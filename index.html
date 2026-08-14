@@ -25,41 +25,67 @@
         }
     </script>
 </head>
-<body class="bg-void text-white font-sans antialiased overflow-x-hidden">
+<body class="bg-void text-white font-sans antialiased overflow-x-hidden selection:bg-blue-500 selection:text-white">
 
     <!-- Navbar / Header with Admin Toggle -->
-    <header class="fixed top-0 left-0 right-0 z-40 bg-void/80 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center">
-        <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">GreatNexa</h1>
+    <header class="fixed top-0 left-0 right-0 z-40 bg-void/80 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center transition-all">
+        <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">GreatNexa</h1>
         <div class="flex gap-4 items-center">
-            <a href="#store" class="text-sm text-gray-300 hover:text-white">Store</a>
-            <button onclick="toggleAdminPanel()" class="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold border border-white/10 transition">Admin Panel</button>
+            <a href="#store" class="text-sm text-gray-300 hover:text-white transition">Store</a>
+            <button onclick="toggleAdminPanel()" class="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold border border-white/10 transition shadow-sm">Admin Panel</button>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="relative min-h-screen flex flex-col items-center justify-center px-6 text-center pt-20 overflow-hidden">
-        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-600/20 rounded-full blur-[140px] pointer-events-none"></div>
-        <div class="absolute top-2/3 left-1/4 w-80 h-80 bg-purple-600/15 rounded-full blur-[120px] pointer-events-none"></div>
+    <section class="relative min-h-screen flex flex-col items-center justify-center px-6 text-center pt-28 pb-16 overflow-hidden">
+        <!-- Background Glowing Orbs -->
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/15 rounded-full blur-[160px] pointer-events-none"></div>
+        <div class="absolute top-1/3 left-1/4 w-96 h-96 bg-purple-600/15 rounded-full blur-[140px] pointer-events-none"></div>
+        <div class="absolute bottom-10 right-1/4 w-80 h-80 bg-indigo-600/10 rounded-full blur-[130px] pointer-events-none"></div>
 
-        <span class="px-4 py-1.5 mb-6 text-xs font-semibold tracking-wider uppercase bg-white/10 text-blue-400 rounded-full border border-white/10 backdrop-blur-md">
-            Welcome to GreatNexa Agency
-        </span>
+        <!-- Top Announcement Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-2 mb-6 text-xs font-medium tracking-wide uppercase bg-white/[0.05] text-blue-400 rounded-full border border-white/10 backdrop-blur-xl shadow-inner">
+            <span class="flex h-2 w-2 rounded-full bg-blue-400 animate-pulse"></span>
+            Welcome to GreatNexa Agency &bull; Next-Gen AI Solutions
+        </div>
         
-        <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 leading-tight max-w-4xl">
+        <!-- Main Heading -->
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1] max-w-5xl">
             Automate Your Future With <br />
             <span class="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
                 AI & Smart Subscriptions
             </span>
         </h1>
         
-        <p class="text-lg md:text-xl text-gray-400 max-w-2xl mb-10">
-            Your ultimate digital platform for premium software access, n8n workflow automations, and digital mastery.
+        <!-- Description -->
+        <p class="text-base sm:text-xl text-gray-400 max-w-2xl mb-10 leading-relaxed">
+            Your ultimate digital platform for premium software access, high-performance n8n workflow automations, and total digital mastery.
         </p>
 
-        <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
-            <a href="#store" class="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 font-medium transition shadow-lg shadow-blue-600/30">
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 w-full justify-center items-center mb-16">
+            <a href="#store" class="px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 font-semibold transition shadow-xl shadow-blue-600/25 border border-blue-400/25">
                 Explore Store
             </a>
+            <a href="#features" class="px-8 py-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] text-gray-300 hover:text-white font-semibold transition border border-white/10 backdrop-blur-md">
+                Learn More
+            </a>
+        </div>
+
+        <!-- Mini Feature / Stats Grid to Eliminate Empty Space -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl w-full pt-8 border-t border-white/10 text-left">
+            <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-sm">
+                <div class="text-blue-400 font-bold text-xl mb-1">100% Secure</div>
+                <div class="text-xs text-gray-400">Instant delivery with guaranteed reliability and trusted uptime.</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-sm">
+                <div class="text-indigo-400 font-bold text-xl mb-1">n8n Workflows</div>
+                <div class="text-xs text-gray-400">Streamline your business tasks with ready-made smart automations.</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-sm">
+                <div class="text-purple-400 font-bold text-xl mb-1">24/7 Support</div>
+                <div class="text-xs text-gray-400">Dedicated assistance anytime you face issues with your subscription.</div>
+            </div>
         </div>
     </section>
 
