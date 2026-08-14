@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreatNexa | AI Automation & Premium Subscriptions</title>
+    <meta name="description" content="Get premium AI subscriptions, n8n workflow automations, and digital solutions at GreatNexa.">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        void: '#05070a',
+                        surface: '#0a0f16',
+                        panel: '#0d141d',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-void text-white font-sans antialiased overflow-x-hidden">
+
+    <!-- Navbar / Header with Admin Toggle -->
+    <header class="fixed top-0 left-0 right-0 z-40 bg-void/80 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">GreatNexa</h1>
+        <div class="flex gap-4 items-center">
+            <a href="#store" class="text-sm text-gray-300 hover:text-white">Store</a>
+            <button onclick="toggleAdminPanel()" class="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold border border-white/10 transition">Admin Panel</button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex flex-col items-center justify-center px-6 text-center pt-20 overflow-hidden">
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-600/20 rounded-full blur-[140px] pointer-events-none"></div>
+        <div class="absolute top-2/3 left-1/4 w-80 h-80 bg-purple-600/15 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <span class="px-4 py-1.5 mb-6 text-xs font-semibold tracking-wider uppercase bg-white/10 text-blue-400 rounded-full border border-white/10 backdrop-blur-md">
+            Welcome to GreatNexa Agency
+        </span>
+        
+        <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 leading-tight max-w-4xl">
+            Automate Your Future With <br />
+            <span class="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
+                AI & Smart Subscriptions
+            </span>
+        </h1>
+        
+        <p class="text-lg md:text-xl text-gray-400 max-w-2xl mb-10">
+            Your ultimate digital platform for premium software access, n8n workflow automations, and digital mastery.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+            <a href="#store" class="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 font-medium transition shadow-lg shadow-blue-600/30">
+                Explore Store
+            </a>
+        </div>
+    </section>
+
+    <!-- Store / Services Page Section -->
+    <section id="store" class="relative z-10 max-w-6xl mx-auto px-6 py-16">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">Our Digital Store</h2>
+            <p class="text-gray-400 mb-8">Choose your category and get instant access to professional tools.</p>
+        </div>
+
+        <!-- Product Grid -->
+        <div id="product-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Product 1 -->
+            <div class="product-card group p-8 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-blue-500/50 transition duration-300 flex flex-col justify-between shadow-xl">
+                <div>
+                    <span class="inline-block px-3 py-1 mb-4 text-xs font-medium bg-blue-500/10 text-blue-400 rounded-lg border border-blue-500/20">AI Subscriptions</span>
+                    <h3 class="text-2xl font-semibold mb-3 group-hover:text-blue-400 transition">Gemini Advanced / ChatGPT Plus</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">Get shared or private premium access to advanced AI models with full features.</p>
+                </div>
+                <div class="flex items-center justify-between pt-4 border-t border-white/10">
+                    <span class="text-lg font-bold text-white">৳499 /mo</span>
+                    <button onclick="openCheckout('Gemini/ChatGPT Plus', '৳499')" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm font-medium transition shadow-lg shadow-blue-600/20">Order Now</button>
+                </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="product-card group p-8 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-purple-500/50 transition duration-300 flex flex-col justify-between shadow-xl">
+                <div>
+                    <span class="inline-block px-3 py-1 mb-4 text-xs font-medium bg-purple-500/10 text-purple-400 rounded-lg border border-purple-500/20">Automation Tools</span>
+                    <h3 class="text-2xl font-semibold mb-3 group-hover:text-purple-400 transition">n8n Workflow Setup</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">Custom automated workflows connecting your apps, CRM, and communication channels.</p>
+                </div>
+                <div class="flex items-center justify-between pt-4 border-t border-white/10">
+                    <span class="text-lg font-bold text-white">৳1,500</span>
+                    <button onclick="openCheckout('n8n Workflow Setup', '৳1,500')" class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-sm font-medium transition shadow-lg shadow-purple-600/20">Order Now</button>
+                </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="product-card group p-8 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-indigo-500/50 transition duration-300 flex flex-col justify-between shadow-xl">
+                <div>
+                    <span class="inline-block px-3 py-1 mb-4 text-xs font-medium bg-indigo-500/10 text-indigo-400 rounded-lg border border-indigo-500/20">Digital Courses</span>
+                    <h3 class="text-2xl font-semibold mb-3 group-hover:text-indigo-400 transition">AI Mastery & Automation</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">Complete step-by-step video guide to build your own digital agency from scratch.</p>
+                </div>
+                <div class="flex items-center justify-between pt-4 border-t border-white/10">
+                    <span class="text-lg font-bold text-white">৳1,299</span>
+                    <button onclick="openCheckout('AI Mastery Course', '৳1,299')" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-medium transition shadow-lg shadow-indigo-600/20">Order Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center px-4">
+        <div class="bg-panel border border-white/10 p-8 rounded-2xl max-w-md w-full relative">
+            <button onclick="closeCheckout()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">✕</button>
+            <h3 class="text-2xl font-bold mb-2">Complete Your Order</h3>
+            <p id="modal-product-name" class="text-blue-400 font-medium mb-4"></p>
+            <div class="bg-white/5 p-4 rounded-xl border border-white/10 mb-6 text-sm text-gray-300">
+                <p class="font-semibold text-white mb-1">bKash / Nagad (Personal):</p>
+                <p class="text-lg font-bold text-emerald-400 tracking-wider">017XXXXXXXX</p>
+                <p class="text-xs text-gray-400 mt-2">Send money to this number and enter your Transaction ID (TrxID) below.</p>
+            </div>
+            <form onsubmit="handleOrder(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Your Phone Number</label>
+                    <input type="text" id="order-phone" required placeholder="01XXXXXXXXX" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Transaction ID (TrxID)</label>
+                    <input type="text" id="order-trx" required placeholder="e.g. 9N87AH6..." class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold transition shadow-lg shadow-blue-600/30">Submit Order</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center px-4">
+        <div class="bg-panel border border-white/10 p-8 rounded-2xl max-w-4xl w-full relative max-h-[80vh] overflow-y-auto">
+            <button onclick="toggleAdminPanel()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">✕</button>
+            <h3 class="text-2xl font-bold mb-4">Admin Verification Panel</h3>
+            <p class="text-gray-400 text-sm mb-6">Manage customer orders and approve transactions.</p>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-white/10 text-xs text-gray-400">
+                            <th class="py-3 px-4">Product</th>
+                            <th class="py-3 px-4">Price</th>
+                            <th class="py-3 px-4">Phone</th>
+                            <th class="py-3 px-4">TrxID</th>
+                            <th class="py-3 px-4">Status</th>
+                            <th class="py-3 px-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-orders-list" class="text-sm">
+                        <!-- Orders will load here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript & Automation Logic -->
+    <script>
+        const SUPABASE_URL = 'https://rkccfwctilfzcepqyocu.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_fvuGzvULvtn0esCYdRX3g_Um4XtWq'; 
+        
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // আপনার n8n Webhook URL এখানে বসাবেন (যখন সেলফ-হোস্টেড n8n ব্যবহার করবেন)
+        const N8N_WEBHOOK_URL = 'YOUR_N8N_WEBHOOK_URL_HERE';
+
+        let selectedProduct = '';
+        let selectedPrice = '';
+
+        function openCheckout(productName, price) {
+            selectedProduct = productName;
+            selectedPrice = price;
+            document.getElementById('modal-product-name').innerText = productName + ' - ' + price;
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+        }
+
+        // 1. Order Submit & Supabase Save + n8n Webhook Trigger
+        async function handleOrder(e) {
+            e.preventDefault();
+            const phone = document.getElementById('order-phone').value;
+            const trxId = document.getElementById('order-trx').value;
+
+            // Save to Supabase
+            const { data, error } = await _supabase
+                .from('orders')
+                .insert([
+                    { product_name: selectedProduct, price: selectedPrice, phone: phone, trx_id: trxId, status: 'pending' }
+                ])
+                .select();
+
+            if (error) {
+                alert('Error submitting order: ' + error.message);
+            } else {
+                alert('Order submitted successfully! Pending verification.');
+                closeCheckout();
+                document.getElementById('order-phone').value = '';
+                document.getElementById('order-trx').value = '';
+
+                // Trigger n8n Webhook for Automation & Notification
+                if (N8N_WEBHOOK_URL !== 'YOUR_N8N_WEBHOOK_URL_HERE') {
+                    fetch(N8N_WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ product: selectedProduct, price: selectedPrice, phone: phone, trx_id: trxId })
+                    }).catch(err => console.log('Webhook error:', err));
+                }
+            }
+        }
+
+        // 2. Admin Panel Toggle & Data Fetching
+        async function toggleAdminPanel() {
+            const modal = document.getElementById('admin-modal');
+            modal.classList.toggle('hidden');
+
+            if (!modal.classList.contains('hidden')) {
+                loadAdminOrders();
+            }
+        }
+
+        async function loadAdminOrders() {
+            const tbody = document.getElementById('admin-orders-list');
+            tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-gray-400">Loading orders...</td></tr>`;
+
+            const { data, error } = await _supabase
+                .from('orders')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-red-400">Error loading orders</td></tr>`;
+                return;
+            }
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-gray-400">No orders found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            data.forEach(order => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-white/5">
+                        <td class="py-3 px-4 font-medium">${order.product_name}</td>
+                        <td class="py-3 px-4 text-blue-400">${order.price}</td>
+                        <td class="py-3 px-4">${order.phone}</td>
+                        <td class="py-3 px-4 font-mono text-xs text-amber-400">${order.trx_id}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${order.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}">
+                                ${order.status}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4">
+                            ${order.status === 'pending' ? `<button onclick="approveOrder(${order.id})" class="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-xs font-medium transition">Approve</button>` : '<span class="text-xs text-gray-500">Done</span>'}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // 3. Approve Order Function
+        async function approveOrder(id) {
+            const { error } = await _supabase
+                .from('orders')
+                .update({ status: 'approved' })
+                .eq('id', id);
+
+            if (error) {
+                alert('Error updating order: ' + error.message);
+            } else {
+                loadAdminOrders();
+            }
+        }
+    </script>
+</body>
+</html>
