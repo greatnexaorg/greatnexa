@@ -374,25 +374,35 @@
             }
         }
 
-        // 2. Hidden Admin Panel via URL Route (/hrk-admin)
-        function toggleAdminPanel() {
-            const currentUrl = window.location.href;
-            if (!currentUrl.includes("hrk-admin")) {
-                alert("স্বাভাবিকভাবে অ্যাডমিন প্যানেল দেখা যাবে না। সঠিক লিঙ্ক ব্যবহার করুন।");
-                return;
-            }
-
-            const isLoggedIn = sessionStorage.getItem("isAdminLoggedIn");
-            if (isLoggedIn === "true") {
-                const modal = document.getElementById('admin-modal');
-                modal.classList.toggle('hidden');
-                if (!modal.classList.contains('hidden')) {
-                    loadAdminOrders();
+        // 2. Hidden Admin Panel via Query Parameter (?admin=hrk-admin)
+                function toggleAdminPanel() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get("admin") !== "hrk-admin") {
+                        alert("স্বাভাবিকভাবে অ্যাডমিন প্যানেল দেখা যাবে না। সঠিক লিঙ্ক ব্যবহার করুন।");
+                        return;
+                    }
+        
+                    const isLoggedIn = sessionStorage.getItem("isAdminLoggedIn");
+                    if (isLoggedIn === "true") {
+                        const modal = document.getElementById('admin-modal');
+                        modal.classList.toggle('hidden');
+                        if (!modal.classList.contains('hidden')) {
+                            loadAdminOrders();
+                        }
+                    } else {
+                        document.getElementById('admin-login-modal').classList.remove('hidden');
+                    }
                 }
-            } else {
-                document.getElementById('admin-login-modal').classList.remove('hidden');
-            }
-        }
+        
+                // পেজ লোড হওয়ার সময় যদি লিঙ্কে ?admin=hrk-admin থাকে তবে অটো লগইন মোডাল ওপেন হবে
+                window.addEventListener('DOMContentLoaded', () => {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get("admin") === "hrk-admin") {
+                        setTimeout(() => {
+                            toggleAdminPanel();
+                        }, 500);
+                    }
+                });
 
         // পেজ লোড হওয়ার সময় যদি ইউআরএল-এ /hrk-admin থাকে এবং ইউজার লগইন করা থাকে তবে প্যানেল ওপেন করার চেকিং
         window.addEventListener('DOMContentLoaded', () => {
