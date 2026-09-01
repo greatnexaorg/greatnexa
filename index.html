@@ -42,9 +42,7 @@
 
     <!-- Hero Section -->
     <section class="relative min-h-[90vh] sm:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 text-center pt-24 sm:pt-28 pb-12 sm:pb-16 overflow-hidden bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&auto=format&fit=crop');">
-        
         <div class="absolute inset-0 bg-void/75 sm:bg-void/65 backdrop-blur-[2px] pointer-events-none"></div>
-
         <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 sm:w-[500px] h-64 sm:h-[500px] bg-blue-600/30 rounded-full blur-[100px] sm:blur-[160px] pointer-events-none z-1"></div>
         <div class="absolute top-1/3 left-1/4 w-48 sm:w-96 h-48 sm:h-96 bg-purple-600/30 rounded-full blur-[90px] sm:blur-[140px] pointer-events-none z-1"></div>
 
@@ -99,7 +97,6 @@
         </div>
 
         <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Product 1 -->
             <div class="product-card group rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-blue-500/50 transition duration-300 flex flex-col justify-between shadow-xl overflow-hidden">
                 <div class="h-44 sm:h-48 overflow-hidden bg-black/40 border-b border-white/10">
                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop" alt="AI Subscriptions" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
@@ -115,7 +112,6 @@
                 </div>
             </div>
 
-            <!-- Product 2 -->
             <div class="product-card group rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-purple-500/50 transition duration-300 flex flex-col justify-between shadow-xl overflow-hidden">
                 <div class="h-44 sm:h-48 overflow-hidden bg-black/40 border-b border-white/10">
                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop" alt="Automation Tools" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
@@ -131,7 +127,6 @@
                 </div>
             </div>
 
-            <!-- Product 3 -->
             <div class="product-card group rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-indigo-500/50 transition duration-300 flex flex-col justify-between shadow-xl overflow-hidden sm:col-span-2 lg:col-span-1">
                 <div class="h-44 sm:h-48 overflow-hidden bg-black/40 border-b border-white/10">
                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop" alt="Digital Courses" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
@@ -157,7 +152,6 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            <!-- Course 1 -->
             <div class="product-card group rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-emerald-500/50 transition duration-300 flex flex-col justify-between shadow-xl overflow-hidden">
                 <div class="h-44 sm:h-48 overflow-hidden bg-black/40 border-b border-white/10">
                     <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop" alt="n8n Bootcamp" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
@@ -173,7 +167,6 @@
                 </div>
             </div>
 
-            <!-- Course 2 -->
             <div class="product-card group rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-amber-500/50 transition duration-300 flex flex-col justify-between shadow-xl overflow-hidden">
                 <div class="h-44 sm:h-48 overflow-hidden bg-black/40 border-b border-white/10">
                     <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=600&auto=format&fit=crop" alt="AI Agency" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
@@ -191,7 +184,7 @@
         </div>
     </section>
 
-    <!-- Checkout Modal (With Email & WhatsApp Input) -->
+    <!-- Checkout Modal -->
     <div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-panel border border-white/10 p-6 sm:p-8 rounded-2xl max-w-md w-full relative shadow-2xl max-h-[90vh] overflow-y-auto">
             <button onclick="closeCheckout()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">✕</button>
@@ -226,12 +219,12 @@
         </div>
     </div>
 
-    <!-- Customer Order Tracker Modal (Shows Direct Access/Credentials) -->
+    <!-- Customer Order Tracker Modal -->
     <div id="customer-tracker-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="bg-panel border border-white/10 p-6 sm:p-8 rounded-2xl max-w-2xl w-full relative shadow-2xl max-h-[85vh] overflow-y-auto">
             <button onclick="toggleCustomerTracker()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">✕</button>
             <h3 class="text-xl sm:text-2xl font-bold mb-1 text-white">Track & Get Your Order</h3>
-            <p class="text-gray-400 text-xs sm:text-sm mb-5">Enter your phone number to check verification and access delivered products.</p>
+            <p class="text-gray-400 text-xs sm:text-sm mb-5">Enter your phone or WhatsApp number to access delivered products.</p>
             
             <div class="flex flex-col sm:flex-row gap-2 mb-6">
                 <input type="text" id="track-phone" placeholder="Enter your phone or WhatsApp number" class="flex-1 bg-black/50 border border-white/20 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
@@ -244,19 +237,43 @@
         </div>
     </div>
 
-    <!-- Admin Delivery Modal (Triggered when Admin clicks Deliver/Approve) -->
+    <!-- Admin Delivery & Multi-Channel Option Modal -->
     <div id="admin-delivery-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-panel border border-white/10 p-6 rounded-2xl max-w-md w-full relative shadow-2xl">
+        <div class="bg-panel border border-white/10 p-6 rounded-2xl max-w-lg w-full relative shadow-2xl max-h-[90vh] overflow-y-auto">
             <button onclick="closeDeliveryModal()" class="absolute top-3 right-3 text-gray-400 hover:text-white">✕</button>
             <h3 class="text-lg font-bold mb-1 text-white">Approve & Deliver Product</h3>
-            <p id="delivery-modal-user" class="text-xs text-gray-400 mb-4"></p>
+            <p id="delivery-modal-user" class="text-xs text-blue-400 mb-4"></p>
             
-            <div class="space-y-3 mb-4">
-                <label class="block text-xs text-gray-300">প্রোডাক্ট ক্রেডেনশিয়াল / ড্রাইভ বা এক্সেস লিঙ্ক:</label>
-                <textarea id="delivery-input-data" rows="4" placeholder="Email: user@example.com&#10;Pass: ******&#10;Drive Link: https://..." class="w-full bg-black/50 border border-white/20 rounded-lg p-3 text-white text-sm focus:outline-none focus:border-emerald-500"></textarea>
+            <div class="space-y-4 mb-5">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1.5">প্রোডাক্ট ক্রেডেনশিয়াল / ড্রাইভ বা এক্সেস লিঙ্ক:</label>
+                    <textarea id="delivery-input-data" rows="4" placeholder="Email: user@example.com&#10;Pass: ******&#10;Access Link: https://..." class="w-full bg-black/50 border border-white/20 rounded-lg p-3 text-white text-xs font-mono focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <!-- 3 Channel Checkmark Selection Options -->
+                <div class="bg-white/5 border border-white/10 p-3.5 rounded-xl space-y-2.5">
+                    <p class="text-xs font-bold text-gray-200">কোথায় কোথায় ডেলিভারি পাঠাবেন? (সিলেক্ট করুন):</p>
+                    
+                    <label class="flex items-center gap-2.5 cursor-pointer text-xs text-gray-300 hover:text-white">
+                        <input type="checkbox" id="channel-website" checked class="w-4 h-4 rounded bg-black/50 border-white/30 text-emerald-500 focus:ring-0">
+                        <span>🌐 <b>Website Track Order</b> (কাস্টমার পোর্টালে সরাসরি দেখাবে)</span>
+                    </label>
+
+                    <label class="flex items-center gap-2.5 cursor-pointer text-xs text-gray-300 hover:text-white">
+                        <input type="checkbox" id="channel-whatsapp" checked class="w-4 h-4 rounded bg-black/50 border-white/30 text-emerald-500 focus:ring-0">
+                        <span>💬 <b>WhatsApp Direct Send</b> (হোয়াটসঅ্যাপে ডেলিভারি মেসেজ ওপেন হবে)</span>
+                    </label>
+
+                    <label class="flex items-center gap-2.5 cursor-pointer text-xs text-gray-300 hover:text-white">
+                        <input type="checkbox" id="channel-email" checked class="w-4 h-4 rounded bg-black/50 border-white/30 text-emerald-500 focus:ring-0">
+                        <span>📧 <b>Email Notification</b> (ইমেইল অ্যাপে ড্রাফট ওপেন / n8n ট্রিগার)</span>
+                    </label>
+                </div>
             </div>
             
-            <button onclick="confirmApprovalAndDelivery()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition text-sm shadow-lg shadow-emerald-600/30">Save & Approve</button>
+            <button onclick="confirmApprovalAndDelivery()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition text-sm shadow-lg shadow-emerald-600/30">
+                Confirm, Save & Deliver
+            </button>
         </div>
     </div>
 
@@ -277,7 +294,7 @@
 
     <!-- Admin Panel Modal -->
     <div id="admin-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-panel border border-white/10 p-5 sm:p-8 rounded-2xl max-w-5xl w-full relative max-h-[85vh] overflow-y-auto shadow-2xl">
+        <div class="bg-panel border border-white/10 p-5 sm:p-8 rounded-2xl max-w-6xl w-full relative max-h-[85vh] overflow-y-auto shadow-2xl">
             <button onclick="toggleAdminPanel()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">✕</button>
             <div class="flex justify-between items-center mb-4 pr-6">
                 <h3 class="text-xl sm:text-2xl font-bold text-white">Admin Verification & Delivery Panel</h3>
@@ -286,7 +303,7 @@
             <p class="text-gray-400 text-xs sm:text-sm mb-6">Manage customer orders, input deliverables, and notify via WhatsApp/Email.</p>
             
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse min-w-[700px]">
+                <table class="w-full text-left border-collapse min-w-[780px]">
                     <thead>
                         <tr class="border-b border-white/10 text-xs text-gray-400">
                             <th class="py-3 px-3">Product</th>
@@ -317,7 +334,8 @@
 
         let selectedProduct = '';
         let selectedPrice = '';
-        let activeApprovingOrder = null;
+        let ordersDataCache = [];
+        let currentEditingOrderId = null;
 
         function openCheckout(productName, price) {
             selectedProduct = productName;
@@ -335,7 +353,7 @@
             modal.classList.toggle('hidden');
         }
 
-        // Search Orders for Customers (Shows Delivery Data)
+        // Search Orders for Customers
         async function searchCustomerOrders() {
             const phone = document.getElementById('track-phone').value.trim();
             const resultDiv = document.getElementById('customer-orders-result');
@@ -358,7 +376,7 @@
                 return;
             }
 
-            if (data.length === 0) {
+            if (!data || data.length === 0) {
                 resultDiv.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">No orders found with this number.</p>`;
                 return;
             }
@@ -399,7 +417,7 @@
             });
         }
 
-        // Order Submit (Saves Email, Phone, WhatsApp)
+        // Handle Order Checkout
         async function handleOrder(e) {
             e.preventDefault();
             const email = document.getElementById('order-email').value.trim();
@@ -506,6 +524,7 @@
             alert("অ্যাডমিন প্যানেল থেকে সফলভাবে লগআউট করা হয়েছে।");
         }
 
+        // Load Admin Orders & Bind Table
         async function loadAdminOrders() {
             const tbody = document.getElementById('admin-orders-list');
             tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-gray-400">Loading orders...</td></tr>`;
@@ -516,28 +535,34 @@
                 .order('created_at', { ascending: false });
 
             if (error) {
-                tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-red-400">Error loading orders</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-red-400">Error loading orders: ${error.message}</td></tr>`;
                 return;
             }
 
-            if (data.length === 0) {
+            if (!data || data.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-gray-400">No orders found.</td></tr>`;
                 return;
             }
 
+            ordersDataCache = data;
             tbody.innerHTML = '';
+            
             data.forEach(order => {
-                const whatsappClean = (order.whatsapp || order.phone || '').replace(/[^0-9]/g, '');
-                const formattedWhatsapp = whatsappClean.startsWith('88') ? whatsappClean : (whatsappClean.startsWith('01') ? '88' + whatsappClean : whatsappClean);
+                const whatsappRaw = (order.whatsapp || order.phone || '').replace(/[^0-9]/g, '');
+                const formattedWhatsapp = whatsappRaw.startsWith('88') ? whatsappRaw : (whatsappRaw.startsWith('01') ? '88' + whatsappRaw : whatsappRaw);
                 const isApproved = order.status === 'approved';
                 
-                const waMessage = encodeURIComponent(`Hello! Your GreatNexa order for "${order.product_name}" is ready.\n\nDetails / Credentials:\n${order.delivery_data || 'Approved'}\n\nThank you for choosing GreatNexa!`);
+                const waMessage = encodeURIComponent(`Hello! Your GreatNexa order for "${order.product_name}" is ready.\n\nDelivery Details:\n${order.delivery_data || 'Approved'}\n\nThank you!`);
                 const waUrl = `https://wa.me/${formattedWhatsapp}?text=${waMessage}`;
+                
+                const emailSubject = encodeURIComponent(`GreatNexa Delivery: ${order.product_name}`);
+                const emailBody = encodeURIComponent(`Hello,\n\nYour order for "${order.product_name}" has been approved.\n\nAccess Details / Credentials:\n${order.delivery_data || 'Your service is activated'}\n\nThank you for choosing GreatNexa!`);
+                const emailUrl = order.email ? `mailto:${order.email}?subject=${emailSubject}&body=${emailBody}` : '#';
 
                 tbody.innerHTML += `
                     <tr class="border-b border-white/5 hover:bg-white/[0.02]">
                         <td class="py-3 px-3 font-medium text-white">${order.product_name}</td>
-                        <td class="py-3 px-3 text-blue-400">${order.price}</td>
+                        <td class="py-3 px-3 text-blue-400 font-medium">${order.price}</td>
                         <td class="py-3 px-3 text-xs">
                             <div class="text-gray-200">${order.email || 'N/A'}</div>
                             <div class="text-gray-400 font-mono">WA: ${order.whatsapp || order.phone}</div>
@@ -550,14 +575,19 @@
                         </td>
                         <td class="py-3 px-3 text-center">
                             <div class="flex items-center justify-center gap-1.5">
-                                ${!isApproved ? `
-                                    <button onclick='openDeliveryModal(${JSON.stringify(order)})' class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-xs font-medium transition">Deliver & Approve</button>
-                                ` : `
-                                    <button onclick='openDeliveryModal(${JSON.stringify(order)})' class="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-[11px] text-gray-300 transition">Edit Delivery</button>
-                                `}
-                                <a href="${waUrl}" target="_blank" class="px-2.5 py-1 rounded bg-green-600/30 hover:bg-green-600 text-green-300 hover:text-white border border-green-500/40 text-xs font-medium transition inline-flex items-center gap-1">
+                                <button onclick="openDeliveryModalById(${order.id})" class="px-2.5 py-1 rounded ${isApproved ? 'bg-white/10 hover:bg-white/20 text-gray-300 text-[11px]' : 'bg-emerald-600 hover:bg-emerald-500 text-white text-xs'} font-medium transition">
+                                    ${isApproved ? 'Edit Delivery' : 'Deliver & Approve'}
+                                </button>
+                                
+                                <a href="${waUrl}" target="_blank" class="px-2 py-1 rounded bg-green-600/30 hover:bg-green-600 text-green-300 hover:text-white border border-green-500/40 text-xs font-medium transition inline-flex items-center gap-1">
                                     WhatsApp
                                 </a>
+
+                                ${order.email ? `
+                                    <a href="${emailUrl}" class="px-2 py-1 rounded bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 text-xs font-medium transition inline-flex items-center gap-1">
+                                        Email
+                                    </a>
+                                ` : ''}
                             </div>
                         </td>
                     </tr>
@@ -565,9 +595,12 @@
             });
         }
 
-        // Open Delivery Input Modal
-        function openDeliveryModal(order) {
-            activeApprovingOrder = order;
+        // Open Modal Safe by Order ID
+        function openDeliveryModalById(orderId) {
+            const order = ordersDataCache.find(o => o.id === orderId);
+            if (!order) return;
+
+            currentEditingOrderId = orderId;
             document.getElementById('delivery-modal-user').innerText = `Product: ${order.product_name} | Customer: ${order.email || order.phone}`;
             document.getElementById('delivery-input-data').value = order.delivery_data || '';
             document.getElementById('admin-delivery-modal').classList.remove('hidden');
@@ -575,45 +608,70 @@
 
         function closeDeliveryModal() {
             document.getElementById('admin-delivery-modal').classList.add('hidden');
-            activeApprovingOrder = null;
+            currentEditingOrderId = null;
         }
 
-        // Save Delivery & Trigger Webhook
+        // Save & Multi-Channel Deliver Action
         async function confirmApprovalAndDelivery() {
-            if (!activeApprovingOrder) return;
+            if (!currentEditingOrderId) return;
+            const order = ordersDataCache.find(o => o.id === currentEditingOrderId);
+            if (!order) return;
+
             const deliveryData = document.getElementById('delivery-input-data').value.trim();
+            const sendToWebsite = document.getElementById('channel-website').checked;
+            const sendToWhatsApp = document.getElementById('channel-whatsapp').checked;
+            const sendToEmail = document.getElementById('channel-email').checked;
 
-            const { error } = await _supabase
-                .from('orders')
-                .update({ 
-                    status: 'approved',
-                    delivery_data: deliveryData
-                })
-                .eq('id', activeApprovingOrder.id);
+            if (sendToWebsite) {
+                const { error } = await _supabase
+                    .from('orders')
+                    .update({ 
+                        status: 'approved',
+                        delivery_data: deliveryData
+                    })
+                    .eq('id', order.id);
 
-            if (error) {
-                alert('Error updating order: ' + error.message);
-            } else {
-                // Trigger n8n for Auto Email Dispatch
-                if (N8N_WEBHOOK_URL !== 'YOUR_N8N_WEBHOOK_URL_HERE') {
-                    fetch(N8N_WEBHOOK_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            type: 'ORDER_DELIVERED',
-                            order_id: activeApprovingOrder.id,
-                            product: activeApprovingOrder.product_name, 
-                            email: activeApprovingOrder.email, 
-                            whatsapp: activeApprovingOrder.whatsapp,
-                            delivery_data: deliveryData 
-                        })
-                    }).catch(err => console.log('Webhook error:', err));
+                if (error) {
+                    alert('Error saving delivery data: ' + error.message);
+                    return;
                 }
-
-                alert('ডেলিভারি ডাটা সফলভাবে সংরক্ষিত হয়েছে এবং অর্ডার অ্যাপ্রুভ হয়েছে!');
-                closeDeliveryModal();
-                loadAdminOrders();
             }
+
+            // n8n Webhook Trigger (Auto dispatch if configured)
+            if (N8N_WEBHOOK_URL !== 'YOUR_N8N_WEBHOOK_URL_HERE') {
+                fetch(N8N_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        type: 'ORDER_DELIVERED',
+                        order_id: order.id,
+                        product: order.product_name, 
+                        email: order.email, 
+                        whatsapp: order.whatsapp,
+                        delivery_data: deliveryData,
+                        channels: { website: sendToWebsite, whatsapp: sendToWhatsApp, email: sendToEmail }
+                    })
+                }).catch(err => console.log('Webhook error:', err));
+            }
+
+            // Trigger Email Client if Checked
+            if (sendToEmail && order.email) {
+                const emailSubject = encodeURIComponent(`GreatNexa Delivery: ${order.product_name}`);
+                const emailBody = encodeURIComponent(`Hello,\n\nYour order for "${order.product_name}" has been approved.\n\nDelivery Details / Credentials:\n${deliveryData}\n\nThank you for choosing GreatNexa!`);
+                window.open(`mailto:${order.email}?subject=${emailSubject}&body=${emailBody}`, '_blank');
+            }
+
+            // Trigger WhatsApp Chat if Checked
+            if (sendToWhatsApp) {
+                const whatsappRaw = (order.whatsapp || order.phone || '').replace(/[^0-9]/g, '');
+                const formattedWhatsapp = whatsappRaw.startsWith('88') ? whatsappRaw : (whatsappRaw.startsWith('01') ? '88' + whatsappRaw : whatsappRaw);
+                const waMessage = encodeURIComponent(`Hello! Your GreatNexa order for "${order.product_name}" is ready.\n\nDelivery Details:\n${deliveryData}\n\nThank you!`);
+                window.open(`https://wa.me/${formattedWhatsapp}?text=${waMessage}`, '_blank');
+            }
+
+            alert('অর্ডার সফলভাবে অ্যাপ্রুভ এবং ডেলিভারি চ্যানেলগুলোতে পাঠানো হয়েছে!');
+            closeDeliveryModal();
+            loadAdminOrders();
         }
     </script>
 </body>
