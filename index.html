@@ -27,214 +27,211 @@
 </head>
 <body class="bg-void text-white font-sans antialiased overflow-x-hidden selection:bg-blue-500 selection:text-white">
 
-    <!-- Navbar / Header with Larger Logo & Shifted Right -->
-    <header class="fixed top-0 left-0 right-0 z-40 bg-void/85 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center transition-all">
-        <div class="flex items-center gap-4 pl-2 sm:pl-6">
-            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=200&auto=format&fit=crop" alt="GreatNexa Logo" class="w-12 h-12 rounded-xl object-cover border border-blue-500/40 shadow-lg">
-            <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">GreatNexa</h1>
+    <!-- Navbar / Header (Fully Responsive) -->
+    <header class="fixed top-0 left-0 right-0 z-40 bg-void/90 backdrop-blur-md border-b border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center transition-all">
+        <div class="flex items-center gap-2 sm:gap-3">
+            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=200&auto=format&fit=crop" alt="GreatNexa Logo" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg object-cover border border-blue-500/40 shadow-lg">
+            <h1 class="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">GreatNexa</h1>
         </div>
-        <div class="flex gap-3 items-center">
-            <a href="#store" class="text-sm text-gray-300 hover:text-white transition">Store</a>
-            <a href="#courses" class="text-sm text-gray-300 hover:text-white transition">Courses</a>
-            <button onclick="toggleCustomerTracker()" class="px-3 py-1.5 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 text-xs font-semibold border border-blue-500/30 transition shadow-sm">Track Order</button>
+        <div class="flex gap-2 sm:gap-4 items-center">
+            <a href="#store" class="text-xs sm:text-sm text-gray-300 hover:text-white transition">Store</a>
+            <a href="#courses" class="text-xs sm:text-sm text-gray-300 hover:text-white transition">Courses</a>
+            <button onclick="toggleCustomerTracker()" class="px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 text-xs font-semibold border border-blue-500/30 transition shadow-sm whitespace-nowrap">Track Order</button>
         </div>
     </header>
 
-    <!-- Hero Section with Premium Futuristic AI Abstract Background -->
-    <section class="relative min-h-screen flex flex-col items-center justify-center px-6 text-center pt-28 pb-16 overflow-hidden bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&auto=format&fit=crop');">
+    <!-- Hero Section (Mobile & Tablet Optimized) -->
+    <section class="relative min-h-[90vh] sm:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 text-center pt-24 sm:pt-28 pb-12 sm:pb-16 overflow-hidden bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&auto=format&fit=crop');">
         
-        <!-- Dark Overlay - ব্যাকগ্রাউন্ড নিখুঁত ও স্পষ্ট রাখার জন্য ডার্ক ওভারলে -->
-        <div class="absolute inset-0 bg-void/65 backdrop-blur-[2px] pointer-events-none"></div>
+        <!-- Dark Overlay -->
+        <div class="absolute inset-0 bg-void/75 sm:bg-void/65 backdrop-blur-[2px] pointer-events-none"></div>
 
-        <!-- Background Glowing Orbs -->
-        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/30 rounded-full blur-[160px] pointer-events-none z-1"></div>
-        <div class="absolute top-1/3 left-1/4 w-96 h-96 bg-purple-600/30 rounded-full blur-[140px] pointer-events-none z-1"></div>
-        <div class="absolute bottom-10 right-1/4 w-80 h-80 bg-indigo-600/20 rounded-full blur-[130px] pointer-events-none z-1"></div>
+        <!-- Glowing Orbs (Adjusted sizes for mobile) -->
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 sm:w-[500px] h-64 sm:h-[500px] bg-blue-600/30 rounded-full blur-[100px] sm:blur-[160px] pointer-events-none z-1"></div>
+        <div class="absolute top-1/3 left-1/4 w-48 sm:w-96 h-48 sm:h-96 bg-purple-600/30 rounded-full blur-[90px] sm:blur-[140px] pointer-events-none z-1"></div>
 
         <div class="relative z-10 flex flex-col items-center w-full max-w-5xl">
             <!-- Top Announcement Badge -->
-            <div class="inline-flex items-center gap-2 px-4 py-2 mb-6 text-xs font-medium tracking-wide uppercase bg-black/50 text-blue-400 rounded-full border border-white/20 backdrop-blur-xl shadow-inner">
-                <span class="flex h-2 w-2 rounded-full bg-blue-400 animate-pulse"></span>
-                Welcome to GreatNexa Agency &bull; Next-Gen AI Solutions
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 mb-6 text-[10px] sm:text-xs font-medium tracking-wide uppercase bg-black/60 text-blue-400 rounded-full border border-white/20 backdrop-blur-xl shadow-inner max-w-full text-center">
+                <span class="flex h-2 w-2 rounded-full bg-blue-400 animate-pulse shrink-0"></span>
+                <span class="truncate">Welcome to GreatNexa &bull; Next-Gen AI Solutions</span>
             </div>
             
             <!-- Main Heading -->
-            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1] max-w-5xl drop-shadow-2xl">
-                Automate Your Future With <br />
+            <h1 class="text-3xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight mb-4 sm:mb-6 leading-[1.2] sm:leading-[1.1] max-w-5xl drop-shadow-2xl">
+                Automate Your Future With <br class="hidden sm:inline" />
                 <span class="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
                     AI & Smart Subscriptions
                 </span>
             </h1>
             
             <!-- Description -->
-            <p class="text-base sm:text-xl text-gray-200 max-w-2xl mb-10 leading-relaxed font-medium drop-shadow-md">
+            <p class="text-sm sm:text-lg lg:text-xl text-gray-300 max-w-2xl mb-8 sm:mb-10 leading-relaxed font-normal sm:font-medium drop-shadow-md px-2">
                 Your ultimate digital platform for premium software access, high-performance n8n workflow automations, and total digital mastery.
             </p>
 
             <!-- CTA Buttons -->
-            <div class="flex flex-col sm:flex-row gap-4 w-full justify-center items-center mb-16">
-                <a href="#store" class="px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 font-semibold transition shadow-xl shadow-blue-600/30 border border-blue-400/25">
+            <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto justify-center items-center mb-12 sm:mb-16">
+                <a href="#store" class="w-full sm:w-auto text-center px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 font-semibold text-sm sm:text-base transition shadow-xl shadow-blue-600/30 border border-blue-400/25">
                     Explore Store
                 </a>
-                <button onclick="toggleCustomerTracker()" class="px-8 py-4 rounded-xl bg-black/50 hover:bg-black/70 text-white font-semibold transition border border-white/20 backdrop-blur-md">
+                <button onclick="toggleCustomerTracker()" class="w-full sm:w-auto text-center px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl bg-black/50 hover:bg-black/70 text-white font-semibold text-sm sm:text-base transition border border-white/20 backdrop-blur-md">
                     Check My Order Status
                 </button>
             </div>
 
-            <!-- Mini Feature / Stats Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl w-full pt-8 border-t border-white/20 text-left">
-                <div class="p-4 rounded-2xl bg-black/50 border border-white/15 backdrop-blur-md shadow-lg">
-                    <div class="text-blue-400 font-bold text-xl mb-1 drop-shadow-md">100% Secure</div>
-                    <div class="text-xs text-gray-200">Instant delivery with guaranteed reliability and trusted uptime.</div>
+            <!-- Mini Feature / Stats Grid (Mobile & Tablet Optimized) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 max-w-4xl w-full pt-6 sm:pt-8 border-t border-white/20 text-left">
+                <div class="p-4 rounded-xl bg-black/50 border border-white/15 backdrop-blur-md shadow-lg">
+                    <div class="text-blue-400 font-bold text-lg sm:text-xl mb-1 drop-shadow-md">100% Secure</div>
+                    <div class="text-xs text-gray-300">Instant delivery with guaranteed reliability and trusted uptime.</div>
                 </div>
-                <div class="p-4 rounded-2xl bg-black/50 border border-white/15 backdrop-blur-md shadow-lg">
-                    <div class="text-indigo-400 font-bold text-xl mb-1 drop-shadow-md">n8n Workflows</div>
-                    <div class="text-xs text-gray-200">Streamline your business tasks with ready-made smart automations.</div>
+                <div class="p-4 rounded-xl bg-black/50 border border-white/15 backdrop-blur-md shadow-lg">
+                    <div class="text-indigo-400 font-bold text-lg sm:text-xl mb-1 drop-shadow-md">n8n Workflows</div>
+                    <div class="text-xs text-gray-300">Streamline your business tasks with ready-made smart automations.</div>
                 </div>
-                <div class="p-4 rounded-2xl bg-black/50 border border-white/15 backdrop-blur-md shadow-lg">
-                    <div class="text-purple-400 font-bold text-xl mb-1 drop-shadow-md">24/7 Support</div>
-                    <div class="text-xs text-gray-200">Dedicated assistance anytime you face issues with your subscription.</div>
+                <div class="p-4 rounded-xl bg-black/50 border border-white/15 backdrop-blur-md shadow-lg">
+                    <div class="text-purple-400 font-bold text-lg sm:text-xl mb-1 drop-shadow-md">24/7 Support</div>
+                    <div class="text-xs text-gray-300">Dedicated assistance anytime you face issues with your subscription.</div>
                 </div>
             </div>
         </div>
     </section>
 
-
-            <!-- Store / Services Page Section -->
-            <section id="store" class="relative z-10 max-w-6xl mx-auto px-6 py-16">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-4">Our Digital Store</h2>
-                    <p class="text-gray-400 mb-8">Choose your category and get instant access to professional tools.</p>
-                </div>
-        
-                <!-- Product Grid -->
-                <div id="product-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Product 1 -->
-                    <div class="product-card group rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-blue-500/50 transition duration-300 flex flex-col justify-between shadow-xl overflow-hidden">
-                        <div class="h-48 overflow-hidden bg-black/40 border-b border-white/10">
-                            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop" alt="AI Subscriptions" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        </div>
-                        <div class="p-6">
-                            <span class="inline-block px-3 py-1 mb-3 text-xs font-medium bg-blue-500/10 text-blue-400 rounded-lg border border-blue-500/20">AI Subscriptions</span>
-                            <h3 class="text-xl font-semibold mb-2 group-hover:text-blue-400 transition">Gemini Advanced / ChatGPT Plus</h3>
-                            <p class="text-gray-400 text-sm leading-relaxed mb-4">Get shared or private premium access to advanced AI models with full features.</p>
-                        </div>
-                        <div class="p-6 pt-0 flex items-center justify-between border-t border-white/10 mt-auto">
-                            <span class="text-lg font-bold text-white">৳499 /mo</span>
-                            <button onclick="openCheckout('Gemini/ChatGPT Plus', '৳499')" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm font-medium transition shadow-lg shadow-blue-600/20">Order Now</button>
-                        </div>
-                    </div>
-        
-                    <!-- Product 2 -->
-                    <div class="product-card group rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-purple-500/50 transition duration-300 flex flex-col justify-between shadow-xl overflow-hidden">
-                        <div class="h-48 overflow-hidden bg-black/40 border-b border-white/10">
-                            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop" alt="Automation Tools" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        </div>
-                        <div class="p-6">
-                            <span class="inline-block px-3 py-1 mb-3 text-xs font-medium bg-purple-500/10 text-purple-400 rounded-lg border border-purple-500/20">Automation Tools</span>
-                            <h3 class="text-xl font-semibold mb-2 group-hover:text-purple-400 transition">n8n Workflow Setup</h3>
-                            <p class="text-gray-400 text-sm leading-relaxed mb-4">Custom automated workflows connecting your apps, CRM, and communication channels.</p>
-                        </div>
-                        <div class="p-6 pt-0 flex items-center justify-between border-t border-white/10 mt-auto">
-                            <span class="text-lg font-bold text-white">৳1,500</span>
-                            <button onclick="openCheckout('n8n Workflow Setup', '৳1,500')" class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-sm font-medium transition shadow-lg shadow-purple-600/20">Order Now</button>
-                        </div>
-                    </div>
-        
-                    <!-- Product 3 -->
-                    <div class="product-card group rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-indigo-500/50 transition duration-300 flex flex-col justify-between shadow-xl overflow-hidden">
-                        <div class="h-48 overflow-hidden bg-black/40 border-b border-white/10">
-                            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop" alt="Digital Courses" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        </div>
-                        <div class="p-6">
-                            <span class="inline-block px-3 py-1 mb-3 text-xs font-medium bg-indigo-500/10 text-indigo-400 rounded-lg border border-indigo-500/20">Digital Courses</span>
-                            <h3 class="text-xl font-semibold mb-2 group-hover:text-indigo-400 transition">AI Mastery & Automation</h3>
-                            <p class="text-gray-400 text-sm leading-relaxed mb-4">Complete step-by-step video guide to build your own digital agency from scratch.</p>
-                        </div>
-                        <div class="p-6 pt-0 flex items-center justify-between border-t border-white/10 mt-auto">
-                            <span class="text-lg font-bold text-white">৳1,299</span>
-                            <button onclick="openCheckout('AI Mastery Course', '৳1,299')" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-medium transition shadow-lg shadow-indigo-600/20">Order Now</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-    <!-- Our Courses Section -->
-    <section id="courses" class="relative z-10 max-w-6xl mx-auto px-6 py-16">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl md:text-4xl font-bold mb-4">Our Professional Courses</h2>
-            <p class="text-gray-400 mb-8">Master high-income skills with our expert-led step-by-step video courses.</p>
+    <!-- Store Section -->
+    <section id="store" class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+        <div class="text-center mb-8 sm:mb-12">
+            <h2 class="text-2xl sm:text-4xl font-bold mb-3">Our Digital Store</h2>
+            <p class="text-sm sm:text-base text-gray-400">Choose your category and get instant access to professional tools.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <!-- Product Grid (1 col mobile, 2 col tablet, 3 col desktop) -->
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Product 1 -->
+            <div class="product-card group rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-blue-500/50 transition duration-300 flex flex-col justify-between shadow-xl overflow-hidden">
+                <div class="h-44 sm:h-48 overflow-hidden bg-black/40 border-b border-white/10">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop" alt="AI Subscriptions" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                </div>
+                <div class="p-5 sm:p-6">
+                    <span class="inline-block px-2.5 py-1 mb-3 text-[11px] sm:text-xs font-medium bg-blue-500/10 text-blue-400 rounded-lg border border-blue-500/20">AI Subscriptions</span>
+                    <h3 class="text-lg sm:text-xl font-semibold mb-2 group-hover:text-blue-400 transition">Gemini Advanced / ChatGPT Plus</h3>
+                    <p class="text-gray-400 text-xs sm:text-sm leading-relaxed mb-4">Get shared or private premium access to advanced AI models with full features.</p>
+                </div>
+                <div class="p-5 sm:p-6 pt-0 flex items-center justify-between border-t border-white/10 mt-auto">
+                    <span class="text-base sm:text-lg font-bold text-white">৳499 /mo</span>
+                    <button onclick="openCheckout('Gemini/ChatGPT Plus', '৳499')" class="px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs sm:text-sm font-medium transition shadow-lg shadow-blue-600/20">Order Now</button>
+                </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="product-card group rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-purple-500/50 transition duration-300 flex flex-col justify-between shadow-xl overflow-hidden">
+                <div class="h-44 sm:h-48 overflow-hidden bg-black/40 border-b border-white/10">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop" alt="Automation Tools" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                </div>
+                <div class="p-5 sm:p-6">
+                    <span class="inline-block px-2.5 py-1 mb-3 text-[11px] sm:text-xs font-medium bg-purple-500/10 text-purple-400 rounded-lg border border-purple-500/20">Automation Tools</span>
+                    <h3 class="text-lg sm:text-xl font-semibold mb-2 group-hover:text-purple-400 transition">n8n Workflow Setup</h3>
+                    <p class="text-gray-400 text-xs sm:text-sm leading-relaxed mb-4">Custom automated workflows connecting your apps, CRM, and communication channels.</p>
+                </div>
+                <div class="p-5 sm:p-6 pt-0 flex items-center justify-between border-t border-white/10 mt-auto">
+                    <span class="text-base sm:text-lg font-bold text-white">৳1,500</span>
+                    <button onclick="openCheckout('n8n Workflow Setup', '৳1,500')" class="px-3.5 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-xs sm:text-sm font-medium transition shadow-lg shadow-purple-600/20">Order Now</button>
+                </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="product-card group rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-indigo-500/50 transition duration-300 flex flex-col justify-between shadow-xl overflow-hidden sm:col-span-2 lg:col-span-1">
+                <div class="h-44 sm:h-48 overflow-hidden bg-black/40 border-b border-white/10">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop" alt="Digital Courses" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                </div>
+                <div class="p-5 sm:p-6">
+                    <span class="inline-block px-2.5 py-1 mb-3 text-[11px] sm:text-xs font-medium bg-indigo-500/10 text-indigo-400 rounded-lg border border-indigo-500/20">Digital Courses</span>
+                    <h3 class="text-lg sm:text-xl font-semibold mb-2 group-hover:text-indigo-400 transition">AI Mastery & Automation</h3>
+                    <p class="text-gray-400 text-xs sm:text-sm leading-relaxed mb-4">Complete step-by-step video guide to build your own digital agency from scratch.</p>
+                </div>
+                <div class="p-5 sm:p-6 pt-0 flex items-center justify-between border-t border-white/10 mt-auto">
+                    <span class="text-base sm:text-lg font-bold text-white">৳1,299</span>
+                    <button onclick="openCheckout('AI Mastery Course', '৳1,299')" class="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs sm:text-sm font-medium transition shadow-lg shadow-indigo-600/20">Order Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section id="courses" class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+        <div class="text-center mb-8 sm:mb-12">
+            <h2 class="text-2xl sm:text-4xl font-bold mb-3">Our Professional Courses</h2>
+            <p class="text-sm sm:text-base text-gray-400">Master high-income skills with our expert-led step-by-step video courses.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             <!-- Course 1 -->
             <div class="product-card group rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-emerald-500/50 transition duration-300 flex flex-col justify-between shadow-xl overflow-hidden">
-                <div class="h-48 overflow-hidden bg-black/40 border-b border-white/10">
+                <div class="h-44 sm:h-48 overflow-hidden bg-black/40 border-b border-white/10">
                     <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop" alt="n8n Bootcamp" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                 </div>
-                <div class="p-6">
-                    <span class="inline-block px-3 py-1 mb-3 text-xs font-medium bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20">Masterclass</span>
-                    <h3 class="text-xl font-semibold mb-2 group-hover:text-emerald-400 transition">Advanced n8n Automation Bootcamp</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed mb-4">Learn how to build complex automated business workflows from scratch with lifetime updates.</p>
+                <div class="p-5 sm:p-6">
+                    <span class="inline-block px-2.5 py-1 mb-3 text-[11px] sm:text-xs font-medium bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20">Masterclass</span>
+                    <h3 class="text-lg sm:text-xl font-semibold mb-2 group-hover:text-emerald-400 transition">Advanced n8n Automation Bootcamp</h3>
+                    <p class="text-gray-400 text-xs sm:text-sm leading-relaxed mb-4">Learn how to build complex automated business workflows from scratch with lifetime updates.</p>
                 </div>
-                <div class="p-6 pt-0 flex items-center justify-between border-t border-white/10 mt-auto">
-                    <span class="text-lg font-bold text-white">৳1,999</span>
-                    <button onclick="openCheckout('Advanced n8n Bootcamp', '৳1,999')" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-sm font-medium transition shadow-lg shadow-emerald-600/20">Order Now</button>
+                <div class="p-5 sm:p-6 pt-0 flex items-center justify-between border-t border-white/10 mt-auto">
+                    <span class="text-base sm:text-lg font-bold text-white">৳1,999</span>
+                    <button onclick="openCheckout('Advanced n8n Bootcamp', '৳1,999')" class="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs sm:text-sm font-medium transition shadow-lg shadow-emerald-600/20">Order Now</button>
                 </div>
             </div>
 
             <!-- Course 2 -->
             <div class="product-card group rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-amber-500/50 transition duration-300 flex flex-col justify-between shadow-xl overflow-hidden">
-                <div class="h-48 overflow-hidden bg-black/40 border-b border-white/10">
+                <div class="h-44 sm:h-48 overflow-hidden bg-black/40 border-b border-white/10">
                     <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=600&auto=format&fit=crop" alt="AI Agency" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                 </div>
-                <div class="p-6">
-                    <span class="inline-block px-3 py-1 mb-3 text-xs font-medium bg-amber-500/10 text-amber-400 rounded-lg border border-amber-500/20">Masterclass</span>
-                    <h3 class="text-xl font-semibold mb-2 group-hover:text-amber-400 transition">AI Agency Scaling Blueprint</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed mb-4">Discover how to find international clients and scale your AI automation services profitably.</p>
+                <div class="p-5 sm:p-6">
+                    <span class="inline-block px-2.5 py-1 mb-3 text-[11px] sm:text-xs font-medium bg-amber-500/10 text-amber-400 rounded-lg border border-amber-500/20">Masterclass</span>
+                    <h3 class="text-lg sm:text-xl font-semibold mb-2 group-hover:text-amber-400 transition">AI Agency Scaling Blueprint</h3>
+                    <p class="text-gray-400 text-xs sm:text-sm leading-relaxed mb-4">Discover how to find international clients and scale your AI automation services profitably.</p>
                 </div>
-                <div class="p-6 pt-0 flex items-center justify-between border-t border-white/10 mt-auto">
-                    <span class="text-lg font-bold text-white">৳2,499</span>
-                    <button onclick="openCheckout('AI Agency Scaling Blueprint', '৳2,499')" class="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-sm font-medium transition shadow-lg shadow-amber-600/20">Order Now</button>
+                <div class="p-5 sm:p-6 pt-0 flex items-center justify-between border-t border-white/10 mt-auto">
+                    <span class="text-base sm:text-lg font-bold text-white">৳2,499</span>
+                    <button onclick="openCheckout('AI Agency Scaling Blueprint', '৳2,499')" class="px-3.5 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-xs sm:text-sm font-medium transition shadow-lg shadow-amber-600/20">Order Now</button>
                 </div>
             </div>
         </div>
     </section>
 
-    
     <!-- Checkout Modal -->
-    <div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center px-4">
-        <div class="bg-panel border border-white/10 p-8 rounded-2xl max-w-md w-full relative shadow-2xl">
+    <div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-panel border border-white/10 p-6 sm:p-8 rounded-2xl max-w-md w-full relative shadow-2xl max-h-[90vh] overflow-y-auto">
             <button onclick="closeCheckout()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">✕</button>
-            <h3 class="text-2xl font-bold mb-2">Complete Your Order</h3>
-            <p id="modal-product-name" class="text-blue-400 font-medium mb-4"></p>
-            <div class="bg-white/5 p-4 rounded-xl border border-white/10 mb-6 text-sm text-gray-300">
+            <h3 class="text-xl sm:text-2xl font-bold mb-2">Complete Your Order</h3>
+            <p id="modal-product-name" class="text-blue-400 font-medium text-sm sm:text-base mb-4"></p>
+            <div class="bg-white/5 p-4 rounded-xl border border-white/10 mb-5 text-sm text-gray-300">
                 <p class="font-semibold text-white mb-1">bKash / Nagad (Personal):</p>
-                <p class="text-lg font-bold text-emerald-400 tracking-wider">01870978004</p>
+                <p class="text-base sm:text-lg font-bold text-emerald-400 tracking-wider">01870978004</p>
                 <p class="text-xs text-gray-400 mt-2">Send money to this number and enter your Transaction ID (TrxID) below.</p>
             </div>
             <form onsubmit="handleOrder(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs text-gray-400 mb-1">Your Phone Number</label>
-                    <input type="text" id="order-phone" required placeholder="01XXXXXXXXX" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-blue-500">
+                    <input type="text" id="order-phone" required placeholder="01XXXXXXXXX" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
                     <label class="block text-xs text-gray-400 mb-1">Transaction ID (TrxID)</label>
-                    <input type="text" id="order-trx" required placeholder="e.g. 9N87AH6..." class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-blue-500">
+                    <input type="text" id="order-trx" required placeholder="e.g. 9N87AH6..." class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
                 </div>
-                <button type="submit" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold transition shadow-lg shadow-blue-600/30">Submit Order</button>
+                <button type="submit" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold text-sm sm:text-base transition shadow-lg shadow-blue-600/30">Submit Order</button>
             </form>
         </div>
     </div>
 
     <!-- Customer Order Tracker Modal -->
-    <div id="customer-tracker-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center px-4">
-        <div class="bg-panel border border-white/10 p-8 rounded-2xl max-w-2xl w-full relative shadow-2xl max-h-[80vh] overflow-y-auto">
+    <div id="customer-tracker-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-panel border border-white/10 p-6 sm:p-8 rounded-2xl max-w-2xl w-full relative shadow-2xl max-h-[85vh] overflow-y-auto">
             <button onclick="toggleCustomerTracker()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">✕</button>
-            <h3 class="text-2xl font-bold mb-2 text-white">Track Your Orders</h3>
-            <p class="text-gray-400 text-sm mb-6">Enter your phone number to check your purchase verification status.</p>
+            <h3 class="text-xl sm:text-2xl font-bold mb-1 text-white">Track Your Orders</h3>
+            <p class="text-gray-400 text-xs sm:text-sm mb-5">Enter your phone number to check your purchase verification status.</p>
             
-            <div class="flex gap-2 mb-6">
+            <div class="flex flex-col sm:flex-row gap-2 mb-6">
                 <input type="text" id="track-phone" placeholder="Enter your phone number (e.g. 01...)" class="flex-1 bg-black/50 border border-white/20 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
                 <button onclick="searchCustomerOrders()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-sm transition">Search</button>
             </div>
@@ -246,10 +243,10 @@
     </div>
 
     <!-- Admin Login Modal -->
-    <div id="admin-login-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center px-4">
+    <div id="admin-login-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="bg-panel border border-white/10 p-6 rounded-2xl max-w-sm w-full relative shadow-2xl">
             <button onclick="closeAdminLogin()" class="absolute top-3 right-3 text-gray-400 hover:text-white">✕</button>
-            <h3 class="text-xl font-bold mb-4 text-white">Admin Login</h3>
+            <h3 class="text-lg sm:text-xl font-bold mb-2 text-white">Admin Login</h3>
             <p class="text-gray-400 text-xs mb-4">Enter credentials to access secure management panel.</p>
             
             <div class="space-y-3 mb-4">
@@ -261,29 +258,29 @@
     </div>
 
     <!-- Admin Panel Modal -->
-    <div id="admin-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center px-4">
-        <div class="bg-panel border border-white/10 p-8 rounded-2xl max-w-4xl w-full relative max-h-[80vh] overflow-y-auto shadow-2xl">
+    <div id="admin-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-panel border border-white/10 p-5 sm:p-8 rounded-2xl max-w-4xl w-full relative max-h-[85vh] overflow-y-auto shadow-2xl">
             <button onclick="toggleAdminPanel()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">✕</button>
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-2xl font-bold text-white">Admin Verification Panel</h3>
+            <div class="flex justify-between items-center mb-4 pr-6">
+                <h3 class="text-xl sm:text-2xl font-bold text-white">Admin Panel</h3>
                 <button onclick="adminLogout()" class="text-xs bg-red-600/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg hover:bg-red-600/30 transition">Logout</button>
             </div>
-            <p class="text-gray-400 text-sm mb-6">Manage customer orders and approve transactions safely.</p>
+            <p class="text-gray-400 text-xs sm:text-sm mb-6">Manage customer orders and approve transactions safely.</p>
             
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse min-w-[550px]">
                     <thead>
                         <tr class="border-b border-white/10 text-xs text-gray-400">
-                            <th class="py-3 px-4">Product</th>
-                            <th class="py-3 px-4">Price</th>
-                            <th class="py-3 px-4">Phone</th>
-                            <th class="py-3 px-4">TrxID</th>
-                            <th class="py-3 px-4">Status</th>
-                            <th class="py-3 px-4">Action</th>
+                            <th class="py-3 px-3 sm:px-4">Product</th>
+                            <th class="py-3 px-3 sm:px-4">Price</th>
+                            <th class="py-3 px-3 sm:px-4">Phone</th>
+                            <th class="py-3 px-3 sm:px-4">TrxID</th>
+                            <th class="py-3 px-3 sm:px-4">Status</th>
+                            <th class="py-3 px-3 sm:px-4">Action</th>
                         </tr>
                     </thead>
-                    <tbody id="admin-orders-list" class="text-sm text-gray-200">
-                        <!-- Orders will load here dynamically -->
+                    <tbody id="admin-orders-list" class="text-xs sm:text-sm text-gray-200">
+                        <!-- Orders will load dynamically -->
                     </tbody>
                 </table>
             </div>
@@ -298,7 +295,6 @@
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // আপনার n8n Webhook URL
         const N8N_WEBHOOK_URL = 'YOUR_N8N_WEBHOOK_URL_HERE';
 
         let selectedProduct = '';
@@ -315,13 +311,11 @@
             document.getElementById('checkout-modal').classList.add('hidden');
         }
 
-        // Customer Tracker Toggle
         function toggleCustomerTracker() {
             const modal = document.getElementById('customer-tracker-modal');
             modal.classList.toggle('hidden');
         }
 
-        // Search Orders for Customers
         async function searchCustomerOrders() {
             const phone = document.getElementById('track-phone').value.trim();
             const resultDiv = document.getElementById('customer-orders-result');
@@ -352,13 +346,13 @@
             resultDiv.innerHTML = '';
             data.forEach(order => {
                 resultDiv.innerHTML += `
-                    <div class="bg-white/5 border border-white/10 p-4 rounded-xl flex justify-between items-center text-sm">
+                    <div class="bg-white/5 border border-white/10 p-3.5 sm:p-4 rounded-xl flex justify-between items-center text-xs sm:text-sm">
                         <div>
                             <p class="font-bold text-white">${order.product_name} <span class="text-blue-400 text-xs">(${order.price})</span></p>
                             <p class="text-xs text-gray-400 mt-1">TrxID: <span class="font-mono text-amber-400">${order.trx_id}</span></p>
                         </div>
                         <div>
-                            <span class="px-3 py-1 rounded-full text-xs font-semibold ${order.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}">
+                            <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold ${order.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}">
                                 ${order.status.toUpperCase()}
                             </span>
                         </div>
@@ -367,13 +361,11 @@
             });
         }
 
-        // 1. Order Submit & Supabase Save + n8n Webhook Trigger
         async function handleOrder(e) {
             e.preventDefault();
             const phone = document.getElementById('order-phone').value;
             const trxId = document.getElementById('order-trx').value;
 
-            // Save to Supabase
             const { data, error } = await _supabase
                 .from('orders')
                 .insert([
@@ -389,7 +381,6 @@
                 document.getElementById('order-phone').value = '';
                 document.getElementById('order-trx').value = '';
 
-                // Trigger n8n Webhook for Automation & Notification
                 if (N8N_WEBHOOK_URL !== 'YOUR_N8N_WEBHOOK_URL_HERE') {
                     fetch(N8N_WEBHOOK_URL, {
                         method: 'POST',
@@ -400,40 +391,28 @@
             }
         }
 
-        // 2. Hidden Admin Panel via Query Parameter (?admin=hrk-admin)
-                function toggleAdminPanel() {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    if (urlParams.get("admin") !== "hrk-admin") {
-                        alert("স্বাভাবিকভাবে অ্যাডমিন প্যানেল দেখা যাবে না। সঠিক লিঙ্ক ব্যবহার করুন।");
-                        return;
-                    }
-        
-                    const isLoggedIn = sessionStorage.getItem("isAdminLoggedIn");
-                    if (isLoggedIn === "true") {
-                        const modal = document.getElementById('admin-modal');
-                        modal.classList.toggle('hidden');
-                        if (!modal.classList.contains('hidden')) {
-                            loadAdminOrders();
-                        }
-                    } else {
-                        document.getElementById('admin-login-modal').classList.remove('hidden');
-                    }
-                }
-        
-                // পেজ লোড হওয়ার সময় যদি লিঙ্কে ?admin=hrk-admin থাকে তবে অটো লগইন মোডাল ওপেন হবে
-                window.addEventListener('DOMContentLoaded', () => {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    if (urlParams.get("admin") === "hrk-admin") {
-                        setTimeout(() => {
-                            toggleAdminPanel();
-                        }, 500);
-                    }
-                });
+        function toggleAdminPanel() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get("admin") !== "hrk-admin") {
+                alert("স্বাভাবিকভাবে অ্যাডমিন প্যানেল দেখা যাবে না। সঠিক লিঙ্ক ব্যবহার করুন।");
+                return;
+            }
 
-        // পেজ লোড হওয়ার সময় যদি ইউআরএল-এ /hrk-admin থাকে এবং ইউজার লগইন করা থাকে তবে প্যানেল ওপেন করার চেকিং
+            const isLoggedIn = sessionStorage.getItem("isAdminLoggedIn");
+            if (isLoggedIn === "true") {
+                const modal = document.getElementById('admin-modal');
+                modal.classList.toggle('hidden');
+                if (!modal.classList.contains('hidden')) {
+                    loadAdminOrders();
+                }
+            } else {
+                document.getElementById('admin-login-modal').classList.remove('hidden');
+            }
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
-            if (window.location.href.includes("hrk-admin")) {
-                // অটো-পাসওয়ার্ড মোডাল ওপেন হবে যদি লগইন করা না থাকে
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get("admin") === "hrk-admin") {
                 setTimeout(() => {
                     toggleAdminPanel();
                 }, 500);
@@ -448,7 +427,6 @@
             const user = document.getElementById('admin-username').value;
             const pass = document.getElementById('admin-password').value;
 
-            // ইউজারনেম এবং পাসওয়ার্ড চেক
             if (user === "admin-4321" && pass === "@Hridoy00002") {
                 sessionStorage.setItem("isAdminLoggedIn", "true");
                 document.getElementById('admin-username').value = "";
@@ -490,24 +468,23 @@
             data.forEach(order => {
                 tbody.innerHTML += `
                     <tr class="border-b border-white/5">
-                        <td class="py-3 px-4 font-medium">${order.product_name}</td>
-                        <td class="py-3 px-4 text-blue-400">${order.price}</td>
-                        <td class="py-3 px-4">${order.phone}</td>
-                        <td class="py-3 px-4 font-mono text-xs text-amber-400">${order.trx_id}</td>
-                        <td class="py-3 px-4">
-                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${order.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}">
+                        <td class="py-3 px-3 sm:px-4 font-medium">${order.product_name}</td>
+                        <td class="py-3 px-3 sm:px-4 text-blue-400">${order.price}</td>
+                        <td class="py-3 px-3 sm:px-4">${order.phone}</td>
+                        <td class="py-3 px-3 sm:px-4 font-mono text-xs text-amber-400">${order.trx_id}</td>
+                        <td class="py-3 px-3 sm:px-4">
+                            <span class="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold ${order.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}">
                                 ${order.status}
                             </span>
                         </td>
-                        <td class="py-3 px-4">
-                            ${order.status === 'pending' ? `<button onclick="approveOrder(${order.id})" class="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-xs font-medium transition">Approve</button>` : '<span class="text-xs text-gray-500">Done</span>'}
+                        <td class="py-3 px-3 sm:px-4">
+                            ${order.status === 'pending' ? `<button onclick="approveOrder(${order.id})" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-xs font-medium transition">Approve</button>` : '<span class="text-xs text-gray-500">Done</span>'}
                         </td>
                     </tr>
                 `;
             });
         }
 
-        // 3. Approve Order Function
         async function approveOrder(id) {
             const { error } = await _supabase
                 .from('orders')
