@@ -27,7 +27,7 @@
 </head>
 <body class="bg-void text-white font-sans antialiased overflow-x-hidden selection:bg-blue-500 selection:text-white">
 
-    <!-- Navbar / Header (Fully Responsive) -->
+    <!-- Navbar / Header -->
     <header class="fixed top-0 left-0 right-0 z-40 bg-void/90 backdrop-blur-md border-b border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center transition-all">
         <div class="flex items-center gap-2 sm:gap-3">
             <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=200&auto=format&fit=crop" alt="GreatNexa Logo" class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg object-cover border border-blue-500/40 shadow-lg">
@@ -40,24 +40,20 @@
         </div>
     </header>
 
-    <!-- Hero Section (Mobile & Tablet Optimized) -->
+    <!-- Hero Section -->
     <section class="relative min-h-[90vh] sm:min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 text-center pt-24 sm:pt-28 pb-12 sm:pb-16 overflow-hidden bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&auto=format&fit=crop');">
         
-        <!-- Dark Overlay -->
         <div class="absolute inset-0 bg-void/75 sm:bg-void/65 backdrop-blur-[2px] pointer-events-none"></div>
 
-        <!-- Glowing Orbs (Adjusted sizes for mobile) -->
         <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 sm:w-[500px] h-64 sm:h-[500px] bg-blue-600/30 rounded-full blur-[100px] sm:blur-[160px] pointer-events-none z-1"></div>
         <div class="absolute top-1/3 left-1/4 w-48 sm:w-96 h-48 sm:h-96 bg-purple-600/30 rounded-full blur-[90px] sm:blur-[140px] pointer-events-none z-1"></div>
 
         <div class="relative z-10 flex flex-col items-center w-full max-w-5xl">
-            <!-- Top Announcement Badge -->
             <div class="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 mb-6 text-[10px] sm:text-xs font-medium tracking-wide uppercase bg-black/60 text-blue-400 rounded-full border border-white/20 backdrop-blur-xl shadow-inner max-w-full text-center">
                 <span class="flex h-2 w-2 rounded-full bg-blue-400 animate-pulse shrink-0"></span>
                 <span class="truncate">Welcome to GreatNexa &bull; Next-Gen AI Solutions</span>
             </div>
             
-            <!-- Main Heading -->
             <h1 class="text-3xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight mb-4 sm:mb-6 leading-[1.2] sm:leading-[1.1] max-w-5xl drop-shadow-2xl">
                 Automate Your Future With <br class="hidden sm:inline" />
                 <span class="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
@@ -65,12 +61,10 @@
                 </span>
             </h1>
             
-            <!-- Description -->
             <p class="text-sm sm:text-lg lg:text-xl text-gray-300 max-w-2xl mb-8 sm:mb-10 leading-relaxed font-normal sm:font-medium drop-shadow-md px-2">
                 Your ultimate digital platform for premium software access, high-performance n8n workflow automations, and total digital mastery.
             </p>
 
-            <!-- CTA Buttons -->
             <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto justify-center items-center mb-12 sm:mb-16">
                 <a href="#store" class="w-full sm:w-auto text-center px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 font-semibold text-sm sm:text-base transition shadow-xl shadow-blue-600/30 border border-blue-400/25">
                     Explore Store
@@ -80,7 +74,6 @@
                 </button>
             </div>
 
-            <!-- Mini Feature / Stats Grid (Mobile & Tablet Optimized) -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 max-w-4xl w-full pt-6 sm:pt-8 border-t border-white/20 text-left">
                 <div class="p-4 rounded-xl bg-black/50 border border-white/15 backdrop-blur-md shadow-lg">
                     <div class="text-blue-400 font-bold text-lg sm:text-xl mb-1 drop-shadow-md">100% Secure</div>
@@ -105,7 +98,6 @@
             <p class="text-sm sm:text-base text-gray-400">Choose your category and get instant access to professional tools.</p>
         </div>
 
-        <!-- Product Grid (1 col mobile, 2 col tablet, 3 col desktop) -->
         <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Product 1 -->
             <div class="product-card group rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-blue-500/50 transition duration-300 flex flex-col justify-between shadow-xl overflow-hidden">
@@ -199,46 +191,72 @@
         </div>
     </section>
 
-    <!-- Checkout Modal -->
+    <!-- Checkout Modal (With Email & WhatsApp Input) -->
     <div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-panel border border-white/10 p-6 sm:p-8 rounded-2xl max-w-md w-full relative shadow-2xl max-h-[90vh] overflow-y-auto">
             <button onclick="closeCheckout()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">✕</button>
-            <h3 class="text-xl sm:text-2xl font-bold mb-2">Complete Your Order</h3>
+            <h3 class="text-xl sm:text-2xl font-bold mb-1">Complete Your Order</h3>
             <p id="modal-product-name" class="text-blue-400 font-medium text-sm sm:text-base mb-4"></p>
-            <div class="bg-white/5 p-4 rounded-xl border border-white/10 mb-5 text-sm text-gray-300">
+            <div class="bg-white/5 p-4 rounded-xl border border-white/10 mb-4 text-sm text-gray-300">
                 <p class="font-semibold text-white mb-1">bKash / Nagad (Personal):</p>
                 <p class="text-base sm:text-lg font-bold text-emerald-400 tracking-wider">01870978004</p>
-                <p class="text-xs text-gray-400 mt-2">Send money to this number and enter your Transaction ID (TrxID) below.</p>
+                <p class="text-xs text-gray-400 mt-1">পেমেন্ট সেন্ড মানি করে নিচের ফর্মটি পূরণ করুন।</p>
             </div>
-            <form onsubmit="handleOrder(event)" class="space-y-4">
+            <form onsubmit="handleOrder(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs text-gray-400 mb-1">Your Phone Number</label>
-                    <input type="text" id="order-phone" required placeholder="01XXXXXXXXX" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+                    <label class="block text-xs text-gray-400 mb-1">আপনার ইমেইল (Delivery Email)</label>
+                    <input type="email" id="order-email" required placeholder="yourname@gmail.com" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">ফোন নম্বর (Phone)</label>
+                        <input type="text" id="order-phone" required placeholder="01XXXXXXXXX" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">WhatsApp নম্বর</label>
+                        <input type="text" id="order-whatsapp" required placeholder="01XXXXXXXXX" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs text-gray-400 mb-1">Transaction ID (TrxID)</label>
-                    <input type="text" id="order-trx" required placeholder="e.g. 9N87AH6..." class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+                    <input type="text" id="order-trx" required placeholder="e.g. 9N87AH6..." class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
                 </div>
-                <button type="submit" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold text-sm sm:text-base transition shadow-lg shadow-blue-600/30">Submit Order</button>
+                <button type="submit" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold text-sm sm:text-base transition shadow-lg shadow-blue-600/30 mt-2">Submit Order</button>
             </form>
         </div>
     </div>
 
-    <!-- Customer Order Tracker Modal -->
+    <!-- Customer Order Tracker Modal (Shows Direct Access/Credentials) -->
     <div id="customer-tracker-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="bg-panel border border-white/10 p-6 sm:p-8 rounded-2xl max-w-2xl w-full relative shadow-2xl max-h-[85vh] overflow-y-auto">
             <button onclick="toggleCustomerTracker()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">✕</button>
-            <h3 class="text-xl sm:text-2xl font-bold mb-1 text-white">Track Your Orders</h3>
-            <p class="text-gray-400 text-xs sm:text-sm mb-5">Enter your phone number to check your purchase verification status.</p>
+            <h3 class="text-xl sm:text-2xl font-bold mb-1 text-white">Track & Get Your Order</h3>
+            <p class="text-gray-400 text-xs sm:text-sm mb-5">Enter your phone number to check verification and access delivered products.</p>
             
             <div class="flex flex-col sm:flex-row gap-2 mb-6">
-                <input type="text" id="track-phone" placeholder="Enter your phone number (e.g. 01...)" class="flex-1 bg-black/50 border border-white/20 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+                <input type="text" id="track-phone" placeholder="Enter your phone or WhatsApp number" class="flex-1 bg-black/50 border border-white/20 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
                 <button onclick="searchCustomerOrders()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-sm transition">Search</button>
             </div>
 
-            <div id="customer-orders-result" class="space-y-3">
+            <div id="customer-orders-result" class="space-y-4">
                 <p class="text-xs text-gray-500 text-center py-4">Search with your phone number to view orders.</p>
             </div>
+        </div>
+    </div>
+
+    <!-- Admin Delivery Modal (Triggered when Admin clicks Deliver/Approve) -->
+    <div id="admin-delivery-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-panel border border-white/10 p-6 rounded-2xl max-w-md w-full relative shadow-2xl">
+            <button onclick="closeDeliveryModal()" class="absolute top-3 right-3 text-gray-400 hover:text-white">✕</button>
+            <h3 class="text-lg font-bold mb-1 text-white">Approve & Deliver Product</h3>
+            <p id="delivery-modal-user" class="text-xs text-gray-400 mb-4"></p>
+            
+            <div class="space-y-3 mb-4">
+                <label class="block text-xs text-gray-300">প্রোডাক্ট ক্রেডেনশিয়াল / ড্রাইভ বা এক্সেস লিঙ্ক:</label>
+                <textarea id="delivery-input-data" rows="4" placeholder="Email: user@example.com&#10;Pass: ******&#10;Drive Link: https://..." class="w-full bg-black/50 border border-white/20 rounded-lg p-3 text-white text-sm focus:outline-none focus:border-emerald-500"></textarea>
+            </div>
+            
+            <button onclick="confirmApprovalAndDelivery()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition text-sm shadow-lg shadow-emerald-600/30">Save & Approve</button>
         </div>
     </div>
 
@@ -259,24 +277,24 @@
 
     <!-- Admin Panel Modal -->
     <div id="admin-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-panel border border-white/10 p-5 sm:p-8 rounded-2xl max-w-4xl w-full relative max-h-[85vh] overflow-y-auto shadow-2xl">
+        <div class="bg-panel border border-white/10 p-5 sm:p-8 rounded-2xl max-w-5xl w-full relative max-h-[85vh] overflow-y-auto shadow-2xl">
             <button onclick="toggleAdminPanel()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">✕</button>
             <div class="flex justify-between items-center mb-4 pr-6">
-                <h3 class="text-xl sm:text-2xl font-bold text-white">Admin Panel</h3>
+                <h3 class="text-xl sm:text-2xl font-bold text-white">Admin Verification & Delivery Panel</h3>
                 <button onclick="adminLogout()" class="text-xs bg-red-600/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg hover:bg-red-600/30 transition">Logout</button>
             </div>
-            <p class="text-gray-400 text-xs sm:text-sm mb-6">Manage customer orders and approve transactions safely.</p>
+            <p class="text-gray-400 text-xs sm:text-sm mb-6">Manage customer orders, input deliverables, and notify via WhatsApp/Email.</p>
             
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse min-w-[550px]">
+                <table class="w-full text-left border-collapse min-w-[700px]">
                     <thead>
                         <tr class="border-b border-white/10 text-xs text-gray-400">
-                            <th class="py-3 px-3 sm:px-4">Product</th>
-                            <th class="py-3 px-3 sm:px-4">Price</th>
-                            <th class="py-3 px-3 sm:px-4">Phone</th>
-                            <th class="py-3 px-3 sm:px-4">TrxID</th>
-                            <th class="py-3 px-3 sm:px-4">Status</th>
-                            <th class="py-3 px-3 sm:px-4">Action</th>
+                            <th class="py-3 px-3">Product</th>
+                            <th class="py-3 px-3">Price</th>
+                            <th class="py-3 px-3">Email & WhatsApp</th>
+                            <th class="py-3 px-3">TrxID</th>
+                            <th class="py-3 px-3">Status</th>
+                            <th class="py-3 px-3 text-center">Action & Notify</th>
                         </tr>
                     </thead>
                     <tbody id="admin-orders-list" class="text-xs sm:text-sm text-gray-200">
@@ -299,6 +317,7 @@
 
         let selectedProduct = '';
         let selectedPrice = '';
+        let activeApprovingOrder = null;
 
         function openCheckout(productName, price) {
             selectedProduct = productName;
@@ -316,6 +335,7 @@
             modal.classList.toggle('hidden');
         }
 
+        // Search Orders for Customers (Shows Delivery Data)
         async function searchCustomerOrders() {
             const phone = document.getElementById('track-phone').value.trim();
             const resultDiv = document.getElementById('customer-orders-result');
@@ -330,7 +350,7 @@
             const { data, error } = await _supabase
                 .from('orders')
                 .select('*')
-                .eq('phone', phone)
+                .or(`phone.eq.${phone},whatsapp.eq.${phone}`)
                 .order('created_at', { ascending: false });
 
             if (error) {
@@ -339,58 +359,99 @@
             }
 
             if (data.length === 0) {
-                resultDiv.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">No orders found with this phone number.</p>`;
+                resultDiv.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">No orders found with this number.</p>`;
                 return;
             }
 
             resultDiv.innerHTML = '';
             data.forEach(order => {
+                const isApproved = order.status === 'approved';
                 resultDiv.innerHTML += `
-                    <div class="bg-white/5 border border-white/10 p-3.5 sm:p-4 rounded-xl flex justify-between items-center text-xs sm:text-sm">
-                        <div>
-                            <p class="font-bold text-white">${order.product_name} <span class="text-blue-400 text-xs">(${order.price})</span></p>
-                            <p class="text-xs text-gray-400 mt-1">TrxID: <span class="font-mono text-amber-400">${order.trx_id}</span></p>
-                        </div>
-                        <div>
-                            <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold ${order.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}">
+                    <div class="bg-white/5 border border-white/10 p-4 sm:p-5 rounded-xl space-y-3">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-bold text-white text-base">${order.product_name} <span class="text-blue-400 text-xs">(${order.price})</span></p>
+                                <p class="text-xs text-gray-400 mt-0.5">TrxID: <span class="font-mono text-amber-400">${order.trx_id}</span></p>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold ${isApproved ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}">
                                 ${order.status.toUpperCase()}
                             </span>
                         </div>
+
+                        ${isApproved && order.delivery_data ? `
+                            <div class="bg-emerald-500/10 border border-emerald-500/30 p-3.5 rounded-xl mt-2">
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        Your Access & Delivery Details:
+                                    </span>
+                                    <button onclick="navigator.clipboard.writeText('${order.delivery_data.replace(/\n/g, '\\n')}'); alert('Copied to clipboard!');" class="text-[10px] bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30">Copy</button>
+                                </div>
+                                <pre class="text-xs text-gray-200 whitespace-pre-wrap font-mono bg-black/40 p-2.5 rounded-lg border border-white/5">${order.delivery_data}</pre>
+                            </div>
+                        ` : isApproved ? `
+                            <p class="text-xs text-emerald-400 bg-emerald-500/5 p-2 rounded-lg border border-emerald-500/20">Order is approved. Delivered via Email / WhatsApp.</p>
+                        ` : `
+                            <p class="text-xs text-amber-300/80 bg-amber-500/5 p-2 rounded-lg border border-amber-500/20">পেমেন্ট যাচাই চলছে। ভেরিফাই হলে এখানে সরাসরি ডেলিভারি এক্সেস দেখতে পাবেন।</p>
+                        `}
                     </div>
                 `;
             });
         }
 
+        // Order Submit (Saves Email, Phone, WhatsApp)
         async function handleOrder(e) {
             e.preventDefault();
-            const phone = document.getElementById('order-phone').value;
-            const trxId = document.getElementById('order-trx').value;
+            const email = document.getElementById('order-email').value.trim();
+            const phone = document.getElementById('order-phone').value.trim();
+            const whatsapp = document.getElementById('order-whatsapp').value.trim();
+            const trxId = document.getElementById('order-trx').value.trim();
 
             const { data, error } = await _supabase
                 .from('orders')
                 .insert([
-                    { product_name: selectedProduct, price: selectedPrice, phone: phone, trx_id: trxId, status: 'pending' }
+                    { 
+                        product_name: selectedProduct, 
+                        price: selectedPrice, 
+                        email: email, 
+                        phone: phone, 
+                        whatsapp: whatsapp, 
+                        trx_id: trxId, 
+                        status: 'pending',
+                        delivery_data: ''
+                    }
                 ])
                 .select();
 
             if (error) {
                 alert('Error submitting order: ' + error.message);
             } else {
-                alert('Order submitted successfully! Pending verification.');
+                alert('অর্ডার সফলভাবে জমা দেওয়া হয়েছে! অ্যাকাউন্ট রেডি করে আপনার ট্র্যাকার ও হোয়াটসঅ্যাপে ডেলিভারি দেওয়া হবে।');
                 closeCheckout();
+                document.getElementById('order-email').value = '';
                 document.getElementById('order-phone').value = '';
+                document.getElementById('order-whatsapp').value = '';
                 document.getElementById('order-trx').value = '';
 
                 if (N8N_WEBHOOK_URL !== 'YOUR_N8N_WEBHOOK_URL_HERE') {
                     fetch(N8N_WEBHOOK_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ product: selectedProduct, price: selectedPrice, phone: phone, trx_id: trxId })
+                        body: JSON.stringify({ 
+                            type: 'NEW_ORDER',
+                            product: selectedProduct, 
+                            price: selectedPrice, 
+                            email: email, 
+                            phone: phone, 
+                            whatsapp: whatsapp, 
+                            trx_id: trxId 
+                        })
                     }).catch(err => console.log('Webhook error:', err));
                 }
             }
         }
 
+        // Admin Management Logic
         function toggleAdminPanel() {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get("admin") !== "hrk-admin") {
@@ -466,34 +527,91 @@
 
             tbody.innerHTML = '';
             data.forEach(order => {
+                const whatsappClean = (order.whatsapp || order.phone || '').replace(/[^0-9]/g, '');
+                const formattedWhatsapp = whatsappClean.startsWith('88') ? whatsappClean : (whatsappClean.startsWith('01') ? '88' + whatsappClean : whatsappClean);
+                const isApproved = order.status === 'approved';
+                
+                const waMessage = encodeURIComponent(`Hello! Your GreatNexa order for "${order.product_name}" is ready.\n\nDetails / Credentials:\n${order.delivery_data || 'Approved'}\n\nThank you for choosing GreatNexa!`);
+                const waUrl = `https://wa.me/${formattedWhatsapp}?text=${waMessage}`;
+
                 tbody.innerHTML += `
-                    <tr class="border-b border-white/5">
-                        <td class="py-3 px-3 sm:px-4 font-medium">${order.product_name}</td>
-                        <td class="py-3 px-3 sm:px-4 text-blue-400">${order.price}</td>
-                        <td class="py-3 px-3 sm:px-4">${order.phone}</td>
-                        <td class="py-3 px-3 sm:px-4 font-mono text-xs text-amber-400">${order.trx_id}</td>
-                        <td class="py-3 px-3 sm:px-4">
-                            <span class="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold ${order.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}">
+                    <tr class="border-b border-white/5 hover:bg-white/[0.02]">
+                        <td class="py-3 px-3 font-medium text-white">${order.product_name}</td>
+                        <td class="py-3 px-3 text-blue-400">${order.price}</td>
+                        <td class="py-3 px-3 text-xs">
+                            <div class="text-gray-200">${order.email || 'N/A'}</div>
+                            <div class="text-gray-400 font-mono">WA: ${order.whatsapp || order.phone}</div>
+                        </td>
+                        <td class="py-3 px-3 font-mono text-xs text-amber-400">${order.trx_id}</td>
+                        <td class="py-3 px-3">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${isApproved ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}">
                                 ${order.status}
                             </span>
                         </td>
-                        <td class="py-3 px-3 sm:px-4">
-                            ${order.status === 'pending' ? `<button onclick="approveOrder(${order.id})" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-xs font-medium transition">Approve</button>` : '<span class="text-xs text-gray-500">Done</span>'}
+                        <td class="py-3 px-3 text-center">
+                            <div class="flex items-center justify-center gap-1.5">
+                                ${!isApproved ? `
+                                    <button onclick='openDeliveryModal(${JSON.stringify(order)})' class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-xs font-medium transition">Deliver & Approve</button>
+                                ` : `
+                                    <button onclick='openDeliveryModal(${JSON.stringify(order)})' class="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-[11px] text-gray-300 transition">Edit Delivery</button>
+                                `}
+                                <a href="${waUrl}" target="_blank" class="px-2.5 py-1 rounded bg-green-600/30 hover:bg-green-600 text-green-300 hover:text-white border border-green-500/40 text-xs font-medium transition inline-flex items-center gap-1">
+                                    WhatsApp
+                                </a>
+                            </div>
                         </td>
                     </tr>
                 `;
             });
         }
 
-        async function approveOrder(id) {
+        // Open Delivery Input Modal
+        function openDeliveryModal(order) {
+            activeApprovingOrder = order;
+            document.getElementById('delivery-modal-user').innerText = `Product: ${order.product_name} | Customer: ${order.email || order.phone}`;
+            document.getElementById('delivery-input-data').value = order.delivery_data || '';
+            document.getElementById('admin-delivery-modal').classList.remove('hidden');
+        }
+
+        function closeDeliveryModal() {
+            document.getElementById('admin-delivery-modal').classList.add('hidden');
+            activeApprovingOrder = null;
+        }
+
+        // Save Delivery & Trigger Webhook
+        async function confirmApprovalAndDelivery() {
+            if (!activeApprovingOrder) return;
+            const deliveryData = document.getElementById('delivery-input-data').value.trim();
+
             const { error } = await _supabase
                 .from('orders')
-                .update({ status: 'approved' })
-                .eq('id', id);
+                .update({ 
+                    status: 'approved',
+                    delivery_data: deliveryData
+                })
+                .eq('id', activeApprovingOrder.id);
 
             if (error) {
                 alert('Error updating order: ' + error.message);
             } else {
+                // Trigger n8n for Auto Email Dispatch
+                if (N8N_WEBHOOK_URL !== 'YOUR_N8N_WEBHOOK_URL_HERE') {
+                    fetch(N8N_WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            type: 'ORDER_DELIVERED',
+                            order_id: activeApprovingOrder.id,
+                            product: activeApprovingOrder.product_name, 
+                            email: activeApprovingOrder.email, 
+                            whatsapp: activeApprovingOrder.whatsapp,
+                            delivery_data: deliveryData 
+                        })
+                    }).catch(err => console.log('Webhook error:', err));
+                }
+
+                alert('ডেলিভারি ডাটা সফলভাবে সংরক্ষিত হয়েছে এবং অর্ডার অ্যাপ্রুভ হয়েছে!');
+                closeDeliveryModal();
                 loadAdminOrders();
             }
         }
