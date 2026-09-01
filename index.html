@@ -237,7 +237,7 @@
         </div>
     </div>
 
-    <!-- Admin Delivery & Multi-Channel Option Modal (Fixed z-[60] so it opens above Admin Panel) -->
+    <!-- Admin Delivery & Multi-Channel Option Modal -->
     <div id="admin-delivery-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] hidden flex items-center justify-center p-4">
         <div class="bg-panel border border-white/10 p-6 rounded-2xl max-w-lg w-full relative shadow-2xl max-h-[90vh] overflow-y-auto">
             <button onclick="closeDeliveryModal()" class="absolute top-3 right-3 text-gray-400 hover:text-white text-lg">✕</button>
@@ -266,7 +266,7 @@
 
                     <label class="flex items-center gap-2.5 cursor-pointer text-xs text-gray-300 hover:text-white">
                         <input type="checkbox" id="channel-email" checked class="w-4 h-4 rounded bg-black/50 border-white/30 text-emerald-500 focus:ring-0">
-                        <span>📧 <b>Email Notification</b> (ইমেইল ড্রাফট ওপেন / n8n ট্রিগার)</span>
+                        <span>📧 <b>Email Notification</b> (ইমেইল ড্রাফট ওপেন হবে)</span>
                     </label>
                 </div>
             </div>
@@ -277,18 +277,18 @@
         </div>
     </div>
 
-    <!-- Admin Login Modal -->
+    <!-- Admin Login Modal (Supabase Auth Protected) -->
     <div id="admin-login-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="bg-panel border border-white/10 p-6 rounded-2xl max-w-sm w-full relative shadow-2xl">
             <button onclick="closeAdminLogin()" class="absolute top-3 right-3 text-gray-400 hover:text-white">✕</button>
-            <h3 class="text-lg sm:text-xl font-bold mb-2 text-white">Admin Login</h3>
-            <p class="text-gray-400 text-xs mb-4">Enter credentials to access secure management panel.</p>
+            <h3 class="text-lg sm:text-xl font-bold mb-2 text-white">Admin Authentication</h3>
+            <p class="text-gray-400 text-xs mb-4">Enter your Supabase Admin credentials to access the panel.</p>
             
-            <div class="space-y-3 mb-4">
-                <input type="text" id="admin-username" placeholder="Username" class="w-full bg-black/50 border border-white/20 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
-                <input type="password" id="admin-password" placeholder="Password" class="w-full bg-black/50 border border-white/20 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
-            </div>
-            <button onclick="verifyAdmin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition text-sm">Login</button>
+            <form onsubmit="handleAdminLogin(event)" class="space-y-3 mb-4">
+                <input type="email" id="admin-email-input" required placeholder="admin@example.com" class="w-full bg-black/50 border border-white/20 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                <input type="password" id="admin-password-input" required placeholder="Password" class="w-full bg-black/50 border border-white/20 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                <button type="submit" id="admin-login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition text-sm">Secure Login</button>
+            </form>
         </div>
     </div>
 
@@ -315,7 +315,7 @@
                         </tr>
                     </thead>
                     <tbody id="admin-orders-list" class="text-xs sm:text-sm text-gray-200">
-                        <!-- Orders will load dynamically -->
+                        <!-- Orders load dynamically -->
                     </tbody>
                 </table>
             </div>
@@ -329,8 +329,6 @@
         
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        const N8N_WEBHOOK_URL = 'YOUR_N8N_WEBHOOK_URL_HERE';
 
         let selectedProduct = '';
         let selectedPrice = '';
@@ -450,35 +448,20 @@
                 document.getElementById('order-phone').value = '';
                 document.getElementById('order-whatsapp').value = '';
                 document.getElementById('order-trx').value = '';
-
-                if (N8N_WEBHOOK_URL !== 'YOUR_N8N_WEBHOOK_URL_HERE') {
-                    fetch(N8N_WEBHOOK_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            type: 'NEW_ORDER',
-                            product: selectedProduct, 
-                            price: selectedPrice, 
-                            email: email, 
-                            phone: phone, 
-                            whatsapp: whatsapp, 
-                            trx_id: trxId 
-                        })
-                    }).catch(err => console.log('Webhook error:', err));
-                }
             }
         }
 
         // Admin Management Logic
-        function toggleAdminPanel() {
+        async function toggleAdminPanel() {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get("admin") !== "hrk-admin") {
                 alert("স্বাভাবিকভাবে অ্যাডমিন প্যানেল দেখা যাবে না। সঠিক লিঙ্ক ব্যবহার করুন।");
                 return;
             }
 
-            const isLoggedIn = sessionStorage.getItem("isAdminLoggedIn");
-            if (isLoggedIn === "true") {
+            const { data: { session } } = await _supabase.auth.getSession();
+
+            if (session) {
                 const modal = document.getElementById('admin-modal');
                 modal.classList.toggle('hidden');
                 if (!modal.classList.contains('hidden')) {
@@ -489,7 +472,7 @@
             }
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get("admin") === "hrk-admin") {
                 setTimeout(() => {
@@ -502,29 +485,42 @@
             document.getElementById('admin-login-modal').classList.add('hidden');
         }
 
-        function verifyAdmin() {
-            const user = document.getElementById('admin-username').value;
-            const pass = document.getElementById('admin-password').value;
+        // Supabase Auth Login
+        async function handleAdminLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('admin-email-input').value.trim();
+            const password = document.getElementById('admin-password-input').value.trim();
+            const loginBtn = document.getElementById('admin-login-btn');
 
-            if (user === "admin-4321" && pass === "@Hridoy00002") {
-                sessionStorage.setItem("isAdminLoggedIn", "true");
-                document.getElementById('admin-username').value = "";
-                document.getElementById('admin-password').value = "";
+            loginBtn.innerText = 'Verifying...';
+            loginBtn.disabled = true;
+
+            const { data, error } = await _supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            loginBtn.innerText = 'Secure Login';
+            loginBtn.disabled = false;
+
+            if (error) {
+                alert('লগইন ব্যর্থ হয়েছে: ' + error.message);
+            } else {
+                document.getElementById('admin-email-input').value = '';
+                document.getElementById('admin-password-input').value = '';
                 closeAdminLogin();
                 document.getElementById('admin-modal').classList.remove('hidden');
                 loadAdminOrders();
-            } else {
-                alert("ভুল ইউজারনেম অথবা পাসওয়ার্ড!");
             }
         }
 
-        function adminLogout() {
-            sessionStorage.removeItem("isAdminLoggedIn");
+        async function adminLogout() {
+            await _supabase.auth.signOut();
             document.getElementById('admin-modal').classList.add('hidden');
             alert("অ্যাডমিন প্যানেল থেকে সফলভাবে লগআউট করা হয়েছে।");
         }
 
-        // Load Admin Orders & Bind Table
+        // Load Admin Orders
         async function loadAdminOrders() {
             const tbody = document.getElementById('admin-orders-list');
             tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-gray-400">Loading orders...</td></tr>`;
@@ -579,7 +575,7 @@
                                     ${isApproved ? 'Edit Delivery' : 'Deliver & Approve'}
                                 </button>
                                 
-                                <a href="${waUrl}" target="_blank" class="px-2.5 py-1 rounded bg-green-600/30 hover:bg-green-600 text-green-300 hover:text-white border border-green-500/40 text-xs font-medium transition inline-flex items-center gap-1">
+                                <a href="${waUrl}" target="_blank" class="px-2 py-1 rounded bg-green-600/30 hover:bg-green-600 text-green-300 hover:text-white border border-green-500/40 text-xs font-medium transition inline-flex items-center gap-1">
                                     WhatsApp
                                 </a>
 
@@ -635,23 +631,6 @@
                     alert('Error saving delivery data: ' + error.message);
                     return;
                 }
-            }
-
-            // n8n Webhook Trigger (Auto dispatch if configured)
-            if (N8N_WEBHOOK_URL !== 'YOUR_N8N_WEBHOOK_URL_HERE') {
-                fetch(N8N_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        type: 'ORDER_DELIVERED',
-                        order_id: order.id,
-                        product: order.product_name, 
-                        email: order.email, 
-                        whatsapp: order.whatsapp,
-                        delivery_data: deliveryData,
-                        channels: { website: sendToWebsite, whatsapp: sendToWhatsApp, email: sendToEmail }
-                    })
-                }).catch(err => console.log('Webhook error:', err));
             }
 
             // Trigger Email Client if Checked
