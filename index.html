@@ -179,7 +179,7 @@
 
             <div class="product-card group rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md hover:border-indigo-500/50 transition duration-300 flex flex-col justify-between shadow-xl overflow-hidden sm:col-span-2 lg:col-span-1">
                 <div class="h-44 sm:h-48 overflow-hidden bg-black/40 border-b border-white/10">
-                    <img src="ai_mastery.webp" alt="Digital Courses" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"">
+                    <img src="ai_mastery.webp" alt="Digital Courses" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                 </div>
                 <div class="p-5 sm:p-6">
                     <span class="inline-block px-2.5 py-1 mb-3 text-[11px] sm:text-xs font-medium bg-indigo-500/10 text-indigo-400 rounded-lg border border-indigo-500/20">Digital Courses</span>
@@ -252,7 +252,7 @@
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs text-gray-400 mb-1">ফোন নম্বর (টাকা পাঠান নম্বর ) (bkash/Nagad phone number)</label>
+                        <label class="block text-xs text-gray-400 mb-1">ফোন নম্বর (টাকা পাঠান নম্বর) (bkash/Nagad phone number)</label>
                         <input type="text" id="order-phone" required placeholder="01XXXXXXXXX" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
                     </div>
                     <div>
@@ -296,13 +296,13 @@
             
             <div class="space-y-4 mb-5">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1.5">প্রোডাক্ট ক্রেডেনশিয়াল / ড্রাইভ বা এক্সেস লিঙ্ক:</label>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1.5">প্রোডাক্ট ক্রেডেনশিয়াল / ড্রাইভ বা এক্সেস লিঙ্ক:</label>
                     <textarea id="delivery-input-data" rows="4" placeholder="Email: user@example.com&#10;Pass: ******&#10;Access Link: https://..." class="w-full bg-black/50 border border-white/20 rounded-lg p-3 text-white text-xs font-mono focus:outline-none focus:border-emerald-500"></textarea>
                 </div>
 
                 <!-- 3 Channel Selection -->
                 <div class="bg-white/5 border border-white/10 p-3.5 rounded-xl space-y-2.5">
-                    <p class="text-xs font-bold text-gray-200">কোথায় কোথায় ডেলিভারি পাঠাবেন? (সিলেক্ট করুন):</p>
+                    <p class="text-xs font-bold text-gray-200">কোথায় কোথায় ডেলিভারি পাঠাবেন? (সিলেক্ট করুন):</p>
                     
                     <label class="flex items-center gap-2.5 cursor-pointer text-xs text-gray-300 hover:text-white">
                         <input type="checkbox" id="channel-website" checked class="w-4 h-4 rounded bg-black/50 border-white/30 text-emerald-500 focus:ring-0">
@@ -311,7 +311,7 @@
 
                     <label class="flex items-center gap-2.5 cursor-pointer text-xs text-gray-300 hover:text-white">
                         <input type="checkbox" id="channel-whatsapp" checked class="w-4 h-4 rounded bg-black/50 border-white/30 text-emerald-500 focus:ring-0">
-                        <span>💬 <b>WhatsApp Direct Send</b> (হোয়াটসঅ্যাপে ডেলিভারি মেসেজ ওপেন হবে)</span>
+                        <span>💬 <b>WhatsApp Direct Send</b> (হোয়াটসঅ্যাপে ডেলিভারি মেসেজ ওপেন হবে)</span>
                     </label>
 
                     <label class="flex items-center gap-2.5 cursor-pointer text-xs text-gray-300 hover:text-white">
@@ -492,7 +492,7 @@
             if (error) {
                 alert('Error submitting order: ' + error.message);
             } else {
-                alert('অর্ডার সফলভাবে জমা দেওয়া হয়েছে! অ্যাকাউন্ট রেডি করে আপনার ট্র্যাকার ও হোয়াটসঅ্যাপে ডেলিভারি দেওয়া হবে।');
+                alert('অর্ডার সফলভাবে জমা দেওয়া হয়েছে! অ্যাকাউন্ট রেডি করে আপনার ট্র্যাকার ও হোয়াটসঅ্যাপে ডেলিভারি দেওয়া হবে।');
                 closeCheckout();
                 document.getElementById('order-email').value = '';
                 document.getElementById('order-phone').value = '';
@@ -672,7 +672,7 @@
                 const { error } = await _supabase
                     .from('orders')
                     .update({ 
-                        status: 'approved',
+                        status: 'approved', 
                         delivery_data: deliveryData
                     })
                     .eq('id', order.id);
@@ -698,67 +698,70 @@
                 window.open(`https://wa.me/${formattedWhatsapp}?text=${waMessage}`, '_blank');
             }
 
-            alert('অর্ডার সফলভাবে অ্যাপ্রুভ এবং সিলেক্টেড চ্যানেলে পাঠানো হয়েছে!');
+            alert('অর্ডার সফলভাবে অ্যাপ্রুভ এবং সিলেক্টেড চ্যানেলে পাঠানো হয়েছে!');
             closeDeliveryModal();
             loadAdminOrders();
         }
     </script>
 
     <!-- ================= GREATNEXA FOOTER & SOCIALS START ================= -->
-    <footer class="w-full bg-[#0a0f16] border-t border-gray-800 text-gray-400 pt-12 pb-8 px-4 sm:px-6 lg:px-8 mt-20">
-        <div class="max-w-7xl mx-auto flex flex-col items-center justify-center text-center">
+    <footer style="width: 100%; background-color: #0a0f16; border-top: 1px solid rgba(255,255,255,0.1); padding: 50px 16px 36px; text-align: center; color: #9ca3af; margin-top: 60px; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; position: relative; z-index: 30;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center;">
             
             <!-- Brand Logo & Tagline -->
-            <div class="mb-4">
-                <span class="text-2xl font-bold tracking-tight text-white">Great<span class="text-indigo-500">Nexa</span></span>
-                <p class="text-sm text-gray-400 mt-2 max-w-md">
+            <div style="margin-bottom: 20px;">
+                <span style="font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: #ffffff;">
+                    Great<span style="color: #6366f1;">Nexa</span>
+                </span>
+                <p style="font-size: 14px; color: #9ca3af; margin-top: 6px; max-width: 480px; line-height: 1.5;">
                     Next-Gen AI Solutions, Subscriptions, and High-Performance Automations in Bangladesh.
                 </p>
             </div>
 
             <!-- Social Media & WhatsApp Direct Action Buttons -->
-            <div class="flex flex-wrap items-center justify-center gap-3.5 my-6">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; margin-bottom: 26px;">
+                
                 <!-- Facebook Page Button -->
                 <a href="https://www.facebook.com/share/1F6PwT38tf/" 
                    target="_blank" 
                    rel="noopener noreferrer" 
-                   class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[#1877F2]/10 border border-[#1877F2]/30 text-white hover:bg-[#1877F2] transition-all duration-300 shadow-md group">
-                    <svg class="w-5 h-5 fill-current text-[#1877F2] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                   style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 20px; border-radius: 12px; background-color: rgba(24, 119, 242, 0.12); border: 1px solid rgba(24, 119, 242, 0.4); color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.2s ease;">
+                    <svg style="width: 20px; height: 20px; fill: #1877F2;" viewBox="0 0 24 24">
                         <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
                     </svg>
-                    <span class="font-medium text-xs sm:text-sm">Facebook Page</span>
+                    <span>Facebook Page</span>
                 </a>
 
                 <!-- Instagram Button -->
                 <a href="https://www.instagram.com/greatnexa/" 
                    target="_blank" 
                    rel="noopener noreferrer" 
-                   class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[#E4405F]/10 border border-[#E4405F]/30 text-white hover:bg-gradient-to-r hover:from-[#833ab4] hover:via-[#fd1d1d] hover:to-[#fcb045] hover:border-transparent transition-all duration-300 shadow-md group">
-                    <svg class="w-5 h-5 fill-current text-[#E4405F] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                   style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 20px; border-radius: 12px; background-color: rgba(228, 64, 95, 0.12); border: 1px solid rgba(228, 64, 95, 0.4); color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.2s ease;">
+                    <svg style="width: 20px; height: 20px; fill: #E4405F;" viewBox="0 0 24 24">
                         <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.13-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                     </svg>
-                    <span class="font-medium text-xs sm:text-sm">Instagram</span>
+                    <span>Instagram</span>
                 </a>
 
                 <!-- WhatsApp Button -->
                 <a href="https://wa.me/8801870978004?text=Hello%20GreatNexa,%20I%20want%20to%20order/inquire%20about%20your%20services." 
                    target="_blank" 
                    rel="noopener noreferrer" 
-                   class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[#25D366]/10 border border-[#25D366]/30 text-white hover:bg-[#25D366] transition-all duration-300 shadow-md group">
-                    <svg class="w-5 h-5 fill-current text-[#25D366] group-hover:text-white transition-colors" viewBox="0 0 24 24">
+                   style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 20px; border-radius: 12px; background-color: rgba(37, 211, 102, 0.12); border: 1px solid rgba(37, 211, 102, 0.4); color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.2s ease;">
+                    <svg style="width: 20px; height: 20px; fill: #25D366;" viewBox="0 0 24 24">
                         <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
                     </svg>
-                    <span class="font-medium text-xs sm:text-sm">WhatsApp (01870978004)</span>
+                    <span>WhatsApp: 01870978004</span>
                 </a>
             </div>
 
             <!-- Support / Contact Text -->
-            <p class="text-xs text-gray-500 mt-2">
-                Need immediate help? WhatsApp us directly at <span class="text-gray-300 font-mono">+880 1870-978004</span>
+            <p style="font-size: 13px; color: #6b7280; margin: 0 0 20px 0;">
+                Need immediate help? WhatsApp us directly at <span style="color: #e5e7eb; font-family: monospace; font-weight: 600;">+880 1870-978004</span>
             </p>
 
             <!-- Copyright Notice -->
-            <div class="mt-6 pt-6 border-t border-gray-800/80 w-full text-center text-xs text-gray-500">
+            <div style="padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08); width: 100%; font-size: 12px; color: #4b5563;">
                 &copy; 2026 GreatNexa. All rights reserved. Built for Next-Gen Automations.
             </div>
         </div>
@@ -768,9 +771,11 @@
     <a href="https://wa.me/8801870978004?text=Hello%20GreatNexa,%20I%20want%20to%20order/inquire%20about%20your%20services." 
        target="_blank" 
        rel="noopener noreferrer" 
-       class="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-2xl hover:scale-110 transition-transform duration-300 hover:shadow-[0_0_20px_rgba(37,211,102,0.6)]"
-       title="Chat on WhatsApp">
-        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
+       style="position: fixed; bottom: 24px; right: 24px; z-index: 9999; background-color: #25D366; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(0,0,0,0.6); text-decoration: none; transition: transform 0.2s ease;" 
+       title="Chat on WhatsApp"
+       onmouseover="this.style.transform='scale(1.1)'" 
+       onmouseout="this.style.transform='scale(1)'">
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#ffffff" viewBox="0 0 16 16">
             <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.707 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.862.114-.944-.05-.082-.182-.132-.38-.23z"/>
         </svg>
     </a>
