@@ -822,6 +822,14 @@
                 alert('Error submitting order: ' + error.message);
             } else {
                 alert('অর্ডার সফলভাবে জমা দেওয়া হয়েছে! অ্যাকাউন্ট রেডি করে আপনার ট্র্যাকার ও হোয়াটসঅ্যাপে ডেলিভারি দেওয়া হবে।');
+                // GA4 Purchase / Lead Conversion Event
+                    if (typeof gtag === 'function') {
+                        gtag('event', 'generate_lead', {
+                            currency: 'BDT',
+                            value: parseFloat(selectedPrice.replace(/[^0-9]/g, '')) || 250,
+                            item_name: selectedProduct
+                        });
+                    }
                 closeCheckout();
                 document.getElementById('order-email').value = '';
                 document.getElementById('order-phone').value = '';
