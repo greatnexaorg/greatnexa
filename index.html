@@ -53,7 +53,7 @@
         }
     </script>
 
-    <!-- Structured Data / Schema Markup (Organization + FAQ Schema for SEO) -->
+    <!-- Structured Data / Schema Markup -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -277,66 +277,56 @@
         </div>
     </section>
 
-    <!-- Social Proof & Customer Reviews Section -->
+    <!-- Social Proof & Customer Reviews Section (Dynamic with Supabase) -->
     <section id="reviews" class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        <div class="text-center mb-10">
-            <h2 class="text-2xl sm:text-4xl font-bold mb-3">Customer Experiences</h2>
-            <p class="text-sm sm:text-base text-gray-400">See what digital creators and freelancers say about GreatNexa.</p>
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
+            <div class="text-center sm:text-left">
+                <h2 class="text-2xl sm:text-4xl font-bold mb-2">Customer Experiences</h2>
+                <p class="text-sm text-gray-400">See what digital creators and freelancers say about GreatNexa.</p>
+            </div>
+            <button onclick="openReviewModal()" class="px-4 py-2.5 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600 hover:text-white transition text-xs sm:text-sm font-semibold shadow-md flex items-center gap-2">
+                <span>✍️ Write a Review</span>
+            </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Review 1 -->
-            <div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md flex flex-col justify-between">
-                <div class="space-y-3">
-                    <div class="flex text-amber-400 text-sm">★★★★★</div>
-                    <p class="text-xs sm:text-sm text-gray-300 italic leading-relaxed">
-                        "Gemini Advanced Pro 18 মাসের সাবস্ক্রিপশনটি বিকাশ পেমেন্টের মাত্র ১৫ মিনিটের মধ্যে পেয়ে গেছি। কাজ করছে দারুণভাবে!"
-                    </p>
-                </div>
-                <div class="pt-4 mt-4 border-t border-white/10 flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center font-bold text-xs">R</div>
-                    <div>
-                        <p class="text-xs font-semibold text-white">Rakibul Hasan</p>
-                        <p class="text-[11px] text-gray-400">Content Creator</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Review 2 -->
-            <div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md flex flex-col justify-between">
-                <div class="space-y-3">
-                    <div class="flex text-amber-400 text-sm">★★★★★</div>
-                    <p class="text-xs sm:text-sm text-gray-300 italic leading-relaxed">
-                        "হোয়াটসঅ্যাপের কাস্টমার সাপোর্ট অসাধারণ। যেকোনো প্রয়োজনে নক দিলে সাথে সাথে রিপ্লাই এবং সলিউশন পাওয়া যায়।"
-                    </p>
-                </div>
-                <div class="pt-4 mt-4 border-t border-white/10 flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-purple-600/30 text-purple-400 flex items-center justify-center font-bold text-xs">T</div>
-                    <div>
-                        <p class="text-xs font-semibold text-white">Tanvir Ahmed</p>
-                        <p class="text-[11px] text-gray-400">Freelance Marketer</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Review 3 -->
-            <div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md flex flex-col justify-between">
-                <div class="space-y-3">
-                    <div class="flex text-amber-400 text-sm">★★★★★</div>
-                    <p class="text-xs sm:text-sm text-gray-300 italic leading-relaxed">
-                        "অর্ডার ট্র্যাক করার অপশনটা সবচেয়ে চমৎকার লেগেছে। ফোন নম্বর দিয়ে সার্চ করলেই লাইভ এক্সেস ডিটেইলস চলে আসে!"
-                    </p>
-                </div>
-                <div class="pt-4 mt-4 border-t border-white/10 flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-emerald-600/30 text-emerald-400 flex items-center justify-center font-bold text-xs">S</div>
-                    <div>
-                        <p class="text-xs font-semibold text-white">Shakil Hossain</p>
-                        <p class="text-[11px] text-gray-400">Web Developer</p>
-                    </div>
-                </div>
-            </div>
+        <div id="reviews-container" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Reviews will load dynamically from Supabase here -->
+            <p class="text-xs text-gray-500 text-center col-span-3 py-6">Loading reviews...</p>
         </div>
     </section>
+
+    <!-- Write a Review Modal -->
+    <div id="review-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-panel border border-white/10 p-6 sm:p-8 rounded-2xl max-w-md w-full relative shadow-2xl">
+            <button onclick="closeReviewModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">✕</button>
+            <h3 class="text-xl font-bold mb-1 text-white">Write a Review</h3>
+            <p class="text-xs text-gray-400 mb-4">Share your feedback about our service or subscriptions.</p>
+
+            <form onsubmit="handleReviewSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Your Name</label>
+                    <input type="text" id="review-name" required placeholder="e.g. Shakil Hossain" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Role / Profession</label>
+                    <input type="text" id="review-role" placeholder="e.g. Freelancer / Designer" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Rating</label>
+                    <select id="review-rating" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                        <option value="5" selected>★★★★★ (5 Star - Excellent)</option>
+                        <option value="4">★★★★☆ (4 Star - Good)</option>
+                        <option value="3">★★★☆☆ (3 Star - Average)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Your Review</label>
+                    <textarea id="review-comment" rows="3" required placeholder="Write your experience with GreatNexa..." class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500"></textarea>
+                </div>
+                <button type="submit" id="review-submit-btn" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold text-sm transition shadow-lg shadow-blue-600/30 mt-2">Submit Review</button>
+            </form>
+        </div>
+    </div>
 
     <!-- FAQ Section -->
     <section id="faq" class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
@@ -346,7 +336,6 @@
         </div>
 
         <div class="space-y-3">
-            <!-- FAQ 1 -->
             <div class="rounded-xl bg-white/[0.03] border border-white/10 overflow-hidden">
                 <button onclick="toggleFaq(1)" class="w-full px-5 py-4 text-left flex justify-between items-center text-sm sm:text-base font-semibold text-white hover:bg-white/[0.02] transition">
                     <span>অর্ডার করার পর ডেলিভারি পেতে কতক্ষণ সময় লাগে?</span>
@@ -357,7 +346,6 @@
                 </div>
             </div>
 
-            <!-- FAQ 2 -->
             <div class="rounded-xl bg-white/[0.03] border border-white/10 overflow-hidden">
                 <button onclick="toggleFaq(2)" class="w-full px-5 py-4 text-left flex justify-between items-center text-sm sm:text-base font-semibold text-white hover:bg-white/[0.02] transition">
                     <span>টাকা পাঠানোর মাধ্যমগুলো কী কী?</span>
@@ -368,7 +356,6 @@
                 </div>
             </div>
 
-            <!-- FAQ 3 -->
             <div class="rounded-xl bg-white/[0.03] border border-white/10 overflow-hidden">
                 <button onclick="toggleFaq(3)" class="w-full px-5 py-4 text-left flex justify-between items-center text-sm sm:text-base font-semibold text-white hover:bg-white/[0.02] transition">
                     <span>অ্যাকাউন্টে কোনো সমস্যা হলে কি রিপ্লেসমেন্ট গ্যারান্টি আছে?</span>
@@ -379,7 +366,6 @@
                 </div>
             </div>
 
-            <!-- FAQ 4 -->
             <div class="rounded-xl bg-white/[0.03] border border-white/10 overflow-hidden">
                 <button onclick="toggleFaq(4)" class="w-full px-5 py-4 text-left flex justify-between items-center text-sm sm:text-base font-semibold text-white hover:bg-white/[0.02] transition">
                     <span>Gemini বা AI অ্যাকাউন্টগুলো কীভাবে ব্যবহার করতে হয়?</span>
@@ -399,7 +385,6 @@
             <h3 class="text-xl sm:text-2xl font-bold mb-1">Complete Your Order</h3>
             <p id="modal-product-name" class="text-blue-400 font-medium text-sm sm:text-base mb-4"></p>
             
-            <!-- Payment Box with 1-Click Copy -->
             <div class="bg-white/5 p-4 rounded-xl border border-white/10 mb-4 text-sm text-gray-300">
                 <div class="flex justify-between items-center mb-1">
                     <p class="font-semibold text-white">bKash / Nagad (Personal):</p>
@@ -453,7 +438,7 @@
         </div>
     </div>
 
-    <!-- Admin Delivery & Multi-Channel Option Modal -->
+    <!-- Admin Delivery Modal -->
     <div id="admin-delivery-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] hidden flex items-center justify-center p-4">
         <div class="bg-panel border border-white/10 p-6 rounded-2xl max-w-lg w-full relative shadow-2xl max-h-[90vh] overflow-y-auto">
             <button onclick="closeDeliveryModal()" class="absolute top-3 right-3 text-gray-400 hover:text-white text-lg">✕</button>
@@ -626,6 +611,126 @@
             modal.classList.toggle('hidden');
         }
 
+        // ================= REVIEWS DYNAMIC LOGIC =================
+        function openReviewModal() {
+            document.getElementById('review-modal').classList.remove('hidden');
+        }
+
+        function closeReviewModal() {
+            document.getElementById('review-modal').classList.add('hidden');
+        }
+
+        async function loadReviews() {
+            const container = document.getElementById('reviews-container');
+            const { data, error } = await _supabase
+                .from('reviews')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error || !data || data.length === 0) {
+                // Default fallback reviews if no database reviews exist yet
+                container.innerHTML = `
+                    <div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md flex flex-col justify-between">
+                        <div class="space-y-3">
+                            <div class="flex text-amber-400 text-sm">★★★★★</div>
+                            <p class="text-xs sm:text-sm text-gray-300 italic leading-relaxed">
+                                "Gemini Advanced Pro 18 মাসের সাবস্ক্রিপশনটি বিকাশ পেমেন্টের মাত্র ১৫ মিনিটের মধ্যে পেয়ে গেছি। কাজ করছে দারুণভাবে!"
+                            </p>
+                        </div>
+                        <div class="pt-4 mt-4 border-t border-white/10 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center font-bold text-xs">R</div>
+                            <div>
+                                <p class="text-xs font-semibold text-white">Rakibul Hasan</p>
+                                <p class="text-[11px] text-gray-400">Content Creator</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md flex flex-col justify-between">
+                        <div class="space-y-3">
+                            <div class="flex text-amber-400 text-sm">★★★★★</div>
+                            <p class="text-xs sm:text-sm text-gray-300 italic leading-relaxed">
+                                "হোয়াটসঅ্যাপের কাস্টমার সাপোর্ট অসাধারণ। যেকোনো প্রয়োজনে নক দিলে সাথে সাথে রিপ্লাই এবং সলিউশন পাওয়া যায়।"
+                            </p>
+                        </div>
+                        <div class="pt-4 mt-4 border-t border-white/10 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-purple-600/30 text-purple-400 flex items-center justify-center font-bold text-xs">T</div>
+                            <div>
+                                <p class="text-xs font-semibold text-white">Tanvir Ahmed</p>
+                                <p class="text-[11px] text-gray-400">Freelance Marketer</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md flex flex-col justify-between">
+                        <div class="space-y-3">
+                            <div class="flex text-amber-400 text-sm">★★★★★</div>
+                            <p class="text-xs sm:text-sm text-gray-300 italic leading-relaxed">
+                                "অর্ডার ট্র্যাক করার অপশনটা সবচেয়ে চমৎকার লেগেছে। ফোন নম্বর দিয়ে সার্চ করলেই লাইভ এক্সেস ডিটেইলস চলে আসে!"
+                            </p>
+                        </div>
+                        <div class="pt-4 mt-4 border-t border-white/10 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-emerald-600/30 text-emerald-400 flex items-center justify-center font-bold text-xs">S</div>
+                            <div>
+                                <p class="text-xs font-semibold text-white">Shakil Hossain</p>
+                                <p class="text-[11px] text-gray-400">Web Developer</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            data.forEach(rev => {
+                const stars = '★'.repeat(rev.rating || 5) + '☆'.repeat(5 - (rev.rating || 5));
+                const firstLetter = (rev.name || 'U').charAt(0).toUpperCase();
+                container.innerHTML += `
+                    <div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md flex flex-col justify-between">
+                        <div class="space-y-3">
+                            <div class="flex text-amber-400 text-sm tracking-widest">${stars}</div>
+                            <p class="text-xs sm:text-sm text-gray-300 italic leading-relaxed">"${rev.comment}"</p>
+                        </div>
+                        <div class="pt-4 mt-4 border-t border-white/10 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center font-bold text-xs">${firstLetter}</div>
+                            <div>
+                                <p class="text-xs font-semibold text-white">${rev.name}</p>
+                                <p class="text-[11px] text-gray-400">${rev.role || 'Verified Customer'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function handleReviewSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('review-submit-btn');
+            btn.innerText = 'Submitting...';
+            btn.disabled = true;
+
+            const name = document.getElementById('review-name').value.trim();
+            const role = document.getElementById('review-role').value.trim() || 'Verified Customer';
+            const rating = parseInt(document.getElementById('review-rating').value);
+            const comment = document.getElementById('review-comment').value.trim();
+
+            const { error } = await _supabase
+                .from('reviews')
+                .insert([{ name, role, rating, comment }]);
+
+            btn.innerText = 'Submit Review';
+            btn.disabled = false;
+
+            if (error) {
+                alert('রিভিউ জমা দিতে সমস্যা হয়েছে: ' + error.message);
+            } else {
+                alert('ধন্যবাদ! আপনার মূল্যবান রিভিউ সফলভাবে যুক্ত হয়েছে।');
+                closeReviewModal();
+                document.getElementById('review-name').value = '';
+                document.getElementById('review-role').value = '';
+                document.getElementById('review-comment').value = '';
+                loadReviews();
+            }
+        }
+
         // Search Orders for Customers
         async function searchCustomerOrders() {
             const phone = document.getElementById('track-phone').value.trim();
@@ -748,6 +853,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
+            loadReviews(); // Load dynamic customer reviews
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get("admin") === "hrk-admin") {
                 setTimeout(() => {
