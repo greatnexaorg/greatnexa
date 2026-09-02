@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="dark scroll-smooth">
 <head>
+    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-WPWTG3YXMT"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -9,6 +10,24 @@
 
       gtag('config', 'G-WPWTG3YXMT');
     </script>
+
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '2156497468608066');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=2156497468608066&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,7 +67,6 @@
             width: max-content;
             animation: marqueeScroll 32s linear infinite;
         }
-        /* মাউস বা টাচ রাখলে স্লাইডার থেমে যাবে যাতে পড়া যায় */
         .marquee-track:hover {
             animation-play-state: paused;
         }
@@ -866,14 +884,27 @@
                 alert('Error submitting order: ' + error.message);
             } else {
                 alert('অর্ডার সফলভাবে জমা দেওয়া হয়েছে! অ্যাকাউন্ট রেডি করে আপনার ট্র্যাকার ও হোয়াটসঅ্যাপে ডেলিভারি দেওয়া হবে।');
-                // GA4 Purchase / Lead Conversion Event
+                
+                const numericPrice = parseFloat(selectedPrice.replace(/[^0-9]/g, '')) || 250;
+
+                // 1. Google Analytics 4 Conversion Event
                 if (typeof gtag === 'function') {
                     gtag('event', 'generate_lead', {
                         currency: 'BDT',
-                        value: parseFloat(selectedPrice.replace(/[^0-9]/g, '')) || 250,
+                        value: numericPrice,
                         item_name: selectedProduct
                     });
                 }
+
+                // 2. Meta Pixel (Facebook) Lead Conversion Event
+                if (typeof fbq === 'function') {
+                    fbq('track', 'Lead', {
+                        content_name: selectedProduct,
+                        value: numericPrice,
+                        currency: 'BDT'
+                    });
+                }
+
                 closeCheckout();
                 document.getElementById('order-customer-name').value = '';
                 document.getElementById('order-city').value = '';
@@ -882,7 +913,6 @@
                 document.getElementById('order-whatsapp').value = '';
                 document.getElementById('order-trx').value = '';
 
-                // নতুন অর্ডার দেওয়ার পর পপ-আপের রিয়েল ডাটা রিফ্রেশ
                 fetchRealSalesForToast();
             }
         }
@@ -920,7 +950,7 @@
 
         let realSalesFeed = [];
         let popUpShownCount = 0;
-        const MAX_POPUPS_PER_SESSION = 3; // এক সেশনে সর্বোচ্চ ৩ বার দেখাবে
+        const MAX_POPUPS_PER_SESSION = 3;
 
         function getTimeAgo(dateString) {
             if (!dateString) return "Recently";
@@ -954,7 +984,6 @@
         }
 
         function showSocialProofToast() {
-            // ১. সেশনে ৩ বারের বেশি দেখানো হবে না
             if (popUpShownCount >= MAX_POPUPS_PER_SESSION) return;
 
             const currentHour = new Date().getHours();
@@ -963,14 +992,11 @@
             let candidatePool = [];
 
             if (isNightTime) {
-                // রাতে কেবল রিয়েল অর্ডার থাকলেই দেখাবে, কোনো ফেক/ব্যাকআপ ডেটা আসবে না
                 candidatePool = [...realSalesFeed];
             } else {
-                // দিনের বেলা রিয়েল ও ব্যাকআপ ডেটা মিক্স হয়ে চলবে
                 candidatePool = [...realSalesFeed, ...backupSales];
             }
 
-            // যদি রাতে কোনো রিয়েল অর্ডার না থাকে, তবে নোটিফিকেশন বন্ধ থাকবে
             if (candidatePool.length === 0) return;
 
             const toast = document.getElementById('social-proof-toast');
@@ -987,9 +1013,8 @@
 
             setTimeout(() => {
                 hideSocialProofToast();
-            }, 5500); // সাড়ে ৫ সেকেন্ড স্ক্রিনে থাকবে
+            }, 5500);
 
-            // ২. পরবর্তী পপ-আপ আসবে ৪৫ সেকেন্ড থেকে ১ মিনিট ২০ সেকেন্ডের অনিয়মিত বিরতিতে
             if (popUpShownCount < MAX_POPUPS_PER_SESSION) {
                 const nextRandomDelay = Math.floor(Math.random() * (80000 - 45000 + 1)) + 45000;
                 setTimeout(showSocialProofToast, nextRandomDelay);
@@ -1004,7 +1029,6 @@
         }
 
         function startSocialProofLoop() {
-            // সাইটে ঢোকার ১৫ থেকে ৩০ সেকেন্ডের মধ্যে র‍্যান্ডম টাইমে ১ম পপ-আপ আসবে
             const firstDelay = Math.floor(Math.random() * (30000 - 15000 + 1)) + 15000;
             setTimeout(showSocialProofToast, firstDelay);
         }
