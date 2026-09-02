@@ -883,7 +883,7 @@
             if (error) {
                 alert('Error submitting order: ' + error.message);
             } else {
-                alert('অর্ডার সফলভাবে জমা দেওয়া হয়েছে! অ্যাকাউন্ট রেডি করে আপনার ট্র্যাকার ও হোয়াটসঅ্যাপে ডেলিভারি দেওয়া হবে।');
+                alert('অর্ডার সফলভাবে জমা দেওয়া হয়েছে! অ্যাকাউন্ট রেডি করে আপনার ট্র্যাকার ও হোয়াটসঅ্যাপে ডেলিভারি দেওয়া হবে।');
                 
                 const numericPrice = parseFloat(selectedPrice.replace(/[^0-9]/g, '')) || 250;
 
@@ -1116,9 +1116,10 @@
                 const waMessage = encodeURIComponent(`Hello! Your GreatNexa order for "${order.product_name}" is ready.\n\nDelivery Details:\n${order.delivery_data || 'Approved'}\n\nThank you!`);
                 const waUrl = `https://wa.me/${formattedWhatsapp}?text=${waMessage}`;
                 
+                // Email Compose Web URL
                 const emailSubject = encodeURIComponent(`GreatNexa Delivery: ${order.product_name}`);
                 const emailBody = encodeURIComponent(`Hello,\n\nYour order for "${order.product_name}" has been approved.\n\nAccess Details / Credentials:\n${order.delivery_data || 'Your service is activated'}\n\nThank you for choosing GreatNexa!`);
-                const emailUrl = order.email ? `mailto:${order.email}?subject=${emailSubject}&body=${emailBody}` : '#';
+                const emailWebUrl = order.email ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(order.email)}&su=${emailSubject}&body=${emailBody}` : '#';
 
                 tbody.innerHTML += `
                     <tr class="border-b border-white/5 hover:bg-white/[0.02]">
@@ -1149,7 +1150,7 @@
                                 </a>
 
                                 ${order.email ? `
-                                    <a href="${emailUrl}" class="px-2 py-1 rounded bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 text-xs font-medium transition inline-flex items-center gap-1">
+                                    <a href="${emailWebUrl}" target="_blank" class="px-2 py-1 rounded bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 text-xs font-medium transition inline-flex items-center gap-1">
                                         Email
                                     </a>
                                 ` : ''}
@@ -1206,7 +1207,7 @@
             if (sendToEmail && order.email) {
                 const emailSubject = encodeURIComponent(`GreatNexa Delivery: ${order.product_name}`);
                 const emailBody = encodeURIComponent(`Hello,\n\nYour order for "${order.product_name}" has been approved.\n\nAccess Details / Credentials:\n${deliveryData}\n\nThank you for choosing GreatNexa!`);
-                window.open(`mailto:${order.email}?subject=${emailSubject}&body=${emailBody}`, '_blank');
+                window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(order.email)}&su=${emailSubject}&body=${emailBody}`, '_blank');
             }
 
             if (sendToWhatsApp) {
@@ -1216,7 +1217,7 @@
                 window.open(`https://wa.me/${formattedWhatsapp}?text=${waMessage}`, '_blank');
             }
 
-            alert('অর্ডার সফলভাবে অ্যাপ্রুভ এবং সিলেক্টেড চ্যানেলে পাঠানো হয়েছে!');
+            alert('অর্ডার সফলভাবে অ্যাপ্রুভ এবং সিলেক্টেড চ্যানেলে পাঠানো হয়েছে!');
             closeDeliveryModal();
             loadAdminOrders();
         }
