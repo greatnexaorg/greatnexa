@@ -48,6 +48,7 @@
             width: max-content;
             animation: marqueeScroll 32s linear infinite;
         }
+        /* মাউস বা টাচ রাখলে স্লাইডার থেমে যাবে যাতে পড়া যায় */
         .marquee-track:hover {
             animation-play-state: paused;
         }
@@ -294,7 +295,7 @@
                 </div>
                 <div class="p-5 sm:p-6 pt-0 flex items-center justify-between border-t border-white/10 mt-auto">
                     <span class="text-xs sm:text-sm text-gray-400 font-medium">Launching Soon</span>
-                    <a href="https://wa.me/8801870978004?text=Hello%20GreatNexa,%20Notify%20me%20when%20AI%20Agency%20Blueprint%20launches." target="_blank" class="px-3.5 py-2 rounded-lg bg-amber-600/20 text-amber-300 border border-amber-500/30 hover:bg-amber-600 hover:text-white text-xs font-medium transition shadow-md">
+                    <a href="https://wa.me/8801870978004?text=Hello%20GreatNexa,%20Notify%20me%20when%20AI%20Agency%20Blueprint%20launches." target="_blank" class="px-3.5 py-2 rounded-lg bg-amber-600/20 text-amber-300 border border-amber-500/30 hover:bg-emerald-600 hover:text-white text-xs font-medium transition shadow-md">
                         Join Waitlist
                     </a>
                 </div>
@@ -864,7 +865,7 @@
             if (error) {
                 alert('Error submitting order: ' + error.message);
             } else {
-                alert('অর্ডার সফলভাবে জমা দেওয়া হয়েছে! অ্যাকাউন্ট রেডি করে আপনার ট্র্যাকার ও হোয়াটসঅ্যাপে ডেলিভারি দেওয়া হবে।');
+                alert('অর্ডার সফলভাবে জমা দেওয়া হয়েছে! অ্যাকাউন্ট রেডি করে আপনার ট্র্যাকার ও হোয়াটসঅ্যাপে ডেলিভারি দেওয়া হবে।');
                 // GA4 Purchase / Lead Conversion Event
                 if (typeof gtag === 'function') {
                     gtag('event', 'generate_lead', {
@@ -907,26 +908,28 @@
             }
         }
 
-        // ================= HYBRID REAL + BACKUP SOCIAL PROOF POP-UP LOGIC =================
+        // ================= SMART & NATURAL SOCIAL PROOF POP-UP LOGIC =================
         const backupSales = [
-            { user: "Shakil (Dhaka)", product: "Gemini Advanced Pro 18 Month", time: "4 mins ago" },
-            { user: "Mahmud (Chittagong)", product: "Gemini Advanced Pro", time: "9 mins ago" },
-            { user: "Hasan (Sylhet)", product: "Gemini Advanced Pro 18 Month", time: "16 mins ago" },
-            { user: "Sabbir (Rajshahi)", product: "Gemini Advanced Pro", time: "22 mins ago" },
-            { user: "Tanvir (Khulna)", product: "Pre-booked n8n Workflow", time: "28 mins ago" },
-            { user: "Fahim (Mirpur)", product: "Gemini Advanced Pro 18 Month", time: "35 mins ago" }
+            { title: "Shakil (Dhaka)", desc: "Purchased Gemini Advanced Pro", time: "42 mins ago", isReal: false },
+            { title: "Trending Now", desc: "4 people are viewing Gemini 18 Month plan", time: "Just now", isReal: false },
+            { title: "Mahmud (Chittagong)", desc: "Purchased Gemini Advanced Pro", time: "2 hours ago", isReal: false },
+            { title: "High Demand", desc: "3 orders placed in the last 24 hours", time: "Today", isReal: false },
+            { title: "Tanvir (Kushtia)", desc: "Inquired about n8n Automations", time: "1 hour ago", isReal: false },
+            { title: "Sabbir (Rajshahi)", desc: "Purchased Gemini Advanced Pro", time: "3 hours ago", isReal: false }
         ];
 
-        let activeSalesFeed = [...backupSales];
+        let realSalesFeed = [];
+        let popUpShownCount = 0;
+        const MAX_POPUPS_PER_SESSION = 3; // এক সেশনে সর্বোচ্চ ৩ বার দেখাবে
 
         function getTimeAgo(dateString) {
-            if (!dateString) return "Just now";
+            if (!dateString) return "Recently";
             const diffMin = Math.floor((new Date() - new Date(dateString)) / 60000);
             if (diffMin < 1) return "Just now";
             if (diffMin < 60) return `${diffMin} mins ago`;
             const diffHours = Math.floor(diffMin / 60);
             if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-            return "Recently";
+            return "Yesterday";
         }
 
         async function fetchRealSalesForToast() {
@@ -934,38 +937,63 @@
                 .from('orders')
                 .select('customer_name, city, product_name, created_at')
                 .order('created_at', { ascending: false })
-                .limit(8);
+                .limit(6);
 
             if (!error && data && data.length > 0) {
-                const realSales = data.map(item => {
+                realSalesFeed = data.map(item => {
                     const name = item.customer_name || 'Customer';
                     const cityPart = item.city ? ` (${item.city})` : '';
                     return {
-                        user: `${name}${cityPart}`,
-                        product: item.product_name || 'Gemini Advanced Pro',
-                        time: getTimeAgo(item.created_at)
+                        title: `${name}${cityPart}`,
+                        desc: `Purchased ${item.product_name || 'Gemini Advanced Pro'}`,
+                        time: getTimeAgo(item.created_at),
+                        isReal: true
                     };
                 });
-                // রিয়েল অর্ডার এবং ব্যাকআপ ডেটা একসাথে মিক্স করা
-                activeSalesFeed = [...realSales, ...backupSales];
             }
         }
 
         function showSocialProofToast() {
-            const toast = document.getElementById('social-proof-toast');
-            if (!toast || activeSalesFeed.length === 0) return;
+            // ১. সেশনে ৩ বারের বেশি দেখানো হবে না
+            if (popUpShownCount >= MAX_POPUPS_PER_SESSION) return;
 
-            const randomItem = activeSalesFeed[Math.floor(Math.random() * activeSalesFeed.length)];
-            document.getElementById('sp-user-text').innerText = randomItem.user;
-            document.getElementById('sp-product-text').innerText = `Purchased ${randomItem.product}`;
+            const currentHour = new Date().getHours();
+            const isNightTime = (currentHour >= 1 && currentHour < 7);
+
+            let candidatePool = [];
+
+            if (isNightTime) {
+                // রাতে কেবল রিয়েল অর্ডার থাকলেই দেখাবে, কোনো ফেক/ব্যাকআপ ডেটা আসবে না
+                candidatePool = [...realSalesFeed];
+            } else {
+                // দিনের বেলা রিয়েল ও ব্যাকআপ ডেটা মিক্স হয়ে চলবে
+                candidatePool = [...realSalesFeed, ...backupSales];
+            }
+
+            // যদি রাতে কোনো রিয়েল অর্ডার না থাকে, তবে নোটিফিকেশন বন্ধ থাকবে
+            if (candidatePool.length === 0) return;
+
+            const toast = document.getElementById('social-proof-toast');
+            if (!toast) return;
+
+            const randomItem = candidatePool[Math.floor(Math.random() * candidatePool.length)];
+            document.getElementById('sp-user-text').innerText = randomItem.title;
+            document.getElementById('sp-product-text').innerText = randomItem.desc;
             document.getElementById('sp-time-text').innerText = randomItem.time;
 
             toast.classList.remove('translate-y-32', 'opacity-0', 'pointer-events-none');
             toast.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+            popUpShownCount++;
 
             setTimeout(() => {
                 hideSocialProofToast();
-            }, 6000);
+            }, 5500); // সাড়ে ৫ সেকেন্ড স্ক্রিনে থাকবে
+
+            // ২. পরবর্তী পপ-আপ আসবে ৪৫ সেকেন্ড থেকে ১ মিনিট ২০ সেকেন্ডের অনিয়মিত বিরতিতে
+            if (popUpShownCount < MAX_POPUPS_PER_SESSION) {
+                const nextRandomDelay = Math.floor(Math.random() * (80000 - 45000 + 1)) + 45000;
+                setTimeout(showSocialProofToast, nextRandomDelay);
+            }
         }
 
         function hideSocialProofToast() {
@@ -976,10 +1004,9 @@
         }
 
         function startSocialProofLoop() {
-            setTimeout(() => {
-                showSocialProofToast();
-                setInterval(showSocialProofToast, 18000);
-            }, 5000);
+            // সাইটে ঢোকার ১৫ থেকে ৩০ সেকেন্ডের মধ্যে র‍্যান্ডম টাইমে ১ম পপ-আপ আসবে
+            const firstDelay = Math.floor(Math.random() * (30000 - 15000 + 1)) + 15000;
+            setTimeout(showSocialProofToast, firstDelay);
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
@@ -1165,7 +1192,7 @@
                 window.open(`https://wa.me/${formattedWhatsapp}?text=${waMessage}`, '_blank');
             }
 
-            alert('অর্ডার সফলভাবে অ্যাপ্রুভ এবং সিলেক্টেড চ্যানেলে পাঠানো হয়েছে!');
+            alert('অর্ডার সফলভাবে অ্যাপ্রুভ এবং সিলেক্টেড চ্যানেলে পাঠানো হয়েছে!');
             closeDeliveryModal();
             loadAdminOrders();
         }
