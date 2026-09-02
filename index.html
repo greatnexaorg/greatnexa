@@ -48,7 +48,6 @@
             width: max-content;
             animation: marqueeScroll 32s linear infinite;
         }
-        /* মাউস বা টাচ রাখলে স্লাইডার থেমে যাবে যাতে পড়া যায় */
         .marquee-track:hover {
             animation-play-state: paused;
         }
@@ -321,6 +320,7 @@
         </div>
     </section>
 
+    <!-- Review Modal with optional City input -->
     <div id="review-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-panel border border-white/10 p-6 sm:p-8 rounded-2xl max-w-md w-full relative shadow-2xl">
             <button onclick="closeReviewModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">✕</button>
@@ -328,9 +328,15 @@
             <p class="text-xs text-gray-400 mb-4">Share your feedback about our service or subscriptions.</p>
 
             <form onsubmit="handleReviewSubmit(event)" class="space-y-3">
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">Your Name</label>
-                    <input type="text" id="review-name" required placeholder="e.g. Shakil Hossain" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Your Name</label>
+                        <input type="text" id="review-name" required placeholder="e.g. Shakil Hossain" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">City / District (ঐচ্ছিক)</label>
+                        <input type="text" id="review-city" placeholder="e.g. Dhaka, Kushtia" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs text-gray-400 mb-1">Role / Profession</label>
@@ -404,6 +410,7 @@
         </div>
     </section>
 
+    <!-- Checkout Modal with Name and City inputs -->
     <div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-panel border border-white/10 p-6 sm:p-8 rounded-2xl max-w-md w-full relative shadow-2xl max-h-[90vh] overflow-y-auto">
             <button onclick="closeCheckout()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">✕</button>
@@ -422,6 +429,16 @@
             </div>
 
             <form onsubmit="handleOrder(event)" class="space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">আপনার নাম (Full Name)</label>
+                        <input type="text" id="order-customer-name" required placeholder="Shakil Hossain" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">জেলা / শহর (City/District)</label>
+                        <input type="text" id="order-city" placeholder="e.g. Dhaka, Kushtia" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
                 <div>
                     <label class="block text-xs text-gray-400 mb-1">আপনার ইমেইল (Delivery Email)</label>
                     <input type="email" id="order-email" required placeholder="yourname@gmail.com" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-blue-500">
@@ -527,6 +544,7 @@
                 <table class="w-full text-left border-collapse min-w-[780px]">
                     <thead>
                         <tr class="border-b border-white/10 text-xs text-gray-400">
+                            <th class="py-3 px-3">Customer & Location</th>
                             <th class="py-3 px-3">Product</th>
                             <th class="py-3 px-3">Price</th>
                             <th class="py-3 px-3">Email & WhatsApp</th>
@@ -556,7 +574,7 @@
             ⚡
         </div>
         <div class="flex-1 overflow-hidden">
-            <p id="sp-user-text" class="text-xs font-semibold text-white truncate">Shakil from Dhaka</p>
+            <p id="sp-user-text" class="text-xs font-semibold text-white truncate">Shakil (Dhaka)</p>
             <p id="sp-product-text" class="text-[11px] text-blue-400 truncate font-medium">Purchased Gemini Advanced Pro</p>
             <div class="flex items-center gap-2 mt-0.5">
                 <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
@@ -658,22 +676,24 @@
             const track = document.getElementById('reviews-track');
             if (!track) return;
 
-            // আগের ৩টি ডিফল্ট রিভিউ
             const defaultReviews = [
                 {
                     name: 'Rakibul Hasan',
+                    city: 'Dhaka',
                     role: 'Content Creator',
                     rating: 5,
                     comment: 'Gemini Advanced Pro 18 মাসের সাবস্ক্রিপশনটি বিকাশ পেমেন্টের মাত্র ১৫ মিনিটের মধ্যে পেয়ে গেছি। কাজ করছে দারুণভাবে!'
                 },
                 {
                     name: 'Tanvir Ahmed',
+                    city: 'Chittagong',
                     role: 'Freelance Marketer',
                     rating: 5,
                     comment: 'হোয়াটসঅ্যাপের কাস্টমার সাপোর্ট অসাধারণ। যেকোনো প্রয়োজনে নক দিলে সাথে সাথে রিপ্লাই এবং সলিউশন পাওয়া যায়।'
                 },
                 {
                     name: 'Shakil Hossain',
+                    city: 'Kushtia',
                     role: 'Web Developer',
                     rating: 5,
                     comment: 'অর্ডার ট্র্যাক করার অপশনটা সবচেয়ে চমৎকার লেগেছে। ফোন নম্বর দিয়ে সার্চ করলেই লাইভ এক্সেস ডিটেইলস চলে আসে!'
@@ -697,6 +717,7 @@
             displayList.forEach(rev => {
                 const stars = '★'.repeat(rev.rating || 5) + '☆'.repeat(Math.max(0, 5 - (rev.rating || 5)));
                 const firstLetter = (rev.name || 'U').charAt(0).toUpperCase();
+                const locationDisplay = rev.city ? ` • ${rev.city}` : '';
 
                 track.innerHTML += `
                     <div class="review-card-item p-5 sm:p-6 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md flex flex-col justify-between shadow-lg">
@@ -708,7 +729,7 @@
                             <div class="w-8 h-8 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center font-bold text-xs shrink-0">${firstLetter}</div>
                             <div class="overflow-hidden">
                                 <p class="text-xs font-semibold text-white truncate">${rev.name}</p>
-                                <p class="text-[11px] text-gray-400 truncate">${rev.role || 'Verified Customer'}</p>
+                                <p class="text-[11px] text-gray-400 truncate">${rev.role || 'Verified Customer'}${locationDisplay}</p>
                             </div>
                         </div>
                     </div>
@@ -723,13 +744,14 @@
             btn.disabled = true;
 
             const name = document.getElementById('review-name').value.trim();
+            const city = document.getElementById('review-city').value.trim();
             const role = document.getElementById('review-role').value.trim() || 'Verified Customer';
             const rating = parseInt(document.getElementById('review-rating').value);
             const comment = document.getElementById('review-comment').value.trim();
 
             const { error } = await _supabase
                 .from('reviews')
-                .insert([{ name, role, rating, comment }]);
+                .insert([{ name, city, role, rating, comment }]);
 
             btn.innerText = 'Submit Review';
             btn.disabled = false;
@@ -740,6 +762,7 @@
                 alert('ধন্যবাদ! আপনার মূল্যবান রিভিউ সফলভাবে যুক্ত হয়েছে।');
                 closeReviewModal();
                 document.getElementById('review-name').value = '';
+                document.getElementById('review-city').value = '';
                 document.getElementById('review-role').value = '';
                 document.getElementById('review-comment').value = '';
                 loadReviews();
@@ -813,6 +836,8 @@
         // Handle Order Checkout
         async function handleOrder(e) {
             e.preventDefault();
+            const customerName = document.getElementById('order-customer-name').value.trim();
+            const city = document.getElementById('order-city').value.trim();
             const email = document.getElementById('order-email').value.trim();
             const phone = document.getElementById('order-phone').value.trim();
             const whatsapp = document.getElementById('order-whatsapp').value.trim();
@@ -822,6 +847,8 @@
                 .from('orders')
                 .insert([
                     { 
+                        customer_name: customerName,
+                        city: city,
                         product_name: selectedProduct, 
                         price: selectedPrice, 
                         email: email, 
@@ -847,10 +874,15 @@
                     });
                 }
                 closeCheckout();
+                document.getElementById('order-customer-name').value = '';
+                document.getElementById('order-city').value = '';
                 document.getElementById('order-email').value = '';
                 document.getElementById('order-phone').value = '';
                 document.getElementById('order-whatsapp').value = '';
                 document.getElementById('order-trx').value = '';
+
+                // নতুন অর্ডার দেওয়ার পর পপ-আপের রিয়েল ডাটা রিফ্রেশ
+                fetchRealSalesForToast();
             }
         }
 
@@ -875,23 +907,57 @@
             }
         }
 
-        // ================= LIVE SOCIAL PROOF POP-UP LOGIC =================
-        const fakeSales = [
+        // ================= HYBRID REAL + BACKUP SOCIAL PROOF POP-UP LOGIC =================
+        const backupSales = [
             { user: "Shakil (Dhaka)", product: "Gemini Advanced Pro 18 Month", time: "4 mins ago" },
-            { user: "Mahmud (Chittagong)", product: "Gemini Advanced Pro", time: "8 mins ago" },
-            { user: "Hasan (Sylhet)", product: "Gemini Advanced Pro 18 Month", time: "14 mins ago" },
-            { user: "Sabbir (Rajshahi)", product: "Gemini Advanced Pro", time: "18 mins ago" },
-            { user: "Tanvir (Khulna)", product: "Pre-booked n8n Workflow", time: "25 mins ago" },
-            { user: "Fahim (Mirpur)", product: "Gemini Advanced Pro 18 Month", time: "30 mins ago" }
+            { user: "Mahmud (Chittagong)", product: "Gemini Advanced Pro", time: "9 mins ago" },
+            { user: "Hasan (Sylhet)", product: "Gemini Advanced Pro 18 Month", time: "16 mins ago" },
+            { user: "Sabbir (Rajshahi)", product: "Gemini Advanced Pro", time: "22 mins ago" },
+            { user: "Tanvir (Khulna)", product: "Pre-booked n8n Workflow", time: "28 mins ago" },
+            { user: "Fahim (Mirpur)", product: "Gemini Advanced Pro 18 Month", time: "35 mins ago" }
         ];
+
+        let activeSalesFeed = [...backupSales];
+
+        function getTimeAgo(dateString) {
+            if (!dateString) return "Just now";
+            const diffMin = Math.floor((new Date() - new Date(dateString)) / 60000);
+            if (diffMin < 1) return "Just now";
+            if (diffMin < 60) return `${diffMin} mins ago`;
+            const diffHours = Math.floor(diffMin / 60);
+            if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            return "Recently";
+        }
+
+        async function fetchRealSalesForToast() {
+            const { data, error } = await _supabase
+                .from('orders')
+                .select('customer_name, city, product_name, created_at')
+                .order('created_at', { ascending: false })
+                .limit(8);
+
+            if (!error && data && data.length > 0) {
+                const realSales = data.map(item => {
+                    const name = item.customer_name || 'Customer';
+                    const cityPart = item.city ? ` (${item.city})` : '';
+                    return {
+                        user: `${name}${cityPart}`,
+                        product: item.product_name || 'Gemini Advanced Pro',
+                        time: getTimeAgo(item.created_at)
+                    };
+                });
+                // রিয়েল অর্ডার এবং ব্যাকআপ ডেটা একসাথে মিক্স করা
+                activeSalesFeed = [...realSales, ...backupSales];
+            }
+        }
 
         function showSocialProofToast() {
             const toast = document.getElementById('social-proof-toast');
-            if (!toast) return;
+            if (!toast || activeSalesFeed.length === 0) return;
 
-            const randomItem = fakeSales[Math.floor(Math.random() * fakeSales.length)];
+            const randomItem = activeSalesFeed[Math.floor(Math.random() * activeSalesFeed.length)];
             document.getElementById('sp-user-text').innerText = randomItem.user;
-            document.getElementById('sp-product-text').innerText = randomItem.product;
+            document.getElementById('sp-product-text').innerText = `Purchased ${randomItem.product}`;
             document.getElementById('sp-time-text').innerText = randomItem.time;
 
             toast.classList.remove('translate-y-32', 'opacity-0', 'pointer-events-none');
@@ -913,12 +979,14 @@
             setTimeout(() => {
                 showSocialProofToast();
                 setInterval(showSocialProofToast, 18000);
-            }, 6000);
+            }, 5000);
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
             loadReviews();
+            await fetchRealSalesForToast();
             startSocialProofLoop();
+
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get("admin") === "hrk-admin") {
                 setTimeout(() => {
@@ -969,7 +1037,7 @@
         // Load Admin Orders
         async function loadAdminOrders() {
             const tbody = document.getElementById('admin-orders-list');
-            tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-gray-400">Loading orders...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-gray-400">Loading orders...</td></tr>`;
 
             const { data, error } = await _supabase
                 .from('orders')
@@ -977,12 +1045,12 @@
                 .order('created_at', { ascending: false });
 
             if (error) {
-                tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-red-400">Error loading orders: ${error.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-red-400">Error loading orders: ${error.message}</td></tr>`;
                 return;
             }
 
             if (!data || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-gray-400">No orders found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-gray-400">No orders found.</td></tr>`;
                 return;
             }
 
@@ -1003,6 +1071,10 @@
 
                 tbody.innerHTML += `
                     <tr class="border-b border-white/5 hover:bg-white/[0.02]">
+                        <td class="py-3 px-3">
+                            <div class="font-medium text-white">${order.customer_name || 'Anonymous'}</div>
+                            <div class="text-[11px] text-gray-400">${order.city || 'No Location'}</div>
+                        </td>
                         <td class="py-3 px-3 font-medium text-white">${order.product_name}</td>
                         <td class="py-3 px-3 text-blue-400 font-medium">${order.price}</td>
                         <td class="py-3 px-3 text-xs">
@@ -1043,7 +1115,8 @@
             if (!order) return;
 
             currentEditingOrderId = order.id;
-            document.getElementById('delivery-modal-user').innerText = `Product: ${order.product_name} | Customer: ${order.email || order.phone}`;
+            const displayName = order.customer_name ? `${order.customer_name} (${order.email || order.phone})` : (order.email || order.phone);
+            document.getElementById('delivery-modal-user').innerText = `Product: ${order.product_name} | Customer: ${displayName}`;
             document.getElementById('delivery-input-data').value = order.delivery_data || '';
             document.getElementById('admin-delivery-modal').classList.remove('hidden');
         }
@@ -1081,7 +1154,7 @@
 
             if (sendToEmail && order.email) {
                 const emailSubject = encodeURIComponent(`GreatNexa Delivery: ${order.product_name}`);
-                const emailBody = encodeURIComponent(`Hello,\n\nYour order for "${order.product_name}" has been approved.\n\nDelivery Details / Credentials:\n${deliveryData}\n\nThank you for choosing GreatNexa!`);
+                const emailBody = encodeURIComponent(`Hello,\n\nYour order for "${order.product_name}" has been approved.\n\nAccess Details / Credentials:\n${deliveryData}\n\nThank you for choosing GreatNexa!`);
                 window.open(`mailto:${order.email}?subject=${emailSubject}&body=${emailBody}`, '_blank');
             }
 
