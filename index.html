@@ -10,23 +10,23 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { background-color: #030712; color: #f3f4f6; font-family: 'Inter', sans-serif; }
-        .terminal-box { background: #0b111e; border: 1px solid rgba(255, 255, 255, 0.1); }
-        .control-panel { background: #111827; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
-        .terminal-card { background: #0d1424; border: 1px solid rgba(255, 255, 255, 0.08); }
-        .select-btn { background: #1f2937; color: #9ca3af; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease; cursor: pointer; }
-        .select-btn.active { background: #2563eb !important; color: #ffffff !important; border-color: #3b82f6 !important; box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
+        .terminal-box { background: #0b1326; border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .control-panel { background: #0f172a; border: 1px solid rgba(59, 130, 246, 0.2); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); }
+        .terminal-card { background: #0e1628; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .select-btn { background: #1e293b; color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease; cursor: pointer; }
+        .select-btn.active { background: #2563eb !important; color: #ffffff !important; border-color: #3b82f6 !important; box-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
         .locked-blur { filter: blur(6px); pointer-events: none; user-select: none; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #030712; }
-        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
     </style>
 </head>
 <body class="p-4 md:p-8 antialiased max-w-7xl mx-auto">
 
-    <!-- Top Minimalist Header -->
-    <header class="terminal-box rounded-2xl px-5 md:px-6 py-4 mb-6 flex flex-wrap justify-between items-center gap-4 shadow-xl">
+    <!-- Top Pro Header -->
+    <header class="terminal-box rounded-2xl px-5 md:px-6 py-4 mb-8 flex flex-wrap justify-between items-center gap-4">
         <div class="flex items-center gap-3.5">
-            <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black text-white text-lg shadow-md shadow-blue-600/30 font-mono">GN</div>
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white text-xl shadow-lg shadow-blue-600/30 font-mono">GN</div>
             <div>
                 <div class="flex items-center gap-2">
                     <h1 class="font-bold text-white text-base tracking-tight">GreatNexa Terminal</h1>
@@ -38,12 +38,12 @@
 
         <div class="flex flex-wrap items-center gap-3">
             <div class="flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl p-1 text-xs">
-                <button onclick="switchTab('active')" id="tab-active" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer">Live Setups</button>
-                <button onclick="switchTab('archive')" id="tab-archive" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Hall of Fame</button>
+                <button onclick="switchTab('active')" id="tab-active" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer shadow">Live Setups</button>
+                <button onclick="switchTab('archive')" id="tab-archive" class="px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Hall of Fame</button>
             </div>
 
             <!-- Language Selector -->
-            <div class="flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl px-3 py-1.5 text-xs">
+            <div class="flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl px-3.5 py-2 text-xs">
                 <span class="text-gray-300 mr-2">🌐</span>
                 <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-[#0d1424]">
                     <option value="en" selected>English</option>
@@ -59,67 +59,70 @@
                 </select>
             </div>
 
-            <a href="/store/" class="px-3.5 py-2 rounded-xl bg-[#131d31] hover:bg-gray-800 text-gray-300 text-xs font-medium transition border border-gray-700/60">Store</a>
+            <!-- Enhanced Store Button -->
+            <a href="/store/" class="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs font-bold transition shadow-lg shadow-indigo-600/25 border border-indigo-500/30 flex items-center gap-1.5">
+                📦 Digital Store
+            </a>
             
-            <!-- Auth & Role Section -->
-            <div id="authHeaderSection" class="flex items-center gap-2">
-                <button onclick="openAuthModal('login')" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition cursor-pointer">Login / Signup</button>
+            <!-- Auth & User Info Section -->
+            <div id="authHeaderSection" class="flex items-center gap-2.5 bg-[#131d31] border border-gray-700/60 px-3.5 py-1.5 rounded-xl text-xs">
+                <button onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>
             </div>
         </div>
     </header>
 
-    <!-- Professional Control Engine: 3 Distinct Separate Boxes -->
-    <div id="controlPanel" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <!-- Professional Control Engine: 3 Distinct Separate Styled Boxes -->
+    <div id="controlPanel" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         
         <!-- 1. Market Selector & Dynamic Execution Mode -->
-        <div class="control-panel p-5 rounded-2xl flex flex-col justify-between">
+        <div class="control-panel p-6 rounded-2xl flex flex-col justify-between">
             <div>
-                <label id="lbl-market" class="block text-xs font-bold uppercase tracking-wider text-blue-400 mb-3">1. Select Asset Market</label>
-                <div class="grid grid-cols-3 gap-2 mb-3">
+                <label id="lbl-market" class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-3">1. Select Asset Market</label>
+                <div class="grid grid-cols-3 gap-2 mb-4">
                     <button onclick="changeFilter('market', 'crypto')" id="m-crypto" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Crypto</button>
                     <button onclick="changeFilter('market', 'forex')" id="m-forex" class="select-btn py-2.5 rounded-xl text-xs font-bold">Forex</button>
                     <button onclick="changeFilter('market', 'stocks')" id="m-stocks" class="select-btn py-2.5 rounded-xl text-xs font-bold">Stocks</button>
                 </div>
             </div>
 
-            <div class="pt-3 border-t border-gray-800 space-y-2.5">
+            <div class="pt-4 border-t border-gray-800 space-y-3">
                 <div>
-                    <span id="lbl-mode" class="text-[10px] font-bold text-gray-400 uppercase">Execution Mode:</span>
-                    <div class="grid grid-cols-2 gap-2 mt-1">
-                        <button onclick="changeTradingMode('mode1')" id="btn-mode1" class="py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer">Spot</button>
-                        <button onclick="changeTradingMode('mode2')" id="btn-mode2" class="py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer">Futures / CFD</button>
+                    <span id="lbl-mode" class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wide">Execution Mode:</span>
+                    <div class="grid grid-cols-2 gap-2 mt-1.5">
+                        <button onclick="changeTradingMode('mode1')" id="btn-mode1" class="py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer">Spot</button>
+                        <button onclick="changeTradingMode('mode2')" id="btn-mode2" class="py-2 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer">Futures / CFD</button>
                     </div>
                 </div>
                 <div>
-                    <span id="lbl-direction" class="text-[10px] font-bold text-gray-400 uppercase">Direction Setup:</span>
-                    <div class="grid grid-cols-2 gap-2 mt-1">
-                        <button onclick="changeDirection('long')" id="dir-long" class="py-1.5 rounded-lg text-[11px] font-bold bg-emerald-600 text-white border border-emerald-500 transition cursor-pointer">🟢 Buy / Long (Up)</button>
-                        <button onclick="changeDirection('short')" id="dir-short" class="py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer">🔴 Sell / Short (Down)</button>
+                    <span id="lbl-direction" class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wide">Direction Setup:</span>
+                    <div class="grid grid-cols-2 gap-2 mt-1.5">
+                        <button onclick="changeDirection('long')" id="dir-long" class="py-2 rounded-lg text-[11px] font-bold bg-emerald-600 text-white border border-emerald-500 transition cursor-pointer">🟢 Buy / Long</button>
+                        <button onclick="changeDirection('short')" id="dir-short" class="py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer">🔴 Sell / Short</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- 2. Time Horizon -->
-        <div class="control-panel p-5 rounded-2xl flex flex-col justify-between">
+        <div class="control-panel p-6 rounded-2xl flex flex-col justify-between">
             <div>
-                <label id="lbl-horizon" class="block text-xs font-bold uppercase tracking-wider text-blue-400 mb-3">2. Projection Horizon</label>
+                <label id="lbl-horizon" class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-3">2. Projection Horizon</label>
                 <div class="grid grid-cols-3 gap-2">
                     <button onclick="changeFilter('horizon', '24h')" id="h-24h" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Today</button>
                     <button onclick="changeFilter('horizon', '1w')" id="h-1w" class="select-btn py-2.5 rounded-xl text-xs font-bold">1 Week</button>
                     <button onclick="changeFilter('horizon', '7w')" id="h-7w" class="select-btn py-2.5 rounded-xl text-xs font-bold">7 Weeks</button>
                 </div>
             </div>
-            <div id="lbl-engine" class="pt-3 border-t border-gray-800 mt-3 text-[11px] text-emerald-400 font-mono">
+            <div id="lbl-engine" class="pt-4 border-t border-gray-800 mt-4 text-[11px] text-emerald-400 font-mono">
                 ✔ 12h Lock-in Stability Active
             </div>
         </div>
 
         <!-- 3. Shortlist Capacity Dropdown Box -->
-        <div class="control-panel p-5 rounded-2xl flex flex-col justify-between">
+        <div class="control-panel p-6 rounded-2xl flex flex-col justify-between">
             <div>
-                <label id="lbl-shortlist" class="block text-xs font-bold uppercase tracking-wider text-blue-400 mb-3">3. Shortlist Capacity</label>
-                <select id="shortlistSelect" onchange="updateLimit(this.value)" class="w-full bg-[#131d31] border border-gray-700 text-white font-bold text-xs rounded-xl px-3 py-3 focus:outline-none focus:border-blue-500 cursor-pointer">
+                <label id="lbl-shortlist" class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-3">3. Shortlist Capacity</label>
+                <select id="shortlistSelect" onchange="updateLimit(this.value)" class="w-full bg-[#1b263b] border border-gray-700 text-white font-bold text-xs rounded-xl px-3 py-3.5 focus:outline-none focus:border-blue-500 cursor-pointer">
                     <option value="3">Top 3 Assets (Free Limit)</option>
                     <option value="5">Top 5 Assets</option>
                     <option value="10" selected>Top 10 Assets</option>
@@ -127,13 +130,13 @@
                     <option value="20">Top 20 Assets (Max)</option>
                 </select>
             </div>
-            <p id="limitNote" class="text-[11px] text-gray-400 mt-3 font-mono">Free plan locked to Top 3.</p>
+            <p id="limitNote" class="text-[11px] text-gray-400 mt-4 font-mono">Free plan locked to Top 3.</p>
         </div>
 
     </div>
 
     <!-- Shortlisted Assets Grid -->
-    <div id="gridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-16"></div>
+    <div id="gridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"></div>
 
     <!-- SaaS Pricing Plans Section -->
     <section class="mb-16 pt-8 border-t border-gray-800">
@@ -158,7 +161,7 @@
                 <button class="w-full py-2.5 bg-gray-900 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed border border-gray-800">Current Plan</button>
             </div>
 
-            <!-- Pro Trader Plan ($9 / month) with Binance Pay UID: 520327779 -->
+            <!-- Pro Trader Plan ($9 / month) -->
             <div class="terminal-card p-6 rounded-2xl border-2 border-blue-600/60 shadow-xl shadow-blue-600/10 flex flex-col justify-between relative">
                 <span class="absolute -top-3 right-6 bg-blue-600 text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider">Special Offer</span>
                 <div>
@@ -172,7 +175,7 @@
                         <li>✔ Instant Telegram Bot Alerts</li>
                     </ul>
                 </div>
-                <button onclick="alert('Binance Pay UID: 520327779 (Send $9 USDT and send your email on WhatsApp to activate Pro)')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-md shadow-blue-600/30 cursor-pointer">Upgrade to Pro ($9)</button>
+                <button onclick="alert('Binance Pay UID: 520327779 (Send $9 USDT and send your email on WhatsApp)')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-md shadow-blue-600/30 cursor-pointer">Upgrade to Pro ($9)</button>
             </div>
 
             <div class="terminal-card p-6 rounded-2xl flex flex-col justify-between">
@@ -187,7 +190,7 @@
                         <li>✔ Lifetime Access Option Available</li>
                     </ul>
                 </div>
-                <button onclick="alert('Binance Pay UID: 520327779 (Send $49 USDT and send your email on WhatsApp to activate VIP)')" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-black font-extrabold rounded-xl text-xs transition shadow-md shadow-amber-500/20 cursor-pointer">Get VIP Access ($49)</button>
+                <button onclick="alert('Binance Pay UID: 520327779 (Send $49 USDT and send your email on WhatsApp)')" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-black font-extrabold rounded-xl text-xs transition shadow-md shadow-amber-500/20 cursor-pointer">Get VIP Access ($49)</button>
             </div>
         </div>
     </section>
@@ -222,7 +225,6 @@
 
     <script src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        // Supabase কানেকশন
         const SUPABASE_URL = 'https://esqhansnosejkqapuhoo.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_FypTC1KRVE66YBURyEhT9A_H3fKhzLM';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -305,19 +307,20 @@
             const { data: { session } } = await _supabase.auth.getSession();
             const headerSec = document.getElementById('authHeaderSection');
             if(session) {
-                headerSec.innerHTML = `
-                    <span class="text-xs text-emerald-400 font-mono hidden sm:inline">${session.user.email}</span>
-                    <button onclick="handleLogout()" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition cursor-pointer">Logout</button>
-                `;
-                // Supabase থেকে ইউজারের টিয়ার চেক করা (Pro নাকি Free)
+                // ইউজারের জিমেইল এবং পেইড (PRO) নাকি ফ্রি (FREE) স্ট্যাটাস চেক করা
                 const { data } = await _supabase.from('user_profiles').select('tier').eq('id', session.user.id).single();
-                if(data && data.tier === 'pro') {
-                    state.role = 'admin';
-                } else {
-                    state.role = 'free';
-                }
+                const userTier = (data && data.tier === 'pro') ? '<span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">PAID (PRO)</span>' : '<span class="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-bold">FREE PLAN</span>';
+
+                headerSec.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-white font-medium">${session.user.email}</span>
+                        ${userTier}
+                    </div>
+                    <button onclick="handleLogout()" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition cursor-pointer">Logout</button>
+                `;
+                state.role = (data && data.tier === 'pro') ? 'admin' : 'free';
             } else {
-                headerSec.innerHTML = `<button onclick="openAuthModal('login')" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition cursor-pointer">Login / Signup</button>`;
+                headerSec.innerHTML = `<button onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>`;
                 state.role = 'free';
             }
             renderGrid();
@@ -336,12 +339,12 @@
         function switchTab(tab) {
             state.viewTab = tab;
             if(tab === 'active') {
-                document.getElementById('tab-active').className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer";
-                document.getElementById('tab-archive').className = "px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
+                document.getElementById('tab-active').className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer shadow";
+                document.getElementById('tab-archive').className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
                 document.getElementById('controlPanel').style.display = 'grid';
             } else {
-                document.getElementById('tab-archive').className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer";
-                document.getElementById('tab-active').className = "px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
+                document.getElementById('tab-archive').className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer shadow";
+                document.getElementById('tab-active').className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
                 document.getElementById('controlPanel').style.display = 'none';
             }
             renderGrid();
@@ -350,11 +353,11 @@
         function changeTradingMode(mode) {
             state.tradingMode = mode;
             if(mode === 'mode1') {
-                document.getElementById('btn-mode1').className = "py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer";
-                document.getElementById('btn-mode2').className = "py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
+                document.getElementById('btn-mode1').className = "py-2 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer";
+                document.getElementById('btn-mode2').className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
             } else {
-                document.getElementById('btn-mode2').className = "py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer";
-                document.getElementById('btn-mode1').className = "py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
+                document.getElementById('btn-mode2').className = "py-2 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer";
+                document.getElementById('btn-mode1').className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
             }
             renderGrid();
         }
@@ -362,11 +365,11 @@
         function changeDirection(dir) {
             state.direction = dir;
             if(dir === 'long') {
-                document.getElementById('dir-long').className = "py-1.5 rounded-lg text-[11px] font-bold bg-emerald-600 text-white border border-emerald-500 transition cursor-pointer";
-                document.getElementById('dir-short').className = "py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
+                document.getElementById('dir-long').className = "py-2 rounded-lg text-[11px] font-bold bg-emerald-600 text-white border border-emerald-500 transition cursor-pointer";
+                document.getElementById('dir-short').className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
             } else {
-                document.getElementById('dir-short').className = "py-1.5 rounded-lg text-[11px] font-bold bg-rose-600 text-white border border-rose-500 transition cursor-pointer";
-                document.getElementById('dir-long').className = "py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
+                document.getElementById('dir-short').className = "py-2 rounded-lg text-[11px] font-bold bg-rose-600 text-white border border-rose-500 transition cursor-pointer";
+                document.getElementById('dir-long').className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
             }
             renderGrid();
         }
