@@ -13,8 +13,8 @@
         .terminal-box { background: #0b111e; border: 1px solid rgba(255, 255, 255, 0.1); }
         .control-panel { background: #111827; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
         .terminal-card { background: #0d1424; border: 1px solid rgba(255, 255, 255, 0.08); }
-        .select-btn { background: #1f2937; color: #9ca3af; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease; }
-        .select-btn.active { background: #2563eb; color: #ffffff; border-color: #3b82f6; box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
+        .select-btn { background: #1f2937; color: #9ca3af; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease; cursor: pointer; }
+        .select-btn.active { background: #2563eb !important; color: #ffffff !important; border-color: #3b82f6 !important; box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
         .locked-blur { filter: blur(6px); pointer-events: none; user-select: none; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #030712; }
@@ -37,7 +37,7 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-3">
-            <!-- 10 Languages Selector -->
+            <!-- Language Selector -->
             <div class="flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl px-3 py-1.5 text-xs">
                 <span class="text-gray-300 mr-2">🌐</span>
                 <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-[#0d1424]">
@@ -82,8 +82,8 @@
                     <span id="lbl-mode" class="text-[11px] font-bold text-gray-400 uppercase">Trading Mode:</span>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
-                    <button onclick="changeTradingMode('spot')" id="mode-spot" class="py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition">Spot Trading</button>
-                    <button onclick="changeTradingMode('futures')" id="mode-futures" class="py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition">Futures Trading</button>
+                    <button onclick="changeTradingMode('spot')" id="mode-spot" class="py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer">Spot Trading</button>
+                    <button onclick="changeTradingMode('futures')" id="mode-futures" class="py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer">Futures Trading</button>
                 </div>
             </div>
         </div>
@@ -201,11 +201,11 @@
             hi: { lblMarket: "1. परिसंपत्ति बाज़ार चुनें", lblHorizon: "2. अनुमान क्षितिज", lblShortlist: "3. शॉर्टलिस्ट क्षमता", lblMode: "ट्रेडिंग मोड:", lblEngine: "✔ 100% हाई-प्रोबेबिलिटी सेटअप इंजन", noteLabel: "अनुसंधान नोट:", flowLabel: "संस्थागत प्रवाह:", catalystLabel: "मुख्य उत्प्रेरक:", potentialLabel: "अनुमानित क्षमता:", viewChart: "चार्ट देखें", verified: "सत्यापित सेटअप", lockedTitle: "उच्च-संभावित सेटअप लॉक है", upgradeBtn: "प्रो में अपग्रेड करें ($19/माह)", pricingTitle: "संस्थागत SaaS सदस्यता टियर", pricingSub: "रीयल-टाइम स्क्रीनिंग, टेलीग्राम सिग्नल और बहु-संपत्ति 7-सप्ताह के अनुमान।" },
             ur: { lblMarket: "1. اثاثہ مارکیٹ منتخب کریں", lblHorizon: "2. پروجیکشن ہورائزن", lblShortlist: "3. شارٹ لسٹ کی گنجائش", lblMode: "ٹریڈنگ موڈ:", lblEngine: "✔ 100% ہائی پروبাবিলিটি سیٹ اپ انجن", noteLabel: "ریسرچ نوٹ:", flowLabel: "ادارہ جاتی فلو:", catalystLabel: "اہم محرک:", potentialLabel: "تخمینہ شدہ صلاحیت:", viewChart: "چارٹ دیکھیں", verified: "تصدیق شدہ سیٹ اپ", lockedTitle: "اعلیٰ صلاحیت کا سیٹ اپ مقفل ہے", upgradeBtn: "پرو میں اپ گریڈ کریں ($19/ماہ)", pricingTitle: "ادارہ جاتی SaaS ممبرশিপ ٹায়ার", pricingSub: "ریئل ٹائم اسکریننگ، ٹیلیگرام سگنلز اور ملٹی اثاثہ 7 ہفتے کے تخمینے۔" },
             ru: { lblMarket: "1. Выберите рынок активов", lblHorizon: "2. Горизонт прогноза", lblShortlist: "3. Емкость шорт-листа", lblMode: "Режим торговли:", lblEngine: "✔ 100% надежный движок настроек", noteLabel: "Исследовательская заметка:", flowLabel: "Институциональный поток:", catalystLabel: "Ключевой катализатор:", potentialLabel: "Ожидаемый потенциал:", viewChart: "График", verified: "Проверенная настройка", lockedTitle: "Настройка заблокирована", upgradeBtn: "Обновить до Pro ($19/мес)", pricingTitle: "Институциональные тарифные планы SaaS", pricingSub: "Институциональный скрининг в реальном времени и мультиактивные прогнозы." },
-            es: { lblMarket: "1. Seleccionar Mercado", lblHorizon: "2. Horizonte de Proyección", lblShortlist: "3. Capacidad de Lista", lblMode: "Modo de Trading:", lblEngine: "✔ Motor de Alta Probabilidad", noteLabel: "Nota de Investigación:", lblEngine: "✔ Motor de Alta Probabilidad", flowLabel: "Flujo Institucional:", catalystLabel: "Catalizador Clave:", potentialLabel: "Potencial Est.:", viewChart: "Ver Gráfico", verified: "Configuración Verificada", lockedTitle: "Configuración Bloqueada", upgradeBtn: "Actualizar a Pro ($19/mes)", pricingTitle: "Planes de Membresía SaaS", pricingSub: "Análisis institucional en tiempo real y proyecciones de 7 semanas." },
+            es: { lblMarket: "1. Seleccionar Mercado", lblHorizon: "2. Horizonte de Proyección", lblShortlist: "3. Capacidad de Lista", lblMode: "Modo de Trading:", lblEngine: "✔ Motor de Alta Probabilidad", noteLabel: "Nota de Investigación:", flowLabel: "Flujo Institucional:", catalystLabel: "Catalizador Clave:", potentialLabel: "Potencial Est.:", viewChart: "Ver Gráfico", verified: "Configuración Verificada", lockedTitle: "Configuración Bloqueada", upgradeBtn: "Actualizar a Pro ($19/mes)", pricingTitle: "Planes de Membresía SaaS", pricingSub: "Análisis institucional en tiempo real y proyecciones de 7 semanas." },
             zh: { lblMarket: "1. 选择资产市场", lblHorizon: "2. 预测周期", lblShortlist: "3. 入选数量", lblMode: "交易模式:", lblEngine: "✔ 高概率设置引擎", noteLabel: "研究备注:", flowLabel: "机构资金流:", catalystLabel: "关键催化剂:", potentialLabel: "预估潜力:", viewChart: "查看图表", verified: "已验证设置", lockedTitle: "高潜力设置已锁定", upgradeBtn: "升级到 Pro ($19/月)", pricingTitle: "机构 SaaS 会员层级", pricingSub: "实时机构筛选、电报 signal 和 7 周多资产预测。" },
             ar: { lblMarket: "1. اختر سوق الأصول", lblHorizon: "2. الأفق الزمني", lblShortlist: "3. سعة القائمة المختصرة", lblMode: "وضع التداول:", lblEngine: "✔ محرك إعداد عالي الاحتمالية", noteLabel: "ملاحظة البحث:", flowLabel: " التدفق المؤسسي:", catalystLabel: "المحفز الرئيسي:", potentialLabel: "الإمكانات المقدرة:", viewChart: "عرض الرسم البياني", verified: "إعداد مؤكد", lockedTitle: "الإعداد مقفل", upgradeBtn: "الترقية إلى Pro ($19/شهر)", pricingTitle: "خطط عضوية SaaS المؤسسية", pricingSub: "فحص مؤسسي في الوقت الفعلي وتوقعات لمدة 7 أسابيع." },
             vi: { lblMarket: "1. Chọn Thị Trường", lblHorizon: "2. Khung Thời Gian", lblShortlist: "3. Số Lượng Danh Sách", lblMode: "Chế Độ Giao Dịch:", lblEngine: "✔ Công Cụ Thiết Lập Xác Suất Cao", noteLabel: "Ghi Chú Nghiên Cứu:", flowLabel: "Dòng Tiền Tổ Chức:", catalystLabel: "Yếu Tố Chính:", potentialLabel: "Tiềm Năng Ước Tính:", viewChart: "Xem Biểu Đồ", verified: "Thiết Lập Đã Xác Thực", lockedTitle: "Đã Khóa Cài Đặt Tiềm Năng", upgradeBtn: "Nâng Cấp Lên Pro ($19/tháng)", pricingTitle: "Gói Thành Viên SaaS Tổ Chức", pricingSub: "Sàng lọc tổ chức theo thời gian thực và dự báo đa tài sản trong 7 tuần." },
-            tr: { lblMarket: "1. Varlık Piyasasını Seçin", lblHorizon: "2. Projeksiyon Ufku", lblShortlist: "3. Kısa Liste Kapasitesi", lblMode: "İşlem Modu:", lblEngine: "✔ Yüksek Olasılıklı Kurulum Motoru", noteLabel: "Araştırma Notu:", flowLabel: "Kurumsal Akış:", catalystLabel: "Ana Katalizör:", potentialLabel: "Tahmini Potansiyel:", viewChart: "Grafiği Gör", verified: "Doğrulanmış Kurulum", lockedTitle: "Yüksek Potansiyel Kilitli", upgradeBtn: "Pro'ya Yükselt ($19/ay)", pricingTitle: "Kurumsal SaaS Üyelik Planları", pricingSub: "Gerçek zamanlı kurumsal tarama, Telegram sinyalleri ve 7 haftalık çoklu varlık projeksiyonları." }
+            tr: { lblMarket: "1. Varlık Piyasasını Seçin", lblHorizon: "2. Projeksiyon Ufku", lblShortlist: "3. Kısa Liste Kapasitesi", lblMode: "İşlem Modu:", lblEngine: "✔ Yüksek Olasılıklı Kurulum Motoru", noteLabel: "Araştırma Notu:", flowLabel: "Kurumsal Akış:", catalystLabel: "Ana Katalizör:", potentialLabel: "Tahmini Potansiyel:", viewChart: "Grafiği Gör", verified: "Doğrulanmış Kurulum", lockedTitle: "Yüksek Potansিয়েল Kilitli", upgradeBtn: "Pro'ya Yükselt ($19/ay)", pricingTitle: "Kurumsal SaaS Üyelik Planları", pricingSub: "Gerçek zamanlı kurumsal tarama, Telegram sinyalleri ve 7 haftalık çoklu varlık projeksiyonları." }
         };
 
         let currentLang = 'en';
@@ -227,11 +227,11 @@
         function changeTradingMode(mode) {
             state.tradingMode = mode;
             if(mode === 'spot') {
-                document.getElementById('mode-spot').className = "py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition";
-                document.getElementById('mode-futures').className = "py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition";
+                document.getElementById('mode-spot').className = "py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer";
+                document.getElementById('mode-futures').className = "py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
             } else {
-                document.getElementById('mode-futures').className = "py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition";
-                document.getElementById('mode-spot').className = "py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition";
+                document.getElementById('mode-futures').className = "py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer";
+                document.getElementById('mode-spot').className = "py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
             }
             renderGrid();
         }
@@ -317,3 +317,80 @@
         function openChart(tvSymbol, name) {
             document.getElementById('chartModal').classList.remove('hidden');
             document.getElementById('chartModal').classList.add('flex');
+            document.getElementById('modalTitle').innerText = `${name} - Multi-Timeframe Institutional Chart`;
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": tvSymbol,
+                "interval": state.horizon === '24h' ? "60" : (state.horizon === '1w' ? "240" : "D"),
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "container_id": "tv_chart_container"
+            });
+        }
+
+        function closeChart() {
+            document.getElementById('chartModal').classList.add('hidden');
+            document.getElementById('chartModal').classList.remove('flex');
+            document.getElementById('tv_chart_container').innerHTML = "";
+        }
+
+        function renderGrid() {
+            const base = sampleSetups[state.market] || sampleSetups['crypto'];
+            const items = [];
+            for (let i = 0; i < state.limit; i++) {
+                let obj = { ...base[i % base.length] };
+                if (i >= base.length) {
+                    obj.name = obj.name.split('/')[0] + `-${i+1}`;
+                    obj.score = Math.max(76, obj.score - i);
+                }
+                items.push(obj);
+            }
+
+            const t = i18n[currentLang];
+            const horizonTitle = state.horizon === '24h' ? 'Today (24h)' : (state.horizon === '1w' ? 'Next 1 Week' : 'Next 7 Weeks');
+            const modeText = state.tradingMode === 'spot' ? 'Spot Engine (100% Validated)' : 'Futures Engine (Leverage Ready)';
+
+            document.getElementById('gridContainer').innerHTML = items.map((item, idx) => {
+                const isLocked = (state.role === 'free' && idx >= 3);
+                return `
+                <div class="relative terminal-card rounded-2xl p-5 hover:border-blue-500/40 transition shadow-xl flex flex-col justify-between">
+                    ${isLocked ? `
+                    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#0d1424]/90 backdrop-blur-md rounded-2xl p-6 text-center">
+                        <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold mb-2">🔒 Pro Setup #${idx+1}</span>
+                        <h4 class="text-white font-bold text-sm mb-1">${t.lockedTitle}</h4>
+                        <p class="text-xs text-gray-300 mb-4">Score: ${item.score}/100 • Potential: ${item.pot[state.horizon]}</p>
+                        <button onclick="alert('Redirecting to Checkout...')" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition">${t.upgradeBtn}</button>
+                    </div>` : ''}
+                    <div class="${isLocked ? 'locked-blur' : ''}">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="text-[10px] text-gray-400 font-mono uppercase tracking-wider">#${idx+1} • ${item.sector} (${modeText.split(' ')[0]})</span>
+                                <h3 class="text-lg font-black text-white mt-0.5">${item.name}</h3>
+                            </div>
+                            <span class="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg text-xs font-bold font-mono">Score: ${item.score}</span>
+                        </div>
+                        <div class="flex gap-2 mb-3">
+                            <span class="px-2 py-0.5 bg-purple-500/10 border border-purple-500/30 text-purple-300 rounded text-[11px] font-medium">⚡ ${item.stage}</span>
+                            <span class="px-2 py-0.5 bg-[#131d31] border border-gray-700/60 text-gray-300 rounded text-[11px] font-mono">24h: ${item.move}</span>
+                        </div>
+                        <div class="bg-black/30 border border-gray-800/80 rounded-xl p-3 mb-3 space-y-1.5 text-xs font-mono">
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.potentialLabel}</span><span class="text-emerald-400 font-bold">${item.pot[state.horizon]}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.flowLabel}</span><span class="text-white">${item.flow}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.catalystLabel}</span><span class="text-amber-300">${item.driver}</span></div>
+                        </div>
+                        <div class="text-[11px] font-mono text-blue-300 bg-blue-950/20 border border-blue-900/30 px-3 py-1.5 rounded-lg mb-3">${item.mtf}</div>
+                        <p class="text-xs text-gray-300 leading-relaxed mb-4 font-sans"><strong class="text-white">${t.noteLabel}</strong> ${item.note}</p>
+                        <div class="pt-3 border-t border-gray-800 flex justify-between items-center text-xs">
+                            <span class="text-emerald-400 font-medium text-[11px]">✔ ${modeText}</span>
+                            <button onclick="openChart('${item.symbol}', '${item.name}')" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition">📈 ${t.viewChart}</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+        renderGrid();
+    </script>
+</body>
+</html>
