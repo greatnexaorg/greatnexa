@@ -1,0 +1,26 @@
+name: Run Crypto Scanner Every 10 Mins
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # প্রতি ১০ মিনিট পরপর ব্যাকগ্রাউন্ডে রান করবে
+  workflow_dispatch:
+
+jobs:
+  run-scanner:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install requests pandas numpy supabase
+
+      - name: Run Scanner Script
+        run: |
+          python scanner.py
