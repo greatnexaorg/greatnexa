@@ -3,66 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GreatNexa | Multi-Asset Research Terminal (Crypto, Forex, Stocks)</title>
+    <title>GreatNexa Terminal | Institutional Multi-Asset Intelligence</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#05070a">
+    <meta name="theme-color" content="#030712">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { background-color: #05070a; color: #e2e8f0; font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(10, 15, 22, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
-        .active-btn { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border-color: #3b82f6; }
+        body { background-color: #030712; color: #f3f4f6; font-family: 'Inter', sans-serif; }
+        .glass-terminal { background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .active-tab { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border-color: #3b82f6; box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3); }
         .locked-blur { filter: blur(6px); pointer-events: none; user-select: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 3px; }
     </style>
 </head>
-<body class="p-3 md:p-6">
+<body class="p-3 md:p-6 antialiased">
 
-    <!-- Top Main Navigation Bar -->
-    <nav class="max-w-7xl mx-auto glass rounded-2xl px-5 py-3.5 mb-6 flex flex-wrap justify-between items-center gap-4">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-bold text-white text-xl shadow-lg shadow-blue-600/30">GN</div>
+    <!-- Top Institutional Header -->
+    <header class="max-w-7xl mx-auto glass-terminal rounded-2xl px-5 py-4 mb-6 flex flex-wrap justify-between items-center gap-4 shadow-2xl">
+        <div class="flex items-center gap-3.5">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white text-xl shadow-lg shadow-blue-600/30">GN</div>
             <div>
-                <h1 class="font-bold text-white text-lg leading-tight">GreatNexa <span class="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30">Terminal v2.0</span></h1>
-                <p class="text-xs text-gray-400">Institutional Pre-Pump & Multi-Asset Research Engine</p>
+                <div class="flex items-center gap-2">
+                    <h1 class="font-extrabold text-white text-lg tracking-tight">GreatNexa Terminal</h1>
+                    <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/20 font-mono font-semibold">PRO v2.5</span>
+                </div>
+                <p class="text-xs text-gray-400 font-medium">Institutional Pre-Pump & Multi-Asset Intelligence Engine</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-3">
-            <a href="/store/" class="px-3.5 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-semibold transition border border-gray-700">📦 Digital Store & Courses (Sub)</a>
-            <div class="flex items-center bg-gray-900 border border-gray-700 rounded-xl p-1 text-xs">
-                <span class="px-2 text-gray-400">Mode:</span>
-                <button onclick="setUserRole('admin')" id="role-admin" class="px-3 py-1 rounded-lg bg-emerald-600 text-white font-semibold">Pro / Admin</button>
-                <button onclick="setUserRole('free')" id="role-free" class="px-3 py-1 rounded-lg text-gray-400 hover:text-white">Free User</button>
+        <div class="flex flex-wrap items-center gap-3">
+            <!-- Language Selector -->
+            <div class="flex items-center bg-gray-900/90 border border-gray-800 rounded-xl px-2.5 py-1.5 text-xs">
+                <span class="text-gray-400 mr-2">🌐</span>
+                <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-gray-900">
+                    <option value="en" selected>English</option>
+                    <option value="bn">বাংলা (Bengali)</option>
+                    <option value="hi">हिन्दी (Hindi)</option>
+                    <option value="ur">اردو (Urdu)</option>
+                    <option value="ru">Русский (Russian)</option>
+                </select>
+            </div>
+
+            <a href="/store/" class="px-3.5 py-2 rounded-xl bg-gray-900 hover:bg-gray-800 text-gray-300 text-xs font-semibold transition border border-gray-800 flex items-center gap-1.5">📦 Digital Store</a>
+            
+            <div class="flex items-center bg-gray-900 border border-gray-800 rounded-xl p-1 text-xs">
+                <button onclick="setUserRole('admin')" id="role-admin" class="px-3 py-1.5 rounded-lg bg-emerald-600/90 text-white font-bold transition shadow-sm">Pro Mode</button>
+                <button onclick="setUserRole('free')" id="role-free" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white font-medium transition">Free User</button>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <!-- Main Control Engine (Crypto, Forex, Stocks) -->
-    <div class="max-w-7xl mx-auto glass p-5 rounded-2xl mb-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Main Control Engine (Filters & Sliders) -->
+    <div class="max-w-7xl mx-auto glass-terminal p-5 rounded-2xl mb-6 grid grid-cols-1 md:grid-cols-3 gap-6 shadow-xl">
+        <!-- 1. Market Selector -->
         <div>
-            <label class="block text-xs font-semibold uppercase text-gray-400 mb-2.5">১. মার্কেট নির্বাচন (Main Focus)</label>
+            <label id="lbl-market" class="block text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2.5">1. Select Asset Market</label>
             <div class="grid grid-cols-3 gap-2">
-                <button onclick="changeFilter('market', 'crypto')" id="m-crypto" class="active-btn py-2.5 rounded-xl text-xs font-bold border border-gray-700">Crypto</button>
-                <button onclick="changeFilter('market', 'forex')" id="m-forex" class="py-2.5 rounded-xl text-xs font-bold border border-gray-700 bg-gray-800/70">Forex</button>
-                <button onclick="changeFilter('market', 'stocks')" id="m-stocks" class="py-2.5 rounded-xl text-xs font-bold border border-gray-700 bg-gray-800/70">Stocks</button>
+                <button onclick="changeFilter('market', 'crypto')" id="m-crypto" class="active-btn py-2.5 rounded-xl text-xs font-bold border border-gray-700/80 transition">Crypto</button>
+                <button onclick="changeFilter('market', 'forex')" id="m-forex" class="py-2.5 rounded-xl text-xs font-bold border border-gray-800 bg-gray-900/60 hover:bg-gray-900 text-gray-300 transition">Forex</button>
+                <button onclick="changeFilter('market', 'stocks')" id="m-stocks" class="py-2.5 rounded-xl text-xs font-bold border border-gray-800 bg-gray-900/60 hover:bg-gray-900 text-gray-300 transition">Stocks</button>
             </div>
         </div>
 
+        <!-- 2. Time Horizon -->
         <div>
-            <label class="block text-xs font-semibold uppercase text-gray-400 mb-2.5">২. রিসার্চ টাইমফ্রেম</label>
+            <label id="lbl-horizon" class="block text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2.5">2. Projection Horizon</label>
             <div class="grid grid-cols-3 gap-2">
-                <button onclick="changeFilter('horizon', '24h')" id="h-24h" class="active-btn py-2.5 rounded-xl text-xs font-bold border border-gray-700">Today (24h)</button>
-                <button onclick="changeFilter('horizon', '1w')" id="h-1w" class="py-2.5 rounded-xl text-xs font-bold border border-gray-700 bg-gray-800/70">Next 1 Week</button>
-                <button onclick="changeFilter('horizon', '7w')" id="h-7w" class="py-2.5 rounded-xl text-xs font-bold border border-gray-700 bg-gray-800/70">1M - 7 Weeks</button>
+                <button onclick="changeFilter('horizon', '24h')" id="h-24h" class="active-btn py-2.5 rounded-xl text-xs font-bold border border-gray-700/80 transition">Today (24h)</button>
+                <button onclick="changeFilter('horizon', '1w')" id="h-1w" class="py-2.5 rounded-xl text-xs font-bold border border-gray-800 bg-gray-900/60 hover:bg-gray-900 text-gray-300 transition">Next 1 Week</button>
+                <button onclick="changeFilter('horizon', '7w')" id="h-7w" class="py-2.5 rounded-xl text-xs font-bold border border-gray-800 bg-gray-900/60 hover:bg-gray-900 text-gray-300 transition">1M - 7 Weeks</button>
             </div>
         </div>
 
+        <!-- 3. Shortlist Count Slider -->
         <div>
-            <div class="flex justify-between items-center mb-2">
-                <label class="text-xs font-semibold uppercase text-gray-400">৩. শর্টলিস্ট সংখ্যা (৫-২০টি)</label>
-                <span id="sliderVal" class="text-xs font-bold px-2.5 py-0.5 bg-blue-500/20 text-blue-400 rounded-md border border-blue-500/30">Top 10 Selected</span>
+            <div class="flex justify-between items-center mb-2.5">
+                <label id="lbl-shortlist" class="text-[11px] font-bold uppercase tracking-wider text-gray-400">3. Shortlist Capacity</label>
+                <span id="sliderVal" class="text-xs font-mono font-bold px-2.5 py-0.5 bg-blue-500/10 text-blue-400 rounded-md border border-blue-500/20">Top 10 Assets</span>
             </div>
-            <input type="range" id="limitSlider" min="5" max="20" step="1" value="10" oninput="updateLimit(this.value)" class="w-full h-2 bg-gray-700 rounded-lg cursor-pointer accent-blue-500">
+            <input type="range" id="limitSlider" min="5" max="20" step="1" value="10" oninput="updateLimit(this.value)" class="w-full h-2 bg-gray-800 rounded-lg cursor-pointer accent-blue-600 mt-2">
+            <div class="flex justify-between text-[10px] text-gray-500 font-mono mt-1.5">
+                <span>5 (Strict)</span><span>10</span><span>15</span><span>20 (Max)</span>
+            </div>
         </div>
     </div>
 
@@ -70,18 +94,18 @@
     <div id="gridContainer" class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-16"></div>
 
     <!-- SaaS Pricing Plans Section -->
-    <section class="max-w-7xl mx-auto mb-16 pt-8 border-t border-gray-800">
+    <section class="max-w-7xl mx-auto mb-16 pt-8 border-t border-gray-800/80">
         <div class="text-center mb-10">
-            <h2 class="text-2xl md:text-3xl font-bold mb-2">Institutional SaaS Membership Tiers</h2>
-            <p class="text-sm text-gray-400">Get real-time institutional screening, Telegram alerts, and 7-week multi-asset projections.</p>
+            <h2 id="pricing-title" class="text-2xl md:text-3xl font-extrabold text-white mb-2">Institutional SaaS Membership Tiers</h2>
+            <p id="pricing-subtitle" class="text-sm text-gray-400">Real-time institutional screening, Telegram signals, and multi-asset 7-week projections.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Free Tier -->
-            <div class="glass p-6 rounded-2xl border border-gray-800 flex flex-col justify-between">
+            <div class="glass-terminal p-6 rounded-2xl border border-gray-800/80 flex flex-col justify-between shadow-xl">
                 <div>
                     <span class="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-xs font-bold">Free Tier</span>
-                    <h3 class="text-2xl font-bold text-white mt-4 mb-1">$0 <span class="text-xs text-gray-400 font-normal">/ lifetime</span></h3>
+                    <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$0 <span class="text-xs text-gray-400 font-normal">/ lifetime</span></h3>
                     <p class="text-xs text-gray-400 mb-6">Basic day trading research for beginners.</p>
                     <ul class="space-y-3 text-xs text-gray-300 mb-8">
                         <li>✔ Top 3 Assets Only</li>
@@ -90,16 +114,16 @@
                         <li>❌ Telegram Bot Alerts</li>
                     </ul>
                 </div>
-                <button class="w-full py-2.5 bg-gray-800 text-gray-300 rounded-xl text-xs font-bold cursor-not-allowed">Current Plan</button>
+                <button class="w-full py-3 bg-gray-800 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed">Current Active Plan</button>
             </div>
 
             <!-- Pro Trader Tier -->
-            <div class="glass p-6 rounded-2xl border-2 border-blue-500/60 shadow-xl shadow-blue-600/10 flex flex-col justify-between relative">
-                <span class="absolute -top-3 right-6 bg-blue-600 text-white text-[10px] font-bold px-3 py-0.5 rounded-full uppercase">Most Popular</span>
+            <div class="glass-terminal p-6 rounded-2xl border-2 border-blue-500/60 shadow-2xl shadow-blue-600/15 flex flex-col justify-between relative">
+                <span class="absolute -top-3 right-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-md">Most Popular</span>
                 <div>
-                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold">Pro Trader</span>
-                    <h3 class="text-2xl font-bold text-white mt-4 mb-1">$19 <span class="text-xs text-gray-400 font-normal">/ month</span></h3>
-                    <p class="text-xs text-gray-400 mb-6">Full institutional research for serious traders.</p>
+                    <span class="px-3 py-1 bg-blue-500/15 text-blue-400 rounded-full text-xs font-bold border border-blue-500/30">Pro Trader</span>
+                    <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$19 <span class="text-xs text-gray-400 font-normal">/ month</span></h3>
+                    <p class="text-xs text-gray-400 mb-6">Full institutional intelligence for serious traders.</p>
                     <ul class="space-y-3 text-xs text-gray-300 mb-8">
                         <li>✔ Crypto, Forex & Stocks Unlocked</li>
                         <li>✔ Up to 20 Shortlisted Assets</li>
@@ -107,14 +131,14 @@
                         <li>✔ Instant Telegram Bot Alerts</li>
                     </ul>
                 </div>
-                <button onclick="alert('Redirecting to Checkout... (bKash / USDT / Stripe)')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition">Upgrade to Pro</button>
+                <button onclick="alert('Redirecting to Secure Checkout... (bKash / USDT / Stripe)')" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-blue-600/30">Upgrade to Pro</button>
             </div>
 
             <!-- VIP Institutional Tier -->
-            <div class="glass p-6 rounded-2xl border border-gray-800 flex flex-col justify-between">
+            <div class="glass-terminal p-6 rounded-2xl border border-gray-800/80 flex flex-col justify-between shadow-xl">
                 <div>
-                    <span class="px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-xs font-bold">VIP Institutional</span>
-                    <h3 class="text-2xl font-bold text-white mt-4 mb-1">$49 <span class="text-xs text-gray-400 font-normal">/ month</span></h3>
+                    <span class="px-3 py-1 bg-amber-500/15 text-amber-400 rounded-full text-xs font-bold border border-amber-500/30">VIP Institutional</span>
+                    <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$49 <span class="text-xs text-gray-400 font-normal">/ month</span></h3>
                     <p class="text-xs text-gray-400 mb-6">For fund managers & high-volume traders.</p>
                     <ul class="space-y-3 text-xs text-gray-300 mb-8">
                         <li>✔ Real-Time Zero-Latency Feed</li>
@@ -123,43 +147,134 @@
                         <li>✔ Lifetime Access Option Available</li>
                     </ul>
                 </div>
-                <button onclick="alert('Redirecting to VIP Checkout...')" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-black rounded-xl text-xs font-bold transition">Get VIP Access</button>
+                <button onclick="alert('Redirecting to VIP Secure Checkout...')" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-black font-extrabold rounded-xl text-xs transition shadow-lg shadow-amber-500/20">Get VIP Access</button>
             </div>
         </div>
     </section>
 
     <!-- Live TradingView Chart Modal -->
-    <div id="chartModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50 p-4">
-        <div class="glass w-full max-w-4xl rounded-2xl overflow-hidden border border-gray-700">
-            <div class="flex justify-between items-center px-5 py-3 border-b border-gray-800">
-                <h3 id="modalTitle" class="font-bold text-white">Live Institutional Chart</h3>
-                <button onclick="closeChart()" class="text-gray-400 hover:text-white text-xl font-bold">&times;</button>
+    <div id="chartModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
+        <div class="glass-terminal w-full max-w-4xl rounded-2xl overflow-hidden border border-gray-700 shadow-2xl">
+            <div class="flex justify-between items-center px-5 py-4 border-b border-gray-800 bg-gray-900/50">
+                <h3 id="modalTitle" class="font-bold text-white text-sm">Live Institutional Chart</h3>
+                <button onclick="closeChart()" class="text-gray-400 hover:text-white text-xl font-bold px-2">&times;</button>
             </div>
-            <div id="tv_chart_container" class="h-[450px] w-full bg-gray-950"></div>
+            <div id="tv_chart_container" class="h-[480px] w-full bg-black"></div>
         </div>
     </div>
 
     <script src="https://s3.tradingview.com/tv.js"></script>
     <script>
+        // Multi-Language Dictionary
+        const i18n = {
+            en: {
+                lblMarket: "1. Select Asset Market",
+                lblHorizon: "2. Projection Horizon",
+                lblShortlist: "3. Shortlist Capacity",
+                noteLabel: "Research Note:",
+                flowLabel: "Institutional Flow:",
+                catalystLabel: "Key Catalyst:",
+                potentialLabel: "Est. Potential:",
+                viewChart: "View Live Chart",
+                verified: "Verified Setup",
+                lockedTitle: "High-Potential Setup Locked",
+                upgradeBtn: "Upgrade to Pro ($19/mo)",
+                pricingTitle: "Institutional SaaS Membership Tiers",
+                pricingSub: "Real-time institutional screening, Telegram signals, and multi-asset 7-week projections."
+            },
+            bn: {
+                lblMarket: "১. অ্যাসেট মার্কেট নির্বাচন করুন",
+                lblHorizon: "২. প্রজেকশন টাইমফ্রেম",
+                lblShortlist: "৩. শর্টলিস্ট ধারণক্ষমতা",
+                noteLabel: "রিসার্চ নোট:",
+                flowLabel: "ইনস্টিটিউশনাল ফ্লো:",
+                catalystLabel: "মূল অনুঘটক:",
+                potentialLabel: "সম্ভাব্য প্রফিট:",
+                viewChart: "লাইভ চার্ট দেখুন",
+                verified: "যাচাইকৃত সেটআপ",
+                lockedTitle: "হাই-পোটেনশিয়াল সেটআপ লক করা আছে",
+                upgradeBtn: "প্রো সংস্করণে উন্নীত করুন ($১৯/মাস)",
+                pricingTitle: "ইনস্টিটিউশনাল SaaS মেম্বারশিপ টায়ার",
+                pricingSub: "রিয়েল-টাইম স্ক্রিনিং, টেলিগ্রাম সিগন্যাল এবং ৭-সপ্তাহের মাল্টি-অ্যাসেট প্রজেকশন।"
+            },
+            hi: {
+                lblMarket: "1. परिसंपत्ति बाज़ार चुनें",
+                lblHorizon: "2. अनुमान क्षितिज",
+                lblShortlist: "3. शॉर्टलिस्ट क्षमता",
+                noteLabel: "अनुसंधान नोट:",
+                flowLabel: "संस्थागत प्रवाह:",
+                catalystLabel: "मुख्य उत्प्रेरक:",
+                potentialLabel: "अनुमानित क्षमता:",
+                viewChart: "लाइव चार्ट देखें",
+                verified: "सत्यापित सेटअप",
+                lockedTitle: "उच्च-संभावित सेटअप लॉक है",
+                upgradeBtn: "प्रो में अपग्रेड करें ($19/माह)",
+                pricingTitle: "संस्थागत SaaS सदस्यता टियर",
+                pricingSub: "रीयल-टाइम स्क्रीनिंग, टेलीग्राम सिग्नल और बहु-संपत्ति 7-सप्ताह के अनुमान।"
+            },
+            ur: {
+                lblMarket: "1. اثاثہ مارکیٹ منتخب کریں",
+                lblHorizon: "2. پروجیکشن ہورائزن",
+                lblShortlist: "3. شارٹ لسٹ کی گنجائش",
+                noteLabel: "ریسرچ نوٹ:",
+                flowLabel: "ادارہ جاتی فلو:",
+                catalystLabel: "اہم محرک:",
+                potentialLabel: "تخمینہ شدہ صلاحیت:",
+                viewChart: "لائیو چارٹ دیکھیں",
+                verified: "تصدیق شدہ سیٹ اپ",
+                lockedTitle: "اعلیٰ صلاحیت کا سیٹ اپ مقفل ہے",
+                upgradeBtn: "پرو میں اپ گریڈ کریں ($19/ماہ)",
+                pricingTitle: "ادارہ جاتی SaaS ممبرশিপ ٹায়ার",
+                pricingSub: "ریئل ٹائم اسکریننگ، ٹیلیگرام سگنلز اور ملٹی اثاثہ 7 ہفتے کے تخمینے۔"
+            },
+            ru: {
+                lblMarket: "1. Выберите рынок активов",
+                lblHorizon: "2. Горизонт прогноза",
+                lblShortlist: "3. Емкость шорт-листа",
+                noteLabel: "Исследовательская заметка:",
+                flowLabel: "Институциональный поток:",
+                catalystLabel: "Ключевой катализатор:",
+                potentialLabel: "Ожидаемый потенциал:",
+                viewChart: "Живой график",
+                verified: "Проверенная настройка",
+                lockedTitle: "Настройка заблокирована",
+                upgradeBtn: "Обновить до Pro ($19/мес)",
+                pricingTitle: "Институциональные тарифные планы SaaS",
+                pricingSub: "Институциональный скрининг в реальном времени и мультиактивные прогнозы."
+            }
+        };
+
+        let currentLang = 'en';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('lbl-market').innerText = i18n[lang].lblMarket;
+            document.getElementById('lbl-horizon').innerText = i18n[lang].lblHorizon;
+            document.getElementById('lbl-shortlist').innerText = i18n[lang].lblShortlist;
+            document.getElementById('pricing-title').innerText = i18n[lang].pricingTitle;
+            document.getElementById('pricing-subtitle').innerText = i18n[lang].pricingSub;
+            renderGrid();
+        }
+
         let state = { market: 'crypto', horizon: '24h', limit: 10, role: 'admin' };
 
         const sampleSetups = {
             crypto: [
-                { symbol: "BINANCE:RENDERUSDT", name: "RENDER/USDT", sector: "AI Narrative", score: 96, stage: "Pre-Pump Coiling", move: "+1.2%", pot: { '24h': "18% - 28%", '1w': "35% - 55%", '7w': "90% - 150%" }, flow: "OI: +14.5% | Spot Buy: 64%", driver: "Funding: -0.025% (Short Squeeze)", mtf: "1D: Bull | 4H: Bull | 1H: Squeeze", note: "দাম বাড়েনি কিন্তু গত ৪ ঘণ্টায় ৩৪০% বেশি স্পট ভলিউম ঢুকেছে। আগামী ৭ সপ্তাহে কোনো বড় টোকেন আনলক নেই।" },
-                { symbol: "BINANCE:SUIUSDT", name: "SUI/USDT", sector: "Layer 1", score: 94, stage: "Whale Absorption", move: "+0.7%", pot: { '24h': "16% - 25%", '1w': "30% - 48%", '7w': "80% - 130%" }, flow: "OI: +11.2% | Outflow High", driver: "Funding: -0.012%", mtf: "1D: Bull | 4H: OB Retest | 15m: Bull", note: "এক্সচেঞ্জ থেকে প্রচুর কয়েন প্রাইভেট ওয়ালেটে গেছে। ৪ ঘণ্টার রেজিস্ট্যান্স ব্রেকআউটের একদম কিনারায়।" }
+                { symbol: "BINANCE:RENDERUSDT", name: "RENDER/USDT", sector: "AI Narrative", score: 96, stage: "Pre-Pump Coiling", move: "+1.2%", pot: { '24h': "18% - 28%", '1w': "35% - 55%", '7w': "90% - 150%" }, flow: "OI: +14.5% | Spot Buy: 64%", driver: "Funding: -0.025% (Short Squeeze)", mtf: "1D: Bull | 4H: Bull | 1H: Squeeze", note: "Volume spiked 340% in last 4 hours while price remained consolidated. Zero token unlock risk for next 30 days." },
+                { symbol: "BINANCE:SUIUSDT", name: "SUI/USDT", sector: "Layer 1", score: 94, stage: "Whale Absorption", move: "+0.7%", pot: { '24h': "16% - 25%", '1w': "30% - 48%", '7w': "80% - 130%" }, flow: "OI: +11.2% | Outflow High", driver: "Funding: -0.012%", mtf: "1D: Bull | 4H: OB Retest | 15m: Bull", note: "Significant exchange outflow recorded. Price is coiling tightly right below the 4H major resistance zone." }
             ],
             forex: [
-                { symbol: "OANDA:XAUUSD", name: "XAU/USD (Gold)", sector: "Commodity", score: 95, stage: "Asian Range Squeeze", move: "+0.1%", pot: { '24h': "250 - 380 Pips", '1w': "600 - 900 Pips", '7w': "1600+ Pips" }, flow: "COT Report: 79% Net Long", driver: "DXY Weakening (-0.4%)", mtf: "1W: Bull | 1D: Bull | 4H: Demand", note: "কেন্দ্রীয় ব্যাংকগুলোর বায়িং ফ্লো অব্যাহত আছে এবং লন্ডন সেশনের আগে লিকুইডিটি বিল্ডআপ হচ্ছে।" }
+                { symbol: "OANDA:XAUUSD", name: "XAU/USD (Gold)", sector: "Commodity", score: 95, stage: "Asian Range Squeeze", move: "+0.1%", pot: { '24h': "250 - 380 Pips", '1w': "600 - 900 Pips", '7w': "1600+ Pips" }, flow: "COT Report: 79% Net Long", driver: "DXY Weakening (-0.4%)", mtf: "1W: Bull | 1D: Bull | 4H: Demand", note: "Central bank institutional buying flow is active. DXY rejecting major resistance ahead of London session." }
             ],
             stocks: [
-                { symbol: "NASDAQ:NVDA", name: "NVDA", sector: "AI / Semis", score: 96, stage: "Dark Pool Buying", move: "+0.8%", pot: { '24h': "4% - 7%", '1w': "10% - 16%", '7w': "25% - 40%" }, flow: "RVOL: 3.5x | Inst. Buy", driver: "Call/Put Ratio: 2.9", mtf: "1W: Bull | 1D: Flag | 1H: Squeeze", note: "ডার্ক পুলে ১ মিটার ডলারের ব্লক অর্ডার শনাক্ত হয়েছে। আগামী ৭ সপ্তাহের অপশন চেইন অত্যন্ত বুলিশ।" }
+                { symbol: "NASDAQ:NVDA", name: "NVDA", sector: "AI / Semis", score: 96, stage: "Dark Pool Buying", move: "+0.8%", pot: { '24h': "4% - 7%", '1w': "10% - 16%", '7w': "25% - 40%" }, flow: "RVOL: 3.5x | Inst. Buy", driver: "Call/Put Ratio: 2.9", mtf: "1W: Bull | 1D: Flag | 1H: Squeeze", note: "Massive dark pool block orders detected. Options chain for next 7 weeks shows heavy institutional bullish bias." }
             ]
         };
 
         function setUserRole(role) {
             state.role = role;
-            document.getElementById('role-admin').className = role === 'admin' ? "px-3 py-1 rounded-lg bg-emerald-600 text-white font-semibold" : "px-3 py-1 rounded-lg text-gray-400";
-            document.getElementById('role-free').className = role === 'free' ? "px-3 py-1 rounded-lg bg-amber-600 text-white font-semibold" : "px-3 py-1 rounded-lg text-gray-400";
+            document.getElementById('role-admin').className = role === 'admin' ? "px-3 py-1.5 rounded-lg bg-emerald-600/90 text-white font-bold transition shadow-sm" : "px-3 py-1.5 rounded-lg text-gray-400 font-medium transition";
+            document.getElementById('role-free').className = role === 'free' ? "px-3 py-1.5 rounded-lg bg-amber-600/90 text-white font-bold transition shadow-sm" : "px-3 py-1.5 rounded-lg text-gray-400 font-medium transition";
             renderGrid();
         }
 
@@ -167,11 +282,11 @@
             state[type] = val;
             if (type === 'market') {
                 ['crypto', 'forex', 'stocks'].forEach(m => {
-                    document.getElementById('m-' + m).className = (m === val) ? "active-btn py-2.5 rounded-xl text-xs md:text-sm font-bold border border-gray-700" : "py-2.5 rounded-xl text-xs md:text-sm font-bold border border-gray-700 bg-gray-800/70";
+                    document.getElementById('m-' + m).className = (m === val) ? "active-btn py-2.5 rounded-xl text-xs font-bold border border-gray-700/80 transition" : "py-2.5 rounded-xl text-xs font-bold border border-gray-800 bg-gray-900/60 hover:bg-gray-900 text-gray-300 transition";
                 });
             } else {
                 ['24h', '1w', '7w'].forEach(h => {
-                    document.getElementById('h-' + h).className = (h === val) ? "active-btn py-2.5 rounded-xl text-xs font-bold border border-gray-700" : "py-2.5 rounded-xl text-xs font-bold border border-gray-700 bg-gray-800/70";
+                    document.getElementById('h-' + h).className = (h === val) ? "active-btn py-2.5 rounded-xl text-xs font-bold border border-gray-700/80 transition" : "py-2.5 rounded-xl text-xs font-bold border border-gray-800 bg-gray-900/60 hover:bg-gray-900 text-gray-300 transition";
                 });
             }
             renderGrid();
@@ -179,7 +294,7 @@
 
         function updateLimit(val) {
             state.limit = parseInt(val);
-            document.getElementById('sliderVal').innerText = `Top ${val} Selected`;
+            document.getElementById('sliderVal').innerText = `Top ${val} Assets`;
             renderGrid();
         }
 
@@ -217,41 +332,42 @@
                 items.push(obj);
             }
 
+            const t = i18n[currentLang];
             const horizonTitle = state.horizon === '24h' ? 'Today (24h)' : (state.horizon === '1w' ? 'Next 1 Week' : 'Next 7 Weeks');
 
             document.getElementById('gridContainer').innerHTML = items.map((item, idx) => {
                 const isLocked = (state.role === 'free' && idx >= 3);
                 return `
-                <div class="relative glass rounded-2xl p-5 border border-gray-800 hover:border-blue-500/40 transition">
+                <div class="relative glass-terminal rounded-2xl p-5 border border-gray-800/80 hover:border-blue-500/50 transition shadow-xl flex flex-col justify-between">
                     ${isLocked ? `
-                    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-gray-950/60 rounded-2xl p-6 text-center">
-                        <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold mb-2">🔒 Pro Setup #${idx+1}</span>
-                        <h4 class="text-white font-bold text-base mb-1">Locked Setup</h4>
+                    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-gray-950/80 backdrop-blur-sm rounded-2xl p-6 text-center">
+                        <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold mb-2">🔒 Pro SaaS Setup #${idx+1}</span>
+                        <h4 class="text-white font-bold text-base mb-1">${t.lockedTitle}</h4>
                         <p class="text-xs text-gray-300 mb-4">Score: ${item.score}/100 • Potential: ${item.pot[state.horizon]}</p>
-                        <button onclick="alert('Upgrade to Pro ($19/mo) to unlock!')" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg">Upgrade to Pro</button>
+                        <button onclick="alert('Redirecting to Checkout...')" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition">${t.upgradeBtn}</button>
                     </div>` : ''}
                     <div class="${isLocked ? 'locked-blur' : ''}">
                         <div class="flex justify-between items-start mb-3">
                             <div>
-                                <span class="text-[11px] text-gray-400 font-semibold uppercase">#${idx+1} • ${item.sector}</span>
-                                <h3 class="text-xl font-bold text-white">${item.name}</h3>
+                                <span class="text-[11px] text-gray-400 font-mono uppercase tracking-wider">#${idx+1} • ${item.sector}</span>
+                                <h3 class="text-xl font-black text-white mt-0.5">${item.name}</h3>
                             </div>
-                            <span class="px-2.5 py-1 bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 rounded-lg text-xs font-bold">Score: ${item.score}/100</span>
+                            <span class="px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg text-xs font-bold font-mono">Score: ${item.score}/100</span>
                         </div>
                         <div class="flex gap-2 mb-4">
-                            <span class="px-2.5 py-1 bg-purple-500/15 border border-purple-500/30 text-purple-300 rounded-md text-xs font-medium">⚡ ${item.stage}</span>
-                            <span class="px-2.5 py-1 bg-gray-800 text-gray-300 rounded-md text-xs">24h: ${item.move}</span>
+                            <span class="px-2.5 py-1 bg-purple-500/10 border border-purple-500/30 text-purple-300 rounded-md text-xs font-medium">⚡ ${item.stage}</span>
+                            <span class="px-2.5 py-1 bg-gray-900 border border-gray-800 text-gray-300 rounded-md text-xs font-mono">24h: ${item.move}</span>
                         </div>
-                        <div class="bg-gray-900/90 border border-gray-800 rounded-xl p-3 mb-3 space-y-1.5 text-xs">
-                            <div class="flex justify-between"><span class="text-gray-400">Est. Potential (${horizonTitle}):</span><span class="text-emerald-400 font-bold">${item.pot[state.horizon]}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400">Institutional Flow:</span><span class="text-white font-medium">${item.flow}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400">Key Catalyst:</span><span class="text-amber-300 font-medium">${item.driver}</span></div>
+                        <div class="bg-black/40 border border-gray-800/80 rounded-xl p-3 mb-3 space-y-1.5 text-xs">
+                            <div class="flex justify-between"><span class="text-gray-400">${t.potentialLabel} (${horizonTitle}):</span><span class="text-emerald-400 font-bold font-mono">${item.pot[state.horizon]}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">${t.flowLabel}</span><span class="text-white font-medium font-mono">${item.flow}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">${t.catalystLabel}</span><span class="text-amber-300 font-medium font-mono">${item.driver}</span></div>
                         </div>
-                        <div class="text-[11px] font-mono text-blue-300 bg-blue-950/40 border border-blue-900/50 px-3 py-1.5 rounded-lg mb-3">${item.mtf}</div>
-                        <p class="text-xs text-gray-300 leading-relaxed mb-4"><strong class="text-white">Research Note:</strong> ${item.note}</p>
-                        <div class="pt-3 border-t border-gray-800 flex justify-between items-center text-xs">
-                            <span class="text-emerald-400 font-medium">✔ Verified Setup</span>
-                            <button onclick="openChart('${item.symbol}', '${item.name}')" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition">📈 View Chart</button>
+                        <div class="text-[11px] font-mono text-blue-300 bg-blue-950/30 border border-blue-900/40 px-3 py-1.5 rounded-lg mb-3">${item.mtf}</div>
+                        <p class="text-xs text-gray-300 leading-relaxed mb-4"><strong class="text-white">${t.noteLabel}</strong> ${item.note}</p>
+                        <div class="pt-3 border-t border-gray-800/80 flex justify-between items-center text-xs">
+                            <span class="text-emerald-400 font-medium">✔ ${t.verified}</span>
+                            <button onclick="openChart('${item.symbol}', '${item.name}')" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition">📈 ${t.viewChart}</button>
                         </div>
                     </div>
                 </div>`;
