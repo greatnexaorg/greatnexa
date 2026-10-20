@@ -11,8 +11,9 @@
     <style>
         body { background-color: #030712; color: #f3f4f6; font-family: 'Inter', sans-serif; }
         .terminal-box { background: #0b111e; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .control-panel { background: #111827; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
         .terminal-card { background: #0d1424; border: 1px solid rgba(255, 255, 255, 0.08); }
-        .tab-btn { background: #131d31; color: #9ca3af; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease; }
+        .tab-btn { background: #1f2937; color: #9ca3af; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease; }
         .tab-btn.active { background: #2563eb; color: #ffffff; border-color: #3b82f6; box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
         .locked-blur { filter: blur(6px); pointer-events: none; user-select: none; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -57,12 +58,12 @@
         </div>
     </header>
 
-    <!-- Professional Control Engine (Clear Background & Spaced) -->
+    <!-- Professional Control Engine with distinct Background Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         
         <!-- 1. Market Selector -->
-        <div class="terminal-box p-5 rounded-2xl shadow-lg">
-            <label id="lbl-market" class="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-3">1. Select Asset Market</label>
+        <div class="control-panel p-5 rounded-2xl">
+            <label id="lbl-market" class="block text-xs font-bold uppercase tracking-wider text-blue-400 mb-3">1. Select Asset Market</label>
             <div class="grid grid-cols-3 gap-2">
                 <button onclick="changeFilter('market', 'crypto')" id="m-crypto" class="tab-btn active py-2.5 rounded-xl text-xs font-bold">Crypto</button>
                 <button onclick="changeFilter('market', 'forex')" id="m-forex" class="tab-btn py-2.5 rounded-xl text-xs font-bold">Forex</button>
@@ -71,8 +72,8 @@
         </div>
 
         <!-- 2. Time Horizon -->
-        <div class="terminal-box p-5 rounded-2xl shadow-lg">
-            <label id="lbl-horizon" class="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-3">2. Projection Horizon</label>
+        <div class="control-panel p-5 rounded-2xl">
+            <label id="lbl-horizon" class="block text-xs font-bold uppercase tracking-wider text-blue-400 mb-3">2. Projection Horizon</label>
             <div class="grid grid-cols-3 gap-2">
                 <button onclick="changeFilter('horizon', '24h')" id="h-24h" class="tab-btn active py-2.5 rounded-xl text-xs font-bold">Today</button>
                 <button onclick="changeFilter('horizon', '1w')" id="h-1w" class="tab-btn py-2.5 rounded-xl text-xs font-bold">1 Week</button>
@@ -80,17 +81,20 @@
             </div>
         </div>
 
-        <!-- 3. Shortlist Capacity Slider -->
-        <div class="terminal-box p-5 rounded-2xl shadow-lg flex flex-col justify-between">
+        <!-- 3. Shortlist Capacity Dropdown Box -->
+        <div class="control-panel p-5 rounded-2xl flex flex-col justify-between">
             <div class="flex justify-between items-center mb-2">
-                <label id="lbl-shortlist" class="text-xs font-bold uppercase tracking-wider text-gray-300">3. Shortlist Capacity</label>
-                <span id="sliderVal" class="text-xs font-mono font-bold px-2.5 py-0.5 bg-blue-500/20 text-blue-400 rounded-md border border-blue-500/30">Top 10 Assets</span>
+                <label id="lbl-shortlist" class="text-xs font-bold uppercase tracking-wider text-blue-400">3. Shortlist Capacity</label>
             </div>
             <div>
-                <input type="range" id="limitSlider" min="5" max="20" step="1" value="10" oninput="updateLimit(this.value)" class="w-full h-2 bg-gray-800 rounded-lg cursor-pointer accent-blue-600 mt-2">
-                <div class="flex justify-between text-[11px] text-gray-400 font-mono mt-1.5">
-                    <span>5</span><span>10</span><span>15</span><span>20 (Max)</span>
-                </div>
+                <select id="shortlistSelect" onchange="updateLimit(this.value)" class="w-full bg-[#131d31] border border-gray-700 text-white font-bold text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-blue-500 cursor-pointer">
+                    <option value="3">Top 3 Assets (Free Limit)</option>
+                    <option value="5">Top 5 Assets</option>
+                    <option value="10" selected>Top 10 Assets</option>
+                    <option value="15">Top 15 Assets</option>
+                    <option value="20">Top 20 Assets (Max)</option>
+                </select>
+                <p id="limitNote" class="text-[10px] text-gray-400 mt-1.5 font-mono">Free plan locked to Top 3.</p>
             </div>
         </div>
 
@@ -195,20 +199,40 @@
         const sampleSetups = {
             crypto: [
                 { symbol: "BINANCE:RENDERUSDT", name: "RENDER/USDT", sector: "AI Narrative", score: 96, stage: "Pre-Pump Coiling", move: "+1.2%", pot: { '24h': "18% - 28%", '1w': "35% - 55%", '7w': "90% - 150%" }, flow: "OI: +14.5% | Spot Buy: 64%", driver: "Funding: -0.025% (Short Squeeze)", mtf: "1D: Bull | 4H: Bull | 1H: Squeeze", note: "Volume spiked 340% in last 4 hours while price remained consolidated. Zero token unlock risk for next 30 days." },
-                { symbol: "BINANCE:SUIUSDT", name: "SUI/USDT", sector: "Layer 1", score: 94, stage: "Whale Absorption", move: "+0.7%", pot: { '24h': "16% - 25%", '1w': "30% - 48%", '7w': "80% - 130%" }, flow: "OI: +11.2% | Outflow High", driver: "Funding: -0.012%", mtf: "1D: Bull | 4H: OB Retest | 15m: Bull", note: "Significant exchange outflow recorded. Price is coiling tightly right below the 4H major resistance zone." }
+                { symbol: "BINANCE:SUIUSDT", name: "SUI/USDT", sector: "Layer 1", score: 94, stage: "Whale Absorption", move: "+0.7%", pot: { '24h': "16% - 25%", '1w': "30% - 48%", '7w': "80% - 130%" }, flow: "OI: +11.2% | Outflow High", driver: "Funding: -0.012%", mtf: "1D: Bull | 4H: OB Retest | 15m: Bull", note: "Significant exchange outflow recorded. Price is coiling tightly right below the 4H major resistance zone." },
+                { symbol: "BINANCE:FETUSDT", name: "FET/USDT", sector: "AI Sector", score: 92, stage: "Volatility Squeeze", move: "-0.4%", pot: { '24h': "15% - 24%", '1w': "28% - 45%", '7w': "70% - 115%" }, flow: "OI: +9.8% | Z-Score: 3.2", driver: "BB Width: 30-Day Low", mtf: "1D: Bull | 4H: Squeeze | 1H: Bull", note: "Volatility has compressed to 30-day lows. Coiled spring ready for expansion." },
+                { symbol: "BINANCE:INJUSDT", name: "INJ/USDT", sector: "DeFi / L1", score: 90, stage: "Stop-Hunt Complete", move: "+1.9%", pot: { '24h': "15% - 22%", '1w': "25% - 40%", '7w': "65% - 105%" }, flow: "OI: +8.4% | CVD Rising", driver: "Funding: -0.031%", mtf: "1D: Bull | 4H: Sweep | 1H: BOS", note: "Retail stop-hunt completed around previous lows. Strong bounce from institutional demand zone." }
             ],
             forex: [
-                { symbol: "OANDA:XAUUSD", name: "XAU/USD (Gold)", sector: "Commodity", score: 95, stage: "Asian Range Squeeze", move: "+0.1%", pot: { '24h': "250 - 380 Pips", '1w': "600 - 900 Pips", '7w': "1600+ Pips" }, flow: "COT Report: 79% Net Long", driver: "DXY Weakening (-0.4%)", mtf: "1W: Bull | 1D: Bull | 4H: Demand", note: "Central bank institutional buying flow is active. DXY rejecting major resistance ahead of London session." }
+                { symbol: "OANDA:XAUUSD", name: "XAU/USD (Gold)", sector: "Commodity", score: 95, stage: "Asian Range Squeeze", move: "+0.1%", pot: { '24h': "250 - 380 Pips", '1w': "600 - 900 Pips", '7w': "1600+ Pips" }, flow: "COT Report: 79% Net Long", driver: "DXY Weakening (-0.4%)", mtf: "1W: Bull | 1D: Bull | 4H: Demand", note: "Central bank institutional buying flow is active. DXY rejecting major resistance ahead of London session." },
+                { symbol: "FX:EURUSD", name: "EUR/USD", sector: "Major FX", score: 91, stage: "Liquidity Sweep", move: "+0.2%", pot: { '24h': "75 - 110 Pips", '1w': "180 - 260 Pips", '7w': "450 - 700 Pips" }, flow: "Bank Flow: Accumulation", driver: "Yield Spread Bullish", mtf: "1D: Bull | 4H: CHoCH | 1H: Bull", note: "Swept previous week lows and entered smart money order block." }
             ],
             stocks: [
-                { symbol: "NASDAQ:NVDA", name: "NVDA", sector: "AI / Semis", score: 96, stage: "Dark Pool Buying", move: "+0.8%", pot: { '24h': "4% - 7%", '1w': "10% - 16%", '7w': "25% - 40%" }, flow: "RVOL: 3.5x | Inst. Buy", driver: "Call/Put Ratio: 2.9", mtf: "1W: Bull | 1D: Flag | 1H: Squeeze", note: "Massive dark pool block orders detected. Options chain for next 7 weeks shows heavy institutional bullish bias." }
+                { symbol: "NASDAQ:NVDA", name: "NVDA", sector: "AI / Semis", score: 96, stage: "Dark Pool Buying", move: "+0.8%", pot: { '24h': "4% - 7%", '1w': "10% - 16%", '7w': "25% - 40%" }, flow: "RVOL: 3.5x | Inst. Buy", driver: "Call/Put Ratio: 2.9", mtf: "1W: Bull | 1D: Flag | 1H: Squeeze", note: "Massive dark pool block orders detected. Options chain for next 7 weeks shows heavy institutional bullish bias." },
+                { symbol: "NASDAQ:PLTR", name: "PLTR", sector: "Enterprise AI", score: 93, stage: "Relative Strength #1", move: "+1.1%", pot: { '24h': "5% - 9%", '1w': "12% - 20%", '7w': "30% - 48%" }, flow: "RVOL: 4.1x | Volume Surge", driver: "Institutional Accumulation", mtf: "1W: Breakout | 1D: Bull | 4H: Tight", note: "Demonstrating 3x relative strength against S&P 500 benchmark indices." }
             ]
         };
 
         function setUserRole(role) {
             state.role = role;
-            document.getElementById('role-admin').className = role === 'admin' ? "px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold transition" : "px-3 py-1.5 rounded-lg text-gray-400 font-medium transition";
-            document.getElementById('role-free').className = role === 'free' ? "px-3 py-1.5 rounded-lg bg-amber-600 text-white font-bold transition" : "px-3 py-1.5 rounded-lg text-gray-400 font-medium transition";
+            const select = document.getElementById('shortlistSelect');
+            const note = document.getElementById('limitNote');
+            
+            if (role === 'free') {
+                document.getElementById('role-free').className = "px-3 py-1.5 rounded-lg bg-amber-600 text-white font-bold transition";
+                document.getElementById('role-admin').className = "px-3 py-1.5 rounded-lg text-gray-400 font-medium transition";
+                select.value = "3";
+                select.disabled = true;
+                state.limit = 3;
+                note.innerText = "Free plan locked to Top 3 Assets.";
+                note.className = "text-[10px] text-amber-400 mt-1.5 font-mono";
+            } else {
+                document.getElementById('role-admin').className = "px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold transition";
+                document.getElementById('role-free').className = "px-3 py-1.5 rounded-lg text-gray-400 font-medium transition";
+                select.disabled = false;
+                note.innerText = "Pro/VIP Unlocked (Up to 20 Assets).";
+                note.className = "text-[10px] text-emerald-400 mt-1.5 font-mono";
+            }
             renderGrid();
         }
 
@@ -237,8 +261,12 @@
         }
 
         function updateLimit(val) {
+            if (state.role === 'free') {
+                state.limit = 3;
+                document.getElementById('shortlistSelect').value = "3";
+                return;
+            }
             state.limit = parseInt(val);
-            document.getElementById('sliderVal').innerText = `Top ${val} Assets`;
             renderGrid();
         }
 
