@@ -71,7 +71,7 @@
     <!-- Professional Control Engine: 3 Distinct Separate Boxes -->
     <div id="controlPanel" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         
-        <!-- 1. Market Selector & Trading Type & Long/Short Direction -->
+        <!-- 1. Market Selector & Dynamic Trading Mode & Direction -->
         <div class="control-panel p-5 rounded-2xl flex flex-col justify-between">
             <div>
                 <label id="lbl-market" class="block text-xs font-bold uppercase tracking-wider text-blue-400 mb-3">1. Select Asset Market</label>
@@ -82,20 +82,20 @@
                 </div>
             </div>
 
-            <!-- Spot vs Futures & Long vs Short Toggle -->
-            <div id="tradingTypeContainer" class="pt-3 border-t border-gray-800 space-y-2.5">
+            <!-- Dynamic Trading Options based on Market -->
+            <div class="pt-3 border-t border-gray-800 space-y-2.5">
                 <div>
                     <span id="lbl-mode" class="text-[10px] font-bold text-gray-400 uppercase">Trading Mode:</span>
-                    <div class="grid grid-cols-2 gap-2 mt-1">
+                    <div id="modeButtonsContainer" class="grid grid-cols-2 gap-2 mt-1">
                         <button onclick="changeTradingMode('spot')" id="mode-spot" class="py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer">Spot</button>
-                        <button onclick="changeTradingMode('futures')" id="mode-futures" class="py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer">Futures</button>
+                        <button onclick="changeTradingMode('futures')" id="mode-futures" class="py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer">Futures / CFD</button>
                     </div>
                 </div>
                 <div>
                     <span id="lbl-direction" class="text-[10px] font-bold text-gray-400 uppercase">Direction (Up / Down):</span>
                     <div class="grid grid-cols-2 gap-2 mt-1">
-                        <button onclick="changeDirection('long')" id="dir-long" class="py-1.5 rounded-lg text-[11px] font-bold bg-emerald-600 text-white border border-emerald-500 transition cursor-pointer">🟢 Long (Up)</button>
-                        <button onclick="changeDirection('short')" id="dir-short" class="py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer">🔴 Short (Down)</button>
+                        <button onclick="changeDirection('long')" id="dir-long" class="py-1.5 rounded-lg text-[11px] font-bold bg-emerald-600 text-white border border-emerald-500 transition cursor-pointer">🟢 Long (Buy)</button>
+                        <button onclick="changeDirection('short')" id="dir-short" class="py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer">🔴 Short (Sell)</button>
                     </div>
                 </div>
             </div>
@@ -112,7 +112,7 @@
                 </div>
             </div>
             <div id="lbl-engine" class="pt-3 border-t border-gray-800 mt-3 text-[11px] text-emerald-400 font-mono">
-                ✔ 12h Lock-in Stability Active
+                ✔ Multi-Asset AI Engine Active
             </div>
         </div>
 
@@ -148,7 +148,7 @@
                 <div>
                     <span class="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-xs font-bold">Free Tier</span>
                     <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$0 <span class="text-xs text-gray-400 font-normal">/ lifetime</span></h3>
-                    <p class="text-xs text-gray-400 mb-6">Basic day trading research for beginners.</p>
+                    <p class="text-xs text-gray-400 mb-6">Basic multi-asset research for beginners.</p>
                     <ul class="space-y-3 text-xs text-gray-300 mb-8">
                         <li>✔ Top 3 Assets Only</li>
                         <li>✔ Today (24h) Horizon</li>
@@ -172,7 +172,7 @@
                         <li>✔ Instant Telegram Bot Alerts</li>
                     </ul>
                 </div>
-                <button onclick="alert('Redirecting to Checkout...')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition shadow-md shadow-blue-600/30 cursor-pointer">Upgrade to Pro</button>
+                <button onclick="alert('Redirecting to Checkout...')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-md shadow-blue-600/30 cursor-pointer">Upgrade to Pro</button>
             </div>
 
             <div class="terminal-card p-6 rounded-2xl flex flex-col justify-between">
@@ -206,8 +206,8 @@
     <script src="https://s3.tradingview.com/tv.js"></script>
     <script>
         const i18n = {
-            en: { lblMarket: "1. Select Asset Market", lblHorizon: "2. Projection Horizon", lblShortlist: "3. Shortlist Capacity", lblMode: "Trading Mode:", lblDirection: "Direction (Up / Down):", lblEngine: "✔ 12h Lock-in Stability Active", noteLabel: "Research Note:", flowLabel: "Institutional Flow:", catalystLabel: "Key Catalyst:", potentialLabel: "Est. Potential:", viewChart: "View Chart", verified: "Verified Setup", lockedTitle: "High-Potential Setup Locked", upgradeBtn: "Upgrade to Pro ($19/mo)", pricingTitle: "Institutional SaaS Membership Tiers", pricingSub: "Real-time institutional screening, Telegram signals, and multi-asset 7-week projections." },
-            bn: { lblMarket: "১. অ্যাসেট মার্কেট নির্বাচন করুন", lblHorizon: "২. প্রজেকশন টাইমফ্রেম", lblShortlist: "৩. শর্টলিস্ট ধারণক্ষমতা", lblMode: "ট্রেডিং মোড:", lblDirection: "ডিরেকশন (আপ / ডাউন):", lblEngine: "✔ ১২ ঘণ্টা লক-ইন স্ট্যাবিলিটি সক্রিয়", noteLabel: "রিসার্চ নোট:", flowLabel: "ইনস্টিটিউশনাল ফ্লো:", catalystLabel: "মূল অনুঘটক:", potentialLabel: "সম্ভাব্য প্রফিট:", viewChart: "চার্ট দেখুন", verified: "যাচাইকৃত সেটআপ", lockedTitle: "হাই-পোটেনশিয়াল সেটআপ লক করা আছে", upgradeBtn: "প্রো সংস্করণে উন্নীত করুন ($১৯/মাস)", pricingTitle: "ইনস্টিটিউশনাল SaaS মেম্বারশিপ টায়ার", pricingSub: "রিয়েল-টাইম স্ক্রিনিং, টেলিগ্রাম সিগন্যাল এবং ৭-সপ্তাহের মাল্টি-অ্যাসেট প্রজেকশন।" }
+            en: { lblMarket: "1. Select Asset Market", lblHorizon: "2. Projection Horizon", lblShortlist: "3. Shortlist Capacity", lblMode: "Trading Mode:", lblDirection: "Direction (Up / Down):", lblEngine: "✔ Multi-Asset AI Engine Active", noteLabel: "Research Note:", flowLabel: "Institutional Flow:", catalystLabel: "Key Catalyst:", potentialLabel: "Est. Potential:", viewChart: "View Chart", verified: "Verified Setup", lockedTitle: "High-Potential Setup Locked", upgradeBtn: "Upgrade to Pro ($19/mo)", pricingTitle: "Institutional SaaS Membership Tiers", pricingSub: "Real-time institutional screening, Telegram signals, and multi-asset 7-week projections." },
+            bn: { lblMarket: "১. অ্যাসেট মার্কেট নির্বাচন করুন", lblHorizon: "২. প্রজেকশন টাইমফ্রেম", lblShortlist: "৩. শর্টলিস্ট ধারণক্ষমতা", lblMode: "ট্রেডিং মোড:", lblDirection: "ডিরেকশন (আপ / ডাউন):", lblEngine: "✔ মাল্টি-অ্যাসেট এআই ইঞ্জিন সক্রিয়", noteLabel: "রিসার্চ নোট:", flowLabel: "ইনস্টিটিউশনাল ফ্লো:", catalystLabel: "মূল অনুঘটক:", potentialLabel: "সম্ভাব্য প্রফিট:", viewChart: "চার্ট দেখুন", verified: "যাচাইকৃত সেটআপ", lockedTitle: "হাই-পোটেনশিয়াল সেটআপ লক করা আছে", upgradeBtn: "প্রো সংস্করণে উন্নীত করুন ($১৯/মাস)", pricingTitle: "ইনস্টিটিউশনাল SaaS মেম্বারশিপ টায়ার", pricingSub: "রিয়েল-টাইম স্ক্রিনিং, টেলিগ্রাম সিগন্যাল এবং ৭-সপ্তাহের মাল্টি-অ্যাসেট প্রজেকশন।" }
         };
 
         let currentLang = 'en';
@@ -265,7 +265,7 @@
             renderGrid();
         }
 
-        // আপ (Long) এবং ডাউন (Short) উভয়ের জন্য স্যাম্পল ডেটা
+        // Crypto, Forex এবং Stocks - তিনটির জন্যই Long (Up) এবং Short (Down) ডেটা
         const sampleSetups = {
             crypto: {
                 long: [
@@ -273,8 +273,7 @@
                     { symbol: "BINANCE:SUIUSDT", name: "SUI/USDT", sector: "Layer 1", score: 94, stage: "Whale Absorption", status: "ACTIVE", move: "+0.7%", pot: { '24h': "16% - 25%", '1w': "30% - 48%", '7w': "80% - 130%" }, flow: "OI: +11.2% | Outflow High", driver: "Funding: -0.012%", note: "Exchange outflow recorded right below major resistance." }
                 ],
                 short: [
-                    { symbol: "BINANCE:DOGEUSDT", name: "DOGE/USDT", sector: "Meme", score: 91, stage: "Overbought Rejection", status: "ACTIVE", move: "-2.4%", pot: { '24h': "15% - 25% (Down)", '1w': "30% - 50%", '7w': "70% - 110%" }, flow: "OI Spike | Long Liquidations", driver: "Funding: +0.065% (Long Trap)", note: "Overbought RSI on 4H with massive long liquidation clusters below." },
-                    { symbol: "BINANCE:PEPEUSDT", name: "PEPE/USDT", sector: "Meme", score: 89, stage: "Resistance Failure", status: "ACTIVE", move: "-3.1%", pot: { '24h': "14% - 22% (Down)", '1w': "28% - 45%", '7w': "60% - 95%" }, flow: "Volume Dropping | Sell Pressure", driver: "Funding: +0.050%", note: "Failed to break major supply zone. Short sellers accumulating." }
+                    { symbol: "BINANCE:DOGEUSDT", name: "DOGE/USDT", sector: "Meme", score: 91, stage: "Overbought Rejection", status: "ACTIVE", move: "-2.4%", pot: { '24h': "15% - 25% (Down)", '1w': "30% - 50%", '7w': "70% - 110%" }, flow: "OI Spike | Long Liquidations", driver: "Funding: +0.065% (Long Trap)", note: "Overbought RSI on 4H with massive long liquidation clusters below." }
                 ]
             },
             forex: {
@@ -332,7 +331,6 @@
                         btn.className = "select-btn py-2.5 rounded-xl text-xs font-bold";
                     }
                 });
-                document.getElementById('tradingTypeContainer').style.display = (val === 'crypto') ? 'block' : 'none';
             } else {
                 ['24h', '1w', '7w'].forEach(h => {
                     const btn = document.getElementById('h-' + h);
@@ -379,7 +377,7 @@
             const container = document.getElementById('gridContainer');
 
             if(state.viewTab === 'archive') {
-                container.innerHTML = archiveSetups.map((item, idx) => `
+                container.innerHTML = archiveSetups.map((item) => `
                 <div class="terminal-card rounded-2xl p-5 border border-emerald-500/30 shadow-xl flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-start mb-3">
@@ -398,8 +396,8 @@
                 return;
             }
 
-            const marketData = sampleSetups[state.market] || sampleSetups['crypto'];
-            const base = marketData[state.direction] || marketData['long'];
+            const marketObj = sampleSetups[state.market] || sampleSetups['crypto'];
+            const base = marketObj[state.direction] || marketObj['long'];
             const items = [];
             for (let i = 0; i < state.limit; i++) {
                 let obj = { ...base[i % base.length] };
