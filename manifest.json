@@ -1,0 +1,17 @@
+{
+  "name": "GreatNexa - Research Terminal",
+  "short_name": "GreatNexa",
+  "description": "Institutional Pre-Pump & Multi-Asset Research SaaS",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#05070a",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2091/2091665.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
