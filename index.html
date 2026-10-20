@@ -13,8 +13,8 @@
         .terminal-box { background: #0b111e; border: 1px solid rgba(255, 255, 255, 0.1); }
         .control-panel { background: #111827; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
         .terminal-card { background: #0d1424; border: 1px solid rgba(255, 255, 255, 0.08); }
-        .tab-btn { background: #1f2937; color: #9ca3af; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease; }
-        .tab-btn.active { background: #2563eb; color: #ffffff; border-color: #3b82f6; box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
+        .select-btn { background: #1f2937; color: #9ca3af; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease; }
+        .select-btn.active { background: #2563eb; color: #ffffff; border-color: #3b82f6; box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
         .locked-blur { filter: blur(6px); pointer-events: none; user-select: none; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #030712; }
@@ -66,12 +66,12 @@
             <div>
                 <label id="lbl-market" class="block text-xs font-bold uppercase tracking-wider text-blue-400 mb-3">1. Select Asset Market</label>
                 <div class="grid grid-cols-3 gap-2 mb-3">
-                    <button onclick="changeFilter('market', 'crypto')" id="m-crypto" class="tab-btn active py-2.5 rounded-xl text-xs font-bold">Crypto</button>
-                    <button onclick="changeFilter('market', 'forex')" id="m-forex" class="tab-btn py-2.5 rounded-xl text-xs font-bold">Forex</button>
-                    <button onclick="changeFilter('market', 'stocks')" id="m-stocks" class="tab-btn py-2.5 rounded-xl text-xs font-bold">Stocks</button>
+                    <button onclick="changeFilter('market', 'crypto')" id="m-crypto" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Crypto</button>
+                    <button onclick="changeFilter('market', 'forex')" id="m-forex" class="select-btn py-2.5 rounded-xl text-xs font-bold">Forex</button>
+                    <button onclick="changeFilter('market', 'stocks')" id="m-stocks" class="select-btn py-2.5 rounded-xl text-xs font-bold">Stocks</button>
                 </div>
             </div>
-            <!-- Spot vs Futures Toggle (Only for Crypto or General) -->
+            <!-- Spot vs Futures Toggle -->
             <div id="tradingTypeContainer" class="pt-3 border-t border-gray-800">
                 <div class="flex justify-between items-center mb-1.5">
                     <span class="text-[11px] font-bold text-gray-400 uppercase">Trading Mode:</span>
@@ -88,9 +88,9 @@
             <div>
                 <label id="lbl-horizon" class="block text-xs font-bold uppercase tracking-wider text-blue-400 mb-3">2. Projection Horizon</label>
                 <div class="grid grid-cols-3 gap-2">
-                    <button onclick="changeFilter('horizon', '24h')" id="h-24h" class="tab-btn active py-2.5 rounded-xl text-xs font-bold">Today</button>
-                    <button onclick="changeFilter('horizon', '1w')" id="h-1w" class="tab-btn py-2.5 rounded-xl text-xs font-bold">1 Week</button>
-                    <button onclick="changeFilter('horizon', '7w')" id="h-7w" class="tab-btn py-2.5 rounded-xl text-xs font-bold">7 Weeks</button>
+                    <button onclick="changeFilter('horizon', '24h')" id="h-24h" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Today</button>
+                    <button onclick="changeFilter('horizon', '1w')" id="h-1w" class="select-btn py-2.5 rounded-xl text-xs font-bold">1 Week</button>
+                    <button onclick="changeFilter('horizon', '7w')" id="h-7w" class="select-btn py-2.5 rounded-xl text-xs font-bold">7 Weeks</button>
                 </div>
             </div>
             <div class="pt-3 border-t border-gray-800 mt-3 text-[11px] text-emerald-400 font-mono">
@@ -267,12 +267,11 @@
                 ['crypto', 'forex', 'stocks'].forEach(m => {
                     const btn = document.getElementById('m-' + m);
                     if (m === val) {
-                        btn.className = "tab-btn active py-2.5 rounded-xl text-xs font-bold";
+                        btn.className = "select-btn active py-2.5 rounded-xl text-xs font-bold";
                     } else {
-                        btn.className = "tab-btn py-2.5 rounded-xl text-xs font-bold";
+                        btn.className = "select-btn py-2.5 rounded-xl text-xs font-bold";
                     }
                 });
-                // Hide or show trading mode depending on market
                 const modeContainer = document.getElementById('tradingTypeContainer');
                 if(val === 'crypto') {
                     modeContainer.style.display = 'block';
@@ -283,9 +282,9 @@
                 ['24h', '1w', '7w'].forEach(h => {
                     const btn = document.getElementById('h-' + h);
                     if (h === val) {
-                        btn.className = "tab-btn active py-2.5 rounded-xl text-xs font-bold";
+                        btn.className = "select-btn active py-2.5 rounded-xl text-xs font-bold";
                     } else {
-                        btn.className = "tab-btn py-2.5 rounded-xl text-xs font-bold";
+                        btn.className = "select-btn py-2.5 rounded-xl text-xs font-bold";
                     }
                 });
             }
@@ -354,4 +353,31 @@
                     <div class="${isLocked ? 'locked-blur' : ''}">
                         <div class="flex justify-between items-start mb-3">
                             <div>
-                                <span class="text-
+                                <span class="text-[10px] text-gray-400 font-mono uppercase tracking-wider">#${idx+1} • ${item.sector} (${modeText.split(' ')[0]})</span>
+                                <h3 class="text-lg font-black text-white mt-0.5">${item.name}</h3>
+                            </div>
+                            <span class="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg text-xs font-bold font-mono">Score: ${item.score}</span>
+                        </div>
+                        <div class="flex gap-2 mb-3">
+                            <span class="px-2 py-0.5 bg-purple-500/10 border border-purple-500/30 text-purple-300 rounded text-[11px] font-medium">⚡ ${item.stage}</span>
+                            <span class="px-2 py-0.5 bg-[#131d31] border border-gray-700/60 text-gray-300 rounded text-[11px] font-mono">24h: ${item.move}</span>
+                        </div>
+                        <div class="bg-black/30 border border-gray-800/80 rounded-xl p-3 mb-3 space-y-1.5 text-xs font-mono">
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.potentialLabel}</span><span class="text-emerald-400 font-bold">${item.pot[state.horizon]}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.flowLabel}</span><span class="text-white">${item.flow}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.catalystLabel}</span><span class="text-amber-300">${item.driver}</span></div>
+                        </div>
+                        <div class="text-[11px] font-mono text-blue-300 bg-blue-950/20 border border-blue-900/30 px-3 py-1.5 rounded-lg mb-3">${item.mtf}</div>
+                        <p class="text-xs text-gray-300 leading-relaxed mb-4 font-sans"><strong class="text-white">${t.noteLabel}</strong> ${item.note}</p>
+                        <div class="pt-3 border-t border-gray-800 flex justify-between items-center text-xs">
+                            <span class="text-emerald-400 font-medium text-[11px]">✔ ${modeText}</span>
+                            <button onclick="openChart('${item.symbol}', '${item.name}')" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition">📈 ${t.viewChart}</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+        renderGrid();
+    </script>
+</body>
+</html>
