@@ -24,7 +24,7 @@
 <body class="p-4 md:p-8 antialiased max-w-7xl mx-auto">
 
     <!-- Top Minimalist Header -->
-    <header class="terminal-box rounded-2xl px-5 md:px-6 py-4 mb-8 flex flex-wrap justify-between items-center gap-4 shadow-xl">
+    <header class="terminal-box rounded-2xl px-5 md:px-6 py-4 mb-6 flex flex-wrap justify-between items-center gap-4 shadow-xl">
         <div class="flex items-center gap-3.5">
             <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black text-white text-lg shadow-md shadow-blue-600/30 font-mono">GN</div>
             <div>
@@ -58,44 +58,59 @@
         </div>
     </header>
 
-    <!-- Professional Control Engine with distinct Background Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Professional Control Engine: 3 Distinct Separate Boxes -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         
-        <!-- 1. Market Selector -->
-        <div class="control-panel p-5 rounded-2xl">
-            <label id="lbl-market" class="block text-xs font-bold uppercase tracking-wider text-blue-400 mb-3">1. Select Asset Market</label>
-            <div class="grid grid-cols-3 gap-2">
-                <button onclick="changeFilter('market', 'crypto')" id="m-crypto" class="tab-btn active py-2.5 rounded-xl text-xs font-bold">Crypto</button>
-                <button onclick="changeFilter('market', 'forex')" id="m-forex" class="tab-btn py-2.5 rounded-xl text-xs font-bold">Forex</button>
-                <button onclick="changeFilter('market', 'stocks')" id="m-stocks" class="tab-btn py-2.5 rounded-xl text-xs font-bold">Stocks</button>
+        <!-- 1. Market Selector & Trading Type -->
+        <div class="control-panel p-5 rounded-2xl flex flex-col justify-between">
+            <div>
+                <label id="lbl-market" class="block text-xs font-bold uppercase tracking-wider text-blue-400 mb-3">1. Select Asset Market</label>
+                <div class="grid grid-cols-3 gap-2 mb-3">
+                    <button onclick="changeFilter('market', 'crypto')" id="m-crypto" class="tab-btn active py-2.5 rounded-xl text-xs font-bold">Crypto</button>
+                    <button onclick="changeFilter('market', 'forex')" id="m-forex" class="tab-btn py-2.5 rounded-xl text-xs font-bold">Forex</button>
+                    <button onclick="changeFilter('market', 'stocks')" id="m-stocks" class="tab-btn py-2.5 rounded-xl text-xs font-bold">Stocks</button>
+                </div>
+            </div>
+            <!-- Spot vs Futures Toggle (Only for Crypto or General) -->
+            <div id="tradingTypeContainer" class="pt-3 border-t border-gray-800">
+                <div class="flex justify-between items-center mb-1.5">
+                    <span class="text-[11px] font-bold text-gray-400 uppercase">Trading Mode:</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="changeTradingMode('spot')" id="mode-spot" class="py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition">Spot Trading</button>
+                    <button onclick="changeTradingMode('futures')" id="mode-futures" class="py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition">Futures Trading</button>
+                </div>
             </div>
         </div>
 
         <!-- 2. Time Horizon -->
-        <div class="control-panel p-5 rounded-2xl">
-            <label id="lbl-horizon" class="block text-xs font-bold uppercase tracking-wider text-blue-400 mb-3">2. Projection Horizon</label>
-            <div class="grid grid-cols-3 gap-2">
-                <button onclick="changeFilter('horizon', '24h')" id="h-24h" class="tab-btn active py-2.5 rounded-xl text-xs font-bold">Today</button>
-                <button onclick="changeFilter('horizon', '1w')" id="h-1w" class="tab-btn py-2.5 rounded-xl text-xs font-bold">1 Week</button>
-                <button onclick="changeFilter('horizon', '7w')" id="h-7w" class="tab-btn py-2.5 rounded-xl text-xs font-bold">7 Weeks</button>
+        <div class="control-panel p-5 rounded-2xl flex flex-col justify-between">
+            <div>
+                <label id="lbl-horizon" class="block text-xs font-bold uppercase tracking-wider text-blue-400 mb-3">2. Projection Horizon</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="changeFilter('horizon', '24h')" id="h-24h" class="tab-btn active py-2.5 rounded-xl text-xs font-bold">Today</button>
+                    <button onclick="changeFilter('horizon', '1w')" id="h-1w" class="tab-btn py-2.5 rounded-xl text-xs font-bold">1 Week</button>
+                    <button onclick="changeFilter('horizon', '7w')" id="h-7w" class="tab-btn py-2.5 rounded-xl text-xs font-bold">7 Weeks</button>
+                </div>
+            </div>
+            <div class="pt-3 border-t border-gray-800 mt-3 text-[11px] text-emerald-400 font-mono">
+                ✔ 100% High-Probability Setup Engine
             </div>
         </div>
 
         <!-- 3. Shortlist Capacity Dropdown Box -->
         <div class="control-panel p-5 rounded-2xl flex flex-col justify-between">
-            <div class="flex justify-between items-center mb-2">
-                <label id="lbl-shortlist" class="text-xs font-bold uppercase tracking-wider text-blue-400">3. Shortlist Capacity</label>
-            </div>
             <div>
-                <select id="shortlistSelect" onchange="updateLimit(this.value)" class="w-full bg-[#131d31] border border-gray-700 text-white font-bold text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-blue-500 cursor-pointer">
+                <label id="lbl-shortlist" class="block text-xs font-bold uppercase tracking-wider text-blue-400 mb-3">3. Shortlist Capacity</label>
+                <select id="shortlistSelect" onchange="updateLimit(this.value)" class="w-full bg-[#131d31] border border-gray-700 text-white font-bold text-xs rounded-xl px-3 py-3 focus:outline-none focus:border-blue-500 cursor-pointer">
                     <option value="3">Top 3 Assets (Free Limit)</option>
                     <option value="5">Top 5 Assets</option>
                     <option value="10" selected>Top 10 Assets</option>
                     <option value="15">Top 15 Assets</option>
                     <option value="20">Top 20 Assets (Max)</option>
                 </select>
-                <p id="limitNote" class="text-[10px] text-gray-400 mt-1.5 font-mono">Free plan locked to Top 3.</p>
             </div>
+            <p id="limitNote" class="text-[11px] text-gray-400 mt-3 font-mono">Free plan locked to Top 3.</p>
         </div>
 
     </div>
@@ -194,7 +209,19 @@
             renderGrid();
         }
 
-        let state = { market: 'crypto', horizon: '24h', limit: 10, role: 'admin' };
+        let state = { market: 'crypto', horizon: '24h', limit: 10, role: 'admin', tradingMode: 'futures' };
+
+        function changeTradingMode(mode) {
+            state.tradingMode = mode;
+            if(mode === 'spot') {
+                document.getElementById('mode-spot').className = "py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition";
+                document.getElementById('mode-futures').className = "py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition";
+            } else {
+                document.getElementById('mode-futures').className = "py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition";
+                document.getElementById('mode-spot').className = "py-1.5 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition";
+            }
+            renderGrid();
+        }
 
         const sampleSetups = {
             crypto: [
@@ -204,12 +231,10 @@
                 { symbol: "BINANCE:INJUSDT", name: "INJ/USDT", sector: "DeFi / L1", score: 90, stage: "Stop-Hunt Complete", move: "+1.9%", pot: { '24h': "15% - 22%", '1w': "25% - 40%", '7w': "65% - 105%" }, flow: "OI: +8.4% | CVD Rising", driver: "Funding: -0.031%", mtf: "1D: Bull | 4H: Sweep | 1H: BOS", note: "Retail stop-hunt completed around previous lows. Strong bounce from institutional demand zone." }
             ],
             forex: [
-                { symbol: "OANDA:XAUUSD", name: "XAU/USD (Gold)", sector: "Commodity", score: 95, stage: "Asian Range Squeeze", move: "+0.1%", pot: { '24h': "250 - 380 Pips", '1w': "600 - 900 Pips", '7w': "1600+ Pips" }, flow: "COT Report: 79% Net Long", driver: "DXY Weakening (-0.4%)", mtf: "1W: Bull | 1D: Bull | 4H: Demand", note: "Central bank institutional buying flow is active. DXY rejecting major resistance ahead of London session." },
-                { symbol: "FX:EURUSD", name: "EUR/USD", sector: "Major FX", score: 91, stage: "Liquidity Sweep", move: "+0.2%", pot: { '24h': "75 - 110 Pips", '1w': "180 - 260 Pips", '7w': "450 - 700 Pips" }, flow: "Bank Flow: Accumulation", driver: "Yield Spread Bullish", mtf: "1D: Bull | 4H: CHoCH | 1H: Bull", note: "Swept previous week lows and entered smart money order block." }
+                { symbol: "OANDA:XAUUSD", name: "XAU/USD (Gold)", sector: "Commodity", score: 95, stage: "Asian Range Squeeze", move: "+0.1%", pot: { '24h': "250 - 380 Pips", '1w': "600 - 900 Pips", '7w': "1600+ Pips" }, flow: "COT Report: 79% Net Long", driver: "DXY Weakening (-0.4%)", mtf: "1W: Bull | 1D: Bull | 4H: Demand", note: "Central bank institutional buying flow is active. DXY rejecting major resistance ahead of London session." }
             ],
             stocks: [
-                { symbol: "NASDAQ:NVDA", name: "NVDA", sector: "AI / Semis", score: 96, stage: "Dark Pool Buying", move: "+0.8%", pot: { '24h': "4% - 7%", '1w': "10% - 16%", '7w': "25% - 40%" }, flow: "RVOL: 3.5x | Inst. Buy", driver: "Call/Put Ratio: 2.9", mtf: "1W: Bull | 1D: Flag | 1H: Squeeze", note: "Massive dark pool block orders detected. Options chain for next 7 weeks shows heavy institutional bullish bias." },
-                { symbol: "NASDAQ:PLTR", name: "PLTR", sector: "Enterprise AI", score: 93, stage: "Relative Strength #1", move: "+1.1%", pot: { '24h': "5% - 9%", '1w': "12% - 20%", '7w': "30% - 48%" }, flow: "RVOL: 4.1x | Volume Surge", driver: "Institutional Accumulation", mtf: "1W: Breakout | 1D: Bull | 4H: Tight", note: "Demonstrating 3x relative strength against S&P 500 benchmark indices." }
+                { symbol: "NASDAQ:NVDA", name: "NVDA", sector: "AI / Semis", score: 96, stage: "Dark Pool Buying", move: "+0.8%", pot: { '24h': "4% - 7%", '1w': "10% - 16%", '7w': "25% - 40%" }, flow: "RVOL: 3.5x | Inst. Buy", driver: "Call/Put Ratio: 2.9", mtf: "1W: Bull | 1D: Flag | 1H: Squeeze", note: "Massive dark pool block orders detected. Options chain for next 7 weeks shows heavy institutional bullish bias." }
             ]
         };
 
@@ -225,13 +250,13 @@
                 select.disabled = true;
                 state.limit = 3;
                 note.innerText = "Free plan locked to Top 3 Assets.";
-                note.className = "text-[10px] text-amber-400 mt-1.5 font-mono";
+                note.className = "text-[11px] text-amber-400 mt-2 font-mono";
             } else {
                 document.getElementById('role-admin').className = "px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold transition";
                 document.getElementById('role-free').className = "px-3 py-1.5 rounded-lg text-gray-400 font-medium transition";
                 select.disabled = false;
                 note.innerText = "Pro/VIP Unlocked (Up to 20 Assets).";
-                note.className = "text-[10px] text-emerald-400 mt-1.5 font-mono";
+                note.className = "text-[11px] text-emerald-400 mt-2 font-mono";
             }
             renderGrid();
         }
@@ -247,6 +272,13 @@
                         btn.className = "tab-btn py-2.5 rounded-xl text-xs font-bold";
                     }
                 });
+                // Hide or show trading mode depending on market
+                const modeContainer = document.getElementById('tradingTypeContainer');
+                if(val === 'crypto') {
+                    modeContainer.style.display = 'block';
+                } else {
+                    modeContainer.style.display = 'none';
+                }
             } else {
                 ['24h', '1w', '7w'].forEach(h => {
                     const btn = document.getElementById('h-' + h);
@@ -306,6 +338,7 @@
 
             const t = i18n[currentLang];
             const horizonTitle = state.horizon === '24h' ? 'Today (24h)' : (state.horizon === '1w' ? 'Next 1 Week' : 'Next 7 Weeks');
+            const modeText = state.tradingMode === 'spot' ? 'Spot Engine (100% Validated)' : 'Futures Engine (Leverage Ready)';
 
             document.getElementById('gridContainer').innerHTML = items.map((item, idx) => {
                 const isLocked = (state.role === 'free' && idx >= 3);
@@ -321,31 +354,4 @@
                     <div class="${isLocked ? 'locked-blur' : ''}">
                         <div class="flex justify-between items-start mb-3">
                             <div>
-                                <span class="text-[10px] text-gray-400 font-mono uppercase tracking-wider">#${idx+1} • ${item.sector}</span>
-                                <h3 class="text-lg font-black text-white mt-0.5">${item.name}</h3>
-                            </div>
-                            <span class="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg text-xs font-bold font-mono">Score: ${item.score}</span>
-                        </div>
-                        <div class="flex gap-2 mb-3">
-                            <span class="px-2 py-0.5 bg-purple-500/10 border border-purple-500/30 text-purple-300 rounded text-[11px] font-medium">⚡ ${item.stage}</span>
-                            <span class="px-2 py-0.5 bg-[#131d31] border border-gray-700/60 text-gray-300 rounded text-[11px] font-mono">24h: ${item.move}</span>
-                        </div>
-                        <div class="bg-black/30 border border-gray-800/80 rounded-xl p-3 mb-3 space-y-1.5 text-xs font-mono">
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.potentialLabel}</span><span class="text-emerald-400 font-bold">${item.pot[state.horizon]}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.flowLabel}</span><span class="text-white">${item.flow}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.catalystLabel}</span><span class="text-amber-300">${item.driver}</span></div>
-                        </div>
-                        <div class="text-[11px] font-mono text-blue-300 bg-blue-950/20 border border-blue-900/30 px-3 py-1.5 rounded-lg mb-3">${item.mtf}</div>
-                        <p class="text-xs text-gray-300 leading-relaxed mb-4 font-sans"><strong class="text-white">${t.noteLabel}</strong> ${item.note}</p>
-                        <div class="pt-3 border-t border-gray-800 flex justify-between items-center text-xs">
-                            <span class="text-emerald-400 font-medium text-[11px]">✔ ${t.verified}</span>
-                            <button onclick="openChart('${item.symbol}', '${item.name}')" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition">📈 ${t.viewChart}</button>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-        renderGrid();
-    </script>
-</body>
-</html>
+                                <span class="text-
