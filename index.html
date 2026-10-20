@@ -10,8 +10,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { background-color: #030712; color: #f3f4f6; font-family: 'Inter', sans-serif; }
-        .terminal-card { background: rgba(10, 14, 20, 0.75); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.06); }
-        .active-tab { background: #2563eb; color: white; border-color: #3b82f6; box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
+        .terminal-box { background: #0b111e; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .terminal-card { background: #0d1424; border: 1px solid rgba(255, 255, 255, 0.08); }
+        .tab-btn { background: #131d31; color: #9ca3af; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease; }
+        .tab-btn.active { background: #2563eb; color: #ffffff; border-color: #3b82f6; box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
         .locked-blur { filter: blur(6px); pointer-events: none; user-select: none; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #030712; }
@@ -21,13 +23,13 @@
 <body class="p-4 md:p-8 antialiased max-w-7xl mx-auto">
 
     <!-- Top Minimalist Header -->
-    <header class="terminal-card rounded-2xl px-6 py-4 mb-8 flex flex-wrap justify-between items-center gap-4 shadow-xl">
+    <header class="terminal-box rounded-2xl px-5 md:px-6 py-4 mb-8 flex flex-wrap justify-between items-center gap-4 shadow-xl">
         <div class="flex items-center gap-3.5">
             <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black text-white text-lg shadow-md shadow-blue-600/30 font-mono">GN</div>
             <div>
                 <div class="flex items-center gap-2">
                     <h1 class="font-bold text-white text-base tracking-tight">GreatNexa Terminal</h1>
-                    <span class="text-[9px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/20 font-mono">PRO</span>
+                    <span class="text-[9px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30 font-mono">PRO</span>
                 </div>
                 <p class="text-[11px] text-gray-400">Institutional Multi-Asset Research Engine</p>
             </div>
@@ -35,9 +37,9 @@
 
         <div class="flex flex-wrap items-center gap-3">
             <!-- Language Selector -->
-            <div class="flex items-center bg-gray-900/80 border border-gray-800 rounded-xl px-3 py-1.5 text-xs">
-                <span class="text-gray-400 mr-2">🌐</span>
-                <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-gray-950">
+            <div class="flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl px-3 py-1.5 text-xs">
+                <span class="text-gray-300 mr-2">🌐</span>
+                <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-[#0d1424]">
                     <option value="en" selected>English</option>
                     <option value="bn">বাংলা</option>
                     <option value="hi">हिन्दी</option>
@@ -46,47 +48,47 @@
                 </select>
             </div>
 
-            <a href="/store/" class="px-3.5 py-2 rounded-xl bg-gray-900 hover:bg-gray-800 text-gray-300 text-xs font-medium transition border border-gray-800">Store</a>
+            <a href="/store/" class="px-3.5 py-2 rounded-xl bg-[#131d31] hover:bg-gray-800 text-gray-300 text-xs font-medium transition border border-gray-700/60">Store</a>
             
-            <div class="flex items-center bg-gray-900 border border-gray-800 rounded-xl p-1 text-xs">
+            <div class="flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl p-1 text-xs">
                 <button onclick="setUserRole('admin')" id="role-admin" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold transition">Pro Mode</button>
                 <button onclick="setUserRole('free')" id="role-free" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition">Free</button>
             </div>
         </div>
     </header>
 
-    <!-- Professional Minimalist Control Engine (Spaced & Separated) -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- Professional Control Engine (Clear Background & Spaced) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         
         <!-- 1. Market Selector -->
-        <div class="terminal-card p-5 rounded-2xl shadow-lg">
-            <label id="lbl-market" class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">1. Select Asset Market</label>
+        <div class="terminal-box p-5 rounded-2xl shadow-lg">
+            <label id="lbl-market" class="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-3">1. Select Asset Market</label>
             <div class="grid grid-cols-3 gap-2">
-                <button onclick="changeFilter('market', 'crypto')" id="m-crypto" class="active-btn py-2.5 rounded-xl text-xs font-bold border border-blue-600 transition">Crypto</button>
-                <button onclick="changeFilter('market', 'forex')" id="m-forex" class="py-2.5 rounded-xl text-xs font-bold border border-gray-800 bg-gray-900/40 hover:bg-gray-900 text-gray-400 transition">Forex</button>
-                <button onclick="changeFilter('market', 'stocks')" id="m-stocks" class="py-2.5 rounded-xl text-xs font-bold border border-gray-800 bg-gray-900/40 hover:bg-gray-900 text-gray-400 transition">Stocks</button>
+                <button onclick="changeFilter('market', 'crypto')" id="m-crypto" class="tab-btn active py-2.5 rounded-xl text-xs font-bold">Crypto</button>
+                <button onclick="changeFilter('market', 'forex')" id="m-forex" class="tab-btn py-2.5 rounded-xl text-xs font-bold">Forex</button>
+                <button onclick="changeFilter('market', 'stocks')" id="m-stocks" class="tab-btn py-2.5 rounded-xl text-xs font-bold">Stocks</button>
             </div>
         </div>
 
         <!-- 2. Time Horizon -->
-        <div class="terminal-card p-5 rounded-2xl shadow-lg">
-            <label id="lbl-horizon" class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">2. Projection Horizon</label>
+        <div class="terminal-box p-5 rounded-2xl shadow-lg">
+            <label id="lbl-horizon" class="block text-xs font-bold uppercase tracking-wider text-gray-300 mb-3">2. Projection Horizon</label>
             <div class="grid grid-cols-3 gap-2">
-                <button onclick="changeFilter('horizon', '24h')" id="h-24h" class="active-btn py-2.5 rounded-xl text-xs font-bold border border-blue-600 transition">Today</button>
-                <button onclick="changeFilter('horizon', '1w')" id="h-1w" class="py-2.5 rounded-xl text-xs font-bold border border-gray-800 bg-gray-900/40 hover:bg-gray-900 text-gray-400 transition">1 Week</button>
-                <button onclick="changeFilter('horizon', '7w')" id="h-7w" class="py-2.5 rounded-xl text-xs font-bold border border-gray-800 bg-gray-900/40 hover:bg-gray-900 text-gray-400 transition">7 Weeks</button>
+                <button onclick="changeFilter('horizon', '24h')" id="h-24h" class="tab-btn active py-2.5 rounded-xl text-xs font-bold">Today</button>
+                <button onclick="changeFilter('horizon', '1w')" id="h-1w" class="tab-btn py-2.5 rounded-xl text-xs font-bold">1 Week</button>
+                <button onclick="changeFilter('horizon', '7w')" id="h-7w" class="tab-btn py-2.5 rounded-xl text-xs font-bold">7 Weeks</button>
             </div>
         </div>
 
-        <!-- 3. Shortlist Capacity Slider (5 to 20 Assets) -->
-        <div class="terminal-card p-5 rounded-2xl shadow-lg flex flex-col justify-between">
+        <!-- 3. Shortlist Capacity Slider -->
+        <div class="terminal-box p-5 rounded-2xl shadow-lg flex flex-col justify-between">
             <div class="flex justify-between items-center mb-2">
-                <label id="lbl-shortlist" class="text-xs font-semibold uppercase tracking-wider text-gray-400">3. Shortlist Capacity</label>
-                <span id="sliderVal" class="text-xs font-mono font-bold px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded border border-blue-500/20">Top 10 Assets</span>
+                <label id="lbl-shortlist" class="text-xs font-bold uppercase tracking-wider text-gray-300">3. Shortlist Capacity</label>
+                <span id="sliderVal" class="text-xs font-mono font-bold px-2.5 py-0.5 bg-blue-500/20 text-blue-400 rounded-md border border-blue-500/30">Top 10 Assets</span>
             </div>
             <div>
-                <input type="range" id="limitSlider" min="5" max="20" step="1" value="10" oninput="updateLimit(this.value)" class="w-full h-1.5 bg-gray-800 rounded-lg cursor-pointer accent-blue-600 mt-1">
-                <div class="flex justify-between text-[10px] text-gray-500 font-mono mt-1">
+                <input type="range" id="limitSlider" min="5" max="20" step="1" value="10" oninput="updateLimit(this.value)" class="w-full h-2 bg-gray-800 rounded-lg cursor-pointer accent-blue-600 mt-2">
+                <div class="flex justify-between text-[11px] text-gray-400 font-mono mt-1.5">
                     <span>5</span><span>10</span><span>15</span><span>20 (Max)</span>
                 </div>
             </div>
@@ -98,7 +100,7 @@
     <div id="gridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-16"></div>
 
     <!-- SaaS Pricing Plans Section -->
-    <section class="mb-16 pt-8 border-t border-gray-800/80">
+    <section class="mb-16 pt-8 border-t border-gray-800">
         <div class="text-center mb-10">
             <h2 id="pricing-title" class="text-2xl font-extrabold text-white mb-2">Institutional SaaS Membership Tiers</h2>
             <p id="pricing-subtitle" class="text-xs text-gray-400">Real-time institutional screening, Telegram signals, and multi-asset 7-week projections.</p>
@@ -106,7 +108,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Free Tier -->
-            <div class="terminal-card p-6 rounded-2xl border border-gray-800/60 flex flex-col justify-between">
+            <div class="terminal-card p-6 rounded-2xl flex flex-col justify-between">
                 <div>
                     <span class="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-xs font-bold">Free Tier</span>
                     <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$0 <span class="text-xs text-gray-400 font-normal">/ lifetime</span></h3>
@@ -118,7 +120,7 @@
                         <li>❌ Telegram Bot Alerts</li>
                     </ul>
                 </div>
-                <button class="w-full py-2.5 bg-gray-900 text-gray-500 rounded-xl text-xs font-bold cursor-not-allowed border border-gray-800">Current Plan</button>
+                <button class="w-full py-2.5 bg-gray-900 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed border border-gray-800">Current Plan</button>
             </div>
 
             <!-- Pro Trader Tier -->
@@ -139,7 +141,7 @@
             </div>
 
             <!-- VIP Institutional Tier -->
-            <div class="terminal-card p-6 rounded-2xl border border-gray-800/60 flex flex-col justify-between">
+            <div class="terminal-card p-6 rounded-2xl flex flex-col justify-between">
                 <div>
                     <span class="px-3 py-1 bg-amber-500/15 text-amber-400 rounded-full text-xs font-bold border border-amber-500/30">VIP Institutional</span>
                     <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$49 <span class="text-xs text-gray-400 font-normal">/ month</span></h3>
@@ -158,8 +160,8 @@
 
     <!-- Live TradingView Chart Modal -->
     <div id="chartModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
-        <div class="terminal-card w-full max-w-4xl rounded-2xl overflow-hidden border border-gray-800 shadow-2xl">
-            <div class="flex justify-between items-center px-5 py-4 border-b border-gray-800 bg-gray-900/50">
+        <div class="terminal-card w-full max-w-4xl rounded-2xl overflow-hidden border border-gray-700 shadow-2xl">
+            <div class="flex justify-between items-center px-5 py-4 border-b border-gray-800 bg-[#0b111e]">
                 <h3 id="modalTitle" class="font-bold text-white text-xs">Live Institutional Chart</h3>
                 <button onclick="closeChart()" class="text-gray-400 hover:text-white text-lg font-bold px-2">&times;</button>
             </div>
@@ -214,11 +216,21 @@
             state[type] = val;
             if (type === 'market') {
                 ['crypto', 'forex', 'stocks'].forEach(m => {
-                    document.getElementById('m-' + m).className = (m === val) ? "active-btn py-2.5 rounded-xl text-xs font-bold border border-blue-600 transition" : "py-2.5 rounded-xl text-xs font-bold border border-gray-800 bg-gray-900/40 hover:bg-gray-900 text-gray-400 transition";
+                    const btn = document.getElementById('m-' + m);
+                    if (m === val) {
+                        btn.className = "tab-btn active py-2.5 rounded-xl text-xs font-bold";
+                    } else {
+                        btn.className = "tab-btn py-2.5 rounded-xl text-xs font-bold";
+                    }
                 });
             } else {
                 ['24h', '1w', '7w'].forEach(h => {
-                    document.getElementById('h-' + h).className = (h === val) ? "active-btn py-2.5 rounded-xl text-xs font-bold border border-blue-600 transition" : "py-2.5 rounded-xl text-xs font-bold border border-gray-800 bg-gray-900/40 hover:bg-gray-900 text-gray-400 transition";
+                    const btn = document.getElementById('h-' + h);
+                    if (h === val) {
+                        btn.className = "tab-btn active py-2.5 rounded-xl text-xs font-bold";
+                    } else {
+                        btn.className = "tab-btn py-2.5 rounded-xl text-xs font-bold";
+                    }
                 });
             }
             renderGrid();
@@ -270,26 +282,42 @@
             document.getElementById('gridContainer').innerHTML = items.map((item, idx) => {
                 const isLocked = (state.role === 'free' && idx >= 3);
                 return `
-                <div class="relative terminal-card rounded-2xl p-5 border border-gray-800/80 hover:border-blue-500/50 transition shadow-xl flex flex-col justify-between">
+                <div class="relative terminal-card rounded-2xl p-5 hover:border-blue-500/40 transition shadow-xl flex flex-col justify-between">
                     ${isLocked ? `
-                    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-gray-950/85 backdrop-blur-md rounded-2xl p-6 text-center">
+                    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#0d1424]/90 backdrop-blur-md rounded-2xl p-6 text-center">
                         <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold mb-2">🔒 Pro Setup #${idx+1}</span>
                         <h4 class="text-white font-bold text-sm mb-1">${t.lockedTitle}</h4>
                         <p class="text-xs text-gray-300 mb-4">Score: ${item.score}/100 • Potential: ${item.pot[state.horizon]}</p>
-                        <button onclick="alert('Redirecting to Checkout...')" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition">${t.upgradeBtn}</button>
+                        <button onclick="alert('Redirecting to Checkout...')" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition">${t.upgradeBtn}</button>
                     </div>` : ''}
                     <div class="${isLocked ? 'locked-blur' : ''}">
                         <div class="flex justify-between items-start mb-3">
                             <div>
-                                <span class="text-[10px] text-gray-400 font-mono uppercase tracking-wider">#${idx+1} •${item.sector}</span>
+                                <span class="text-[10px] text-gray-400 font-mono uppercase tracking-wider">#${idx+1} • ${item.sector}</span>
                                 <h3 class="text-lg font-black text-white mt-0.5">${item.name}</h3>
                             </div>
                             <span class="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg text-xs font-bold font-mono">Score: ${item.score}</span>
                         </div>
                         <div class="flex gap-2 mb-3">
                             <span class="px-2 py-0.5 bg-purple-500/10 border border-purple-500/30 text-purple-300 rounded text-[11px] font-medium">⚡ ${item.stage}</span>
-                            <span class="px-2 py-0.5 bg-gray-900 border border-gray-800 text-gray-300 rounded text-[11px] font-mono">24h: ${item.move}</span>
+                            <span class="px-2 py-0.5 bg-[#131d31] border border-gray-700/60 text-gray-300 rounded text-[11px] font-mono">24h: ${item.move}</span>
                         </div>
-                        <div class="bg-black/40 border border-gray-800/60 rounded-xl p-3 mb-3 space-y-1.5 text-xs font-mono">
+                        <div class="bg-black/30 border border-gray-800/80 rounded-xl p-3 mb-3 space-y-1.5 text-xs font-mono">
                             <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.potentialLabel}</span><span class="text-emerald-400 font-bold">${item.pot[state.horizon]}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400 text
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.flowLabel}</span><span class="text-white">${item.flow}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.catalystLabel}</span><span class="text-amber-300">${item.driver}</span></div>
+                        </div>
+                        <div class="text-[11px] font-mono text-blue-300 bg-blue-950/20 border border-blue-900/30 px-3 py-1.5 rounded-lg mb-3">${item.mtf}</div>
+                        <p class="text-xs text-gray-300 leading-relaxed mb-4 font-sans"><strong class="text-white">${t.noteLabel}</strong> ${item.note}</p>
+                        <div class="pt-3 border-t border-gray-800 flex justify-between items-center text-xs">
+                            <span class="text-emerald-400 font-medium text-[11px]">✔ ${t.verified}</span>
+                            <button onclick="openChart('${item.symbol}', '${item.name}')" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition">📈 ${t.viewChart}</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+        renderGrid();
+    </script>
+</body>
+</html>
