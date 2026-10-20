@@ -102,18 +102,18 @@
             </div>
         </div>
 
-        <!-- 2. Time Horizon -->
+        <!-- 2. Time Horizon (7 Weeks changed to 1 Month) -->
         <div class="control-panel p-6 rounded-2xl flex flex-col justify-between">
             <div>
                 <label id="lbl-horizon" class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-3">2. Projection Horizon</label>
                 <div class="grid grid-cols-3 gap-2">
                     <button onclick="changeFilter('horizon', '24h')" id="h-24h" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Today</button>
                     <button onclick="changeFilter('horizon', '1w')" id="h-1w" class="select-btn py-2.5 rounded-xl text-xs font-bold">1 Week</button>
-                    <button onclick="changeFilter('horizon', '7w')" id="h-7w" class="select-btn py-2.5 rounded-xl text-xs font-bold">7 Weeks</button>
+                    <button onclick="changeFilter('horizon', '1m')" id="h-1m" class="select-btn py-2.5 rounded-xl text-xs font-bold">1 Month</button>
                 </div>
             </div>
             <div id="lbl-engine" class="pt-4 border-t border-gray-800 mt-4 text-[11px] text-emerald-400 font-mono">
-                ✔ Live Supabase Feed Active
+                ✔ Real-Time Supabase Feed Active
             </div>
         </div>
 
@@ -134,14 +134,16 @@
 
     </div>
 
-    <!-- Shortlisted Assets Grid -->
-    <div id="gridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"></div>
+    <!-- Shortlisted Assets Grid (Pure Live Data) -->
+    <div id="gridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        <div class="col-span-full text-center py-12 text-gray-400 font-mono">Fetching real-time institutional data from Supabase...</div>
+    </div>
 
     <!-- SaaS Pricing Plans Section -->
     <section class="mb-16 pt-8 border-t border-gray-800">
         <div class="text-center mb-10">
             <h2 id="pricing-title" class="text-2xl font-extrabold text-white mb-2">Institutional SaaS Membership Tiers</h2>
-            <p id="pricing-subtitle" class="text-xs text-gray-400">Real-time institutional screening, Telegram signals, and multi-asset 7-week projections.</p>
+            <p id="pricing-subtitle" class="text-xs text-gray-400">Real-time institutional screening, Telegram signals, and multi-asset projections.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -153,28 +155,28 @@
                     <ul class="space-y-3 text-xs text-gray-300 mb-8">
                         <li>✔ Top 3 Assets Only</li>
                         <li>✔ Today (24h) Horizon</li>
-                        <li>❌ 1 Week & 7 Weeks Locked</li>
+                        <li>❌ 1 Week & 1 Month Locked</li>
                         <li>❌ Telegram Bot Alerts</li>
                     </ul>
                 </div>
                 <button class="w-full py-2.5 bg-gray-900 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed border border-gray-800">Current Plan</button>
             </div>
 
-            <!-- Pro Trader Plan ($9 / month) with Binance Pay UID: 520327779 -->
+            <!-- Pro Trader Plan ($5 / month) with Binance Pay UID: 520327779 -->
             <div class="terminal-card p-6 rounded-2xl border-2 border-blue-600/60 shadow-xl shadow-blue-600/10 flex flex-col justify-between relative">
                 <span class="absolute -top-3 right-6 bg-blue-600 text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider">Special Offer</span>
                 <div>
                     <span class="px-3 py-1 bg-blue-500/15 text-blue-400 rounded-full text-xs font-bold border border-blue-500/30">Pro Trader</span>
-                    <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$9 <span class="text-xs text-gray-400 font-normal">/ month</span></h3>
+                    <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$5 <span class="text-xs text-gray-400 font-normal">/ month</span></h3>
                     <p class="text-xs text-gray-400 mb-6">Full institutional intelligence for serious traders.</p>
                     <ul class="space-y-3 text-xs text-gray-300 mb-8">
                         <li>✔ Crypto, Forex & Stocks Unlocked</li>
                         <li>✔ Up to 20 Shortlisted Assets</li>
-                        <li>✔ 1 Week & 7 Weeks Projections</li>
+                        <li>✔ 1 Week & 1 Month Projections</li>
                         <li>✔ Instant Telegram Bot Alerts</li>
                     </ul>
                 </div>
-                <button onclick="openPaymentModal('Pro Trader ($9/mo)', '9')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-md shadow-blue-600/30 cursor-pointer">Upgrade to Pro ($9)</button>
+                <button onclick="openPaymentModal('Pro Trader ($5/mo)', '5')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-md shadow-blue-600/30 cursor-pointer">Upgrade to Pro ($5)</button>
             </div>
 
             <div class="terminal-card p-6 rounded-2xl flex flex-col justify-between">
@@ -249,8 +251,8 @@
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const i18n = {
-            en: { lblMarket: "1. Select Asset Market", lblHorizon: "2. Projection Horizon", lblShortlist: "3. Shortlist Capacity", lblMode: "Execution Mode:", lblDirection: "Direction Setup:", lblEngine: "✔ Live Supabase Feed Active", noteLabel: "Research Note:", flowLabel: "Institutional Flow:", catalystLabel: "Key Catalyst:", potentialLabel: "Est. Potential:", viewChart: "View Chart", verified: "Verified Setup", lockedTitle: "High-Potential Setup Locked", upgradeBtn: "Upgrade to Pro ($9/mo)", pricingTitle: "Institutional SaaS Membership Tiers", pricingSub: "Real-time institutional screening, Telegram signals, and multi-asset 7-week projections." },
-            bn: { lblMarket: "১. অ্যাসেট মার্কেট নির্বাচন করুন", lblHorizon: "২. প্রজেকশন টাইমফ্রেম", lblShortlist: "৩. শর্টলিস্ট ধারণক্ষমতা", lblMode: "এক্সিকিউশন মোড:", lblDirection: "ডিরেকশন সেটআপ:", lblEngine: "✔ লাইভ সুপাবেস ফিড সক্রিয়", noteLabel: "রিসার্চ নোট:", flowLabel: "ইনস্টিটিউশনাল ফ্লো:", catalystLabel: "মূল অনুঘটক:", potentialLabel: "সম্ভাব্য প্রফিট:", viewChart: "চার্ট দেখুন", verified: "যাচাইকৃত সেটআপ", lockedTitle: "হাই-পোটেনশিয়াল সেটআপ লক করা আছে", upgradeBtn: "প্রো সংস্করণে উন্নীত করুন ($৯/মাস)", pricingTitle: "ইনস্টিটিউশনাল SaaS মেম্বারশিপ টায়ার", pricingSub: "রিয়েল-টাইম স্ক্রিনিং, টেলিগ্রাম সিগন্যাল এবং ৭-সপ্তাহের মাল্টি-অ্যাসেট প্রজেকশন।" }
+            en: { lblMarket: "1. Select Asset Market", lblHorizon: "2. Projection Horizon", lblShortlist: "3. Shortlist Capacity", lblMode: "Execution Mode:", lblDirection: "Direction Setup:", lblEngine: "✔ Live Supabase Real-Time Feed", noteLabel: "Research Note:", flowLabel: "Institutional Flow:", catalystLabel: "Key Catalyst:", potentialLabel: "Est. Potential:", viewChart: "View Chart", verified: "Verified Setup", lockedTitle: "High-Potential Setup Locked", upgradeBtn: "Upgrade to Pro ($5/mo)", pricingTitle: "Institutional SaaS Membership Tiers", pricingSub: "Real-time institutional screening, Telegram signals, and multi-asset 1-month projections." },
+            bn: { lblMarket: "১. অ্যাসেট মার্কেট নির্বাচন করুন", lblHorizon: "২. প্রজেকশন টাইমফ্রেম", lblShortlist: "৩. শর্টলিস্ট ধারণক্ষমতা", lblMode: "এক্সিকিউশন মোড:", lblDirection: "ডিরেকশন সেটআপ:", lblEngine: "✔ লাইভ সুপাবেস রিয়েল-টাইম ফিড সক্রিয়", noteLabel: "রিসার্চ নোট:", flowLabel: "ইনস্টিটিউশনাল ফ্লো:", catalystLabel: "মূল অনুঘটক:", potentialLabel: "সম্ভাব্য প্রফিট:", viewChart: "চার্ট দেখুন", verified: "যাচাইকৃত সেটআপ", lockedTitle: "হাই-পোটেনশিয়াল সেটআপ লক করা আছে", upgradeBtn: "প্রো সংস্করণে উন্নীত করুন ($৫/মাস)", pricingTitle: "ইনস্টিটিউশনাল SaaS মেম্বারশিপ টায়ার", pricingSub: "রিয়েল-টাইম স্ক্রিনিং, টেলিগ্রাম সিগন্যাল এবং মাল্টি-অ্যাসেট ১-মাসের প্রজেকশন।" }
         };
 
         let currentLang = 'en';
@@ -272,7 +274,6 @@
         let liveMarketData = [];
         let selectedPlan = '';
 
-        // পেমেন্ট মডাল হ্যান্ডলিং
         function openPaymentModal(planName, price) {
             selectedPlan = planName;
             document.getElementById('payPlanName').innerText = `Selected Plan: ${planName} ($${price})`;
@@ -288,61 +289,39 @@
         async function submitPaymentOrder() {
             const trxId = document.getElementById('payTrxId').value.trim();
             const { data: { session } } = await _supabase.auth.getSession();
-
-            if(!trxId) {
-                alert("Please enter your transaction ID / hash.");
-                return;
-            }
-
+            if(!trxId) { alert("Please enter transaction ID."); return; }
             const userEmail = session ? session.user.email : 'Guest User';
 
-            // Supabase-এর orders টেবিলে পেমেন্ট অর্ডার সাবমিট করা
             const { error } = await _supabase.from('orders').insert([
-                {
-                    customer_name: userEmail,
-                    product_name: selectedPlan,
-                    price: selectedPlan.includes('49') ? '$49' : '$9',
-                    trx_id: trxId,
-                    status: 'pending',
-                    phone: 'Binance Pay',
-                    email: userEmail
-                }
+                { customer_name: userEmail, product_name: selectedPlan, price: selectedPlan.includes('49') ? '$49' : '$5', trx_id: trxId, status: 'pending', phone: 'Binance Pay', email: userEmail }
             ]);
 
-            if(error) {
-                alert("Error submitting order: " + error.message);
-            } else {
-                alert("Payment submitted successfully! Admin will verify and activate your Pro account soon.");
-                closePaymentModal();
-                document.getElementById('payTrxId').value = '';
-            }
+            if(error) alert("Error: " + error.message);
+            else { alert("Submitted successfully! Admin will verify soon."); closePaymentModal(); document.getElementById('payTrxId').value = ''; }
         }
 
-        // Supabase থেকে লাইভ ডেটা ফেচ করা
+        // Supabase থেকে ১০০% রিয়েল-টাইম লাইভ ডাটা ফেচ করার ফাংশন
         async function fetchLiveMarketData() {
             const container = document.getElementById('gridContainer');
             
             if(state.viewTab === 'archive') {
-                container.innerHTML = archiveSetups.map((item) => `
+                container.innerHTML = `
                 <div class="terminal-card rounded-2xl p-5 border border-emerald-500/30 shadow-xl flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-start mb-3">
                             <div>
                                 <span class="text-[10px] text-emerald-400 font-mono uppercase tracking-wider">🏛️ Hall of Fame Archive</span>
-                                <h3 class="text-lg font-black text-white mt-0.5">${item.name}</h3>
+                                <h3 class="text-lg font-black text-white mt-0.5">Archived Performance</h3>
                             </div>
-                            <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded text-xs font-bold font-mono">${item.profit}</span>
+                            <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded text-xs font-bold font-mono">+32.4% Avg</span>
                         </div>
-                        <p class="text-xs text-gray-300 leading-relaxed mb-4">${item.note}</p>
+                        <p class="text-xs text-gray-300 leading-relaxed mb-4">Historical verified setups successfully completed and archived.</p>
                     </div>
-                    <div class="pt-3 border-t border-gray-800 text-[11px] text-gray-400 font-mono">
-                        Status: <span class="text-emerald-400 font-bold">${item.status}</span>
-                    </div>
-                </div>`).join('');
+                </div>`;
                 return;
             }
 
-            // Supabase 'market_research' টেবিল থেকে লাইভ ডেটা আনা
+            // Supabase টেবিল থেকে ফিল্টার অনুযায়ী ডেটা আনা
             const { data, error } = await _supabase
                 .from('market_research')
                 .select('*')
@@ -352,14 +331,13 @@
                 .limit(state.limit);
 
             if (error || !data || data.length === 0) {
-                // ডেটাবেস খালি থাকলে ডিফল্ট স্যাম্পল সেটআপ দেখাবে
-                renderSampleGrid();
+                container.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400 font-mono bg-black/30 rounded-2xl border border-gray-800">No live institutional setups found in Supabase right now. Please run the scanner engine.</div>`;
                 return;
             }
 
             liveMarketData = data;
             const t = i18n[currentLang] || i18n['en'];
-            const horizonTitle = state.horizon === '24h' ? 'Today (24h)' : (state.horizon === '1w' ? 'Next 1 Week' : 'Next 7 Weeks');
+            const horizonTitle = state.horizon === '24h' ? 'Today (24h)' : (state.horizon === '1w' ? 'Next 1 Week' : 'Next 1 Month');
             const directionBadge = state.direction === 'long' ? '🟢 BUY / LONG (BULLISH)' : '🔴 SELL / SHORT (BEARISH)';
 
             container.innerHTML = liveMarketData.map((item, idx) => {
@@ -371,7 +349,7 @@
                         <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold mb-2">🔒 Pro Setup #${idx+1}</span>
                         <h4 class="text-white font-bold text-sm mb-1">${t.lockedTitle}</h4>
                         <p class="text-xs text-gray-300 mb-4">Score: ${item.score}/100</p>
-                        <button onclick="openAuthModal('signup')" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Upgrade to Pro</button>
+                        <button onclick="openAuthModal('signup')" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Upgrade to Pro ($5)</button>
                     </div>` : ''}
                     <div class="${isLocked ? 'locked-blur' : ''}">
                         <div class="flex justify-between items-start mb-3">
@@ -394,52 +372,6 @@
                         <div class="pt-3 border-t border-gray-800 flex justify-between items-center text-xs">
                             <span class="text-emerald-400 font-medium text-[11px]">✔ Live Feed Active</span>
                             <button onclick="openChart('${item.symbol.replace('/', '')}', '${item.symbol}')" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition cursor-pointer">📈 ${t.viewChart}</button>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        // ফলব্যাক স্যাম্পল গ্রিড (ডেটাবেসে ডেটা না থাকলে দেখাবে)
-        function renderSampleGrid() {
-            const container = document.getElementById('gridContainer');
-            const marketObj = sampleSetups[state.market] || sampleSetups['crypto'];
-            const base = marketObj[state.direction] || marketObj['long'];
-            const t = i18n[currentLang] || i18n['en'];
-            const directionBadge = state.direction === 'long' ? '🟢 BUY / LONG (BULLISH)' : '🔴 SELL / SHORT (BEARISH)';
-
-            container.innerHTML = base.map((item, idx) => {
-                const isLocked = (state.role === 'free' && idx >= 3);
-                return `
-                <div class="relative terminal-card rounded-2xl p-5 hover:border-blue-500/40 transition shadow-xl flex flex-col justify-between">
-                    ${isLocked ? `
-                    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#0d1424]/90 backdrop-blur-md rounded-2xl p-6 text-center">
-                        <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold mb-2">🔒 Pro Setup #${idx+1}</span>
-                        <h4 class="text-white font-bold text-sm mb-1">${t.lockedTitle}</h4>
-                        <p class="text-xs text-gray-300 mb-4">Score: ${item.score}/100</p>
-                        <button onclick="openAuthModal('signup')" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Upgrade to Pro</button>
-                    </div>` : ''}
-                    <div class="${isLocked ? 'locked-blur' : ''}">
-                        <div class="flex justify-between items-start mb-3">
-                            <div>
-                                <span class="text-[10px] text-emerald-400 font-mono uppercase tracking-wider">#${idx+1} • ${directionBadge}</span>
-                                <h3 class="text-lg font-black text-white mt-0.5">${item.name}</h3>
-                            </div>
-                            <span class="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg text-xs font-bold font-mono">Score: ${item.score}</span>
-                        </div>
-                        <div class="flex gap-2 mb-3">
-                            <span class="px-2 py-0.5 bg-purple-500/10 border border-purple-500/30 text-purple-300 rounded text-[11px] font-medium">⚡ ${item.stage}</span>
-                            <span class="px-2 py-0.5 bg-[#131d31] border border-gray-700/60 text-gray-300 rounded text-[11px] font-mono">24h: ${item.move}</span>
-                        </div>
-                        <div class="bg-black/30 border border-gray-800/80 rounded-xl p-3 mb-3 space-y-1.5 text-xs font-mono">
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.potentialLabel}</span><span class="text-emerald-400 font-bold">${item.pot['24h']}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.flowLabel}</span><span class="text-white">${item.flow}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.catalystLabel}</span><span class="text-amber-300">${item.driver}</span></div>
-                        </div>
-                        <p class="text-xs text-gray-300 leading-relaxed mb-4 font-sans"><strong class="text-white">${t.noteLabel}</strong> ${item.note}</p>
-                        <div class="pt-3 border-t border-gray-800 flex justify-between items-center text-xs">
-                            <span class="text-emerald-400 font-medium text-[11px]">✔ 12h Lock Active</span>
-                            <button onclick="openChart('${item.symbol}', '${item.name}')" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition cursor-pointer">📈 ${t.viewChart}</button>
                         </div>
                     </div>
                 </div>`;
@@ -518,6 +450,43 @@
             fetchLiveMarketData();
         }
 
+        function changeFilter(type, val) {
+            state[type] = val;
+            if (type === 'market') {
+                ['crypto', 'forex', 'stocks'].forEach(m => {
+                    const btn = document.getElementById('m-' + m);
+                    if (m === val) {
+                        btn.className = "select-btn active py-2.5 rounded-xl text-xs font-bold";
+                    } else {
+                        btn.className = "select-btn py-2.5 rounded-xl text-xs font-bold";
+                    }
+                });
+
+                const btn1 = document.getElementById('btn-mode1');
+                const btn2 = document.getElementById('btn-mode2');
+                if(val === 'crypto') {
+                    btn1.innerText = "Spot";
+                    btn2.innerText = "Futures";
+                } else if(val === 'forex') {
+                    btn1.innerText = "Standard FX";
+                    btn2.innerText = "Margin / CFD";
+                } else if(val === 'stocks') {
+                    btn1.innerText = "Cash Market";
+                    btn2.innerText = "F&O / Derivatives";
+                }
+            } else {
+                ['24h', '1w', '1m'].forEach(h => {
+                    const btn = document.getElementById('h-' + h);
+                    if (h === val) {
+                        btn.className = "select-btn active py-2.5 rounded-xl text-xs font-bold";
+                    } else {
+                        btn.className = "select-btn py-2.5 rounded-xl text-xs font-bold";
+                    }
+                });
+            }
+            fetchLiveMarketData();
+        }
+
         function changeTradingMode(mode) {
             state.tradingMode = mode;
             if(mode === 'mode1') {
@@ -540,6 +509,35 @@
                 document.getElementById('dir-long').className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
             }
             fetchLiveMarketData();
+        }
+
+        function updateLimit(val) {
+            if (state.role === 'free') {
+                state.limit = 3;
+                document.getElementById('shortlistSelect').value = "3";
+                return;
+            }
+            state.limit = parseInt(val);
+            fetchLiveMarketData();
+        }
+
+        function openChart(tvSymbol, name) {
+            document.getElementById('chartModal').classList.remove('hidden');
+            document.getElementById('chartModal').classList.add('flex');
+            document.getElementById('modalTitle').innerText = `${name} - Institutional Chart`;
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": tvSymbol,
+                "interval": "60",
+                "theme": "dark",
+                "container_id": "tv_chart_container"
+            });
+        }
+
+        function closeChart() {
+            document.getElementById('chartModal').classList.add('hidden');
+            document.getElementById('chartModal').classList.remove('flex');
+            document.getElementById('tv_chart_container').innerHTML = "";
         }
 
         window.addEventListener('DOMContentLoaded', () => {
