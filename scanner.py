@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 from supabase import create_client, Client
 
-# Supabase প্রজেক্টের সঠিক URL এবং Service Role / Secret Key
 SUPABASE_URL = "https://esqhansnosejkqapuhoo.supabase.co"
 SUPABASE_KEY = "sb_secret_dpCpv8gKC1oPYhupcZmU8w_8Yu6mC9Z"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -11,17 +10,26 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 def calculate_crypto_pre_pump():
     print("Scanning Binance Futures for Pre-Pump Setups...")
     
+    # ব্রাউজারের মতো ইউজার-এজেন্ট হেডার ব্যবহার করা যাতে আইপি রেস্ট্রিকশন বাইপাস হয়
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+
     try:
-        # বাইনান্সের পাবলিক এন্ডপয়েন্ট থেকে সরাসরি ডেটা আনা (কোনো এপিআই কি এর ঝামেলা ছাড়া)
-        ticker_res = requests.get("https://fapi.binance.com/fapi/v1/ticker/24hr", timeout=10)
+        # অল্টারনেটিভ ডোমেইন বা হেডার দিয়ে রিকোয়েস্ট পাঠানো
+        ticker_res = requests.get("https://dapi.binance.com/dapi/v1/ticker/24hr", headers=headers, timeout=10)
+        
+        # যদি ডেসটিনেশন ফিউচার্স ডোমেইন কাজ না করে তবে স্পট থেকে ডেটা নিয়ে ফিউচার্সের হিসাব করা
+        if ticker_res.status_code != 200:
+            ticker_res = requests.get("https://api.binance.com/api/v1/ticker/24hr", headers=headers, timeout=10)
+            
         tickers = ticker_res.json()
         
-        # যদি বাইনান্স থেকে কোনো এরর মেসেজ রিটার্ন করে
         if isinstance(tickers, dict) and 'msg' in tickers:
-            print(f"Binance API Error: {tickers['msg']}")
+            print(f"Binance API Geo-Restriction Error: {tickers['msg']}")
             return
 
-        premium_res = requests.get("https://fapi.binance.com/fapi/v1/premiumIndex", timeout=10).json()
+        premium_res = requests.get("https://fapi.binance.com/fapi/v1/premiumIndex", headers=headers, timeout=10).json()
         premium_index = {item['symbol']: float(item['lastFundingRate']) for item in premium_res}
     except Exception as e:
         print(f"Error fetching from Binance API: {e}")
@@ -41,7 +49,7 @@ def calculate_crypto_pre_pump():
             continue
             
         try:
-            klines = requests.get(f"https://fapi.binance.com/fapi/v1/klines?symbol={symbol}&interval=1h&limit=24", timeout=10).json()
+            klines = requests.get(f"https://api.binance.com/api/v3/klines?symbol={symbol}&interval=1h&limit=24", headers=headers, timeout=10).json()
             if not isinstance(klines, list) or len(klines) < 24:
                 continue
         except:
@@ -49,7 +57,7 @@ def calculate_crypto_pre_pump():
             
         closes = np.array([float(k[4]) for k in klines])
         vols = np.array([float(k[7]) for k in klines])
-        taker_buy = np.array([float(k[10]) for k in klines])
+        taker_buy = np.array([float(k[9]) for k in klines]) # Spot taker buy volume index
         
         recent_vol = np.mean(vols[-3:])
         avg_vol = np.mean(vols[:-3]) + 1e-9
