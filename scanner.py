@@ -21,7 +21,8 @@ def calculate_crypto_pre_pump():
 
     try:
         tickers = requests.get("https://fapi.binance.com/fapi/v1/ticker/24hr", headers=headers, timeout=10).json()
-        premium_index = {item['symbol']: float(item['lastFundingRate']) for item in requests.get("https://fapi.binance.com/fapi/v1/premiumIndex", headers=headers, timeout=10).json()}
+        premium_res = requests.get("https://fapi.binance.com/fapi/v1/premiumIndex", headers=headers, timeout=10).json()
+        premium_index = {item['symbol']: float(item['lastFundingRate']) for item in premium_res}
     except Exception as e:
         print(f"Error fetching from Binance API: {e}")
         return
@@ -71,7 +72,7 @@ def calculate_crypto_pre_pump():
         score = min(99, int(score))
         
         if score >= 75:
-            for horizon, pot in [('24h', '18% - 28%'), ('1w', '35% - 55%'), ('7w', '90% - 150%')]:
+            for horizon, pot in [('24h', '18% - 28%'), ('1w', '35% - 55%'), ('1m', '90% - 150%')]:
                 note = f"Volume spiked {vol_ratio:.1f}x in last 3 hours while price moved only {price_change:.1f}%. Taker buy ratio at {taker_ratio:.0f}% (Smart Money Accumulation)."
                 
                 results.append({
@@ -93,9 +94,14 @@ def calculate_crypto_pre_pump():
     results = sorted(results, key=lambda x: x['score'], reverse=True)[:60]
     
     if results:
-        supabase.table("market_research").delete().eq("market_type", "crypto").execute()
-        supabase.table("market_research").insert(results).execute()
-        print(f"Successfully updated {len(results)} crypto setups to Supabase using API!")
+        try:
+            supabase.table("market_research").delete().eq("market_type", "crypto").execute()
+            supabase.table("market_research").insert(results).execute()
+            print(f"Successfully updated {len(results)} crypto setups to Supabase using API!")
+        except Exception as db_err:
+            print(f"Supabase Error: {db_err}")
+    else:
+        print("No setups matched criteria in this run.")
 
 if __name__ == "__main__":
     calculate_crypto_pre_pump()
