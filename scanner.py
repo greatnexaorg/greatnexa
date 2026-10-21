@@ -3,25 +3,25 @@ import pandas as pd
 import numpy as np
 from supabase import create_client, Client
 
-# বাইনান্স এপিআই ক্রেডেনশিয়াল
-BINANCE_API_KEY = "RIOYR1XGF1x68ZX5iV7yrBmSz5jqVXwwB1miMo4Vjgn5dR74I3xfdJ7gRLlZ4yG8"
-BINANCE_SECRET_KEY = "lrE32dqLzUf1lCveMe8O1xSfSd1eTv948Qi3VQ716yBDajG5ZGnUIrWcUVEMQNp6"
-
 # Supabase প্রজেক্টের সঠিক URL এবং Service Role / Secret Key
 SUPABASE_URL = "https://esqhansnosejkqapuhoo.supabase.co"
 SUPABASE_KEY = "sb_secret_dpCpv8gKC1oPYhupcZmU8w_8Yu6mC9Z"
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def calculate_crypto_pre_pump():
-    print("Scanning Binance Futures for Pre-Pump Setups using API...")
+    print("Scanning Binance Futures for Pre-Pump Setups...")
     
-    headers = {
-        "X-MBX-APIKEY": BINANCE_API_KEY
-    }
-
     try:
-        tickers = requests.get("https://fapi.binance.com/fapi/v1/ticker/24hr", headers=headers, timeout=10).json()
-        premium_res = requests.get("https://fapi.binance.com/fapi/v1/premiumIndex", headers=headers, timeout=10).json()
+        # বাইনান্সের পাবলিক এন্ডপয়েন্ট থেকে সরাসরি ডেটা আনা (কোনো এপিআই কি এর ঝামেলা ছাড়া)
+        ticker_res = requests.get("https://fapi.binance.com/fapi/v1/ticker/24hr", timeout=10)
+        tickers = ticker_res.json()
+        
+        # যদি বাইনান্স থেকে কোনো এরর মেসেজ রিটার্ন করে
+        if isinstance(tickers, dict) and 'msg' in tickers:
+            print(f"Binance API Error: {tickers['msg']}")
+            return
+
+        premium_res = requests.get("https://fapi.binance.com/fapi/v1/premiumIndex", timeout=10).json()
         premium_index = {item['symbol']: float(item['lastFundingRate']) for item in premium_res}
     except Exception as e:
         print(f"Error fetching from Binance API: {e}")
@@ -41,8 +41,8 @@ def calculate_crypto_pre_pump():
             continue
             
         try:
-            klines = requests.get(f"https://fapi.binance.com/fapi/v1/klines?symbol={symbol}&interval=1h&limit=24", headers=headers, timeout=10).json()
-            if len(klines) < 24:
+            klines = requests.get(f"https://fapi.binance.com/fapi/v1/klines?symbol={symbol}&interval=1h&limit=24", timeout=10).json()
+            if not isinstance(klines, list) or len(klines) < 24:
                 continue
         except:
             continue
@@ -97,11 +97,11 @@ def calculate_crypto_pre_pump():
         try:
             supabase.table("market_research").delete().eq("market_type", "crypto").execute()
             supabase.table("market_research").insert(results).execute()
-            print(f"Successfully updated {len(results)} crypto setups to Supabase using API!")
+            print(f"Successfully updated {len(results)} crypto setups to Supabase!")
         except Exception as db_err:
             print(f"Supabase Error: {db_err}")
     else:
-        print("No setups matched criteria in this run.")
+        print("No crypto setups matched criteria in this run.")
 
 if __name__ == "__main__":
     calculate_crypto_pre_pump()
