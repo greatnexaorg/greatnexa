@@ -1,0 +1,35 @@
+name: Run Institutional Scanner Engine
+
+on:
+  # প্রতি ১৫ মিনিট পর পর স্বয়ংক্রিয়ভাবে চলবে (প্রয়োজনে সময় বদলাতে পারেন)
+  schedule:
+    - cron: '*/15 * * * *'
+  # GitHub ড্যাশবোর্ড থেকে ম্যানুয়ালি রান করার অপশন
+  workflow_dispatch:
+
+jobs:
+  run-scanner:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ১. রিপোজিটরি থেকে কোড চেকআউট করা
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # ২. পাইথন এনভায়রনমেন্ট সেটআপ করা
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip' # বারবার ইনস্টলেশন দ্রুত করার জন্য ক্যাশ রাখা
+
+      # ৩. requirements.txt থেকে সব লাইব্রেরি ইনস্টল করা
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # ৪. মূল স্ক্যানার স্ক্রিপ্ট চালানো
+      - name: Run Python Script
+        run: |
+          python scanner.py
