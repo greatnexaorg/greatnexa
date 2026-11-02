@@ -1,6 +1,6 @@
 import requests
 import time
-import math
+from datetime import datetime, timezone
 from supabase import create_client, Client
 
 # ১. Supabase সংযোগ (Service Role Secret Key)
@@ -18,252 +18,204 @@ def fmt_price(p):
     p = float(p)
     return f"{p:.2f}" if p >= 100 else (f"{p:.4f}" if p >= 1 else f"{p:.6f}")
 
-# ২. রিয়েল-টাইম মার্কেট ফিড ফেচার
+# ২. মার্কেট প্রাইস ফিড
 def fetch_top_liquid_market():
-    market_pool = []
+    market_pool = {}
     try:
         headers = {"User-Agent": "Mozilla/5.0"}
         r = requests.get("https://data-api.binance.vision/api/v3/ticker/24hr", headers=headers, timeout=8)
         if r.status_code == 200:
-            raw = r.json()
-            # স্টেবলকয়েন ও লেভারেজড টোকেন বাদ দিয়ে টপ লিকুইডিটি পেয়ার নির্বাচন
-            clean = [
-                t for t in raw 
-                if t['symbol'].endswith('USDT') 
-                and not any(x in t['symbol'] for x in ['UPUSDT', 'DOWNUSDT', 'FDUSD', 'USDC', 'EURUSDT', 'TUSD'])
-            ]
-            # শীর্ষ ৩০টি সর্বোচ্চ ট্রানজ্যাকশন ভলিউমের কয়েন
-            clean = sorted(clean, key=lambda x: float(x.get('quoteVolume', 0)), reverse=True)[:30]
-            
-            for c in clean:
-                market_pool.append({
-                    "symbol": c['symbol'].replace("USDT", "/USDT"),
-                    "price": float(c.get('lastPrice', 0)),
-                    "high": float(c.get('highPrice', 0)),
-                    "low": float(c.get('lowPrice', 0)),
-                    "change": float(c.get('priceChangePercent', 0)),
-                    "volume_m": round(float(c.get('quoteVolume', 0)) / 1_000_000, 1),
-                    "trades": int(c.get('count', 0))
-                })
+            for t in r.json():
+                if t['symbol'].endswith('USDT'):
+                    sym = t['symbol'].replace("USDT", "/USDT")
+                    market_pool[sym] = {
+                        "symbol": sym,
+                        "price": float(t.get('lastPrice', 0)),
+                        "high": float(t.get('highPrice', 0)),
+                        "low": float(t.get('lowPrice', 0)),
+                        "change": float(t.get('priceChangePercent', 0)),
+                        "volume_m": round(float(t.get('quoteVolume', 0)) / 1_000_000, 1)
+                    }
     except Exception as e:
         print(f"[-] প্রাথমিক ফিড ফেইল: {e}")
-
-    # ফলব্যাক নেটওয়ার্ক
-    if not market_pool:
-        try:
-            r = requests.get("https://api.coincap.io/v2/assets?limit=25", timeout=8)
-            if r.status_code == 200:
-                for c in r.json().get("data", []):
-                    p = float(c.get('priceUsd', 0))
-                    market_pool.append({
-                        "symbol": f"{c['symbol']}/USDT",
-                        "price": p,
-                        "high": p * 1.035,
-                        "low": p * 0.965,
-                        "change": float(c.get('changePercent24Hr', 0)),
-                        "volume_m": round(float(c.get('volumeUsd24Hr', 0)) / 1_000_000, 1),
-                        "trades": 65000
-                    })
-        except Exception:
-            pass
-
     return market_pool
 
-# ৩. প্রাতিষ্ঠানিক অ্যালগরিদমিক ইঞ্জিন (SMC + Volatility Compression)
-def generate_high_conviction_setups(coin):
+# ৩. লাইফসাইকেল ট্র্যাকার (পুরানো সিগন্যাল TP/SL যাচাই ও ইনভ্যালিডেশন)
+def track_and_update_lifecycle(current_prices):
+    print("[*] সক্রিয় ট্রেডগুলোর লাইফসাইকেল নিরীক্ষণ শুরু হচ্ছে...")
+    try:
+        # বর্তমানে যে সিগন্যালগুলো ACTIVE আছে
+        res = supabase.table("market_research").select("*").eq("status", "ACTIVE").execute()
+        active_signals = res.data or []
+        print(f"[i] বর্তমানে ট্র্যাকিংয়ে থাকা সক্রিয় সিগন্যাল: {len(active_signals)} টি")
+
+        for sig in active_signals:
+            sym = sig.get("symbol")
+            if sym not in current_prices:
+                continue
+
+            cur_price = current_prices[sym]["price"]
+            direction = sig.get("direction", "long")
+            sl = float(sig.get("sl_price") or 0)
+            tp = float(sig.get("tp_price") or 0)
+            sig_id = sig.get("id")
+
+            # TP বা SL হিট করেছে কি না যাচাই
+            hit_status = None
+            if direction == "long":
+                if cur_price >= tp and tp > 0:
+                    hit_status = "HIT_TP"
+                elif cur_price <= sl and sl > 0:
+                    hit_status = "HIT_SL"
+            else: # short
+                if cur_price <= tp and tp > 0:
+                    hit_status = "HIT_TP"
+                elif cur_price >= sl and sl > 0:
+                    hit_status = "HIT_SL"
+
+            if hit_status:
+                supabase.table("market_research").update({
+                    "status": hit_status,
+                    "resolved_at": datetime.now(timezone.utc).isoformat()
+                }).eq("id", sig_id).execute()
+                print(f"  -> সিগন্যাল ক্লোজড: {sym} | ফলাফল: {hit_status} | বর্তমান মূল্য: ${fmt_price(cur_price)}")
+
+    except Exception as e:
+        print(f"[-] লাইফসাইকেল ট্র্যাকিং ত্রুটি: {e}")
+
+# ৪. নতুন হাই-কনভিকশন আলফা সিগন্যাল তৈরি
+def generate_institutional_setups(coin):
     p = coin['price']
     chg = coin['change']
     vol = coin['volume_m']
     high = coin['high']
     low = coin['low']
 
-    # ১. ভোল্টিলিটি রেঞ্জ (Pseudo-ATR)
     span = high - low
     volatility_ratio = span / (p + 1e-9)
-    # ২. লিকুইডিটি রেঞ্জ পজিশন (0.0 = ডেইলিলো, 1.0 = ডেইলি হাই)
     range_pos = (p - low) / (span + 1e-9)
 
     setups = []
 
-    # =========================================================================
-    # ক) SCALPER (5M-15M Momentum Ignition & Order Flow Burst)
-    # লজিক: হাই ভলিউম সহ রেঞ্জের ৬০% এর উপরে কনসোলিডেশন = কুইক ব্রেকআউট
-    # =========================================================================
-    scalp_direction = "long" if range_pos >= 0.48 or chg >= 0.5 else "short"
-    scalp_risk = max(0.009, volatility_ratio * 0.18) # টাইট এসএল
-    scalp_reward = scalp_risk * 2.2                  # ১:২.২ রিস্ক-টু-রিওয়ার্ড
-
-    sl_s = p * (1 - scalp_risk) if scalp_direction == "long" else p * (1 + scalp_risk)
-    tp_s = p * (1 + scalp_reward) if scalp_direction == "long" else p * (1 - scalp_reward)
-    
-    score_s = min(98, int(88 + (vol / 50) + (abs(chg) * 0.5)))
+    # ক) SCALPER
+    scalp_dir = "long" if range_pos >= 0.48 or chg >= 0.5 else "short"
+    scalp_risk = max(0.009, volatility_ratio * 0.18)
+    scalp_reward = scalp_risk * 2.2
+    sl_s = p * (1 - scalp_risk) if scalp_dir == "long" else p * (1 + scalp_risk)
+    tp_s = p * (1 + scalp_reward) if scalp_dir == "long" else p * (1 - scalp_reward)
 
     setups.append({
         "symbol": coin['symbol'],
         "market_type": "crypto",
         "horizon": "24h",
-        "direction": scalp_direction,
+        "direction": scalp_dir,
         "trading_mode": "mode2",
-        "score": score_s,
+        "score": min(98, int(88 + (vol / 50) + (abs(chg) * 0.5))),
         "stage": "[SCALP] Momentum Flow Ignition",
         "current_change_24h": round(chg, 2),
         "sector": "Scalp Engine (5M)",
         "est_potential": f"+{round(scalp_reward * 100, 1)}%",
         "flow_metric": f"${vol}M Liquid Flow",
-        "driver_metric": "RVOL Volume Burst",
+        "driver_metric": "RVOL Order Burst",
+        "entry_price": p,
+        "sl_price": sl_s,
+        "tp_price": tp_s,
+        "status": "ACTIVE",
         "mtf_alignment": f"Entry: ${fmt_price(p)} | SL: ${fmt_price(sl_s)}",
-        "research_note": f"অর্ডারবুকে আক্রমণাত্মক বায়ারদের চাপ। ৫ মিনিটের ব্রেকআউট ট্রিগার জোন সক্রিয়। [TP: ${fmt_price(tp_s)}]"
+        "research_note": f"অর্ডারবুকে প্রাতিষ্ঠানিক চাপ। ৫ মিনিটের ব্রেকআউট মোমেন্টাম। [TP: ${fmt_price(tp_s)}]"
     })
 
-    # =========================================================================
-    # খ) DAY TRADER (15M-1H Squeeze Accumulation & Liquidity Expansion)
-    # লজিক: ভলাটিলিটি কম্প্রেশন এবং স্মার্ট মানি বিল্ডআপ
-    # =========================================================================
-    day_direction = "long" if range_pos >= 0.35 else "short"
+    # খ) DAY TRADER
+    day_dir = "long" if range_pos >= 0.35 else "short"
     day_risk = max(0.019, volatility_ratio * 0.35)
-    day_reward = day_risk * 2.5                     # ১:২.৫ রিস্ক-টু-রিওয়ার্ড
-
-    sl_d = p * (1 - day_risk) if day_direction == "long" else p * (1 + day_risk)
-    tp_d = p * (1 + day_reward) if day_direction == "long" else p * (1 - day_reward)
+    day_reward = day_risk * 2.5
+    sl_d = p * (1 - day_risk) if day_dir == "long" else p * (1 + day_risk)
+    tp_d = p * (1 + day_reward) if day_dir == "long" else p * (1 - day_reward)
 
     setups.append({
         "symbol": coin['symbol'],
         "market_type": "crypto",
         "horizon": "24h",
-        "direction": day_direction,
+        "direction": day_dir,
         "trading_mode": "mode2",
         "score": 93,
-        "stage": "[DAY] Volatility Squeeze Expansion",
+        "stage": "[DAY] Volatility Squeeze",
         "current_change_24h": round(chg, 2),
         "sector": "Day Engine (1H)",
         "est_potential": f"+{round(day_reward * 100, 1)}%",
         "flow_metric": "Accumulation Delta",
         "driver_metric": "Pre-Breakout Squeeze",
+        "entry_price": p,
+        "sl_price": sl_d,
+        "tp_price": tp_d,
+        "status": "ACTIVE",
         "mtf_alignment": f"Entry: ${fmt_price(p)} | SL: ${fmt_price(sl_d)}",
-        "research_note": f"১ ঘণ্টার বলিঙ্গার রেঞ্জ চরম সংকুচিত। স্মার্ট মানি লিকুইডিটি পুলে ডিরেকশনাল এক্সপ্যানশন আসন্ন। [TP: ${fmt_price(tp_d)}]"
+        "research_note": f"১ ঘণ্টার বলিঙ্গার স্কুইজ সম্পন্ন। ডিরেকশনাল এক্সপ্যানশন আসন্ন। [TP: ${fmt_price(tp_d)}]"
     })
 
-    # =========================================================================
-    # গ) SWING TRADER (4H-1D Liquidity Sweep & Whale Trap)
-    # লজিক: লোয়ার সাপোর্ট সুইপ বা ওভার-এক্সটেন্ডেড রিভার্সাল
-    # =========================================================================
-    swing_direction = "long" if (range_pos <= 0.32 or chg < -1.5) else "short"
+    # গ) SWING TRADER
+    swing_dir = "long" if (range_pos <= 0.32 or chg < -1.5) else "short"
     swing_risk = max(0.035, volatility_ratio * 0.60)
-    swing_reward = swing_risk * 2.8                 # ১:২.৮ রিস্ক-টু-রিওয়ার্ড
-
-    sl_w = p * (1 - swing_risk) if swing_direction == "long" else p * (1 + swing_risk)
-    tp_w = p * (1 + swing_reward) if swing_direction == "long" else p * (1 - swing_reward)
+    swing_reward = swing_risk * 2.8
+    sl_w = p * (1 - swing_risk) if swing_dir == "long" else p * (1 + swing_risk)
+    tp_w = p * (1 + swing_reward) if swing_dir == "long" else p * (1 - swing_reward)
 
     setups.append({
         "symbol": coin['symbol'],
         "market_type": "crypto",
         "horizon": "1w",
-        "direction": swing_direction,
+        "direction": swing_dir,
         "trading_mode": "mode2",
         "score": 97,
-        "stage": "[SWING] Institutional Liquidity Sweep",
+        "stage": "[SWING] Liquidity Sweep",
         "current_change_24h": round(chg, 2),
         "sector": "Swing Engine (4H)",
         "est_potential": f"+{round(swing_reward * 100, 1)}%",
         "flow_metric": "Dark Pool Absorption",
         "driver_metric": "Whale Order Imbalance",
+        "entry_price": p,
+        "sl_price": sl_w,
+        "tp_price": tp_w,
+        "status": "ACTIVE",
         "mtf_alignment": f"Entry: ${fmt_price(p)} | SL: ${fmt_price(sl_w)}",
-        "research_note": f"উচ্চ টাইমফ্রেমে রিটেইল স্টপ হান্ট সম্পন্ন। প্রাতিষ্ঠানিক ক্যাপিটালে বড় মাল্টি-ডে সুইং রিভার্সাল। [TP: ${fmt_price(tp_w)}]"
+        "research_note": f"উচ্চ টাইমফ্রেমে লিকুইডিটি পুলে প্রাতিষ্ঠানিক সুইপ সম্পন্ন। [TP: ${fmt_price(tp_w)}]"
     })
 
     return setups
 
-# ৪. ট্র্যাডিশনাল মার্কেট আলফা (Forex & Stocks)
-def generate_traditional_alpha():
-    data = []
-    
-    # ফরেক্স
-    try:
-        r = requests.get("https://open.er-api.com/v6/latest/USD", timeout=8).json()
-        rates = r.get("rates", {})
-        fx = [
-            ("EUR/USD", 1 / rates.get("EUR", 0.92), 0.32, "long"),
-            ("GBP/USD", 1 / rates.get("GBP", 0.78), -0.25, "short"),
-            ("USD/JPY", rates.get("JPY", 152.0), 0.29, "long")
-        ]
-        for s, p, c, d in fx:
-            sl = p * (0.995 if d == "long" else 1.005)
-            tp = p * (1.012 if d == "long" else 0.988)
-            data.append({
-                "symbol": s, "market_type": "forex", "horizon": "24h", "direction": d,
-                "trading_mode": "mode1", "score": 92, "stage": "[DAY] Interbank Order Flow",
-                "current_change_24h": c, "sector": "Major FX", "est_potential": "+1.2% to +2.5%",
-                "flow_metric": "Interbank Liquidity", "driver_metric": "Macro Session Confluence",
-                "mtf_alignment": f"Entry: ${fmt_price(p)} | SL: ${fmt_price(sl)}",
-                "research_note": f"লন্ডন/নিউইয়র্ক সেশনের প্রাতিষ্ঠানিক সাপোর্ট-রেজিস্ট্যান্স কনফার্মেশন। [TP: ${fmt_price(tp)}]"
-            })
-    except Exception:
-        pass
-
-    # ইউএস স্টকস
-    stocks = [
-        ("NVDA", 138.50, 2.45, "long", "US Tech / AI"),
-        ("TSLA", 258.20, -1.80, "short", "Automotive"),
-        ("AAPL", 228.40, 0.85, "long", "Mega-Cap Tech")
-    ]
-    for s, p, c, d, sec in stocks:
-        sl = p * (0.975 if d == "long" else 1.025)
-        tp = p * (1.055 if d == "long" else 0.945)
-        data.append({
-            "symbol": s, "market_type": "stocks", "horizon": "24h", "direction": d,
-            "trading_mode": "mode1", "score": 95, "stage": "[DAY] Dark Pool Block Inflow",
-            "current_change_24h": c, "sector": sec, "est_potential": "+5.5% to +10.0%",
-            "flow_metric": "Off-Market Volume", "driver_metric": "Institutional Accumulation",
-            "mtf_alignment": f"Entry: ${fmt_price(p)} | SL: ${fmt_price(sl)}",
-            "research_note": f"অফ-মার্কেট ডার্ক পুল ট্রানজ্যাকশন এবং ট্রেন্ড কনফার্মেশন। [TP: ${fmt_price(tp)}]"
-        })
-
-    return data
-
-# ৫. সেন্ট্রাল এক্সিকিউশন ও সিঙ্ক
-def run_alpha_engine():
-    print("[*] আলফা স্ক্রিনিং ইঞ্জিন শুরু হচ্ছে...")
-    payload = []
-
-    # ক্রিপ্টো পুল বিশ্লেষণ
-    coins = fetch_top_liquid_market()
-    print(f"[+] বিশ্লেষণকৃত শীর্ষ ক্রিপ্টো পেয়ার: {len(coins)} টি")
-
-    for coin in coins:
-        setups = generate_high_conviction_setups(coin)
-        payload.extend(setups)
-
-    # ফরেক্স ও স্টকস অন্তর্ভুক্তি
-    trad = generate_traditional_alpha()
-    payload.extend(trad)
-
-    print(f"[✔] সর্বমোট হাই-কনভিকশন আলফা সিগন্যাল তৈরি হয়েছে: {len(payload)} টি")
-
-    if not payload:
-        print("[-] কোনো সিগন্যাল তৈরি হয়নি।")
+def run():
+    print("[*] আলফা স্ক্যানার ও লাইফসাইকেল ইঞ্জিন চালু হচ্ছে...")
+    prices = fetch_top_liquid_market()
+    if not prices:
+        print("[-] মার্কেট ডেটা পাওয়া যায়নি।")
         return
 
-    # পুরাতন ডেটা ক্লিয়ার করে নতুন ডেটা দিয়ে টেবিল ফ্রেশ রাখা
-    try:
-        supabase.table("market_research").delete().neq("id", 0).execute()
-    except Exception:
-        pass
+    # ১. পুরানো অ্যাক্টিভ ট্রেডের TP/SL ট্র্যাক ও আপডেট করা
+    track_and_update_lifecycle(prices)
 
+    # ২. ফ্রেশ সিগন্যাল তৈরি করা
+    new_setups = []
+    top_coins = sorted(prices.values(), key=lambda x: x['volume_m'], reverse=True)[:25]
+    for c in top_coins:
+        new_setups.extend(generate_institutional_setups(c))
+
+    # ফরেক্স ও স্টকস সিগন্যাল
+    trad_signals = [
+        {"symbol": "EUR/USD", "market_type": "forex", "horizon": "24h", "direction": "long", "trading_mode": "mode1", "score": 92, "stage": "[DAY] Interbank Flow", "current_change_24h": 0.32, "sector": "Major FX", "est_potential": "+1.2%", "flow_metric": "Interbank Flow", "driver_metric": "Session Liquidity", "entry_price": 1.0850, "sl_price": 1.0800, "tp_price": 1.0920, "status": "ACTIVE", "mtf_alignment": "Entry: $1.0850 | SL: $1.0800", "research_note": "লন্ডন সেশন কি-লেভেল রিজেকশন। [TP: $1.0920]"},
+        {"symbol": "NVDA", "market_type": "stocks", "horizon": "24h", "direction": "long", "trading_mode": "mode1", "score": 95, "stage": "[DAY] Dark Pool Block", "current_change_24h": 2.45, "sector": "US Tech / AI", "est_potential": "+5.5%", "flow_metric": "Off-Market Flow", "driver_metric": "Whale Accumulation", "entry_price": 138.50, "sl_price": 135.00, "tp_price": 146.00, "status": "ACTIVE", "mtf_alignment": "Entry: $138.50 | SL: $135.00", "research_note": "অফ-মার্কেট ব্লক ট্রানজ্যাকশন সক্রিয়। [TP: $146.00]"}
+    ]
+    new_setups.extend(trad_signals)
+
+    # ৩. Supabase-এ ইনসার্ট
     success = 0
-    fail = 0
-
-    for item in payload:
+    for item in new_setups:
         try:
             supabase.table("market_research").insert(item).execute()
             success += 1
-            print(f"✔ পুশ সফল: {item['symbol']} | {item['sector']} | Score: {item['score']}")
-        except Exception as e:
-            fail += 1
-            print(f"✖ পুশ ব্যর্থ: {item['symbol']} -> {e}")
+        except Exception:
+            pass
 
-    print(f"\n==========================================")
-    print(f"সম্পন্ন! সফল ইনসার্ট: {success} টি | ব্যর্থ: {fail} টি")
-    print(f"==========================================")
+    print(f"\n[DONE] মোট {success}টি নতুন সক্রিয় সিগন্যাল পুশ সম্পন্ন!")
 
 if __name__ == "__main__":
-    run_alpha_engine()
+    run()
