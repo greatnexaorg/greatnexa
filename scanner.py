@@ -5,11 +5,18 @@ import numpy as np
 from supabase import create_client, Client
 import yfinance as yf
 
-# ১. Supabase সংযোগ
+# ১. Supabase সংযোগ কনফিগারেশন
 SUPABASE_URL = "https://esqhansnosejkqapuhoo.supabase.co"
+# পরামর্শ: Supabase Dashboard -> Settings -> API থেকে service_role কী দিলে সবচেয়ে নিরাপদ ও দ্রুত কাজ করে
 SUPABASE_KEY = "sb_publishable_FypTC1KRVE66YBURyEhT9A_H3fKhzLM"
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+try:
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    print("[*] Supabase ক্লায়েন্ট সফলভাবে সংযুক্ত হয়েছে।")
+except Exception as e:
+    print(f"[-] Supabase সংযোগ ব্যর্থ: {e}")
+
+# প্রাইস ফরম্যাটার
 def fmt_price(p):
     if p >= 100:
         return f"{p:.2f}"
@@ -18,6 +25,7 @@ def fmt_price(p):
     else:
         return f"{p:.6f}"
 
+# ২. টেকনিক্যাল ইন্ডিকেটর ইঞ্জিন
 def calculate_indicators(df):
     if len(df) < 20:
         return None
@@ -43,6 +51,7 @@ def calculate_indicators(df):
     df['vol_ratio'] = volume / (df['vol_ma'] + 1e-9)
     return df
 
+# ৩. Bybit থেকে নির্দিষ্ট টাইমফ্রেমের ক্যান্ডেল আনা
 def get_bybit_klines(symbol, interval_str, limit=35):
     url = f"https://api.bybit.com/v5/market/kline?category=linear&symbol={symbol}&interval={interval_str}&limit={limit}"
     try:
@@ -58,6 +67,7 @@ def get_bybit_klines(symbol, interval_str, limit=35):
         pass
     return None
 
+# ৪. ক্রিপ্টো মার্কেট বিশ্লেষণ (Scalp, Day, Swing)
 def analyze_crypto_setup(symbol, turnover_24h, funding_rate, price_change_24h, last_price):
     results = []
     
@@ -150,6 +160,7 @@ def analyze_crypto_setup(symbol, turnover_24h, funding_rate, price_change_24h, l
 
     return results
 
+# ৫. ফরেক্স ও স্টকস স্ক্যানার
 def scan_traditional_markets():
     traditional_setups = []
     fx_pairs = [("EURUSD=X", "EUR/USD"), ("GBPUSD=X", "GBP/USD"), ("USDJPY=X", "USD/JPY")]
@@ -217,10 +228,12 @@ def scan_traditional_markets():
 
     return traditional_setups
 
+# ৬. মূল এক্সিকিউশন ও পুশ ইঞ্জিন
 def run_unified_scanner():
     print("[*] Unified Scanner চালু হচ্ছে...")
     all_setups = []
 
+    # Bybit থেকে ক্রিপ্টো স্ক্যান
     try:
         res = requests.get("https://api.bybit.com/v5/market/tickers?category=linear", timeout=10).json()
         if res.get("retCode") == 0:
@@ -242,28 +255,32 @@ def run_unified_scanner():
     except Exception as e:
         print(f"[-] Bybit Error: {e}")
 
+    # ফরেক্স ও স্টকস স্ক্যান
     trad_results = scan_traditional_markets()
     all_setups.extend(trad_results)
 
-    print(f"[+] সর্বমোট সিগন্যাল তৈরি হয়েছে: {len(all_setups)}টি। ডেটাবেজে পুশ হচ্ছে...")
+    print(f"\n[+] সর্বমোট সিগন্যাল তৈরি হয়েছে: {len(all_setups)}টি।")
+    print("[*] Supabase-এ ডেটা ইনসার্ট করা হচ্ছে...\n")
+
+    # পুরাতন টেস্ট ডেটা ডুপ্লিকেট পরিষ্কার করতে চাইলে (ঐচ্ছিক):
+    # supabase.table("market_research").delete().neq("id", 0).execute()
 
     success_count = 0
+    fail_count = 0
+
     for s in all_setups:
         try:
-            res = supabase.table("market_research").upsert(
-                s, on_conflict="symbol,horizon,market_type,direction"
-            ).execute()
+            # upsert-এর বদলে সরাসরি নিশ্চিত ইনসার্ট
+            res = supabase.table("market_research").insert(s).execute()
             success_count += 1
-            print(f"✔ পুশ সফল: {s['symbol']} | {s['stage']} | {s['direction'].upper()}")
+            print(f"✔ সফল পুশ: {s['symbol']} | {s['direction'].upper()} | {s['stage']}")
         except Exception as e:
-            try:
-                supabase.table("market_research").insert(s).execute()
-                success_count += 1
-                print(f"✔ ইনসার্ট সফল: {s['symbol']}")
-            except Exception as err:
-                print(f"✖ পুশ ব্যর্থ ({s['symbol']}): {err}")
+            fail_count += 1
+            print(f"✖ পুশ ব্যর্থ [{s['symbol']}]: {str(e)}")
 
-    print(f"\n[DONE] মোট {success_count}টি সিগন্যাল Supabase-এ পুশ সম্পন্ন!")
+    print(f"\n==========================================")
+    print(f"কার্যক্রম সম্পন্ন! সফল: {success_count} টি | ব্যর্থ: {fail_count} টি")
+    print(f"==========================================")
 
 if __name__ == "__main__":
     run_unified_scanner()
