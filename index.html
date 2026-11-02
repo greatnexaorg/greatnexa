@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- গুগল ট্রান্সলেট ব্যাকগ্রাউন্ড ইঞ্জিন -->
+    <!-- গুগল ট্রান্সলেট ইঞ্জিন -->
     <div id="google_translate_element" style="display:none !important;"></div>
     <script type="text/javascript">
         function googleTranslateElementInit() {
@@ -23,7 +23,6 @@
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <style>
-        /* বডির ওপর গুগলের তৈরি করা বাড়তি মার্জিন/প্যাডিং ফিক্স */
         body { 
             background-color: #030712; 
             color: #f3f4f6; 
@@ -41,18 +40,25 @@
         .style-tab-btn.active { background: linear-gradient(135deg, #1d4ed8, #2563eb) !important; color: #ffffff !important; border-color: #3b82f6 !important; box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4); }
         .locked-blur { filter: blur(6px); pointer-events: none; user-select: none; }
         
-        /* গুগলের টপ ব্যানার, বার, ফ্রেম এবং টুলটিপ সম্পূর্ণ হাইড */
-        .goog-te-banner-frame.skiptranslate, 
-        .goog-te-banner-frame, 
+        /* কোনায় ভাসমান গুগল ট্রান্সলেট আইকন, স্পিনার, ব্যানার সম্পূর্ণ ব্লক */
+        .goog-te-banner-frame,
+        .goog-te-banner-frame.skiptranslate,
         iframe.goog-te-banner-frame,
-        .goog-te-banner,
+        .goog-te-balloon-frame,
         #goog-gt-tt,
-        .goog-te-balloon-frame { 
-            display: none !important; 
-            visibility: hidden !important; 
+        .goog-te-spinner-pos,
+        .VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+        .VIpgJd-ZVi9od-aZ2wEe-wOHMyf-ti6hGc,
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            width: 0 !important;
+            height: 0 !important;
         }
 
-        .skiptranslate:not(.keep-visible) {
+        .skiptranslate {
             display: none !important;
         }
 
@@ -69,7 +75,7 @@
     <!-- Top Pro Header -->
     <header class="terminal-box rounded-2xl px-4 sm:px-6 py-4 mb-6 flex flex-wrap justify-between items-center gap-4">
         <div class="flex items-center gap-3.5">
-            <!-- notranslate দিয়ে ব্র্যান্ড লোগো অক্ষত -->
+            <!-- notranslate ক্লাস দিয়ে ব্র্যান্ড লোগো অক্ষত -->
             <div class="notranslate w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white text-lg sm:text-xl shadow-lg shadow-blue-600/30 font-mono">GN</div>
             <div>
                 <div class="flex items-center gap-2 notranslate">
@@ -86,7 +92,7 @@
                 <button type="button" onclick="switchTab('archive')" id="tab-archive" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Hall of Fame</button>
             </div>
 
-            <!-- নিজস্ব ভাষায় সুন্দর কাস্টম ড্রপডাউন -->
+            <!-- নিজস্ব ভাষায় পরিচ্ছন্ন ড্রপডাউন -->
             <div class="notranslate flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl px-2.5 py-1.5 text-xs">
                 <span class="text-gray-300 mr-1.5">🌐</span>
                 <select id="customLangSelect" onchange="applyCustomLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-[#0d1424]">
@@ -365,7 +371,7 @@
         let selectedPlan = '';
         let isSignUpMode = false;
 
-        // কাস্টম ভাষা নির্বাচন
+        // ভাষা পরিবর্তন
         function applyCustomLanguage(langCode) {
             const select = document.querySelector('#google_translate_element select');
             if (select) {
