@@ -9,7 +9,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- Google Translate Script (১০০% ফ্রি অটো ট্রান্সলেশন ইঞ্জিন) -->
+    <!-- গুগল ট্রান্সলেট হিডেন ইঞ্জিন -->
+    <div id="google_translate_element" style="display:none !important;"></div>
     <script type="text/javascript">
         function googleTranslateElementInit() {
             new google.translate.TranslateElement({
@@ -32,22 +33,12 @@
         .style-tab-btn.active { background: linear-gradient(135deg, #1d4ed8, #2563eb) !important; color: #ffffff !important; border-color: #3b82f6 !important; box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4); }
         .locked-blur { filter: blur(6px); pointer-events: none; user-select: none; }
         
-        /* গুগলের টপ ব্যানার এবং ফ্রেম লুকিয়ে প্রিমিয়াম ডার্ক লুক রাখা */
-        .goog-te-banner-frame.skiptranslate, .goog-te-banner-frame { display: none !important; }
+        /* গুগলের ব্যানার, ফ্রেম এবং টুলটিপ ১০০% হাইড */
+        .goog-te-banner-frame.skiptranslate, .goog-te-banner-frame, iframe.goog-te-banner-frame { display: none !important; }
         body { top: 0px !important; }
-        #google_translate_element select {
-            background-color: #131d31;
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 0.75rem;
-            padding: 0.35rem 0.6rem;
-            font-size: 0.75rem;
-            outline: none;
-            cursor: pointer;
-        }
-        .goog-logo-link { display: none !important; }
-        .goog-te-gadget { color: transparent !important; font-size: 0px !important; }
-        .goog-te-gadget .goog-te-combo { margin: 0px !important; }
+        .goog-tooltip, .goog-tooltip:hover { display: none !important; }
+        .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
+        #goog-gt-tt { display: none !important; visibility: hidden !important; }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #030712; }
@@ -59,11 +50,12 @@
     <!-- Top Pro Header -->
     <header class="terminal-box rounded-2xl px-4 sm:px-6 py-4 mb-6 flex flex-wrap justify-between items-center gap-4">
         <div class="flex items-center gap-3.5">
-            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white text-lg sm:text-xl shadow-lg shadow-blue-600/30 font-mono">GN</div>
+            <!-- notranslate ক্লাস দিয়ে লোগো ও ব্র্যান্ড নাম সুরক্ষিত -->
+            <div class="notranslate w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white text-lg sm:text-xl shadow-lg shadow-blue-600/30 font-mono">GN</div>
             <div>
-                <div class="flex items-center gap-2">
-                    <h1 class="font-bold text-white text-sm sm:text-base tracking-tight notranslate">GreatNexa Terminal</h1>
-                    <span class="text-[9px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30 font-mono notranslate">PRO</span>
+                <div class="flex items-center gap-2 notranslate">
+                    <h1 class="font-bold text-white text-sm sm:text-base tracking-tight">GreatNexa Terminal</h1>
+                    <span class="text-[9px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30 font-mono">PRO</span>
                 </div>
                 <p class="text-[10px] sm:text-[11px] text-gray-400">Institutional Multi-Asset Research Engine</p>
             </div>
@@ -75,10 +67,21 @@
                 <button type="button" onclick="switchTab('archive')" id="tab-archive" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Hall of Fame</button>
             </div>
 
-            <!-- ফ্রি স্বয়ংক্রিয় গুগল অনুবাদ ড্রপডাউন -->
-            <div class="flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl px-2.5 py-1 text-xs">
-                <span class="text-gray-300 mr-1.5 text-xs">🌐</span>
-                <div id="google_translate_element"></div>
+            <!-- কাস্টম লোগোহীন পরিচ্ছন্ন ড্রপডাউন (যে ভাষা সিলেক্ট করবে সেটি সেই ভাষাতেই প্রদর্শিত) -->
+            <div class="notranslate flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl px-2.5 py-1.5 text-xs">
+                <span class="text-gray-300 mr-1.5">🌐</span>
+                <select id="customLangSelect" onchange="applyCustomLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-[#0d1424]">
+                    <option value="en">English</option>
+                    <option value="bn">বাংলা (Bengali)</option>
+                    <option value="hi">हिन्दी (Hindi)</option>
+                    <option value="ur">اردو (Urdu)</option>
+                    <option value="ru">Русский (Russian)</option>
+                    <option value="es">Español (Spanish)</option>
+                    <option value="zh-CN">中文 (Chinese)</option>
+                    <option value="ar">العربية (Arabic)</option>
+                    <option value="vi">Tiếng Việt (Vietnamese)</option>
+                    <option value="tr">Türkçe (Turkish)</option>
+                </select>
             </div>
 
             <!-- Digital Store Button -->
@@ -87,7 +90,7 @@
             </a>
             
             <!-- Auth & User Info Section -->
-            <div id="authHeaderSection" class="flex items-center gap-2 bg-[#131d31] border border-gray-700/60 px-3 py-1.5 rounded-xl text-xs">
+            <div id="authHeaderSection" class="flex items-center gap-2 bg-[#131d31] border border-gray-700/60 px-3 py-1.5 rounded-xl text-xs notranslate">
                 <button type="button" onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>
             </div>
         </div>
@@ -100,13 +103,13 @@
                 <span>🌐</span> <span>All Market Alpha</span>
             </button>
             <button type="button" onclick="changeTraderStyle('scalp')" id="style-scalp" class="style-tab-btn px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 justify-center">
-                <span>⚡</span> <span>Scalper</span> <span class="text-[9px] bg-black/40 px-1.5 py-0.5 rounded-full font-mono text-blue-300 notranslate">5M</span>
+                <span>⚡</span> <span>Scalper</span> <span class="notranslate text-[9px] bg-black/40 px-1.5 py-0.5 rounded-full font-mono text-blue-300">5M</span>
             </button>
             <button type="button" onclick="changeTraderStyle('day')" id="style-day" class="style-tab-btn px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 justify-center">
-                <span>🎯</span> <span>Day Trader</span> <span class="text-[9px] bg-black/40 px-1.5 py-0.5 rounded-full font-mono text-emerald-300 notranslate">1H</span>
+                <span>🎯</span> <span>Day Trader</span> <span class="notranslate text-[9px] bg-black/40 px-1.5 py-0.5 rounded-full font-mono text-emerald-300">1H</span>
             </button>
             <button type="button" onclick="changeTraderStyle('swing')" id="style-swing" class="style-tab-btn px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 justify-center">
-                <span>🌊</span> <span>Swing Trader</span> <span class="text-[9px] bg-black/40 px-1.5 py-0.5 rounded-full font-mono text-amber-300 notranslate">4H</span>
+                <span>🌊</span> <span>Swing Trader</span> <span class="notranslate text-[9px] bg-black/40 px-1.5 py-0.5 rounded-full font-mono text-amber-300">4H</span>
             </button>
         </div>
         <div class="hidden lg:flex items-center gap-2 px-3 text-[11px] text-gray-400 font-mono">
@@ -241,7 +244,7 @@
                         <span class="text-xs text-gray-400 line-through font-mono notranslate">$120</span>
                         <span class="text-xs text-amber-300 font-bold">/ 2 Full Years</span>
                     </div>
-                    <p class="text-[11px] text-gray-400 mb-6">১২ মাসের ফি $৬০ থেকে বিশেষ ডিসকাউন্ট পেয়ে মাত্র $৪৯, সাথে আরও ১ বছর সম্পূর্ণ ফ্রি (মোট ২৪ মাস)।</p>
+                    <p class="text-[11px] text-gray-400 mb-6">Special discount from $60 regular yearly fee to $49, plus 1 additional year completely FREE (Total 24 Months Access).</p>
                     
                     <ul class="space-y-3 text-xs text-gray-200 mb-8 font-medium">
                         <li class="flex items-center gap-2 text-amber-300">✔ <b>24 Months Complete Access</b> (12 Mos + 12 Mos Free)</li>
@@ -342,6 +345,27 @@
         let liveMarketData = [];
         let selectedPlan = '';
         let isSignUpMode = false;
+
+        // কাস্টম ভাষা পরিবর্তন লজিক (গুগল ট্র্যান্সলেট ফ্রেমওয়ার্ক ছাড়া সরাসরি ট্রিগার)
+        function applyCustomLanguage(langCode) {
+            const select = document.querySelector('#google_translate_element select');
+            if (select) {
+                select.value = langCode;
+                select.dispatchEvent(new Event('change'));
+            } else {
+                // কুকি সেট করে পেজ আপডেট
+                document.cookie = `googtrans=/en/${langCode}; path=/;`;
+                document.cookie = `googtrans=/en/${langCode}; domain=.${location.hostname}; path=/;`;
+                location.reload();
+            }
+
+            // RTL লেআউট হ্যান্ডলিং (উর্দু এবং আরবি)
+            if (langCode === 'ur' || langCode === 'ar') {
+                document.documentElement.dir = 'rtl';
+            } else {
+                document.documentElement.dir = 'ltr';
+            }
+        }
 
         function changeTraderStyle(style) {
             state.traderStyle = style;
@@ -526,7 +550,6 @@
                             <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Key Catalyst:</span><span class="text-amber-300">${item.driver_metric || 'Volume Surge'}</span></div>
                             ${item.mtf_alignment ? `<div class="flex justify-between pt-1 border-t border-gray-800/60"><span class="text-gray-400 text-[10px]">Level Setup:</span><span class="text-indigo-300 text-[10px] font-bold notranslate">${item.mtf_alignment}</span></div>` : ''}
                         </div>
-                        <!-- Research Note - গুগল ট্রান্সলেট দিয়ে এটিও স্বয়ংক্রিয় অনুবাদ হবে -->
                         <p class="text-xs text-gray-300 leading-relaxed mb-4 font-sans"><strong class="text-white">Research Note:</strong> ${item.research_note || 'Smart money volume footprint detected.'}</p>
                         <div class="pt-3 border-t border-gray-800 flex justify-between items-center text-xs">
                             ${statusBadge}
