@@ -286,7 +286,8 @@
     <script src="https://s3.tradingview.com/tv.js"></script>
     <script>
         const SUPABASE_URL = 'https://esqhansnosejkqapuhoo.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_FypTC1KRVE66YBURyEhT9A_H3fKhzLM';
+        // ব্রাউজারের জন্য আপনার নতুন ও ভেরিফায়েড Public Key
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDk0MDMsImV4cCI6MjEwMjI4NTQwM30.ePcRYy5_B193R4S1MXw3slF5amFseCv1sSCAUyH59ok';
         
         let _supabase = null;
         try {
@@ -325,7 +326,7 @@
             tradingMode: 'mode2', 
             direction: 'long', 
             viewTab: 'active',
-            traderStyle: 'all' // 'all', 'scalp', 'day', 'swing'
+            traderStyle: 'all'
         };
         let liveMarketData = [];
         let selectedPlan = '';
@@ -575,7 +576,6 @@
             renderCards();
         }
 
-        // Auth Feedback Box Helper
         function showAuthFeedback(msg, isSuccess = false) {
             const box = document.getElementById('authFeedback');
             box.className = isSuccess 
