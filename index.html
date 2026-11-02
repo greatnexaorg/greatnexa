@@ -15,6 +15,8 @@
         .terminal-card { background: #0e1628; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
         .select-btn { background: #1e293b; color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease; cursor: pointer; }
         .select-btn.active { background: #2563eb !important; color: #ffffff !important; border-color: #3b82f6 !important; box-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
+        .style-tab-btn { background: #111a2e; color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease; cursor: pointer; }
+        .style-tab-btn.active { background: linear-gradient(135deg, #1d4ed8, #2563eb) !important; color: #ffffff !important; border-color: #3b82f6 !important; box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4); }
         .locked-blur { filter: blur(6px); pointer-events: none; user-select: none; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #030712; }
@@ -24,7 +26,7 @@
 <body class="p-4 md:p-8 antialiased max-w-7xl mx-auto">
 
     <!-- Top Pro Header -->
-    <header class="terminal-box rounded-2xl px-5 md:px-6 py-4 mb-8 flex flex-wrap justify-between items-center gap-4">
+    <header class="terminal-box rounded-2xl px-5 md:px-6 py-4 mb-6 flex flex-wrap justify-between items-center gap-4">
         <div class="flex items-center gap-3.5">
             <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white text-xl shadow-lg shadow-blue-600/30 font-mono">GN</div>
             <div>
@@ -70,6 +72,28 @@
             </div>
         </div>
     </header>
+
+    <!-- Trader Style Tabs Navigation -->
+    <div class="terminal-box rounded-2xl p-2 mb-8 flex flex-wrap items-center justify-between gap-2 border border-blue-500/20">
+        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            <button type="button" onclick="changeTraderStyle('all')" id="style-all" class="style-tab-btn active px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 flex-1 md:flex-initial justify-center">
+                <span>🌐</span> All Market Alpha
+            </button>
+            <button type="button" onclick="changeTraderStyle('scalp')" id="style-scalp" class="style-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 flex-1 md:flex-initial justify-center">
+                <span>⚡</span> Scalper <span class="text-[10px] bg-black/40 px-2 py-0.5 rounded-full font-mono text-blue-300">5M-15M</span>
+            </button>
+            <button type="button" onclick="changeTraderStyle('day')" id="style-day" class="style-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 flex-1 md:flex-initial justify-center">
+                <span>🎯</span> Day Trader <span class="text-[10px] bg-black/40 px-2 py-0.5 rounded-full font-mono text-emerald-300">15M-1H</span>
+            </button>
+            <button type="button" onclick="changeTraderStyle('swing')" id="style-swing" class="style-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 flex-1 md:flex-initial justify-center">
+                <span>🌊</span> Swing Trader <span class="text-[10px] bg-black/40 px-2 py-0.5 rounded-full font-mono text-amber-300">4H-1D</span>
+            </button>
+        </div>
+        <div class="hidden lg:flex items-center gap-2 px-3 text-[11px] text-gray-400 font-mono">
+            <span>Adaptive Engine:</span>
+            <span id="activeStyleIndicator" class="text-blue-400 font-bold uppercase tracking-wider">All Institutional Styles</span>
+        </div>
+    </div>
 
     <!-- Professional Control Engine -->
     <div id="controlPanel" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -293,7 +317,16 @@
         };
 
         let currentLang = 'en';
-        let state = { market: 'crypto', horizon: '24h', limit: 10, role: 'free', tradingMode: 'mode2', direction: 'long', viewTab: 'active' };
+        let state = { 
+            market: 'crypto', 
+            horizon: '24h', 
+            limit: 10, 
+            role: 'free', 
+            tradingMode: 'mode2', 
+            direction: 'long', 
+            viewTab: 'active',
+            traderStyle: 'all' // 'all', 'scalp', 'day', 'swing'
+        };
         let liveMarketData = [];
         let selectedPlan = '';
         let isSignUpMode = false;
@@ -307,401 +340,4 @@
             if (get('lbl-shortlist')) get('lbl-shortlist').innerText = t.lblShortlist;
             if (get('lbl-mode')) get('lbl-mode').innerText = t.lblMode;
             if (get('lbl-direction')) get('lbl-direction').innerText = t.lblDirection;
-            if (get('lbl-engine')) get('lbl-engine').innerHTML = `<span>${t.lblEngine}</span><button type="button" onclick="fetchLiveMarketData()" class="text-blue-400 hover:underline cursor-pointer">🔄 Sync</button>`;
-            if (get('pricing-title')) get('pricing-title').innerText = t.pricingTitle;
-            if (get('pricing-subtitle')) get('pricing-subtitle').innerText = t.pricingSub;
-            renderCards();
-        }
-
-        function switchTab(tab) {
-            state.viewTab = tab;
-            const btnActive = document.getElementById('tab-active');
-            const btnArchive = document.getElementById('tab-archive');
-            const controlPanel = document.getElementById('controlPanel');
-
-            if(tab === 'active') {
-                btnActive.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer shadow";
-                btnArchive.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
-                controlPanel.style.display = 'grid';
-            } else {
-                btnArchive.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer shadow";
-                btnActive.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
-                controlPanel.style.display = 'none';
-            }
-            fetchLiveMarketData();
-        }
-
-        function changeFilter(type, val) {
-            state[type] = val;
-            if (type === 'market') {
-                ['crypto', 'forex', 'stocks'].forEach(m => {
-                    const btn = document.getElementById('m-' + m);
-                    if(btn) btn.className = (m === val) ? "select-btn active py-2.5 rounded-xl text-xs font-bold" : "select-btn py-2.5 rounded-xl text-xs font-bold";
-                });
-
-                const btn1 = document.getElementById('btn-mode1');
-                const btn2 = document.getElementById('btn-mode2');
-                if(btn1 && btn2) {
-                    if(val === 'crypto') { btn1.innerText = "Spot"; btn2.innerText = "Futures"; }
-                    else if(val === 'forex') { btn1.innerText = "Standard FX"; btn2.innerText = "Margin / CFD"; }
-                    else if(val === 'stocks') { btn1.innerText = "Cash Market"; btn2.innerText = "F&O / Derivatives"; }
-                }
-            } else if (type === 'horizon') {
-                if(state.role === 'free' && (val === '1w' || val === '1m')) {
-                    alert("1 Week and 1 Month projections are locked for Pro / VIP members. Please upgrade.");
-                    openAuthModal('signup');
-                    return;
-                }
-                ['24h', '1w', '1m'].forEach(h => {
-                    const btn = document.getElementById('h-' + h);
-                    if(btn) btn.className = (h === val) ? "select-btn active py-2.5 rounded-xl text-xs font-bold" : "select-btn py-2.5 rounded-xl text-xs font-bold";
-                });
-            }
-            fetchLiveMarketData();
-        }
-
-        function changeTradingMode(mode) {
-            state.tradingMode = mode;
-            const btn1 = document.getElementById('btn-mode1');
-            const btn2 = document.getElementById('btn-mode2');
-            if(mode === 'mode1') {
-                btn1.className = "py-2 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer";
-                btn2.className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
-            } else {
-                btn2.className = "py-2 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer";
-                btn1.className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
-            }
-            fetchLiveMarketData();
-        }
-
-        function changeDirection(dir) {
-            state.direction = dir;
-            const dirLong = document.getElementById('dir-long');
-            const dirShort = document.getElementById('dir-short');
-            if(dir === 'long') {
-                dirLong.className = "py-2 rounded-lg text-[11px] font-bold bg-emerald-600 text-white border border-emerald-500 transition cursor-pointer";
-                dirShort.className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
-            } else {
-                dirShort.className = "py-2 rounded-lg text-[11px] font-bold bg-rose-600 text-white border border-rose-500 transition cursor-pointer";
-                dirLong.className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
-            }
-            fetchLiveMarketData();
-        }
-
-        function updateLimit(val) {
-            if (state.role === 'free' && parseInt(val) > 3) {
-                alert("Free tier is limited to Top 3 assets. Please upgrade to Pro.");
-                document.getElementById('shortlistSelect').value = "3";
-                state.limit = 3;
-                return;
-            }
-            state.limit = parseInt(val);
-            fetchLiveMarketData();
-        }
-
-        function renderCards() {
-            const container = document.getElementById('gridContainer');
-            if (!container) return;
-
-            if (state.viewTab === 'archive') {
-                container.innerHTML = `
-                <div class="terminal-card rounded-2xl p-5 border border-emerald-500/30 shadow-xl flex flex-col justify-between col-span-full">
-                    <div>
-                        <div class="flex justify-between items-start mb-3">
-                            <div>
-                                <span class="text-[10px] text-emerald-400 font-mono uppercase tracking-wider">🏛️ Hall of Fame Archive</span>
-                                <h3 class="text-lg font-black text-white mt-0.5">Archived Performance Record</h3>
-                            </div>
-                            <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg text-xs font-bold font-mono">+38.6% Avg Win</span>
-                        </div>
-                        <p class="text-xs text-gray-300 leading-relaxed mb-4">Historical verified institutional setups that successfully triggered target price projection.</p>
-                    </div>
-                </div>`;
-                return;
-            }
-
-            if (!liveMarketData || liveMarketData.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400 font-mono bg-black/30 rounded-2xl border border-gray-800">No live setups matching criteria. Scanner script is running on background.</div>`;
-                return;
-            }
-
-            const t = i18n[currentLang] || i18n['en'];
-            const directionBadge = state.direction === 'long' ? '🟢 BUY / LONG' : '🔴 SELL / SHORT';
-
-            container.innerHTML = liveMarketData.map((item, idx) => {
-                const isLocked = (state.role === 'free' && idx >= 3);
-                const score = item.score || 75;
-                const scoreColor = score >= 85 ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-blue-400 border-blue-500/30 bg-blue-500/10';
-
-                return `
-                <div class="relative terminal-card rounded-2xl p-5 hover:border-blue-500/40 transition shadow-xl flex flex-col justify-between">
-                    ${isLocked ? `
-                    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#0d1424]/90 backdrop-blur-md rounded-2xl p-6 text-center">
-                        <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold mb-2">🔒 Pro Setup #${idx+1}</span>
-                        <h4 class="text-white font-bold text-sm mb-1">${t.lockedTitle}</h4>
-                        <p class="text-xs text-gray-300 mb-4">Smart Money Score: ${score}/100</p>
-                        <button type="button" onclick="openPaymentModal('Pro Trader ($5/mo)', '5')" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Upgrade to Pro ($5)</button>
-                    </div>` : ''}
-                    
-                    <div class="${isLocked ? 'locked-blur' : ''}">
-                        <div class="flex justify-between items-start mb-3">
-                            <div>
-                                <span class="text-[10px] ${state.direction === 'long' ? 'text-emerald-400' : 'text-rose-400'} font-mono uppercase tracking-wider">#${idx+1} • ${directionBadge}</span>
-                                <h3 class="text-lg font-black text-white mt-0.5">${item.symbol}</h3>
-                            </div>
-                            <span class="px-2.5 py-1 border rounded-lg text-xs font-bold font-mono ${scoreColor}">
-                                Score: ${score}
-                            </span>
-                        </div>
-                        <div class="flex flex-wrap gap-1.5 mb-3">
-                            <span class="px-2 py-0.5 bg-purple-500/10 border border-purple-500/30 text-purple-300 rounded text-[11px] font-medium">⚡ ${item.stage || 'Accumulation'}</span>
-                            <span class="px-2 py-0.5 bg-[#131d31] border border-gray-700/60 text-gray-300 rounded text-[11px] font-mono">24h: ${item.current_change_24h || 0}%</span>
-                            ${item.sector ? `<span class="px-2 py-0.5 bg-blue-500/10 border border-blue-500/30 text-blue-300 rounded text-[11px] font-mono">${item.sector}</span>` : ''}
-                        </div>
-                        <div class="bg-black/40 border border-gray-800/80 rounded-xl p-3 mb-3 space-y-1.5 text-xs font-mono">
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.potentialLabel}</span><span class="text-emerald-400 font-bold">${item.est_potential || '+20%'}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.flowLabel}</span><span class="text-white">${item.flow_metric || 'Active'}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.catalystLabel}</span><span class="text-amber-300">${item.driver_metric || 'Volume Surge'}</span></div>
-                            ${item.mtf_alignment ? `<div class="flex justify-between pt-1 border-t border-gray-800/60"><span class="text-gray-400 text-[10px]">MTF Confluence:</span><span class="text-indigo-300 text-[10px]">${item.mtf_alignment}</span></div>` : ''}
-                        </div>
-                        <p class="text-xs text-gray-300 leading-relaxed mb-4 font-sans"><strong class="text-white">${t.noteLabel}</strong> ${item.research_note || 'Identified with smart money volume footprint.'}</p>
-                        <div class="pt-3 border-t border-gray-800 flex justify-between items-center text-xs">
-                            <span class="text-emerald-400 font-medium text-[11px]">✔ Active Setup</span>
-                            <button type="button" onclick="openChart('${item.symbol}', '${item.symbol}')" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition cursor-pointer">📈 ${t.viewChart}</button>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        async function fetchLiveMarketData() {
-            const container = document.getElementById('gridContainer');
-            if(!_supabase) {
-                container.innerHTML = `<div class="col-span-full text-center py-16 text-rose-400 font-mono bg-black/30 rounded-2xl border border-gray-800">Database connection not available.</div>`;
-                return;
-            }
-
-            try {
-                let query = _supabase
-                    .from('market_research')
-                    .select('*')
-                    .eq('market_type', state.market)
-                    .eq('horizon', state.horizon);
-
-                if (state.direction) {
-                    query = query.eq('direction', state.direction);
-                }
-
-                const { data, error } = await query
-                    .order('score', { ascending: false })
-                    .limit(state.limit);
-
-                if (error || !data || data.length === 0) {
-                    liveMarketData = [];
-                } else {
-                    liveMarketData = data;
-                }
-            } catch (err) {
-                console.error("Data fetch error:", err);
-                liveMarketData = [];
-            }
-            renderCards();
-        }
-
-        function showAuthFeedback(msg, isSuccess = false) {
-            const box = document.getElementById('authFeedback');
-            box.className = isSuccess 
-                ? "text-xs p-3 rounded-xl mb-4 border bg-emerald-950/40 text-emerald-300 border-emerald-500/30 block"
-                : "text-xs p-3 rounded-xl mb-4 border bg-rose-950/40 text-rose-300 border-rose-500/30 block";
-            box.innerText = msg;
-        }
-
-        function openAuthModal(mode) {
-            isSignUpMode = (mode === 'signup');
-            document.getElementById('authTitle').innerText = isSignUpMode ? "Create GreatNexa Account" : "Login to GreatNexa";
-            document.getElementById('authSubmitBtn').innerText = isSignUpMode ? "Sign Up" : "Login";
-            document.getElementById('authToggleText').innerText = isSignUpMode ? "Already have an account?" : "Don't have an account?";
-            document.getElementById('authToggleBtn').innerText = isSignUpMode ? "Login" : "Sign Up";
-            document.getElementById('authFeedback').className = "hidden";
-            
-            const modal = document.getElementById('authModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeAuthModal() {
-            const modal = document.getElementById('authModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function toggleAuthMode() {
-            openAuthModal(isSignUpMode ? 'login' : 'signup');
-        }
-
-        async function handleAuthAction() {
-            const email = document.getElementById('authEmail').value.trim();
-            const password = document.getElementById('authPassword').value.trim();
-            
-            if(!email || !password) {
-                showAuthFeedback("Please enter both email and password.");
-                return;
-            }
-            if(!_supabase) {
-                showAuthFeedback("Authentication service currently unavailable.");
-                return;
-            }
-
-            if(isSignUpMode) {
-                const { data, error } = await _supabase.auth.signUp({ email, password });
-                if(error) {
-                    showAuthFeedback(error.message);
-                } else {
-                    showAuthFeedback("Registration successful! You can now log in.", true);
-                    setTimeout(() => toggleAuthMode(), 1200);
-                }
-            } else {
-                const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
-                if(error) {
-                    showAuthFeedback("Invalid email or password: " + error.message);
-                } else {
-                    showAuthFeedback("Login successful! Loading membership profile...", true);
-                    setTimeout(() => {
-                        closeAuthModal();
-                        checkUserSession();
-                    }, 800);
-                }
-            }
-        }
-
-        async function checkUserSession() {
-            const headerSec = document.getElementById('authHeaderSection');
-            if(!_supabase) return;
-
-            try {
-                const { data: { session } } = await _supabase.auth.getSession();
-                if(session && session.user) {
-                    let userTier = 'free';
-                    const { data, error } = await _supabase.from('user_profiles').select('tier').eq('id', session.user.id).single();
-                    if(data && data.tier) {
-                        userTier = data.tier.toLowerCase();
-                    }
-
-                    state.role = (userTier === 'vip') ? 'vip' : ((userTier === 'pro') ? 'pro' : 'free');
-
-                    let tierBadge = '';
-                    if(state.role === 'vip') {
-                        tierBadge = '<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold">VIP MEMBER</span>';
-                        state.limit = 20;
-                    } else if(state.role === 'pro') {
-                        tierBadge = '<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-full font-bold">PRO TRADER</span>';
-                        state.limit = 10;
-                    } else {
-                        tierBadge = '<span class="text-[10px] bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full font-bold">FREE TIER</span>';
-                        state.limit = 3;
-                    }
-
-                    const select = document.getElementById('shortlistSelect');
-                    if(select) select.value = String(state.limit);
-
-                    headerSec.innerHTML = `
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs text-white font-medium">${session.user.email}</span>
-                            ${tierBadge}
-                        </div>
-                        <button type="button" onclick="handleLogout()" class="px-2.5 py-1 rounded-lg bg-rose-600/80 hover:bg-rose-500 text-white text-xs font-bold transition cursor-pointer">Logout</button>
-                    `;
-                } else {
-                    headerSec.innerHTML = `<button type="button" onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>`;
-                    state.role = 'free';
-                }
-            } catch (err) {
-                console.error("Session check error:", err);
-            }
-            fetchLiveMarketData();
-        }
-
-        async function handleLogout() {
-            if(_supabase) await _supabase.auth.signOut();
-            checkUserSession();
-        }
-
-        function openPaymentModal(planName, price) {
-            selectedPlan = planName;
-            document.getElementById('payPlanName').innerText = `Selected Plan: ${planName} ($${price})`;
-            const modal = document.getElementById('paymentModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closePaymentModal() {
-            const modal = document.getElementById('paymentModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        async function submitPaymentOrder() {
-            const trxId = document.getElementById('payTrxId').value.trim();
-            if(!trxId) { alert("Please enter transaction ID."); return; }
-            if(!_supabase) return;
-
-            const { data: { session } } = await _supabase.auth.getSession();
-            if(!session) {
-                alert("Please log in first to submit your payment verification.");
-                closePaymentModal();
-                openAuthModal('login');
-                return;
-            }
-
-            const userEmail = session.user.email;
-            const { error } = await _supabase.from('orders').insert([
-                { customer_name: userEmail, product_name: selectedPlan, price: selectedPlan.includes('49') ? '$49' : '$5', trx_id: trxId, status: 'pending', phone: 'Binance Pay', email: userEmail }
-            ]);
-
-            if(error) {
-                alert("Error: " + error.message);
-            } else {
-                alert("Payment submitted successfully! Admin will verify and activate your tier.");
-                closePaymentModal();
-                document.getElementById('payTrxId').value = '';
-            }
-        }
-
-        function openChart(rawSymbol, name) {
-            const modal = document.getElementById('chartModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.getElementById('modalTitle').innerText = `${name} - Institutional Chart`;
-            
-            let clean = rawSymbol.replace(/[^a-zA-Z0-9]/g, '');
-            let tvTicker = `BINANCE:${clean}`;
-            if(state.market === 'forex') {
-                tvTicker = `FX:${clean}`;
-            } else if(state.market === 'stocks') {
-                tvTicker = `NASDAQ:${clean}`;
-            }
-
-            if (window.TradingView) {
-                new window.TradingView.widget({
-                    "autosize": true,
-                    "symbol": tvTicker,
-                    "interval": "60",
-                    "theme": "dark",
-                    "container_id": "tv_chart_container"
-                });
-            }
-        }
-
-        function closeChart() {
-            const modal = document.getElementById('chartModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.getElementById('tv_chart_container').innerHTML = "";
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            checkUserSession();
-        });
-    </script>
-</body>
-</html>
+            if (
