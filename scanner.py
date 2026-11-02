@@ -1,1246 +1,221 @@
-<!DOCTYPE html>
-<html lang="en" class="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GreatNexa Terminal | Institutional Multi-Asset Intelligence</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#030712">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body { background-color: #030712; color: #f3f4f6; font-family: 'Inter', system-ui, sans-serif; }
-        .terminal-box { background: #0b1326; border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .control-panel { background: #0f172a; border: 1px solid rgba(59, 130, 246, 0.2); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); }
-        .terminal-card { background: #0e1628; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        .select-btn { background: #1e293b; color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease; cursor: pointer; }
-        .select-btn.active { background: #2563eb !important; color: #ffffff !important; border-color: #3b82f6 !important; box-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
-        .style-tab-btn { background: #111a2e; color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease; cursor: pointer; }
-        .style-tab-btn.active { background: linear-gradient(135deg, #1d4ed8, #2563eb) !important; color: #ffffff !important; border-color: #3b82f6 !important; box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4); }
-        .locked-blur { filter: blur(6px); pointer-events: none; user-select: none; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #030712; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
-    </style>
-</head>
-<body class="p-3 sm:p-5 md:p-8 antialiased max-w-7xl mx-auto">
+import requests
+import time
+from datetime import datetime, timezone
+from supabase import create_client, Client
 
-    <!-- Top Pro Header -->
-    <header class="terminal-box rounded-2xl px-4 sm:px-6 py-4 mb-6 flex flex-wrap justify-between items-center gap-4">
-        <div class="flex items-center gap-3.5">
-            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white text-lg sm:text-xl shadow-lg shadow-blue-600/30 font-mono">GN</div>
-            <div>
-                <div class="flex items-center gap-2">
-                    <h1 class="font-bold text-white text-sm sm:text-base tracking-tight">GreatNexa Terminal</h1>
-                    <span class="text-[9px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30 font-mono">PRO</span>
-                </div>
-                <p id="header-subtitle" class="text-[10px] sm:text-[11px] text-gray-400">Institutional Multi-Asset Research Engine</p>
-            </div>
-        </div>
+# ১. Supabase সংযোগ (Service Role Secret Key)
+SUPABASE_URL = "https://esqhansnosejkqapuhoo.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjcwOTQwMywiZXhwIjoyMTAyMjg1NDAzfQ.gVXQnOD9OXWCJj_MN_i6eML9dyPvZZhC1BznGE4y3Ks"
 
-        <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
-            <div class="flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl p-1 text-xs">
-                <button type="button" onclick="switchTab('active')" id="tab-active" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer shadow">Live Setups</button>
-                <button type="button" onclick="switchTab('archive')" id="tab-archive" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Hall of Fame</button>
-            </div>
+try:
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    print("✔ Supabase প্রাতিষ্ঠানিক ইঞ্জিন সংযুক্ত!")
+except Exception as e:
+    print(f"✖ Supabase ক্লায়েন্ট ফেইল: {e}")
+    exit(1)
 
-            <!-- Language Selector -->
-            <div class="flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl px-2.5 sm:px-3.5 py-1.5 text-xs">
-                <span class="text-gray-300 mr-1.5">🌐</span>
-                <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-[#0d1424]">
-                    <option value="en" selected>English</option>
-                    <option value="bn">বাংলা (Bengali)</option>
-                    <option value="hi">हिन्दी (Hindi)</option>
-                    <option value="ur">اردو (Urdu)</option>
-                    <option value="ru">Русский (Russian)</option>
-                    <option value="es">Español (Spanish)</option>
-                    <option value="zh">中文 (Chinese)</option>
-                    <option value="ar">العربية (Arabic)</option>
-                    <option value="vi">Tiếng Việt (Vietnamese)</option>
-                    <option value="tr">Türkçe (Turkish)</option>
-                </select>
-            </div>
+def fmt_price(p):
+    p = float(p)
+    return f"{p:.2f}" if p >= 100 else (f"{p:.4f}" if p >= 1 else f"{p:.6f}")
 
-            <!-- Digital Store Button -->
-            <a href="/store/" id="btn-store" class="px-3.5 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs font-bold transition shadow-lg shadow-indigo-600/25 border border-indigo-500/30 flex items-center gap-1.5 cursor-pointer">
-                📦 Digital Store
-            </a>
-            
-            <!-- Auth & User Info Section -->
-            <div id="authHeaderSection" class="flex items-center gap-2 bg-[#131d31] border border-gray-700/60 px-3 py-1.5 rounded-xl text-xs">
-                <button type="button" onclick="openAuthModal('login')" id="btn-login-header" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Trader Style Tabs Navigation -->
-    <div class="terminal-box rounded-2xl p-2 sm:p-2.5 mb-6 sm:mb-8 flex flex-wrap items-center justify-between gap-3 border border-blue-500/20">
-        <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full sm:w-auto">
-            <button type="button" onclick="changeTraderStyle('all')" id="style-all" class="style-tab-btn active px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 justify-center">
-                <span>🌐</span> <span id="txt-style-all">All Market Alpha</span>
-            </button>
-            <button type="button" onclick="changeTraderStyle('scalp')" id="style-scalp" class="style-tab-btn px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 justify-center">
-                <span>⚡</span> <span id="txt-style-scalp">Scalper</span> <span class="text-[9px] bg-black/40 px-1.5 py-0.5 rounded-full font-mono text-blue-300">5M</span>
-            </button>
-            <button type="button" onclick="changeTraderStyle('day')" id="style-day" class="style-tab-btn px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 justify-center">
-                <span>🎯</span> <span id="txt-style-day">Day Trader</span> <span class="text-[9px] bg-black/40 px-1.5 py-0.5 rounded-full font-mono text-emerald-300">1H</span>
-            </button>
-            <button type="button" onclick="changeTraderStyle('swing')" id="style-swing" class="style-tab-btn px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 justify-center">
-                <span>🌊</span> <span id="txt-style-swing">Swing Trader</span> <span class="text-[9px] bg-black/40 px-1.5 py-0.5 rounded-full font-mono text-amber-300">4H</span>
-            </button>
-        </div>
-        <div class="hidden lg:flex items-center gap-2 px-3 text-[11px] text-gray-400 font-mono">
-            <span id="txt-adaptive-engine">Adaptive Engine:</span>
-            <span id="activeStyleIndicator" class="text-blue-400 font-bold uppercase tracking-wider">All Institutional Styles</span>
-        </div>
-    </div>
-
-    <!-- Professional Control Engine -->
-    <div id="controlPanel" class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
-        
-        <!-- 1. Market Selector & Dynamic Execution Mode -->
-        <div class="control-panel p-5 sm:p-6 rounded-2xl flex flex-col justify-between">
-            <div>
-                <label id="lbl-market" class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-3">1. Select Asset Market</label>
-                <div class="grid grid-cols-3 gap-2 mb-4">
-                    <button type="button" onclick="changeFilter('market', 'crypto')" id="m-crypto" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Crypto</button>
-                    <button type="button" onclick="changeFilter('market', 'forex')" id="m-forex" class="select-btn py-2.5 rounded-xl text-xs font-bold">Forex</button>
-                    <button type="button" onclick="changeFilter('market', 'stocks')" id="m-stocks" class="select-btn py-2.5 rounded-xl text-xs font-bold">Stocks</button>
-                </div>
-            </div>
-
-            <div class="pt-4 border-t border-gray-800 space-y-3">
-                <div>
-                    <span id="lbl-mode" class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wide">Execution Mode:</span>
-                    <div class="grid grid-cols-2 gap-2 mt-1.5">
-                        <button type="button" onclick="changeTradingMode('mode1')" id="btn-mode1" class="py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer">Spot</button>
-                        <button type="button" onclick="changeTradingMode('mode2')" id="btn-mode2" class="py-2 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer">Futures / CFD</button>
-                    </div>
-                </div>
-                <div>
-                    <span id="lbl-direction" class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wide">Direction Setup:</span>
-                    <div class="grid grid-cols-2 gap-2 mt-1.5">
-                        <button type="button" onclick="changeDirection('long')" id="dir-long" class="py-2 rounded-lg text-[11px] font-bold bg-emerald-600 text-white border border-emerald-500 transition cursor-pointer">🟢 Buy / Long</button>
-                        <button type="button" onclick="changeDirection('short')" id="dir-short" class="py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer">🔴 Sell / Short</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. Time Horizon -->
-        <div class="control-panel p-5 sm:p-6 rounded-2xl flex flex-col justify-between">
-            <div>
-                <label id="lbl-horizon" class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-3">2. Projection Horizon</label>
-                <div class="grid grid-cols-3 gap-2">
-                    <button type="button" onclick="changeFilter('horizon', '24h')" id="h-24h" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Today</button>
-                    <button type="button" onclick="changeFilter('horizon', '1w')" id="h-1w" class="select-btn py-2.5 rounded-xl text-xs font-bold">1 Week</button>
-                    <button type="button" onclick="changeFilter('horizon', '1m')" id="h-1m" class="select-btn py-2.5 rounded-xl text-xs font-bold">1 Month</button>
-                </div>
-            </div>
-            <div id="lbl-engine" class="pt-4 border-t border-gray-800 mt-4 text-[11px] text-emerald-400 font-mono flex items-center justify-between">
-                <span>✔ Real-Time Supabase Feed Active</span>
-                <button type="button" onclick="fetchLiveMarketData()" class="text-blue-400 hover:underline cursor-pointer">🔄 Sync</button>
-            </div>
-        </div>
-
-        <!-- 3. Shortlist Capacity Dropdown Box -->
-        <div class="control-panel p-5 sm:p-6 rounded-2xl flex flex-col justify-between">
-            <div>
-                <label id="lbl-shortlist" class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-3">3. Shortlist Capacity</label>
-                <select id="shortlistSelect" onchange="updateLimit(this.value)" class="w-full bg-[#1b263b] border border-gray-700 text-white font-bold text-xs rounded-xl px-3 py-3.5 focus:outline-none focus:border-blue-500 cursor-pointer">
-                    <option value="3" id="opt-3">Top 3 Assets (Free Limit)</option>
-                    <option value="5" id="opt-5">Top 5 Assets</option>
-                    <option value="10" id="opt-10" selected>Top 10 Assets</option>
-                    <option value="15" id="opt-15">Top 15 Assets</option>
-                    <option value="20" id="opt-20">Top 20 Assets (Max)</option>
-                </select>
-            </div>
-            <p id="limitNote" class="text-[11px] text-gray-400 mt-4 font-mono">Free plan locked to Top 3 (Server Enforced).</p>
-        </div>
-
-    </div>
-
-    <!-- Shortlisted Assets Grid -->
-    <div id="gridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-16">
-        <div class="col-span-full text-center py-16 text-gray-400 font-mono bg-[#0b1326] rounded-2xl border border-gray-800">
-            Connecting to Supabase Intelligence Engine...
-        </div>
-    </div>
-
-    <!-- SaaS Pricing Plans Section -->
-    <section class="mb-16 pt-8 border-t border-gray-800">
-        <div class="text-center mb-10">
-            <h2 id="pricing-title" class="text-xl sm:text-2xl font-extrabold text-white mb-2">Institutional SaaS Membership Tiers</h2>
-            <p id="pricing-subtitle" class="text-xs text-gray-400">Real-time institutional screening, Telegram signals, and multi-asset projections.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Free Tier -->
-            <div class="terminal-card p-6 rounded-2xl flex flex-col justify-between">
-                <div>
-                    <span id="tier-free-badge" class="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-xs font-bold">Free Tier</span>
-                    <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$0 <span class="text-xs text-gray-400 font-normal">/ lifetime</span></h3>
-                    <p id="tier-free-desc" class="text-xs text-gray-400 mb-6">Basic multi-asset research for beginners.</p>
-                    <ul class="space-y-3 text-xs text-gray-300 mb-8">
-                        <li id="tier-free-f1">✔ Top 3 Assets Only (Server Enforced)</li>
-                        <li id="tier-free-f2">✔ Today (24h) Horizon</li>
-                        <li id="tier-free-f3">❌ 1 Week & 1 Month Locked</li>
-                        <li id="tier-free-f4">❌ Telegram Bot Alerts</li>
-                    </ul>
-                </div>
-                <button id="btn-current-plan" class="w-full py-2.5 bg-gray-900 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed border border-gray-800">Current Plan</button>
-            </div>
-
-            <!-- Pro Monthly Tier -->
-            <div class="terminal-card p-6 rounded-2xl flex flex-col justify-between">
-                <div>
-                    <span class="px-3 py-1 bg-blue-500/15 text-blue-400 rounded-full text-xs font-bold border border-blue-500/30">Pro Monthly</span>
-                    <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$5 <span class="text-xs text-gray-400 font-normal">/ month</span></h3>
-                    <p id="tier-pro-desc" class="text-xs text-gray-400 mb-6">Full institutional intelligence on monthly basis.</p>
-                    <ul class="space-y-3 text-xs text-gray-300 mb-8">
-                        <li id="tier-pro-f1">✔ Crypto, Forex & Stocks Unlocked</li>
-                        <li id="tier-pro-f2">✔ Up to 20 Shortlisted Assets</li>
-                        <li id="tier-pro-f3">✔ 1 Week & 1 Month Projections</li>
-                        <li id="tier-pro-f4">✔ Instant Telegram Bot Alerts</li>
-                    </ul>
-                </div>
-                <button type="button" onclick="openPaymentModal('Pro Monthly ($5/mo)', '5')" id="btn-upgrade-pro" class="w-full py-2.5 bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold transition rounded-xl border border-gray-700 cursor-pointer">Get Monthly ($5)</button>
-            </div>
-
-            <!-- VIP 2-Year Mega Deal ($49) -->
-            <div class="terminal-card p-6 rounded-2xl border-2 border-amber-500/80 shadow-2xl shadow-amber-500/20 flex flex-col justify-between relative bg-gradient-to-b from-[#141d33] to-[#0e1628]">
-                <span class="absolute -top-3 right-6 bg-gradient-to-r from-amber-500 to-orange-500 text-black text-[10px] font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-lg">🔥 1 Year Free (Mega Deal)</span>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-xs font-extrabold border border-amber-500/40">VIP 2-Year Pass</span>
-                        <span class="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Save ~60%</span>
-                    </div>
-                    
-                    <div class="mt-4 mb-1 flex items-baseline gap-2">
-                        <h3 class="text-3xl font-black text-white">$49</h3>
-                        <span class="text-xs text-gray-400 line-through font-mono">$120</span>
-                        <span class="text-xs text-amber-300 font-bold">/ 2 Full Years</span>
-                    </div>
-                    <p id="tier-vip-desc" class="text-[11px] text-gray-400 mb-6">১২ মাসের রেগুলার ফি $৬০, সাথে আরও ১ বছর সম্পূর্ণ ফ্রি ($১২০ ভ্যালু মাত্র $৪৯ এ)।</p>
-                    
-                    <ul class="space-y-3 text-xs text-gray-200 mb-8 font-medium">
-                        <li id="tier-vip-f1" class="flex items-center gap-2 text-amber-300">✔ <b>24 Months Complete Access</b> (12 Mos + 12 Mos Free)</li>
-                        <li id="tier-vip-f2">✔ Real-Time Zero-Latency Institutional Feed</li>
-                        <li id="tier-vip-f3">✔ Crypto, Forex & US Dark Pool Blocks</li>
-                        <li id="tier-vip-f4">✔ Private VIP Telegram Auto-Alerts</li>
-                    </ul>
-                </div>
-                <button type="button" onclick="openPaymentModal('VIP 2-Year Special Deal ($49)', '49')" id="btn-upgrade-vip" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-black text-xs rounded-xl transition shadow-lg shadow-amber-500/30 cursor-pointer uppercase tracking-wider">
-                    Claim 2-Year Deal ($49)
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Binance Pay / Crypto Payment Modal -->
-    <div id="paymentModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
-        <div class="terminal-card w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
-            <button type="button" onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
-            <h3 class="text-lg font-bold text-white mb-2">Binance Pay Checkout</h3>
-            <p id="payPlanName" class="text-xs text-blue-400 font-semibold mb-4"></p>
-            
-            <div class="bg-[#131d31] p-4 rounded-xl border border-gray-700 mb-4 space-y-2 text-xs">
-                <p class="text-gray-300">1. Send exact amount via <b class="text-white">Binance Pay</b> or <b class="text-white">USDT (TRC20/BEP20)</b>.</p>
-                <p class="text-gray-300">2. Binance Pay UID: <b class="text-emerald-400 font-mono text-sm">520327779</b></p>
-                <p class="text-gray-300">3. After payment, submit your transaction hash/ID below:</p>
-            </div>
-
-            <div class="space-y-3">
-                <input type="text" id="payTrxId" placeholder="Enter Transaction ID / Hash" class="w-full bg-[#131d31] border border-gray-700 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
-                <button type="button" onclick="submitPaymentOrder()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Submit Payment for Approval</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Enhanced Auth Modal with Feedback Box -->
-    <div id="authModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
-        <div class="terminal-card w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
-            <button type="button" onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
-            <h3 id="authTitle" class="text-lg font-bold text-white mb-2">Login to GreatNexa</h3>
-            <p class="text-xs text-gray-400 mb-4">Access institutional research setups and signals.</p>
-
-            <div id="authFeedback" class="hidden text-xs p-3 rounded-xl mb-4 border font-medium"></div>
-
-            <div class="space-y-3">
-                <div>
-                    <label class="block text-[11px] text-gray-400 mb-1">Email Address</label>
-                    <input type="email" id="authEmail" placeholder="your@email.com" class="w-full bg-[#131d31] border border-gray-700 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-[11px] text-gray-400 mb-1">Password</label>
-                    <input type="password" id="authPassword" placeholder="••••••••" class="w-full bg-[#131d31] border border-gray-700 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
-                </div>
-                <button type="button" onclick="handleAuthAction()" id="authSubmitBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Login</button>
-                <div class="flex justify-between items-center text-xs text-gray-400 pt-2">
-                    <span id="authToggleText">Don't have an account?</span>
-                    <button type="button" onclick="toggleAuthMode()" id="authToggleBtn" class="text-blue-400 hover:underline font-semibold cursor-pointer">Sign Up</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Live TradingView Chart Modal -->
-    <div id="chartModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
-        <div class="terminal-card w-full max-w-4xl rounded-2xl overflow-hidden border border-gray-700 shadow-2xl">
-            <div class="flex justify-between items-center px-5 py-4 border-b border-gray-800 bg-[#0b111e]">
-                <h3 id="modalTitle" class="font-bold text-white text-xs">Live Institutional Chart</h3>
-                <button type="button" onclick="closeChart()" class="text-gray-400 hover:text-white text-lg font-bold px-2 cursor-pointer">&times;</button>
-            </div>
-            <div id="tv_chart_container" class="h-[400px] sm:h-[450px] w-full bg-black"></div>
-        </div>
-    </div>
-
-    <script src="https://s3.tradingview.com/tv.js"></script>
-    <script>
-        const SUPABASE_URL = 'https://esqhansnosejkqapuhoo.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDk0MDMsImV4cCI6MjEwMjI4NTQwM30.ePcRYy5_B193R4S1MXw3slF5amFseCv1sSCAUyH59ok';
-        
-        let _supabase = null;
-        try {
-            if (window.supabase) {
-                _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            }
-        } catch (e) {
-            console.error("Supabase Client Init Error:", e);
-        }
-
-        // ১০টি ভাষার সম্পূর্ণ অনুবাদ ডিকশনারি
-        const i18n = {
-            en: {
-                subtitle: "Institutional Multi-Asset Research Engine",
-                tabActive: "Live Setups",
-                tabArchive: "Hall of Fame",
-                store: "📦 Digital Store",
-                styleAll: "All Market Alpha",
-                styleScalp: "Scalper",
-                styleDay: "Day Trader",
-                styleSwing: "Swing Trader",
-                adaptiveEngine: "Adaptive Engine:",
-                lblMarket: "1. Select Asset Market",
-                lblHorizon: "2. Projection Horizon",
-                lblShortlist: "3. Shortlist Capacity",
-                lblMode: "Execution Mode:",
-                lblDirection: "Direction Setup:",
-                lblEngine: "✔ Real-Time Supabase Feed Active",
-                limitNote: "Free plan locked to Top 3 (Server Enforced).",
-                today: "Today",
-                week1: "1 Week",
-                month1: "1 Month",
-                buyLong: "🟢 Buy / Long",
-                sellShort: "🔴 Sell / Short",
-                opt3: "Top 3 Assets (Free Limit)",
-                opt5: "Top 5 Assets",
-                opt10: "Top 10 Assets",
-                opt15: "Top 15 Assets",
-                opt20: "Top 20 Assets (Max)",
-                pricingTitle: "Institutional SaaS Membership Tiers",
-                pricingSub: "Real-time institutional screening, Telegram signals, and multi-asset projections.",
-                currentPlan: "Current Plan",
-                upgradePro: "Get Monthly ($5)",
-                upgradeVip: "Claim 2-Year Deal ($49)",
-                noteLabel: "Research Note:",
-                flowLabel: "Order Flow:",
-                catalystLabel: "Key Catalyst:",
-                potentialLabel: "Est. Potential:",
-                levelSetup: "Level Setup:",
-                viewChart: "View Chart",
-                activeSetup: "✔ Active Setup",
-                tpReached: "🎯 TP Reached",
-                invalidated: "⛔ Invalidated",
-                lockedTitle: "High-Potential Setup Locked"
-            },
-            bn: {
-                subtitle: "ইনস্টিটিউশনাল মাল্টি-অ্যাসেট রিসার্চ ইঞ্জিন",
-                tabActive: "লাইভ সেটআপ",
-                tabArchive: "হল অব ফেম",
-                store: "📦 ডিজিটাল স্টোর",
-                styleAll: "অল মার্কেট আলফা",
-                styleScalp: "স্ক্যাল্পার",
-                styleDay: "ডে ট্রেডার",
-                styleSwing: "সুইং ট্রেডার",
-                adaptiveEngine: "অ্যাডাপ্টিভ ইঞ্জিন:",
-                lblMarket: "১. অ্যাসেট মার্কেট নির্বাচন করুন",
-                lblHorizon: "২. প্রজেকশন টাইমফ্রেম",
-                lblShortlist: "৩. শর্টলিস্ট ধারণক্ষমতা",
-                lblMode: "এক্সিকিউশন মোড:",
-                lblDirection: "ডিরেকশন সেটআপ:",
-                lblEngine: "✔ লাইভ সুপাবেস রিয়েল-টাইম ফিড সক্রিয়",
-                limitNote: "ফ্রি প্ল্যান সর্বোচ্চ ৩টি অ্যাসেটে সীমাবদ্ধ (সার্ভার নিয়ন্ত্রিত)।",
-                today: "আজ",
-                week1: "১ সপ্তাহ",
-                month1: "১ মাস",
-                buyLong: "🟢 বাই / লং",
-                sellShort: "🔴 সেল / শর্ট",
-                opt3: "শীর্ষ ৩টি অ্যাসেট (ফ্রি সীমা)",
-                opt5: "শীর্ষ ৫টি অ্যাসেট",
-                opt10: "শীর্ষ ১০টি অ্যাসেট",
-                opt15: "শীর্ষ ১৫টি অ্যাসেট",
-                opt20: "শীর্ষ ২০টি অ্যাসেট (সর্বোচ্চ)",
-                pricingTitle: "ইনস্টিটিউশনাল SaaS মেম্বারশিপ টায়ার",
-                pricingSub: "রিয়েল-টাইম প্রাতিষ্ঠানিক স্ক্রিনিং, টেলিগ্রাম সিগন্যাল এবং মাল্টি-অ্যাসেট প্রজেকশন।",
-                currentPlan: "বর্তমান প্ল্যান",
-                upgradePro: "মাসিক নিন ($৫)",
-                upgradeVip: "২ বছরের অফার নিন ($৪৯)",
-                noteLabel: "রিসার্চ নোট:",
-                flowLabel: "অর্ডার ফ্লো:",
-                catalystLabel: "মূল অনুঘটক:",
-                potentialLabel: "সম্ভাব্য প্রফিট:",
-                levelSetup: "লেভেল সেটআপ:",
-                viewChart: "চার্ট দেখুন",
-                activeSetup: "✔ সক্রিয় সেটআপ",
-                tpReached: "🎯 টিপি সম্পন্ন",
-                invalidated: "⛔ বাতিলকৃত",
-                lockedTitle: "হাই-পোটেনশিয়াল সেটআপ লক করা আছে"
-            },
-            hi: {
-                subtitle: "संस्थागत मल्टी-एसेट रिसर्च इंजन",
-                tabActive: "लाइव सेटअप",
-                tabArchive: "हॉल ऑफ फेम",
-                store: "📦 डिजिटल स्टोर",
-                styleAll: "ऑल मार्केट अल्फा",
-                styleScalp: "स्कैल्पर",
-                styleDay: "डे ट्रेडर",
-                styleSwing: "स्विंग ट्रेडर",
-                adaptiveEngine: "अडैप्टिव इंजन:",
-                lblMarket: "1. एसेट मार्केट चुनें",
-                lblHorizon: "2. प्रोजेक्शन टाइमफ्रेम",
-                lblShortlist: "3. शॉर्टलिस्ट क्षमता",
-                lblMode: "एग्जीक्यूशन मोड:",
-                lblDirection: "दिशा सेटअप:",
-                lblEngine: "✔ लाइव सुपाबेस रीयल-टाइम फ़ीड सक्रिय",
-                limitNote: "फ्री प्लान टॉप 3 एसेट्स तक सीमित (सर्वर नियंत्रित)।",
-                today: "आज",
-                week1: "1 सप्ताह",
-                month1: "1 महीना",
-                buyLong: "🟢 खरीदें / लॉन्ग",
-                sellShort: "🔴 बेचें / शॉर्ट",
-                opt3: "शीर्ष 3 एसेट्स (फ्री सीमा)",
-                opt5: "शीर्ष 5 एसेट्स",
-                opt10: "शीर्ष 10 एसेट्स",
-                opt15: "शीर्ष 15 एसेट्स",
-                opt20: "शीर्ष 20 एसेट्स (अधिकतम)",
-                pricingTitle: "संस्थागत SaaS सदस्यता स्तर",
-                pricingSub: "रीयल-टाइम स्क्रीनिंग, टेलीग्राम सिग्नल और मल्टी-एसेट अनुमान।",
-                currentPlan: "वर्तमान प्लान",
-                upgradePro: "मंथली लें ($5)",
-                upgradeVip: "2 साल का ऑफर लें ($49)",
-                noteLabel: "रिसर्च नोट:",
-                flowLabel: "ऑर्डर फ्लो:",
-                catalystLabel: "मुख्य उत्प्रेरक:",
-                potentialLabel: "अनुमानित लाभ:",
-                levelSetup: "लेवल सेटअप:",
-                viewChart: "चार्ट देखें",
-                activeSetup: "✔ सक्रिय सेटअप",
-                tpReached: "🎯 टीपी प्राप्त",
-                invalidated: "⛔ अमान्य",
-                lockedTitle: "प्रीमियम सेटअप लॉक है"
-            },
-            ur: {
-                subtitle: "ادارہ جاتی ملٹی اثاثہ ریسرچ انجن",
-                tabActive: "لائیو سیٹ اپس",
-                tabArchive: "ہال آف فیم",
-                store: "📦 ڈیجیٹل اسٹور",
-                styleAll: "تمام مارکیٹ الفا",
-                styleScalp: "اسکیلپر",
-                styleDay: "ڈے ٹریڈر",
-                styleSwing: "سوئنگ ٹریڈر",
-                adaptiveEngine: "اڈاپٹیو انجن:",
-                lblMarket: "1۔ مارکیٹ کا انتخاب کریں",
-                lblHorizon: "2۔ تخمینی مدت",
-                lblShortlist: "3۔ شارٹ لسٹ کی گنجائش",
-                lblMode: "عملدرآمد موڈ:",
-                lblDirection: "سمت کا تعین:",
-                lblEngine: "✔ لائیو سپابیس ڈیٹا فعال ہے",
-                limitNote: "مفت پلان ٹاپ 3 اثاثوں تک محدود ہے۔",
-                today: "آج",
-                week1: "1 ہفتہ",
-                month1: "1 مہینہ",
-                buyLong: "🟢 خریدیں / لانگ",
-                sellShort: "🔴 بیچیں / شارٹ",
-                opt3: "ٹاپ 3 اثاثے (مفت حد)",
-                opt5: "ٹاپ 5 اثاثے",
-                opt10: "ٹاپ 10 اثاثے",
-                opt15: "ٹاپ 15 اثاثے",
-                opt20: "ٹاپ 20 اثاثے (زیادہ سے زیادہ)",
-                pricingTitle: "ادارہ جاتی رکنیت کے درجات",
-                pricingSub: "ریئل ٹائم اسکریننگ، ٹیلیگرام سگنلز، اور ملٹی اثاثہ تخمینہ۔",
-                currentPlan: "موجودہ پلان",
-                upgradePro: "ماہانہ لیں ($5)",
-                upgradeVip: "2 سالہ آفر حاصل کریں ($49)",
-                noteLabel: "ریسرچ نوٹ:",
-                flowLabel: "آرڈر فلو:",
-                catalystLabel: "اہم محرک:",
-                potentialLabel: "متوقع منافع:",
-                levelSetup: "لیول سیٹ اپ:",
-                viewChart: "چارٹ دیکھیں",
-                activeSetup: "✔ فعال سیٹ اپ",
-                tpReached: "🎯 ہدف مکمل",
-                invalidated: "⛔ منسوخ شدہ",
-                lockedTitle: "اعلی صلاحیت کا سیٹ اپ مقفل ہے"
-            },
-            ru: {
-                subtitle: "Институциональный движок анализа активов",
-                tabActive: "Сетапы онлайн",
-                tabArchive: "Зал славы",
-                store: "📦 Магазин",
-                styleAll: "Все рынки",
-                styleScalp: "Скальпер",
-                styleDay: "Дейтрейдер",
-                styleSwing: "Свинг-трейдер",
-                adaptiveEngine: "Адаптивный движок:",
-                lblMarket: "1. Выберите рынок активов",
-                lblHorizon: "2. Горизонт прогноза",
-                lblShortlist: "3. Количество активов",
-                lblMode: "Режим торговли:",
-                lblDirection: "Направление сделки:",
-                lblEngine: "✔ Прямое подключение к Supabase активно",
-                limitNote: "Бесплатный план ограничен 3 активами.",
-                today: "Сегодня",
-                week1: "1 неделя",
-                month1: "1 месяц",
-                buyLong: "🟢 Покупка / Long",
-                sellShort: "🔴 Продажа / Short",
-                opt3: "Топ-3 актива (Бесплатно)",
-                opt5: "Топ-5 активов",
-                opt10: "Топ-10 активов",
-                opt15: "Топ-15 активов",
-                opt20: "Топ-20 активов (Макс)",
-                pricingTitle: "Тарифные планы SaaS",
-                pricingSub: "Институциональный скрининг, сигналы в Telegram и прогнозы по активам.",
-                currentPlan: "Текущий план",
-                upgradePro: "Ежемесячно ($5)",
-                upgradeVip: "План на 2 года ($49)",
-                noteLabel: "Аналитическая заметка:",
-                flowLabel: "Поток ордеров:",
-                catalystLabel: "Драйвер движения:",
-                potentialLabel: "Потенциал сделки:",
-                levelSetup: "Ценовые уровни:",
-                viewChart: "Открыть график",
-                activeSetup: "✔ Активный сетап",
-                tpReached: "🎯 Тейк-профит взят",
-                invalidated: "⛔ Недействителен",
-                lockedTitle: "Премиум-сетап заблокирован"
-            },
-            es: {
-                subtitle: "Motor Institucional de Investigación de Activos",
-                tabActive: "Setups en Vivo",
-                tabArchive: "Salón de la Fama",
-                store: "📦 Tienda Digital",
-                styleAll: "Todo el Mercado",
-                styleScalp: "Scalper",
-                styleDay: "Day Trader",
-                styleSwing: "Swing Trader",
-                adaptiveEngine: "Motor Adaptativo:",
-                lblMarket: "1. Seleccione el Mercado",
-                lblHorizon: "2. Horizonte de Proyección",
-                lblShortlist: "3. Capacidad de Lista",
-                lblMode: "Modo de Ejecución:",
-                lblDirection: "Dirección:",
-                lblEngine: "✔ Feed en tiempo real activo",
-                limitNote: "Plan gratuito limitado a 3 activos.",
-                today: "Hoy",
-                week1: "1 Semana",
-                month1: "1 Mes",
-                buyLong: "🟢 Comprar / Long",
-                sellShort: "🔴 Vender / Short",
-                opt3: "Top 3 Activos (Gratis)",
-                opt5: "Top 5 Activos",
-                opt10: "Top 10 Activos",
-                opt15: "Top 15 Activos",
-                opt20: "Top 20 Activos (Máx)",
-                pricingTitle: "Niveles de Suscripción SaaS",
-                pricingSub: "Escaneo en tiempo real, alertas de Telegram y proyecciones multiactivo.",
-                currentPlan: "Plan Actual",
-                upgradePro: "Mensual ($5)",
-                upgradeVip: "Oferta 2 Años ($49)",
-                noteLabel: "Nota de Análisis:",
-                flowLabel: "Flujo de Órdenes:",
-                catalystLabel: "Catalizador Clave:",
-                potentialLabel: "Potencial Estimado:",
-                levelSetup: "Niveles de Entrada:",
-                viewChart: "Ver Gráfico",
-                activeSetup: "✔ Setup Activo",
-                tpReached: "🎯 TP Alcanzado",
-                invalidated: "⛔ Invalidado",
-                lockedTitle: "Setup Exclusivo Bloqueado"
-            },
-            zh: {
-                subtitle: "机构级多资产投研引擎",
-                tabActive: "实时策略",
-                tabArchive: "荣誉殿堂",
-                store: "📦 数字商城",
-                styleAll: "全市场 Alpha",
-                styleScalp: "超短线 (Scalper)",
-                styleDay: "日内交易 (Day)",
-                styleSwing: "波段交易 (Swing)",
-                adaptiveEngine: "自适应引擎:",
-                lblMarket: "1. 选择资产市场",
-                lblHorizon: "2. 预测周期",
-                lblShortlist: "3. 推荐榜容量",
-                lblMode: "交易模式:",
-                lblDirection: "交易方向:",
-                lblEngine: "✔ Supabase 实时数据已连接",
-                limitNote: "免费版受服务器策略限制仅展示前 3 个标的。",
-                today: "今日 (24h)",
-                week1: "1 周",
-                month1: "1 个月",
-                buyLong: "🟢 做多 / Long",
-                sellShort: "🔴 做空 / Short",
-                opt3: "前 3 标的 (免费)",
-                opt5: "前 5 标的",
-                opt10: "前 10 标的",
-                opt15: "前 15 标的",
-                opt20: "前 20 标的 (最大)",
-                pricingTitle: "机构级 SaaS 会员层级",
-                pricingSub: "提供实时机构级筛选、Telegram 信号提醒及多资产预测。",
-                currentPlan: "当前方案",
-                upgradePro: "月度订阅 ($5)",
-                upgradeVip: "尊享 2 年特惠 ($49)",
-                noteLabel: "研究报告:",
-                flowLabel: "资金流向:",
-                catalystLabel: "核心驱动:",
-                potentialLabel: "预期收益:",
-                levelSetup: "点位策略:",
-                viewChart: "查看图表",
-                activeSetup: "✔ 策略生效中",
-                tpReached: "🎯 已止盈 (TP)",
-                invalidated: "⛔ 已失效 (SL)",
-                lockedTitle: "高胜率策略已锁定"
-            },
-            ar: {
-                subtitle: "محرك أبحاث الأصول المؤسسية المتعددة",
-                tabActive: "التوصيات الحية",
-                tabArchive: "قاعة المشاهير",
-                store: "📦 المتجر الرقمي",
-                styleAll: "جميع الأسواق",
-                styleScalp: "مضاربة سريعة",
-                styleDay: "تداول يومي",
-                styleSwing: "تداول متأرجح",
-                adaptiveEngine: "المحرك التكيفي:",
-                lblMarket: "1. حدد سوق الأصول",
-                lblHorizon: "2. الأفق الزمني",
-                lblShortlist: "3. سعة القائمة",
-                lblMode: "وضع التنفيذ:",
-                lblDirection: "الاتجاه:",
-                lblEngine: "✔ التغذية الحية لقاعدة البيانات نشطة",
-                limitNote: "الخطة المجانية مقيدة بـ 3 أصول فقط.",
-                today: "اليوم",
-                week1: "أسبوع",
-                month1: "شهر",
-                buyLong: "🟢 شراء / Long",
-                sellShort: "🔴 بيع / Short",
-                opt3: "أفضل 3 أصول (مجاني)",
-                opt5: "أفضل 5 أصول",
-                opt10: "أفضل 10 أصول",
-                opt15: "أفضل 15 أصول",
-                opt20: "أفضل 20 أصول (أقصى)",
-                pricingTitle: "باقات اشتراك SaaS المؤسسية",
-                pricingSub: "فحص فوري، تنبيهات تيليجرام، وتوقعات متعددة للأصول.",
-                currentPlan: "الخطة الحالية",
-                upgradePro: "شهري ($5)",
-                upgradeVip: "عرض سنتين ($49)",
-                noteLabel: "تقرير التحليل:",
-                flowLabel: "تدفق السيولة:",
-                catalystLabel: "المحفز الرئيسي:",
-                potentialLabel: "العائد المتوقع:",
-                levelSetup: "إعداد المستويات:",
-                viewChart: "عرض الرسم البياني",
-                activeSetup: "✔ إعداد نشط",
-                tpReached: "🎯 تم تحقيق الهدف",
-                invalidated: "⛔ ملغى",
-                lockedTitle: "التوصية مقفلة"
-            },
-            vi: {
-                subtitle: "Công Cụ Nghiên Cứu Đa Tài Sản Tổ Chức",
-                tabActive: "Chiến Lược Trực Tiếp",
-                tabArchive: "Bảng Danh Dự",
-                store: "📦 Cửa Hàng Số",
-                styleAll: "Tất Cả Thị Trường",
-                styleScalp: "Scalper",
-                styleDay: "Day Trader",
-                styleSwing: "Swing Trader",
-                adaptiveEngine: "Động Cơ Thích Ứng:",
-                lblMarket: "1. Chọn Thị Trường",
-                lblHorizon: "2. Khung Thời Gian",
-                lblShortlist: "3. Số Lượng Tài Sản",
-                lblMode: "Chế Độ Giao Dịch:",
-                lblDirection: "Xu Hướng:",
-                lblEngine: "✔ Kết Nối Supabase Hoạt Động",
-                limitNote: "Gói miễn phí giới hạn 3 tài sản.",
-                today: "Hôm nay",
-                week1: "1 Tuần",
-                month1: "1 Tháng",
-                buyLong: "🟢 Mua / Long",
-                sellShort: "🔴 Bán / Short",
-                opt3: "Top 3 Tài Sản (Miễn phí)",
-                opt5: "Top 5 Tài Sản",
-                opt10: "Top 10 Tài Sản",
-                opt15: "Top 15 Tài Sản",
-                opt20: "Top 20 Tài Sản (Tối đa)",
-                pricingTitle: "Các Gói Thành Viên SaaS",
-                pricingSub: "Sàng lọc tổ chức thời gian thực, tín hiệu Telegram và dự báo đa tài sản.",
-                currentPlan: "Gói Hiện Tại",
-                upgradePro: "Gói Tháng ($5)",
-                upgradeVip: "Gói 2 Năm Siêu Rẻ ($49)",
-                noteLabel: "Ghi Chú Phân Tích:",
-                flowLabel: "Dòng Lệnh:",
-                catalystLabel: "Chất Xúc Tác:",
-                potentialLabel: "Lợi Nhuận Dự Kiến:",
-                levelSetup: "Thiết Lập Mức Giá:",
-                viewChart: "Xem Biểu Đồ",
-                activeSetup: "✔ Kèo Đang Chạy",
-                tpReached: "🎯 Đạt Mục Tiêu (TP)",
-                invalidated: "⛔ Đã Dừng Lỗ (SL)",
-                lockedTitle: "Kèo Đẳng Cấp Đang Bị Khóa"
-            },
-            tr: {
-                subtitle: "Kurumsal Çoklu Varlık Araştırma Motoru",
-                tabActive: "Canlı Formasyonlar",
-                tabArchive: "Onur Listesi",
-                store: "📦 Dijital Mağaza",
-                styleAll: "Tüm Piyasa Alfa",
-                styleScalp: "Scalper",
-                styleDay: "Günlük Yatırımcı",
-                styleSwing: "Swing Yatırımcı",
-                adaptiveEngine: "Uyarlanabilir Motor:",
-                lblMarket: "1. Varlık Piyasasını Seçin",
-                lblHorizon: "2. Tahmin Süresi",
-                lblShortlist: "3. Liste Kapasitesi",
-                lblMode: "İşlem Modu:",
-                lblDirection: "Yön Kurulumu:",
-                lblEngine: "✔ Gerçek Zamanlı Supabase Yayını Aktif",
-                limitNote: "Ücretsiz plan sunucu tarafından İlk 3 varlıkla sınırlandırılmıştır.",
-                today: "Bugün",
-                week1: "1 Hafta",
-                month1: "1 Ay",
-                buyLong: "🟢 Al / Long",
-                sellShort: "🔴 Sat / Short",
-                opt3: "İlk 3 Varlık (Ücretsiz)",
-                opt5: "İlk 5 Varlık",
-                opt10: "İlk 10 Varlık",
-                opt15: "İlk 15 Varlık",
-                opt20: "İlk 20 Varlık (Maks)",
-                pricingTitle: "Kurumsal SaaS Üyelik Planları",
-                pricingSub: "Gerçek zamanlı tarama, Telegram sinyalleri ve çoklu varlık projeksiyonları.",
-                currentPlan: "Mevcut Plan",
-                upgradePro: "Aylık Al ($5)",
-                upgradeVip: "2 Yıllık Fırsat ($49)",
-                noteLabel: "Araştırma Notu:",
-                flowLabel: "Emir Akışı:",
-                catalystLabel: "Ana Katalizör:",
-                potentialLabel: "Tahmini Kar:",
-                levelSetup: "Seviye Kurulumu:",
-                viewChart: "Grafiği Aç",
-                activeSetup: "✔ Aktif Kurulum",
-                tpReached: "🎯 TP'ye Ulaşıldı",
-                invalidated: "⛔ İptal Oldu",
-                lockedTitle: "Yüksek Potansiyelli Kurulum Kilitli"
-            }
-        };
-
-        let currentLang = 'en';
-        let state = { 
-            market: 'crypto', 
-            horizon: '24h', 
-            limit: 10, 
-            role: 'free', 
-            tradingMode: 'mode2', 
-            direction: 'long', 
-            viewTab: 'active',
-            traderStyle: 'all'
-        };
-        let liveMarketData = [];
-        let selectedPlan = '';
-        let isSignUpMode = false;
-
-        function changeLanguage(lang) {
-            currentLang = i18n[lang] ? lang : 'en';
-            const t = i18n[currentLang];
-            const get = (id) => document.getElementById(id);
-
-            // RTL (Right-to-Left) সাপোর্ট (উর্দু এবং আরবি ভাষার জন্য)
-            if (currentLang === 'ur' || currentLang === 'ar') {
-                document.documentElement.dir = 'rtl';
-            } else {
-                document.documentElement.dir = 'ltr';
-            }
-
-            // হেডার ও নেভিগেশন
-            if (get('header-subtitle')) get('header-subtitle').innerText = t.subtitle;
-            if (get('tab-active')) get('tab-active').innerText = t.tabActive;
-            if (get('tab-archive')) get('tab-archive').innerText = t.tabArchive;
-            if (get('btn-store')) get('btn-store').innerText = t.store;
-            if (get('txt-style-all')) get('txt-style-all').innerText = t.styleAll;
-            if (get('txt-style-scalp')) get('txt-style-scalp').innerText = t.styleScalp;
-            if (get('txt-style-day')) get('txt-style-day').innerText = t.styleDay;
-            if (get('txt-style-swing')) get('txt-style-swing').innerText = t.styleSwing;
-            if (get('txt-adaptive-engine')) get('txt-adaptive-engine').innerText = t.adaptiveEngine;
-
-            // কন্ট্রোল প্যানেল
-            if (get('lbl-market')) get('lbl-market').innerText = t.lblMarket;
-            if (get('lbl-horizon')) get('lbl-horizon').innerText = t.lblHorizon;
-            if (get('lbl-shortlist')) get('lbl-shortlist').innerText = t.lblShortlist;
-            if (get('lbl-mode')) get('lbl-mode').innerText = t.lblMode;
-            if (get('lbl-direction')) get('lbl-direction').innerText = t.lblDirection;
-            if (get('limitNote')) get('limitNote').innerText = t.limitNote;
-            if (get('h-24h')) get('h-24h').innerText = t.today;
-            if (get('h-1w')) get('h-1w').innerText = t.week1;
-            if (get('h-1m')) get('h-1m').innerText = t.month1;
-            if (get('dir-long')) get('dir-long').innerText = t.buyLong;
-            if (get('dir-short')) get('dir-short').innerText = t.sellShort;
-
-            // ড্রপডাউন অপশন
-            if (get('opt-3')) get('opt-3').innerText = t.opt3;
-            if (get('opt-5')) get('opt-5').innerText = t.opt5;
-            if (get('opt-10')) get('opt-10').innerText = t.opt10;
-            if (get('opt-15')) get('opt-15').innerText = t.opt15;
-            if (get('opt-20')) get('opt-20').innerText = t.opt20;
-
-            if (get('lbl-engine')) {
-                get('lbl-engine').innerHTML = `<span>${t.lblEngine}</span><button type="button" onclick="fetchLiveMarketData()" class="text-blue-400 hover:underline cursor-pointer">🔄 Sync</button>`;
-            }
-
-            // প্রাইসিং সেকশন
-            if (get('pricing-title')) get('pricing-title').innerText = t.pricingTitle;
-            if (get('pricing-subtitle')) get('pricing-subtitle').innerText = t.pricingSub;
-            if (get('btn-current-plan')) get('btn-current-plan').innerText = t.currentPlan;
-            if (get('btn-upgrade-pro')) get('btn-upgrade-pro').innerText = t.upgradePro;
-            if (get('btn-upgrade-vip')) get('btn-upgrade-vip').innerText = t.upgradeVip;
-
-            renderCards();
-        }
-
-        function changeTraderStyle(style) {
-            state.traderStyle = style;
-            const styles = ['all', 'scalp', 'day', 'swing'];
-            styles.forEach(s => {
-                const btn = document.getElementById('style-' + s);
-                if (btn) {
-                    btn.className = (s === style) 
-                        ? "style-tab-btn active px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 justify-center" 
-                        : "style-tab-btn px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 justify-center";
-                }
-            });
-
-            const indicator = document.getElementById('activeStyleIndicator');
-            if (indicator) {
-                if (style === 'all') indicator.innerText = "All Institutional Styles";
-                if (style === 'scalp') indicator.innerText = "Scalper Momentum Engine (5M)";
-                if (style === 'day') indicator.innerText = "Day Trader Squeeze Engine (1H)";
-                if (style === 'swing') indicator.innerText = "Swing Liquidity Engine (4H)";
-            }
-
-            fetchLiveMarketData();
-        }
-
-        function switchTab(tab) {
-            state.viewTab = tab;
-            const btnActive = document.getElementById('tab-active');
-            const btnArchive = document.getElementById('tab-archive');
-            const controlPanel = document.getElementById('controlPanel');
-
-            if (tab === 'active') {
-                btnActive.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer shadow";
-                btnArchive.className = "px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
-                controlPanel.style.display = 'grid';
-            } else {
-                btnArchive.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer shadow";
-                btnActive.className = "px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
-                controlPanel.style.display = 'none';
-            }
-            fetchLiveMarketData();
-        }
-
-        function changeFilter(type, val) {
-            state[type] = val;
-            if (type === 'market') {
-                ['crypto', 'forex', 'stocks'].forEach(m => {
-                    const btn = document.getElementById('m-' + m);
-                    if (btn) btn.className = (m === val) ? "select-btn active py-2.5 rounded-xl text-xs font-bold" : "select-btn py-2.5 rounded-xl text-xs font-bold";
-                });
-
-                const btn1 = document.getElementById('btn-mode1');
-                const btn2 = document.getElementById('btn-mode2');
-                if (btn1 && btn2) {
-                    if (val === 'crypto') { btn1.innerText = "Spot"; btn2.innerText = "Futures"; }
-                    else if (val === 'forex') { btn1.innerText = "Standard FX"; btn2.innerText = "Margin / CFD"; }
-                    else if (val === 'stocks') { btn1.innerText = "Cash Market"; btn2.innerText = "F&O / Derivatives"; }
-                }
-            } else if (type === 'horizon') {
-                if (state.role === 'free' && (val === '1w' || val === '1m')) {
-                    alert("1 Week and 1 Month projections are locked for Pro / VIP members. Please upgrade.");
-                    openAuthModal('signup');
-                    return;
-                }
-                ['24h', '1w', '1m'].forEach(h => {
-                    const btn = document.getElementById('h-' + h);
-                    if (btn) btn.className = (h === val) ? "select-btn active py-2.5 rounded-xl text-xs font-bold" : "select-btn py-2.5 rounded-xl text-xs font-bold";
-                });
-            }
-            fetchLiveMarketData();
-        }
-
-        function changeTradingMode(mode) {
-            state.tradingMode = mode;
-            const btn1 = document.getElementById('btn-mode1');
-            const btn2 = document.getElementById('btn-mode2');
-            if (mode === 'mode1') {
-                btn1.className = "py-2 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer";
-                btn2.className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
-            } else {
-                btn2.className = "py-2 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer";
-                btn1.className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
-            }
-            fetchLiveMarketData();
-        }
-
-        function changeDirection(dir) {
-            state.direction = dir;
-            const dirLong = document.getElementById('dir-long');
-            const dirShort = document.getElementById('dir-short');
-            if (dir === 'long') {
-                dirLong.className = "py-2 rounded-lg text-[11px] font-bold bg-emerald-600 text-white border border-emerald-500 transition cursor-pointer";
-                dirShort.className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
-            } else {
-                dirShort.className = "py-2 rounded-lg text-[11px] font-bold bg-rose-600 text-white border border-rose-500 transition cursor-pointer";
-                dirLong.className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
-            }
-            fetchLiveMarketData();
-        }
-
-        function updateLimit(val) {
-            if (state.role === 'free' && parseInt(val) > 3) {
-                alert("Free tier is limited to Top 3 assets by Server Policy. Please upgrade to Pro.");
-                document.getElementById('shortlistSelect').value = "3";
-                state.limit = 3;
-                return;
-            }
-            state.limit = parseInt(val);
-            fetchLiveMarketData();
-        }
-
-        function renderCards() {
-            const container = document.getElementById('gridContainer');
-            if (!container) return;
-
-            const t = i18n[currentLang] || i18n['en'];
-
-            if (state.viewTab === 'archive') {
-                container.innerHTML = `
-                <div class="terminal-card rounded-2xl p-5 border border-emerald-500/30 shadow-xl flex flex-col justify-between col-span-full">
-                    <div>
-                        <div class="flex justify-between items-start mb-3">
-                            <div>
-                                <span class="text-[10px] text-emerald-400 font-mono uppercase tracking-wider">🏛️ ${t.tabArchive}</span>
-                                <h3 class="text-lg font-black text-white mt-0.5">Archived Performance Record</h3>
-                            </div>
-                            <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg text-xs font-bold font-mono">+38.6% Avg Win</span>
-                        </div>
-                        <p class="text-xs text-gray-300 leading-relaxed mb-4">Historical verified institutional setups that successfully triggered target price projection.</p>
-                    </div>
-                </div>`;
-                return;
-            }
-
-            let displayData = liveMarketData;
-
-            if (!displayData || displayData.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400 font-mono bg-black/30 rounded-2xl border border-gray-800">No active setups found matching criteria. Please click "🔄 Sync" or select "All Market Alpha".</div>`;
-                return;
-            }
-
-            const directionBadge = state.direction === 'long' ? t.buyLong : t.sellShort;
-
-            container.innerHTML = displayData.map((item, idx) => {
-                const isLocked = (state.role === 'free' && idx >= 3);
-                const score = item.score || 75;
-                const scoreColor = score >= 85 ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-blue-400 border-blue-500/30 bg-blue-500/10';
-
-                const status = item.status || 'ACTIVE';
-                let statusBadge = `<span class="text-emerald-400 font-medium text-[11px]">${t.activeSetup}</span>`;
-                if(status === 'HIT_TP') {
-                    statusBadge = `<span class="text-emerald-400 font-bold text-[11px] bg-emerald-500/20 px-2 py-0.5 rounded">${t.tpReached}</span>`;
-                } else if(status === 'HIT_SL') {
-                    statusBadge = `<span class="text-rose-400 font-bold text-[11px] bg-rose-500/20 px-2 py-0.5 rounded">${t.invalidated}</span>`;
-                }
-
-                return `
-                <div class="relative terminal-card rounded-2xl p-4 sm:p-5 hover:border-blue-500/40 transition shadow-xl flex flex-col justify-between">
-                    ${isLocked ? `
-                    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#0d1424]/90 backdrop-blur-md rounded-2xl p-6 text-center">
-                        <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold mb-2">🔒 Pro Setup #${idx+1}</span>
-                        <h4 class="text-white font-bold text-sm mb-1">${t.lockedTitle}</h4>
-                        <p class="text-xs text-gray-300 mb-4">Smart Money Score: ${score}/100</p>
-                        <button type="button" onclick="openPaymentModal('Pro Monthly ($5/mo)', '5')" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">${t.upgradePro}</button>
-                    </div>` : ''}
-                    
-                    <div class="${isLocked ? 'locked-blur' : ''}">
-                        <div class="flex justify-between items-start mb-3">
-                            <div>
-                                <span class="text-[10px] ${state.direction === 'long' ? 'text-emerald-400' : 'text-rose-400'} font-mono uppercase tracking-wider">#${idx+1} • ${directionBadge}</span>
-                                <h3 class="text-base sm:text-lg font-black text-white mt-0.5">${item.symbol}</h3>
-                            </div>
-                            <span class="px-2.5 py-1 border rounded-lg text-xs font-bold font-mono ${scoreColor}">
-                                Score: ${score}
-                            </span>
-                        </div>
-                        <div class="flex flex-wrap gap-1.5 mb-3">
-                            <span class="px-2 py-0.5 bg-purple-500/10 border border-purple-500/30 text-purple-300 rounded text-[11px] font-medium">⚡ ${item.stage || 'Institutional Setup'}</span>
-                            <span class="px-2 py-0.5 bg-[#131d31] border border-gray-700/60 text-gray-300 rounded text-[11px] font-mono">24h: ${item.current_change_24h || 0}%</span>
-                            ${item.sector ? `<span class="px-2 py-0.5 bg-blue-500/10 border border-blue-500/30 text-blue-300 rounded text-[11px] font-mono">${item.sector}</span>` : ''}
-                        </div>
-                        <div class="bg-black/40 border border-gray-800/80 rounded-xl p-3 mb-3 space-y-1.5 text-xs font-mono">
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.potentialLabel}</span><span class="text-emerald-400 font-bold">${item.est_potential || '+20%'}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.flowLabel}</span><span class="text-white">${item.flow_metric || 'Active'}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.catalystLabel}</span><span class="text-amber-300">${item.driver_metric || 'Volume Surge'}</span></div>
-                            ${item.mtf_alignment ? `<div class="flex justify-between pt-1 border-t border-gray-800/60"><span class="text-gray-400 text-[10px]">${t.levelSetup}</span><span class="text-indigo-300 text-[10px] font-bold">${item.mtf_alignment}</span></div>` : ''}
-                        </div>
-                        <p class="text-xs text-gray-300 leading-relaxed mb-4 font-sans"><strong class="text-white">${t.noteLabel}</strong> ${item.research_note || 'Smart money volume footprint detected.'}</p>
-                        <div class="pt-3 border-t border-gray-800 flex justify-between items-center text-xs">
-                            ${statusBadge}
-                            <button type="button" onclick="openChart('${item.symbol}', '${item.symbol}')" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition cursor-pointer">📈 ${t.viewChart}</button>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        async function fetchLiveMarketData() {
-            const container = document.getElementById('gridContainer');
-            if(!_supabase) {
-                container.innerHTML = `<div class="col-span-full text-center py-16 text-rose-400 font-mono bg-black/30 rounded-2xl border border-gray-800">Database connection not available.</div>`;
-                return;
-            }
-
-            try {
-                const { data, error } = await _supabase.rpc('get_market_signals', {
-                    p_market: state.market,
-                    p_direction: state.direction,
-                    p_trader_style: state.traderStyle
-                });
-
-                if (error) {
-                    console.warn("RPC Security Gateway Fallback:", error.message);
-                    let query = _supabase
-                        .from('market_research')
-                        .select('*')
-                        .eq('market_type', state.market);
-
-                    if (state.direction) {
-                        query = query.eq('direction', state.direction);
+# ২. মার্কেট প্রাইস ফিড
+def fetch_top_liquid_market():
+    market_pool = {}
+    try:
+        headers = {"User-Agent": "Mozilla/5.0"}
+        r = requests.get("https://data-api.binance.vision/api/v3/ticker/24hr", headers=headers, timeout=8)
+        if r.status_code == 200:
+            for t in r.json():
+                if t['symbol'].endswith('USDT'):
+                    sym = t['symbol'].replace("USDT", "/USDT")
+                    market_pool[sym] = {
+                        "symbol": sym,
+                        "price": float(t.get('lastPrice', 0)),
+                        "high": float(t.get('highPrice', 0)),
+                        "low": float(t.get('lowPrice', 0)),
+                        "change": float(t.get('priceChangePercent', 0)),
+                        "volume_m": round(float(t.get('quoteVolume', 0)) / 1_000_000, 1)
                     }
+    except Exception as e:
+        print(f"[-] প্রাথমিক ফিড ফেইল: {e}")
+    return market_pool
 
-                    const { data: fbData, error: fbError } = await query
-                        .order('score', { ascending: false })
-                        .limit(state.limit);
+# ৩. লাইফসাইকেল ট্র্যাকার (পুরানো সিগন্যাল TP/SL যাচাই ও ইনভ্যালিডেশন)
+def track_and_update_lifecycle(current_prices):
+    print("[*] সক্রিয় ট্রেডগুলোর লাইফসাইকেল নিরীক্ষণ শুরু হচ্ছে...")
+    try:
+        # বর্তমানে যে সিগন্যালগুলো ACTIVE আছে
+        res = supabase.table("market_research").select("*").eq("status", "ACTIVE").execute()
+        active_signals = res.data or []
+        print(f"[i] বর্তমানে ট্র্যাকিংয়ে থাকা সক্রিয় সিগন্যাল: {len(active_signals)} টি")
 
-                    liveMarketData = (!fbError && fbData) ? fbData : [];
-                } else {
-                    liveMarketData = data || [];
-                }
-            } catch (err) {
-                console.error("Data Fetch Error:", err);
-                liveMarketData = [];
-            }
-            renderCards();
-        }
+        for sig in active_signals:
+            sym = sig.get("symbol")
+            if sym not in current_prices:
+                continue
 
-        function showAuthFeedback(msg, isSuccess = false) {
-            const box = document.getElementById('authFeedback');
-            box.className = isSuccess 
-                ? "text-xs p-3 rounded-xl mb-4 border bg-emerald-950/40 text-emerald-300 border-emerald-500/30 block"
-                : "text-xs p-3 rounded-xl mb-4 border bg-rose-950/40 text-rose-300 border-rose-500/30 block";
-            box.innerText = msg;
-        }
+            cur_price = current_prices[sym]["price"]
+            direction = sig.get("direction", "long")
+            sl = float(sig.get("sl_price") or 0)
+            tp = float(sig.get("tp_price") or 0)
+            sig_id = sig.get("id")
 
-        function openAuthModal(mode) {
-            isSignUpMode = (mode === 'signup');
-            document.getElementById('authTitle').innerText = isSignUpMode ? "Create GreatNexa Account" : "Login to GreatNexa";
-            document.getElementById('authSubmitBtn').innerText = isSignUpMode ? "Sign Up" : "Login";
-            document.getElementById('authToggleText').innerText = isSignUpMode ? "Already have an account?" : "Don't have an account?";
-            document.getElementById('authToggleBtn').innerText = isSignUpMode ? "Login" : "Sign Up";
-            document.getElementById('authFeedback').className = "hidden";
-            
-            const modal = document.getElementById('authModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
+            # TP বা SL হিট করেছে কি না যাচাই
+            hit_status = None
+            if direction == "long":
+                if cur_price >= tp and tp > 0:
+                    hit_status = "HIT_TP"
+                elif cur_price <= sl and sl > 0:
+                    hit_status = "HIT_SL"
+            else: # short
+                if cur_price <= tp and tp > 0:
+                    hit_status = "HIT_TP"
+                elif cur_price >= sl and sl > 0:
+                    hit_status = "HIT_SL"
 
-        function closeAuthModal() {
-            const modal = document.getElementById('authModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
+            if hit_status:
+                supabase.table("market_research").update({
+                    "status": hit_status,
+                    "resolved_at": datetime.now(timezone.utc).isoformat()
+                }).eq("id", sig_id).execute()
+                print(f"  -> সিগন্যাল ক্লোজড: {sym} | ফলাফল: {hit_status} | বর্তমান মূল্য: ${fmt_price(cur_price)}")
 
-        function toggleAuthMode() {
-            openAuthModal(isSignUpMode ? 'login' : 'signup');
-        }
+    except Exception as e:
+        print(f"[-] লাইফসাইকেল ট্র্যাকিং ত্রুটি: {e}")
 
-        async function handleAuthAction() {
-            const email = document.getElementById('authEmail').value.trim();
-            const password = document.getElementById('authPassword').value.trim();
-            
-            if(!email || !password) {
-                showAuthFeedback("Please enter both email and password.");
-                return;
-            }
-            if(!_supabase) {
-                showAuthFeedback("Authentication service currently unavailable.");
-                return;
-            }
+# ৪. নতুন হাই-কনভিকশন আলফা সিগন্যাল তৈরি
+def generate_institutional_setups(coin):
+    p = coin['price']
+    chg = coin['change']
+    vol = coin['volume_m']
+    high = coin['high']
+    low = coin['low']
 
-            if(isSignUpMode) {
-                const { data, error } = await _supabase.auth.signUp({ email, password });
-                if(error) {
-                    showAuthFeedback(error.message);
-                } else {
-                    showAuthFeedback("Registration successful! You can now log in.", true);
-                    setTimeout(() => toggleAuthMode(), 1200);
-                }
-            } else {
-                const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
-                if(error) {
-                    showAuthFeedback("Invalid email or password: " + error.message);
-                } else {
-                    showAuthFeedback("Login successful! Loading membership profile...", true);
-                    setTimeout(() => {
-                        closeAuthModal();
-                        checkUserSession();
-                    }, 800);
-                }
-            }
-        }
+    span = high - low
+    volatility_ratio = span / (p + 1e-9)
+    range_pos = (p - low) / (span + 1e-9)
 
-        async function checkUserSession() {
-            const headerSec = document.getElementById('authHeaderSection');
-            if(!_supabase) return;
+    setups = []
 
-            try {
-                const { data: { session } } = await _supabase.auth.getSession();
-                if(session && session.user) {
-                    let userTier = 'free';
-                    const { data, error } = await _supabase.from('user_profiles').select('tier').eq('id', session.user.id).single();
-                    if(data && data.tier) {
-                        userTier = data.tier.toLowerCase();
-                    }
+    # ক) SCALPER
+    scalp_dir = "long" if range_pos >= 0.48 or chg >= 0.5 else "short"
+    scalp_risk = max(0.009, volatility_ratio * 0.18)
+    scalp_reward = scalp_risk * 2.2
+    sl_s = p * (1 - scalp_risk) if scalp_dir == "long" else p * (1 + scalp_risk)
+    tp_s = p * (1 + scalp_reward) if scalp_dir == "long" else p * (1 - scalp_reward)
 
-                    state.role = (userTier === 'vip') ? 'vip' : ((userTier === 'pro') ? 'pro' : 'free');
+    setups.append({
+        "symbol": coin['symbol'],
+        "market_type": "crypto",
+        "horizon": "24h",
+        "direction": scalp_dir,
+        "trading_mode": "mode2",
+        "score": min(98, int(88 + (vol / 50) + (abs(chg) * 0.5))),
+        "stage": "[SCALP] Momentum Flow Ignition",
+        "current_change_24h": round(chg, 2),
+        "sector": "Scalp Engine (5M)",
+        "est_potential": f"+{round(scalp_reward * 100, 1)}%",
+        "flow_metric": f"${vol}M Liquid Flow",
+        "driver_metric": "RVOL Order Burst",
+        "entry_price": p,
+        "sl_price": sl_s,
+        "tp_price": tp_s,
+        "status": "ACTIVE",
+        "mtf_alignment": f"Entry: ${fmt_price(p)} | SL: ${fmt_price(sl_s)}",
+        "research_note": f"অর্ডারবুকে প্রাতিষ্ঠানিক চাপ। ৫ মিনিটের ব্রেকআউট মোমেন্টাম। [TP: ${fmt_price(tp_s)}]"
+    })
 
-                    let tierBadge = '';
-                    if(state.role === 'vip') {
-                        tierBadge = '<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold">VIP MEMBER</span>';
-                        state.limit = 20;
-                    } else if(state.role === 'pro') {
-                        tierBadge = '<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-full font-bold">PRO TRADER</span>';
-                        state.limit = 10;
-                    } else {
-                        tierBadge = '<span class="text-[10px] bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full font-bold">FREE TIER</span>';
-                        state.limit = 3;
-                    }
+    # খ) DAY TRADER
+    day_dir = "long" if range_pos >= 0.35 else "short"
+    day_risk = max(0.019, volatility_ratio * 0.35)
+    day_reward = day_risk * 2.5
+    sl_d = p * (1 - day_risk) if day_dir == "long" else p * (1 + day_risk)
+    tp_d = p * (1 + day_reward) if day_dir == "long" else p * (1 - day_reward)
 
-                    const select = document.getElementById('shortlistSelect');
-                    if(select) select.value = String(state.limit);
+    setups.append({
+        "symbol": coin['symbol'],
+        "market_type": "crypto",
+        "horizon": "24h",
+        "direction": day_dir,
+        "trading_mode": "mode2",
+        "score": 93,
+        "stage": "[DAY] Volatility Squeeze",
+        "current_change_24h": round(chg, 2),
+        "sector": "Day Engine (1H)",
+        "est_potential": f"+{round(day_reward * 100, 1)}%",
+        "flow_metric": "Accumulation Delta",
+        "driver_metric": "Pre-Breakout Squeeze",
+        "entry_price": p,
+        "sl_price": sl_d,
+        "tp_price": tp_d,
+        "status": "ACTIVE",
+        "mtf_alignment": f"Entry: ${fmt_price(p)} | SL: ${fmt_price(sl_d)}",
+        "research_note": f"১ ঘণ্টার বলিঙ্গার স্কুইজ সম্পন্ন। ডিরেকশনাল এক্সপ্যানশন আসন্ন। [TP: ${fmt_price(tp_d)}]"
+    })
 
-                    headerSec.innerHTML = `
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs text-white font-medium">${session.user.email}</span>
-                            ${tierBadge}
-                        </div>
-                        <button type="button" onclick="handleLogout()" class="px-2.5 py-1 rounded-lg bg-rose-600/80 hover:bg-rose-500 text-white text-xs font-bold transition cursor-pointer">Logout</button>
-                    `;
-                } else {
-                    headerSec.innerHTML = `<button type="button" onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>`;
-                    state.role = 'free';
-                }
-            } catch (err) {
-                console.error("Session check error:", err);
-            }
-            fetchLiveMarketData();
-        }
+    # গ) SWING TRADER
+    swing_dir = "long" if (range_pos <= 0.32 or chg < -1.5) else "short"
+    swing_risk = max(0.035, volatility_ratio * 0.60)
+    swing_reward = swing_risk * 2.8
+    sl_w = p * (1 - swing_risk) if swing_dir == "long" else p * (1 + swing_risk)
+    tp_w = p * (1 + swing_reward) if swing_dir == "long" else p * (1 - swing_reward)
 
-        async function handleLogout() {
-            if(_supabase) await _supabase.auth.signOut();
-            checkUserSession();
-        }
+    setups.append({
+        "symbol": coin['symbol'],
+        "market_type": "crypto",
+        "horizon": "1w",
+        "direction": swing_dir,
+        "trading_mode": "mode2",
+        "score": 97,
+        "stage": "[SWING] Liquidity Sweep",
+        "current_change_24h": round(chg, 2),
+        "sector": "Swing Engine (4H)",
+        "est_potential": f"+{round(swing_reward * 100, 1)}%",
+        "flow_metric": "Dark Pool Absorption",
+        "driver_metric": "Whale Order Imbalance",
+        "entry_price": p,
+        "sl_price": sl_w,
+        "tp_price": tp_w,
+        "status": "ACTIVE",
+        "mtf_alignment": f"Entry: ${fmt_price(p)} | SL: ${fmt_price(sl_w)}",
+        "research_note": f"উচ্চ টাইমফ্রেমে লিকুইডিটি পুলে প্রাতিষ্ঠানিক সুইপ সম্পন্ন। [TP: ${fmt_price(tp_w)}]"
+    })
 
-        function openPaymentModal(planName, price) {
-            selectedPlan = planName;
-            document.getElementById('payPlanName').innerText = `Selected Plan: ${planName} ($${price})`;
-            const modal = document.getElementById('paymentModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
+    return setups
 
-        function closePaymentModal() {
-            const modal = document.getElementById('paymentModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
+def run():
+    print("[*] আলফা স্ক্যানার ও লাইফসাইকেল ইঞ্জিন চালু হচ্ছে...")
+    prices = fetch_top_liquid_market()
+    if not prices:
+        print("[-] মার্কেট ডেটা পাওয়া যায়নি।")
+        return
 
-        async function submitPaymentOrder() {
-            const trxId = document.getElementById('payTrxId').value.trim();
-            if(!trxId) { alert("Please enter transaction ID."); return; }
-            if(!_supabase) return;
+    # ১. পুরানো অ্যাক্টিভ ট্রেডের TP/SL ট্র্যাক ও আপডেট করা
+    track_and_update_lifecycle(prices)
 
-            const { data: { session } } = await _supabase.auth.getSession();
-            if(!session) {
-                alert("Please log in first to submit your payment verification.");
-                closePaymentModal();
-                openAuthModal('login');
-                return;
-            }
+    # ২. ফ্রেশ সিগন্যাল তৈরি করা
+    new_setups = []
+    top_coins = sorted(prices.values(), key=lambda x: x['volume_m'], reverse=True)[:25]
+    for c in top_coins:
+        new_setups.extend(generate_institutional_setups(c))
 
-            const userEmail = session.user.email;
-            const { error } = await _supabase.from('orders').insert([
-                { customer_name: userEmail, product_name: selectedPlan, price: selectedPlan.includes('49') ? '$49' : '$5', trx_id: trxId, status: 'pending', phone: 'Binance Pay', email: userEmail }
-            ]);
+    # ফরেক্স ও স্টকস সিগন্যাল
+    trad_signals = [
+        {"symbol": "EUR/USD", "market_type": "forex", "horizon": "24h", "direction": "long", "trading_mode": "mode1", "score": 92, "stage": "[DAY] Interbank Flow", "current_change_24h": 0.32, "sector": "Major FX", "est_potential": "+1.2%", "flow_metric": "Interbank Flow", "driver_metric": "Session Liquidity", "entry_price": 1.0850, "sl_price": 1.0800, "tp_price": 1.0920, "status": "ACTIVE", "mtf_alignment": "Entry: $1.0850 | SL: $1.0800", "research_note": "লন্ডন সেশন কি-লেভেল রিজেকশন। [TP: $1.0920]"},
+        {"symbol": "NVDA", "market_type": "stocks", "horizon": "24h", "direction": "long", "trading_mode": "mode1", "score": 95, "stage": "[DAY] Dark Pool Block", "current_change_24h": 2.45, "sector": "US Tech / AI", "est_potential": "+5.5%", "flow_metric": "Off-Market Flow", "driver_metric": "Whale Accumulation", "entry_price": 138.50, "sl_price": 135.00, "tp_price": 146.00, "status": "ACTIVE", "mtf_alignment": "Entry: $138.50 | SL: $135.00", "research_note": "অফ-মার্কেট ব্লক ট্রানজ্যাকশন সক্রিয়। [TP: $146.00]"}
+    ]
+    new_setups.extend(trad_signals)
 
-            if(error) {
-                alert("Error: " + error.message);
-            } else {
-                alert("Payment submitted successfully! Admin will verify and activate your tier.");
-                closePaymentModal();
-                document.getElementById('payTrxId').value = '';
-            }
-        }
+    # ৩. Supabase-এ ইনসার্ট
+    success = 0
+    for item in new_setups:
+        try:
+            supabase.table("market_research").insert(item).execute()
+            success += 1
+        except Exception:
+            pass
 
-        function openChart(rawSymbol, name) {
-            const modal = document.getElementById('chartModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.getElementById('modalTitle').innerText = `${name} - Institutional Chart`;
-            
-            let clean = rawSymbol.replace(/[^a-zA-Z0-9]/g, '');
-            let tvTicker = `BINANCE:${clean}`;
-            if(state.market === 'forex') tvTicker = `FX:${clean}`;
-            else if(state.market === 'stocks') tvTicker = `NASDAQ:${clean}`;
+    print(f"\n[DONE] মোট {success}টি নতুন সক্রিয় সিগন্যাল পুশ সম্পন্ন!")
 
-            if (window.TradingView) {
-                new window.TradingView.widget({
-                    "autosize": true,
-                    "symbol": tvTicker,
-                    "interval": "60",
-                    "theme": "dark",
-                    "container_id": "tv_chart_container"
-                });
-            }
-        }
-
-        function closeChart() {
-            const modal = document.getElementById('chartModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.getElementById('tv_chart_container').innerHTML = "";
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            checkUserSession();
-        });
-    </script>
-</body>
-</html>
+if __name__ == "__main__":
+    run()
