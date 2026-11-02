@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- গুগল ট্রান্সলেট হিডেন ইঞ্জিন -->
+    <!-- গুগল ট্রান্সলেট ব্যাকগ্রাউন্ড ইঞ্জিন -->
     <div id="google_translate_element" style="display:none !important;"></div>
     <script type="text/javascript">
         function googleTranslateElementInit() {
@@ -23,7 +23,15 @@
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <style>
-        body { background-color: #030712; color: #f3f4f6; font-family: 'Inter', system-ui, sans-serif; top: 0px !important; }
+        /* বডির ওপর গুগলের তৈরি করা বাড়তি মার্জিন/প্যাডিং ফিক্স */
+        body { 
+            background-color: #030712; 
+            color: #f3f4f6; 
+            font-family: 'Inter', system-ui, sans-serif; 
+            top: 0px !important; 
+            position: static !important; 
+        }
+
         .terminal-box { background: #0b1326; border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .control-panel { background: #0f172a; border: 1px solid rgba(59, 130, 246, 0.2); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); }
         .terminal-card { background: #0e1628; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
@@ -33,12 +41,23 @@
         .style-tab-btn.active { background: linear-gradient(135deg, #1d4ed8, #2563eb) !important; color: #ffffff !important; border-color: #3b82f6 !important; box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4); }
         .locked-blur { filter: blur(6px); pointer-events: none; user-select: none; }
         
-        /* গুগলের ব্যানার, ফ্রেম এবং টুলটিপ ১০০% হাইড */
-        .goog-te-banner-frame.skiptranslate, .goog-te-banner-frame, iframe.goog-te-banner-frame { display: none !important; }
-        body { top: 0px !important; }
+        /* গুগলের টপ ব্যানার, বার, ফ্রেম এবং টুলটিপ সম্পূর্ণ হাইড */
+        .goog-te-banner-frame.skiptranslate, 
+        .goog-te-banner-frame, 
+        iframe.goog-te-banner-frame,
+        .goog-te-banner,
+        #goog-gt-tt,
+        .goog-te-balloon-frame { 
+            display: none !important; 
+            visibility: hidden !important; 
+        }
+
+        .skiptranslate:not(.keep-visible) {
+            display: none !important;
+        }
+
         .goog-tooltip, .goog-tooltip:hover { display: none !important; }
         .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
-        #goog-gt-tt { display: none !important; visibility: hidden !important; }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #030712; }
@@ -50,7 +69,7 @@
     <!-- Top Pro Header -->
     <header class="terminal-box rounded-2xl px-4 sm:px-6 py-4 mb-6 flex flex-wrap justify-between items-center gap-4">
         <div class="flex items-center gap-3.5">
-            <!-- notranslate ক্লাস দিয়ে লোগো ও ব্র্যান্ড নাম সুরক্ষিত -->
+            <!-- notranslate দিয়ে ব্র্যান্ড লোগো অক্ষত -->
             <div class="notranslate w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white text-lg sm:text-xl shadow-lg shadow-blue-600/30 font-mono">GN</div>
             <div>
                 <div class="flex items-center gap-2 notranslate">
@@ -67,7 +86,7 @@
                 <button type="button" onclick="switchTab('archive')" id="tab-archive" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Hall of Fame</button>
             </div>
 
-            <!-- কাস্টম লোগোহীন পরিচ্ছন্ন ড্রপডাউন (যে ভাষা সিলেক্ট করবে সেটি সেই ভাষাতেই প্রদর্শিত) -->
+            <!-- নিজস্ব ভাষায় সুন্দর কাস্টম ড্রপডাউন -->
             <div class="notranslate flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl px-2.5 py-1.5 text-xs">
                 <span class="text-gray-300 mr-1.5">🌐</span>
                 <select id="customLangSelect" onchange="applyCustomLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-[#0d1424]">
@@ -346,20 +365,18 @@
         let selectedPlan = '';
         let isSignUpMode = false;
 
-        // কাস্টম ভাষা পরিবর্তন লজিক (গুগল ট্র্যান্সলেট ফ্রেমওয়ার্ক ছাড়া সরাসরি ট্রিগার)
+        // কাস্টম ভাষা নির্বাচন
         function applyCustomLanguage(langCode) {
             const select = document.querySelector('#google_translate_element select');
             if (select) {
                 select.value = langCode;
                 select.dispatchEvent(new Event('change'));
             } else {
-                // কুকি সেট করে পেজ আপডেট
                 document.cookie = `googtrans=/en/${langCode}; path=/;`;
                 document.cookie = `googtrans=/en/${langCode}; domain=.${location.hostname}; path=/;`;
                 location.reload();
             }
 
-            // RTL লেআউট হ্যান্ডলিং (উর্দু এবং আরবি)
             if (langCode === 'ur' || langCode === 'ar') {
                 document.documentElement.dir = 'rtl';
             } else {
