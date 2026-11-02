@@ -4,29 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GreatNexa Terminal | Institutional Multi-Asset Intelligence</title>
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#030712">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { background-color: #030712; color: #f3f4f6; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: #030712; color: #f3f4f6; font-family: 'Inter', system-ui, sans-serif; }
         .terminal-box { background: #0b1326; border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .control-panel { background: #0f172a; border: 1px solid rgba(59, 130, 246, 0.2); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); }
         .terminal-card { background: #0e1628; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
         .select-btn { background: #1e293b; color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease; cursor: pointer; }
         .select-btn.active { background: #2563eb !important; color: #ffffff !important; border-color: #3b82f6 !important; box-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
         .locked-blur { filter: blur(6px); pointer-events: none; user-select: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
     </style>
 </head>
 <body class="p-4 md:p-8 antialiased max-w-7xl mx-auto">
 
-    <!-- Top Header -->
-    <header class="terminal-box rounded-2xl px-5 py-4 mb-8 flex flex-wrap justify-between items-center gap-4">
+    <!-- Top Pro Header -->
+    <header class="terminal-box rounded-2xl px-5 md:px-6 py-4 mb-8 flex flex-wrap justify-between items-center gap-4">
         <div class="flex items-center gap-3.5">
-            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white text-xl shadow-lg font-mono">GN</div>
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white text-xl shadow-lg shadow-blue-600/30 font-mono">GN</div>
             <div>
                 <div class="flex items-center gap-2">
                     <h1 class="font-bold text-white text-base tracking-tight">GreatNexa Terminal</h1>
-                    <span class="text-[9px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30 font-mono">PRO ALPHA</span>
+                    <span class="text-[9px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30 font-mono">PRO</span>
                 </div>
                 <p class="text-[11px] text-gray-400">Institutional Multi-Asset Research Engine</p>
             </div>
@@ -34,37 +38,50 @@
 
         <div class="flex flex-wrap items-center gap-3">
             <div class="flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl p-1 text-xs">
-                <button onclick="switchTab('active')" id="tab-active" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition">Live Setups</button>
-                <button onclick="switchTab('archive')" id="tab-archive" class="px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition">Hall of Fame</button>
+                <button type="button" onclick="switchTab('active')" id="tab-active" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer shadow">Live Setups</button>
+                <button type="button" onclick="switchTab('archive')" id="tab-archive" class="px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Hall of Fame</button>
             </div>
 
             <!-- Language Selector -->
-            <div class="flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl px-3 py-1.5 text-xs">
-                <span class="mr-2">🌐</span>
+            <div class="flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl px-3.5 py-2 text-xs">
+                <span class="text-gray-300 mr-2">🌐</span>
                 <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-[#0d1424]">
                     <option value="en" selected>English</option>
                     <option value="bn">বাংলা (Bengali)</option>
+                    <option value="hi">हिन्दी (Hindi)</option>
+                    <option value="ur">اردو (Urdu)</option>
+                    <option value="ru">Русский (Russian)</option>
+                    <option value="es">Español (Spanish)</option>
+                    <option value="zh">中文 (Chinese)</option>
+                    <option value="ar">العربية (Arabic)</option>
+                    <option value="vi">Tiếng Việt (Vietnamese)</option>
+                    <option value="tr">Türkçe (Turkish)</option>
                 </select>
             </div>
 
+            <!-- Digital Store Button (Restored) -->
+            <a href="/store/" class="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs font-bold transition shadow-lg shadow-indigo-600/25 border border-indigo-500/30 flex items-center gap-1.5 cursor-pointer">
+                📦 Digital Store
+            </a>
+            
             <!-- Auth & User Info Section -->
             <div id="authHeaderSection" class="flex items-center gap-2.5 bg-[#131d31] border border-gray-700/60 px-3.5 py-1.5 rounded-xl text-xs">
-                <button onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>
+                <button type="button" onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>
             </div>
         </div>
     </header>
 
-    <!-- Control Panel -->
+    <!-- Professional Control Engine -->
     <div id="controlPanel" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         
-        <!-- 1. Asset Market -->
+        <!-- 1. Market Selector & Dynamic Execution Mode -->
         <div class="control-panel p-6 rounded-2xl flex flex-col justify-between">
             <div>
                 <label id="lbl-market" class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-3">1. Select Asset Market</label>
                 <div class="grid grid-cols-3 gap-2 mb-4">
-                    <button onclick="changeFilter('market', 'crypto')" id="m-crypto" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Crypto</button>
-                    <button onclick="changeFilter('market', 'forex')" id="m-forex" class="select-btn py-2.5 rounded-xl text-xs font-bold">Forex</button>
-                    <button onclick="changeFilter('market', 'stocks')" id="m-stocks" class="select-btn py-2.5 rounded-xl text-xs font-bold">Stocks</button>
+                    <button type="button" onclick="changeFilter('market', 'crypto')" id="m-crypto" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Crypto</button>
+                    <button type="button" onclick="changeFilter('market', 'forex')" id="m-forex" class="select-btn py-2.5 rounded-xl text-xs font-bold">Forex</button>
+                    <button type="button" onclick="changeFilter('market', 'stocks')" id="m-stocks" class="select-btn py-2.5 rounded-xl text-xs font-bold">Stocks</button>
                 </div>
             </div>
 
@@ -72,60 +89,61 @@
                 <div>
                     <span id="lbl-mode" class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wide">Execution Mode:</span>
                     <div class="grid grid-cols-2 gap-2 mt-1.5">
-                        <button onclick="changeTradingMode('mode1')" id="btn-mode1" class="py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700">Spot</button>
-                        <button onclick="changeTradingMode('mode2')" id="btn-mode2" class="py-2 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500">Futures</button>
+                        <button type="button" onclick="changeTradingMode('mode1')" id="btn-mode1" class="py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer">Spot</button>
+                        <button type="button" onclick="changeTradingMode('mode2')" id="btn-mode2" class="py-2 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer">Futures / CFD</button>
                     </div>
                 </div>
                 <div>
-                    <span id="lbl-direction" class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wide">Direction:</span>
+                    <span id="lbl-direction" class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wide">Direction Setup:</span>
                     <div class="grid grid-cols-2 gap-2 mt-1.5">
-                        <button onclick="changeDirection('long')" id="dir-long" class="py-2 rounded-lg text-[11px] font-bold bg-emerald-600 text-white border border-emerald-500">🟢 Long</button>
-                        <button onclick="changeDirection('short')" id="dir-short" class="py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700">🔴 Short</button>
+                        <button type="button" onclick="changeDirection('long')" id="dir-long" class="py-2 rounded-lg text-[11px] font-bold bg-emerald-600 text-white border border-emerald-500 transition cursor-pointer">🟢 Buy / Long</button>
+                        <button type="button" onclick="changeDirection('short')" id="dir-short" class="py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer">🔴 Sell / Short</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 2. Projection Horizon -->
+        <!-- 2. Time Horizon -->
         <div class="control-panel p-6 rounded-2xl flex flex-col justify-between">
             <div>
                 <label id="lbl-horizon" class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-3">2. Projection Horizon</label>
                 <div class="grid grid-cols-3 gap-2">
-                    <button onclick="changeFilter('horizon', '24h')" id="h-24h" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Today</button>
-                    <button onclick="changeFilter('horizon', '1w')" id="h-1w" class="select-btn py-2.5 rounded-xl text-xs font-bold">1 Week</button>
-                    <button onclick="changeFilter('horizon', '1m')" id="h-1m" class="select-btn py-2.5 rounded-xl text-xs font-bold">1 Month</button>
+                    <button type="button" onclick="changeFilter('horizon', '24h')" id="h-24h" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Today</button>
+                    <button type="button" onclick="changeFilter('horizon', '1w')" id="h-1w" class="select-btn py-2.5 rounded-xl text-xs font-bold">1 Week</button>
+                    <button type="button" onclick="changeFilter('horizon', '1m')" id="h-1m" class="select-btn py-2.5 rounded-xl text-xs font-bold">1 Month</button>
                 </div>
             </div>
-            <div class="pt-4 border-t border-gray-800 mt-4 flex justify-between items-center text-[11px] font-mono">
-                <span id="lbl-engine" class="text-emerald-400">✔ Live Sync Active</span>
-                <button onclick="fetchLiveMarketData()" class="text-blue-400 hover:underline">🔄 Scan Now</button>
+            <div id="lbl-engine" class="pt-4 border-t border-gray-800 mt-4 text-[11px] text-emerald-400 font-mono flex items-center justify-between">
+                <span>✔ Real-Time Supabase Feed Active</span>
+                <button type="button" onclick="fetchLiveMarketData()" class="text-blue-400 hover:underline cursor-pointer">🔄 Sync</button>
             </div>
         </div>
 
-        <!-- 3. Shortlist Capacity -->
+        <!-- 3. Shortlist Capacity Dropdown Box -->
         <div class="control-panel p-6 rounded-2xl flex flex-col justify-between">
             <div>
                 <label id="lbl-shortlist" class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-3">3. Shortlist Capacity</label>
-                <select id="shortlistSelect" onchange="updateLimit(this.value)" class="w-full bg-[#1b263b] border border-gray-700 text-white font-bold text-xs rounded-xl px-3 py-3.5 focus:outline-none">
-                    <option value="3">Top 3 Setups (Free)</option>
-                    <option value="5">Top 5 Setups</option>
-                    <option value="10" selected>Top 10 Setups</option>
-                    <option value="15">Top 15 Setups</option>
+                <select id="shortlistSelect" onchange="updateLimit(this.value)" class="w-full bg-[#1b263b] border border-gray-700 text-white font-bold text-xs rounded-xl px-3 py-3.5 focus:outline-none focus:border-blue-500 cursor-pointer">
+                    <option value="3">Top 3 Assets (Free Limit)</option>
+                    <option value="5">Top 5 Assets</option>
+                    <option value="10" selected>Top 10 Assets</option>
+                    <option value="15">Top 15 Assets</option>
+                    <option value="20">Top 20 Assets (Max)</option>
                 </select>
             </div>
-            <p class="text-[11px] text-gray-400 mt-4 font-mono">Updates automatically from scanner.</p>
+            <p id="limitNote" class="text-[11px] text-gray-400 mt-4 font-mono">Free plan locked to Top 3.</p>
         </div>
 
     </div>
 
-    <!-- Live Setups Grid -->
+    <!-- Shortlisted Assets Grid -->
     <div id="gridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-        <div class="col-span-full text-center py-16 text-gray-400 font-mono bg-black/30 rounded-2xl border border-gray-800">
-            Checking live market data from Supabase...
+        <div class="col-span-full text-center py-16 text-gray-400 font-mono bg-[#0b1326] rounded-2xl border border-gray-800">
+            Connecting to Supabase Intelligence Engine...
         </div>
     </div>
 
-    <!-- Pricing Section -->
+    <!-- SaaS Pricing Plans Section -->
     <section class="mb-16 pt-8 border-t border-gray-800">
         <div class="text-center mb-10">
             <h2 id="pricing-title" class="text-2xl font-extrabold text-white mb-2">Institutional SaaS Membership Tiers</h2>
@@ -137,91 +155,106 @@
                 <div>
                     <span class="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-xs font-bold">Free Tier</span>
                     <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$0 <span class="text-xs text-gray-400 font-normal">/ lifetime</span></h3>
-                    <p class="text-xs text-gray-400 mb-6">Basic research for beginners.</p>
+                    <p class="text-xs text-gray-400 mb-6">Basic multi-asset research for beginners.</p>
                     <ul class="space-y-3 text-xs text-gray-300 mb-8">
                         <li>✔ Top 3 Assets Only</li>
                         <li>✔ Today (24h) Horizon</li>
                         <li>❌ 1 Week & 1 Month Locked</li>
+                        <li>❌ Telegram Bot Alerts</li>
                     </ul>
                 </div>
                 <button class="w-full py-2.5 bg-gray-900 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed border border-gray-800">Current Plan</button>
             </div>
 
             <!-- Pro Trader Plan -->
-            <div class="terminal-card p-6 rounded-2xl border-2 border-blue-600/60 shadow-xl flex flex-col justify-between relative">
-                <span class="absolute -top-3 right-6 bg-blue-600 text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider">Most Popular</span>
+            <div class="terminal-card p-6 rounded-2xl border-2 border-blue-600/60 shadow-xl shadow-blue-600/10 flex flex-col justify-between relative">
+                <span class="absolute -top-3 right-6 bg-blue-600 text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider">Special Offer</span>
                 <div>
                     <span class="px-3 py-1 bg-blue-500/15 text-blue-400 rounded-full text-xs font-bold border border-blue-500/30">Pro Trader</span>
                     <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$5 <span class="text-xs text-gray-400 font-normal">/ month</span></h3>
-                    <p class="text-xs text-gray-400 mb-6">Full institutional intelligence.</p>
+                    <p class="text-xs text-gray-400 mb-6">Full institutional intelligence for serious traders.</p>
                     <ul class="space-y-3 text-xs text-gray-300 mb-8">
-                        <li>✔ Unlocked All Setups</li>
-                        <li>✔ Up to 15 Pre-Pump Setups</li>
+                        <li>✔ Crypto, Forex & Stocks Unlocked</li>
+                        <li>✔ Up to 20 Shortlisted Assets</li>
                         <li>✔ 1 Week & 1 Month Projections</li>
+                        <li>✔ Instant Telegram Bot Alerts</li>
                     </ul>
                 </div>
-                <button onclick="openPaymentModal('Pro Trader ($5/mo)', '5')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition rounded-xl cursor-pointer">Upgrade to Pro ($5)</button>
+                <button type="button" onclick="openPaymentModal('Pro Trader ($5/mo)', '5')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-md shadow-blue-600/30 rounded-xl cursor-pointer">Upgrade to Pro ($5)</button>
             </div>
 
+            <!-- VIP Plan -->
             <div class="terminal-card p-6 rounded-2xl flex flex-col justify-between">
                 <div>
                     <span class="px-3 py-1 bg-amber-500/15 text-amber-400 rounded-full text-xs font-bold border border-amber-500/30">VIP Institutional</span>
                     <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$49 <span class="text-xs text-gray-400 font-normal">/ month</span></h3>
-                    <p class="text-xs text-gray-400 mb-6">For high-volume traders & funds.</p>
+                    <p class="text-xs text-gray-400 mb-6">For fund managers & high-volume traders.</p>
                     <ul class="space-y-3 text-xs text-gray-300 mb-8">
-                        <li>✔ Zero-Latency Feed</li>
-                        <li>✔ Whale & OI Accumulation Filters</li>
-                        <li>✔ Priority VIP Support</li>
+                        <li>✔ Real-Time Zero-Latency Feed</li>
+                        <li>✔ Custom Whale & Dark Pool Filters</li>
+                        <li>✔ Private VIP Support Channel</li>
+                        <li>✔ Lifetime Access Option Available</li>
                     </ul>
                 </div>
-                <button onclick="openPaymentModal('VIP Institutional ($49/mo)', '49')" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-black font-extrabold rounded-xl text-xs transition cursor-pointer">Get VIP Access ($49)</button>
+                <button type="button" onclick="openPaymentModal('VIP Institutional ($49/mo)', '49')" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-black font-extrabold rounded-xl text-xs transition shadow-md shadow-amber-500/20 cursor-pointer">Get VIP Access ($49)</button>
             </div>
         </div>
     </section>
 
-    <!-- Binance Pay Checkout Modal -->
+    <!-- Binance Pay / Crypto Payment Modal -->
     <div id="paymentModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="terminal-card w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
-            <button onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
+            <button type="button" onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
             <h3 class="text-lg font-bold text-white mb-2">Binance Pay Checkout</h3>
             <p id="payPlanName" class="text-xs text-blue-400 font-semibold mb-4"></p>
             
             <div class="bg-[#131d31] p-4 rounded-xl border border-gray-700 mb-4 space-y-2 text-xs">
-                <p class="text-gray-300">1. Send exact amount via <b class="text-white">Binance Pay</b> or <b class="text-white">USDT</b>.</p>
+                <p class="text-gray-300">1. Send exact amount via <b class="text-white">Binance Pay</b> or <b class="text-white">USDT (TRC20/BEP20)</b>.</p>
                 <p class="text-gray-300">2. Binance Pay UID: <b class="text-emerald-400 font-mono text-sm">520327779</b></p>
-                <p class="text-gray-300">3. Submit transaction hash/ID below:</p>
+                <p class="text-gray-300">3. After payment, submit your transaction hash/ID below:</p>
             </div>
 
             <div class="space-y-3">
                 <input type="text" id="payTrxId" placeholder="Enter Transaction ID / Hash" class="w-full bg-[#131d31] border border-gray-700 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
-                <button onclick="submitPaymentOrder()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Submit Payment</button>
+                <button type="button" onclick="submitPaymentOrder()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Submit Payment for Approval</button>
             </div>
         </div>
     </div>
 
-    <!-- Auth Modal -->
+    <!-- Enhanced Auth Modal with Feedback Box -->
     <div id="authModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="terminal-card w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
-            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
-            <h3 id="authTitle" class="text-lg font-bold text-white mb-4">Login to GreatNexa</h3>
+            <button type="button" onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
+            <h3 id="authTitle" class="text-lg font-bold text-white mb-2">Login to GreatNexa</h3>
+            <p class="text-xs text-gray-400 mb-4">Access institutional research setups and signals.</p>
+
+            <!-- Dynamic Feedback Box (Success / Error) -->
+            <div id="authFeedback" class="hidden text-xs p-3 rounded-xl mb-4 border font-medium"></div>
+
             <div class="space-y-3">
-                <input type="email" id="authEmail" placeholder="Enter your email" class="w-full bg-[#131d31] border border-gray-700 text-white text-xs rounded-xl px-4 py-3 focus:outline-none">
-                <input type="password" id="authPassword" placeholder="Enter password" class="w-full bg-[#131d31] border border-gray-700 text-white text-xs rounded-xl px-4 py-3 focus:outline-none">
-                <button onclick="handleAuthAction()" id="authSubmitBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Login</button>
+                <div>
+                    <label class="block text-[11px] text-gray-400 mb-1">Email Address</label>
+                    <input type="email" id="authEmail" placeholder="your@email.com" class="w-full bg-[#131d31] border border-gray-700 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-[11px] text-gray-400 mb-1">Password</label>
+                    <input type="password" id="authPassword" placeholder="••••••••" class="w-full bg-[#131d31] border border-gray-700 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
+                </div>
+                <button type="button" onclick="handleAuthAction()" id="authSubmitBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Login</button>
                 <div class="flex justify-between items-center text-xs text-gray-400 pt-2">
                     <span id="authToggleText">Don't have an account?</span>
-                    <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-blue-400 hover:underline font-semibold cursor-pointer">Sign Up</button>
+                    <button type="button" onclick="toggleAuthMode()" id="authToggleBtn" class="text-blue-400 hover:underline font-semibold cursor-pointer">Sign Up</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Chart Modal -->
+    <!-- Live TradingView Chart Modal -->
     <div id="chartModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="terminal-card w-full max-w-4xl rounded-2xl overflow-hidden border border-gray-700 shadow-2xl">
             <div class="flex justify-between items-center px-5 py-4 border-b border-gray-800 bg-[#0b111e]">
                 <h3 id="modalTitle" class="font-bold text-white text-xs">Live Institutional Chart</h3>
-                <button onclick="closeChart()" class="text-gray-400 hover:text-white text-lg font-bold px-2 cursor-pointer">&times;</button>
+                <button type="button" onclick="closeChart()" class="text-gray-400 hover:text-white text-lg font-bold px-2 cursor-pointer">&times;</button>
             </div>
             <div id="tv_chart_container" class="h-[450px] w-full bg-black"></div>
         </div>
@@ -237,24 +270,26 @@
             if (window.supabase) {
                 _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             }
-        } catch(e) {
-            console.error("Supabase Init Error:", e);
+        } catch (e) {
+            console.error("Supabase client initialization warning:", e);
         }
 
         const i18n = {
             en: { 
                 lblMarket: "1. Select Asset Market", lblHorizon: "2. Projection Horizon", lblShortlist: "3. Shortlist Capacity", 
-                lblMode: "Execution Mode:", lblDirection: "Direction:", lblEngine: "✔ Live Sync Active", 
+                lblMode: "Execution Mode:", lblDirection: "Direction Setup:", lblEngine: "✔ Real-Time Supabase Feed Active", 
                 noteLabel: "Research Note:", flowLabel: "Institutional Flow:", catalystLabel: "Key Catalyst:", 
-                potentialLabel: "Est. Potential:", viewChart: "View Chart", lockedTitle: "High-Potential Alpha Locked", 
+                potentialLabel: "Est. Potential:", viewChart: "View Chart", verified: "Verified Setup", 
+                lockedTitle: "High-Potential Setup Locked", upgradeBtn: "Upgrade to Pro ($5/mo)", 
                 pricingTitle: "Institutional SaaS Membership Tiers", pricingSub: "Real-time institutional screening, Telegram signals, and multi-asset projections." 
             },
             bn: { 
-                lblMarket: "১. মার্কেট নির্বাচন করুন", lblHorizon: "২. টাইমফ্রেম নির্বাচন", lblShortlist: "৩. শর্টলিস্ট ক্যাপাসিটি", 
-                lblMode: "মোড:", lblDirection: "ডিরেকশন:", lblEngine: "✔ লাইভ সিঙ্ক সক্রিয়", 
-                noteLabel: "রিসার্চ নোট:", flowLabel: "ফ্লো মেট্রিক্স:", catalystLabel: "মূল অনুঘটক:", 
-                potentialLabel: "সম্ভাব্য প্রফিট:", viewChart: "চার্ট দেখুন", lockedTitle: "আলফা সেটআপ লক করা আছে", 
-                pricingTitle: "ইনস্টিটিউশনাল মেম্বারশিপ প্ল্যান", pricingSub: "রিয়েল-টাইম স্ক্রিনিং এবং মাল্টি-অ্যাসেট প্রজেকশন।" 
+                lblMarket: "১. অ্যাসেট মার্কেট নির্বাচন করুন", lblHorizon: "২. প্রজেকশন টাইমফ্রেম", lblShortlist: "৩. শর্টলিস্ট ধারণক্ষমতা", 
+                lblMode: "এক্সিকিউশন মোড:", lblDirection: "ডিরেকশন সেটআপ:", lblEngine: "✔ লাইভ সুপাবেস রিয়েল-টাইম ফিড সক্রিয়", 
+                noteLabel: "রিসার্চ নোট:", flowLabel: "ইনস্টিটিউশনাল ফ্লো:", catalystLabel: "মূল অনুঘটক:", 
+                potentialLabel: "সম্ভাব্য প্রফিট:", viewChart: "চার্ট দেখুন", verified: "যাচাইকৃত সেটআপ", 
+                lockedTitle: "হাই-পোটেনশিয়াল সেটআপ লক করা আছে", upgradeBtn: "প্রো সংস্করণে উন্নীত করুন ($৫/মাস)", 
+                pricingTitle: "ইনস্টিটিউশনাল SaaS মেম্বারশিপ টায়ার", pricingSub: "রিয়েল-টাইম স্ক্রিনিং, টেলিগ্রাম সিগন্যাল এবং মাল্টি-অ্যাসেট প্রজেকশন।" 
             }
         };
 
@@ -267,16 +302,327 @@
         function changeLanguage(lang) {
             currentLang = i18n[lang] ? lang : 'en';
             const t = i18n[currentLang];
-            const el = (id) => document.getElementById(id);
-            if(el('lbl-market')) el('lbl-market').innerText = t.lblMarket;
-            if(el('lbl-horizon')) el('lbl-horizon').innerText = t.lblHorizon;
-            if(el('lbl-shortlist')) el('lbl-shortlist').innerText = t.lblShortlist;
-            if(el('lbl-mode')) el('lbl-mode').innerText = t.lblMode;
-            if(el('lbl-direction')) el('lbl-direction').innerText = t.lblDirection;
-            if(el('lbl-engine')) el('lbl-engine').innerText = t.lblEngine;
-            if(el('pricing-title')) el('pricing-title').innerText = t.pricingTitle;
-            if(el('pricing-subtitle')) el('pricing-subtitle').innerText = t.pricingSub;
+            const get = (id) => document.getElementById(id);
+            if (get('lbl-market')) get('lbl-market').innerText = t.lblMarket;
+            if (get('lbl-horizon')) get('lbl-horizon').innerText = t.lblHorizon;
+            if (get('lbl-shortlist')) get('lbl-shortlist').innerText = t.lblShortlist;
+            if (get('lbl-mode')) get('lbl-mode').innerText = t.lblMode;
+            if (get('lbl-direction')) get('lbl-direction').innerText = t.lblDirection;
+            if (get('lbl-engine')) get('lbl-engine').innerHTML = `<span>${t.lblEngine}</span><button type="button" onclick="fetchLiveMarketData()" class="text-blue-400 hover:underline cursor-pointer">🔄 Sync</button>`;
+            if (get('pricing-title')) get('pricing-title').innerText = t.pricingTitle;
+            if (get('pricing-subtitle')) get('pricing-subtitle').innerText = t.pricingSub;
+            renderCards();
+        }
+
+        function switchTab(tab) {
+            state.viewTab = tab;
+            const btnActive = document.getElementById('tab-active');
+            const btnArchive = document.getElementById('tab-archive');
+            const controlPanel = document.getElementById('controlPanel');
+
+            if(tab === 'active') {
+                btnActive.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer shadow";
+                btnArchive.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
+                controlPanel.style.display = 'grid';
+            } else {
+                btnArchive.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer shadow";
+                btnActive.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
+                controlPanel.style.display = 'none';
+            }
             fetchLiveMarketData();
+        }
+
+        function changeFilter(type, val) {
+            state[type] = val;
+            if (type === 'market') {
+                ['crypto', 'forex', 'stocks'].forEach(m => {
+                    const btn = document.getElementById('m-' + m);
+                    if(btn) btn.className = (m === val) ? "select-btn active py-2.5 rounded-xl text-xs font-bold" : "select-btn py-2.5 rounded-xl text-xs font-bold";
+                });
+
+                const btn1 = document.getElementById('btn-mode1');
+                const btn2 = document.getElementById('btn-mode2');
+                if(btn1 && btn2) {
+                    if(val === 'crypto') { btn1.innerText = "Spot"; btn2.innerText = "Futures"; }
+                    else if(val === 'forex') { btn1.innerText = "Standard FX"; btn2.innerText = "Margin / CFD"; }
+                    else if(val === 'stocks') { btn1.innerText = "Cash Market"; btn2.innerText = "F&O / Derivatives"; }
+                }
+            } else if (type === 'horizon') {
+                // Free tiers lock check for 1w and 1m
+                if(state.role === 'free' && (val === '1w' || val === '1m')) {
+                    alert("1 Week and 1 Month projections are locked for Pro / VIP members. Please upgrade.");
+                    openAuthModal('signup');
+                    return;
+                }
+                ['24h', '1w', '1m'].forEach(h => {
+                    const btn = document.getElementById('h-' + h);
+                    if(btn) btn.className = (h === val) ? "select-btn active py-2.5 rounded-xl text-xs font-bold" : "select-btn py-2.5 rounded-xl text-xs font-bold";
+                });
+            }
+            fetchLiveMarketData();
+        }
+
+        function changeTradingMode(mode) {
+            state.tradingMode = mode;
+            const btn1 = document.getElementById('btn-mode1');
+            const btn2 = document.getElementById('btn-mode2');
+            if(mode === 'mode1') {
+                btn1.className = "py-2 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer";
+                btn2.className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
+            } else {
+                btn2.className = "py-2 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer";
+                btn1.className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
+            }
+            fetchLiveMarketData();
+        }
+
+        function changeDirection(dir) {
+            state.direction = dir;
+            const dirLong = document.getElementById('dir-long');
+            const dirShort = document.getElementById('dir-short');
+            if(dir === 'long') {
+                dirLong.className = "py-2 rounded-lg text-[11px] font-bold bg-emerald-600 text-white border border-emerald-500 transition cursor-pointer";
+                dirShort.className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
+            } else {
+                dirShort.className = "py-2 rounded-lg text-[11px] font-bold bg-rose-600 text-white border border-rose-500 transition cursor-pointer";
+                dirLong.className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
+            }
+            fetchLiveMarketData();
+        }
+
+        function updateLimit(val) {
+            if (state.role === 'free' && parseInt(val) > 3) {
+                alert("Free tier is limited to Top 3 assets. Please upgrade to Pro.");
+                document.getElementById('shortlistSelect').value = "3";
+                state.limit = 3;
+                return;
+            }
+            state.limit = parseInt(val);
+            fetchLiveMarketData();
+        }
+
+        // Render Data Function
+        function renderCards() {
+            const container = document.getElementById('gridContainer');
+            if (!container) return;
+
+            if (state.viewTab === 'archive') {
+                container.innerHTML = `
+                <div class="terminal-card rounded-2xl p-5 border border-emerald-500/30 shadow-xl flex flex-col justify-between col-span-full">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="text-[10px] text-emerald-400 font-mono uppercase tracking-wider">🏛️ Hall of Fame Archive</span>
+                                <h3 class="text-lg font-black text-white mt-0.5">Archived Performance Record</h3>
+                            </div>
+                            <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg text-xs font-bold font-mono">+38.6% Avg Win</span>
+                        </div>
+                        <p class="text-xs text-gray-300 leading-relaxed mb-4">Historical verified institutional setups that successfully triggered target price projection.</p>
+                    </div>
+                </div>`;
+                return;
+            }
+
+            if (!liveMarketData || liveMarketData.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400 font-mono bg-black/30 rounded-2xl border border-gray-800">No live setups matching criteria. Scanner script is running on background.</div>`;
+                return;
+            }
+
+            const t = i18n[currentLang] || i18n['en'];
+            const directionBadge = state.direction === 'long' ? '🟢 BUY / LONG' : '🔴 SELL / SHORT';
+
+            container.innerHTML = liveMarketData.map((item, idx) => {
+                const isLocked = (state.role === 'free' && idx >= 3);
+                const score = item.score || 75;
+                const scoreColor = score >= 85 ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-blue-400 border-blue-500/30 bg-blue-500/10';
+
+                return `
+                <div class="relative terminal-card rounded-2xl p-5 hover:border-blue-500/40 transition shadow-xl flex flex-col justify-between">
+                    ${isLocked ? `
+                    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#0d1424]/90 backdrop-blur-md rounded-2xl p-6 text-center">
+                        <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold mb-2">🔒 Pro Setup #${idx+1}</span>
+                        <h4 class="text-white font-bold text-sm mb-1">${t.lockedTitle}</h4>
+                        <p class="text-xs text-gray-300 mb-4">Smart Money Score: ${score}/100</p>
+                        <button type="button" onclick="openPaymentModal('Pro Trader ($5/mo)', '5')" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Upgrade to Pro ($5)</button>
+                    </div>` : ''}
+                    
+                    <div class="${isLocked ? 'locked-blur' : ''}">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="text-[10px] ${state.direction === 'long' ? 'text-emerald-400' : 'text-rose-400'} font-mono uppercase tracking-wider">#${idx+1} • ${directionBadge}</span>
+                                <h3 class="text-lg font-black text-white mt-0.5">${item.symbol}</h3>
+                            </div>
+                            <span class="px-2.5 py-1 border rounded-lg text-xs font-bold font-mono ${scoreColor}">
+                                Score: ${score}
+                            </span>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 mb-3">
+                            <span class="px-2 py-0.5 bg-purple-500/10 border border-purple-500/30 text-purple-300 rounded text-[11px] font-medium">⚡ ${item.stage || 'Accumulation'}</span>
+                            <span class="px-2 py-0.5 bg-[#131d31] border border-gray-700/60 text-gray-300 rounded text-[11px] font-mono">24h: ${item.current_change_24h}%</span>
+                            ${item.sector ? `<span class="px-2 py-0.5 bg-blue-500/10 border border-blue-500/30 text-blue-300 rounded text-[11px] font-mono">${item.sector}</span>` : ''}
+                        </div>
+                        <div class="bg-black/40 border border-gray-800/80 rounded-xl p-3 mb-3 space-y-1.5 text-xs font-mono">
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.potentialLabel}</span><span class="text-emerald-400 font-bold">${item.est_potential || '+20%'}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.flowLabel}</span><span class="text-white">${item.flow_metric || 'Active'}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">${t.catalystLabel}</span><span class="text-amber-300">${item.driver_metric || 'Volume Surge'}</span></div>
+                            ${item.mtf_alignment ? `<div class="flex justify-between pt-1 border-t border-gray-800/60"><span class="text-gray-400 text-[10px]">MTF Confluence:</span><span class="text-indigo-300 text-[10px]">${item.mtf_alignment}</span></div>` : ''}
+                        </div>
+                        <p class="text-xs text-gray-300 leading-relaxed mb-4 font-sans"><strong class="text-white">${t.noteLabel}</strong> ${item.research_note || 'Identified with smart money volume footprint.'}</p>
+                        <div class="pt-3 border-t border-gray-800 flex justify-between items-center text-xs">
+                            <span class="text-emerald-400 font-medium text-[11px]">✔ Active Setup</span>
+                            <button type="button" onclick="openChart('${item.symbol.replace('/', '')}', '${item.symbol}')" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition cursor-pointer">📈 ${t.viewChart}</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        async function fetchLiveMarketData() {
+            const container = document.getElementById('gridContainer');
+            if(!_supabase) {
+                container.innerHTML = `<div class="col-span-full text-center py-16 text-rose-400 font-mono bg-black/30 rounded-2xl border border-gray-800">Database connection not available.</div>`;
+                return;
+            }
+
+            try {
+                const { data, error } = await _supabase
+                    .from('market_research')
+                    .select('*')
+                    .eq('market_type', state.market)
+                    .eq('horizon', state.horizon)
+                    .order('score', { ascending: false })
+                    .limit(state.limit);
+
+                if (error || !data || data.length === 0) {
+                    liveMarketData = [];
+                } else {
+                    liveMarketData = data;
+                }
+            } catch (err) {
+                console.error("Data fetch error:", err);
+                liveMarketData = [];
+            }
+            renderCards();
+        }
+
+        // Auth Feedback Box Helper
+        function showAuthFeedback(msg, isSuccess = false) {
+            const box = document.getElementById('authFeedback');
+            box.className = isSuccess 
+                ? "text-xs p-3 rounded-xl mb-4 border bg-emerald-950/40 text-emerald-300 border-emerald-500/30 block"
+                : "text-xs p-3 rounded-xl mb-4 border bg-rose-950/40 text-rose-300 border-rose-500/30 block";
+            box.innerText = msg;
+        }
+
+        function openAuthModal(mode) {
+            isSignUpMode = (mode === 'signup');
+            document.getElementById('authTitle').innerText = isSignUpMode ? "Create GreatNexa Account" : "Login to GreatNexa";
+            document.getElementById('authSubmitBtn').innerText = isSignUpMode ? "Sign Up" : "Login";
+            document.getElementById('authToggleText').innerText = isSignUpMode ? "Already have an account?" : "Don't have an account?";
+            document.getElementById('authToggleBtn').innerText = isSignUpMode ? "Login" : "Sign Up";
+            document.getElementById('authFeedback').className = "hidden";
+            
+            const modal = document.getElementById('authModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeAuthModal() {
+            const modal = document.getElementById('authModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function toggleAuthMode() {
+            openAuthModal(isSignUpMode ? 'login' : 'signup');
+        }
+
+        async function handleAuthAction() {
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+            
+            if(!email || !password) {
+                showAuthFeedback("Please enter both email and password.");
+                return;
+            }
+            if(!_supabase) {
+                showAuthFeedback("Authentication service currently unavailable.");
+                return;
+            }
+
+            if(isSignUpMode) {
+                const { data, error } = await _supabase.auth.signUp({ email, password });
+                if(error) {
+                    showAuthFeedback(error.message);
+                } else {
+                    showAuthFeedback("Registration successful! You can now log in.", true);
+                    setTimeout(() => toggleAuthMode(), 1200);
+                }
+            } else {
+                const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+                if(error) {
+                    showAuthFeedback("Invalid email or password: " + error.message);
+                } else {
+                    showAuthFeedback("Login successful! Loading membership profile...", true);
+                    setTimeout(() => {
+                        closeAuthModal();
+                        checkUserSession();
+                    }, 800);
+                }
+            }
+        }
+
+        async function checkUserSession() {
+            const headerSec = document.getElementById('authHeaderSection');
+            if(!_supabase) return;
+
+            try {
+                const { data: { session } } = await _supabase.auth.getSession();
+                if(session && session.user) {
+                    // Check Tier in DB
+                    let userTier = 'free';
+                    const { data, error } = await _supabase.from('user_profiles').select('tier').eq('id', session.user.id).single();
+                    if(data && data.tier) {
+                        userTier = data.tier.toLowerCase();
+                    }
+
+                    state.role = (userTier === 'vip') ? 'vip' : ((userTier === 'pro') ? 'pro' : 'free');
+
+                    let tierBadge = '';
+                    if(state.role === 'vip') {
+                        tierBadge = '<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold">VIP MEMBER</span>';
+                        state.limit = 20;
+                    } else if(state.role === 'pro') {
+                        tierBadge = '<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-full font-bold">PRO TRADER</span>';
+                        state.limit = 10;
+                    } else {
+                        tierBadge = '<span class="text-[10px] bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full font-bold">FREE TIER</span>';
+                        state.limit = 3;
+                    }
+
+                    const select = document.getElementById('shortlistSelect');
+                    if(select) select.value = String(state.limit);
+
+                    headerSec.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-white font-medium">${session.user.email}</span>
+                            ${tierBadge}
+                        </div>
+                        <button type="button" onclick="handleLogout()" class="px-2.5 py-1 rounded-lg bg-rose-600/80 hover:bg-rose-500 text-white text-xs font-bold transition cursor-pointer">Logout</button>
+                    `;
+                } else {
+                    headerSec.innerHTML = `<button type="button" onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>`;
+                    state.role = 'free';
+                }
+            } catch (err) {
+                console.error("Session check error:", err);
+            }
+            fetchLiveMarketData();
+        }
+
+        async function handleLogout() {
+            if(_supabase) await _supabase.auth.signOut();
+            checkUserSession();
         }
 
         function openPaymentModal(planName, price) {
@@ -296,7 +642,7 @@
         async function submitPaymentOrder() {
             const trxId = document.getElementById('payTrxId').value.trim();
             if(!trxId) { alert("Please enter transaction ID."); return; }
-            if(!_supabase) { alert("Database service not ready."); return; }
+            if(!_supabase) return;
 
             const { data: { session } } = await _supabase.auth.getSession();
             const userEmail = session ? session.user.email : 'Guest User';
@@ -305,100 +651,42 @@
                 { customer_name: userEmail, product_name: selectedPlan, price: selectedPlan.includes('49') ? '$49' : '$5', trx_id: trxId, status: 'pending', phone: 'Binance Pay', email: userEmail }
             ]);
 
-            if(error) alert("Error: " + error.message);
-            else { alert("Submitted successfully! Admin will verify soon."); closePaymentModal(); document.getElementById('payTrxId').value = ''; }
+            if(error) {
+                alert("Error: " + error.message);
+            } else {
+                alert("Payment submitted successfully! Admin will verify and activate your tier.");
+                closePaymentModal();
+                document.getElementById('payTrxId').value = '';
+            }
         }
 
-        async function fetchLiveMarketData() {
-            const container = document.getElementById('gridContainer');
-            if(!container) return;
+        function openChart(tvSymbol, name) {
+            const modal = document.getElementById('chartModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('modalTitle').innerText = `${name} - Institutional Chart`;
             
-            if(state.viewTab === 'archive') {
-                container.innerHTML = `
-                <div class="terminal-card rounded-2xl p-5 border border-emerald-500/30 shadow-xl flex flex-col justify-between col-span-full">
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <span class="text-[10px] text-emerald-400 font-mono uppercase tracking-wider">🏛️ Hall of Fame Archive</span>
-                            <h3 class="text-lg font-black text-white mt-0.5">Historical Performance</h3>
-                        </div>
-                        <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded text-xs font-bold font-mono">+41.8% Avg Pump</span>
-                    </div>
-                    <p class="text-xs text-gray-300 leading-relaxed mb-4">Historical verified smart money setups that executed successfully after volume breakout.</p>
-                </div>`;
-                return;
+            if (window.TradingView) {
+                new window.TradingView.widget({
+                    "autosize": true,
+                    "symbol": `BINANCE:${tvSymbol}`,
+                    "interval": "60",
+                    "theme": "dark",
+                    "container_id": "tv_chart_container"
+                });
             }
+        }
 
-            if(!_supabase) {
-                container.innerHTML = `<div class="col-span-full text-center py-16 text-rose-400 font-mono bg-black/30 rounded-2xl border border-gray-800">Supabase client could not connect. Check network or credentials.</div>`;
-                return;
-            }
+        function closeChart() {
+            const modal = document.getElementById('chartModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.getElementById('tv_chart_container').innerHTML = "";
+        }
 
-            const { data, error } = await _supabase
-                .from('market_research')
-                .select('*')
-                .eq('market_type', state.market)
-                .eq('horizon', state.horizon)
-                .order('score', { ascending: false })
-                .limit(state.limit);
-
-            if (error || !data || data.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400 font-mono bg-black/30 rounded-2xl border border-gray-800">No setups found in Supabase right now. Run the Python scanner on GitHub to populate data.</div>`;
-                return;
-            }
-
-            liveMarketData = data;
-            const t = i18n[currentLang] || i18n['en'];
-            const directionBadge = state.direction === 'long' ? '🟢 LONG' : '🔴 SHORT';
-
-            container.innerHTML = liveMarketData.map((item, idx) => {
-                const isLocked = (state.role === 'free' && idx >= 3);
-                const scoreColor = item.score >= 85 ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-blue-400 border-blue-500/30 bg-blue-500/10';
-
-                return `
-                <div class="relative terminal-card rounded-2xl p-5 hover:border-blue-500/40 transition shadow-xl flex flex-col justify-between">
-                    ${isLocked ? `
-                    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#0d1424]/90 backdrop-blur-md rounded-2xl p-6 text-center">
-                        <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold mb-2">🔒 Pro Setup #${idx+1}</span>
-                        <h4 class="text-white font-bold text-sm mb-1">${t.lockedTitle}</h4>
-                        <p class="text-xs text-gray-300 mb-4">Institutional Score: ${item.score}/100</p>
-                        <button onclick="openPaymentModal('Pro Trader ($5/mo)', '5')" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Upgrade to Pro ($5)</button>
-                    </div>` : ''}
-                    
-                    <div class="${isLocked ? 'locked-blur' : ''}">
-                        <div class="flex justify-between items-start mb-3">
-                            <div>
-                                <span class="text-[10px] text-emerald-400 font-mono uppercase tracking-wider">#${idx+1} •${directionBadge}</span>
-                                <h3 class="text-lg font-black text-white mt-0.5">${item.symbol}</h3>
-                            </div>
-                            <span class="px-2.5 py-1 border rounded-lg text-xs font-extrabold font-mono ${scoreColor}">
-                                Score: ${item.score}
-                            </span>
-                        </div>
-
-                        <!-- Highlights: Stage & Sector -->
-                        <div class="flex flex-wrap gap-1.5 mb-3">
-                            <span class="px-2 py-0.5 bg-purple-500/10 border border-purple-500/30 text-purple-300 rounded text-[10px] font-medium">⚡ ${item.stage || 'Accumulation'}</span>
-                            <span class="px-2 py-0.5 bg-blue-500/10 border border-blue-500/30 text-blue-300 rounded text-[10px] font-mono">${item.sector || 'Perpetuals'}</span>
-                            <span class="px-2 py-0.5 bg-[#131d31] border border-gray-700/60 text-gray-300 rounded text-[10px] font-mono">24h: ${item.current_change_24h > 0 ? '+' : ''}${item.current_change_24h}%</span>
-                        </div>
-
-                        <!-- Metrics Display -->
-                        <div class="bg-black/40 border border-gray-800/80 rounded-xl p-3 mb-3 space-y-1.5 text-xs font-mono">
-                            <div class="flex justify-between">
-                                <span class="text-gray-400 text-[11px]">${t.potentialLabel}</span>
-                                <span class="text-emerald-400 font-bold">${item.est_potential}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-400 text-[11px]">${t.flowLabel}</span>
-                                <span class="text-white">${item.flow_metric}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-400 text-[11px]">${t.catalystLabel}</span>
-                                <span class="text-amber-300">${item.driver_metric}</span>
-                            </div>
-                            ${item.mtf_alignment ? `
-                            <div class="flex justify-between pt-1 border-t border-gray-800/60">
-                                <span class="text-gray-500 text-[10px]">MTF Confluence:</span>
-                                <span class="text-indigo-300 text-[10px] font-sans">${item.mtf_alignment}</span>
-                            </div>` : ''}
-                        </div>
+        window.addEventListener('DOMContentLoaded', () => {
+            checkUserSession();
+        });
+    </script>
+</body>
+</html>
