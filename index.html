@@ -59,7 +59,7 @@
                 </select>
             </div>
 
-            <!-- Digital Store Button (Restored) -->
+            <!-- Digital Store Button -->
             <a href="/store/" class="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs font-bold transition shadow-lg shadow-indigo-600/25 border border-indigo-500/30 flex items-center gap-1.5 cursor-pointer">
                 📦 Digital Store
             </a>
@@ -228,7 +228,6 @@
             <h3 id="authTitle" class="text-lg font-bold text-white mb-2">Login to GreatNexa</h3>
             <p class="text-xs text-gray-400 mb-4">Access institutional research setups and signals.</p>
 
-            <!-- Dynamic Feedback Box (Success / Error) -->
             <div id="authFeedback" class="hidden text-xs p-3 rounded-xl mb-4 border font-medium"></div>
 
             <div class="space-y-3">
@@ -348,7 +347,6 @@
                     else if(val === 'stocks') { btn1.innerText = "Cash Market"; btn2.innerText = "F&O / Derivatives"; }
                 }
             } else if (type === 'horizon') {
-                // Free tiers lock check for 1w and 1m
                 if(state.role === 'free' && (val === '1w' || val === '1m')) {
                     alert("1 Week and 1 Month projections are locked for Pro / VIP members. Please upgrade.");
                     openAuthModal('signup');
@@ -401,7 +399,6 @@
             fetchLiveMarketData();
         }
 
-        // Render Data Function
         function renderCards() {
             const container = document.getElementById('gridContainer');
             if (!container) return;
@@ -458,7 +455,7 @@
                         </div>
                         <div class="flex flex-wrap gap-1.5 mb-3">
                             <span class="px-2 py-0.5 bg-purple-500/10 border border-purple-500/30 text-purple-300 rounded text-[11px] font-medium">⚡ ${item.stage || 'Accumulation'}</span>
-                            <span class="px-2 py-0.5 bg-[#131d31] border border-gray-700/60 text-gray-300 rounded text-[11px] font-mono">24h: ${item.current_change_24h}%</span>
+                            <span class="px-2 py-0.5 bg-[#131d31] border border-gray-700/60 text-gray-300 rounded text-[11px] font-mono">24h: ${item.current_change_24h || 0}%</span>
                             ${item.sector ? `<span class="px-2 py-0.5 bg-blue-500/10 border border-blue-500/30 text-blue-300 rounded text-[11px] font-mono">${item.sector}</span>` : ''}
                         </div>
                         <div class="bg-black/40 border border-gray-800/80 rounded-xl p-3 mb-3 space-y-1.5 text-xs font-mono">
@@ -470,7 +467,7 @@
                         <p class="text-xs text-gray-300 leading-relaxed mb-4 font-sans"><strong class="text-white">${t.noteLabel}</strong> ${item.research_note || 'Identified with smart money volume footprint.'}</p>
                         <div class="pt-3 border-t border-gray-800 flex justify-between items-center text-xs">
                             <span class="text-emerald-400 font-medium text-[11px]">✔ Active Setup</span>
-                            <button type="button" onclick="openChart('${item.symbol.replace('/', '')}', '${item.symbol}')" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition cursor-pointer">📈 ${t.viewChart}</button>
+                            <button type="button" onclick="openChart('${item.symbol}', '${item.symbol}')" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition cursor-pointer">📈 ${t.viewChart}</button>
                         </div>
                     </div>
                 </div>`;
@@ -485,11 +482,17 @@
             }
 
             try {
-                const { data, error } = await _supabase
+                let query = _supabase
                     .from('market_research')
                     .select('*')
                     .eq('market_type', state.market)
-                    .eq('horizon', state.horizon)
+                    .eq('horizon', state.horizon);
+
+                if (state.direction) {
+                    query = query.eq('direction', state.direction);
+                }
+
+                const { data, error } = await query
                     .order('score', { ascending: false })
                     .limit(state.limit);
 
@@ -505,7 +508,6 @@
             renderCards();
         }
 
-        // Auth Feedback Box Helper
         function showAuthFeedback(msg, isSuccess = false) {
             const box = document.getElementById('authFeedback');
             box.className = isSuccess 
@@ -579,7 +581,6 @@
             try {
                 const { data: { session } } = await _supabase.auth.getSession();
                 if(session && session.user) {
-                    // Check Tier in DB
                     let userTier = 'free';
                     const { data, error } = await _supabase.from('user_profiles').select('tier').eq('id', session.user.id).single();
                     if(data && data.tier) {
@@ -645,8 +646,14 @@
             if(!_supabase) return;
 
             const { data: { session } } = await _supabase.auth.getSession();
-            const userEmail = session ? session.user.email : 'Guest User';
+            if(!session) {
+                alert("Please log in first to submit your payment verification.");
+                closePaymentModal();
+                openAuthModal('login');
+                return;
+            }
 
+            const userEmail = session.user.email;
             const { error } = await _supabase.from('orders').insert([
                 { customer_name: userEmail, product_name: selectedPlan, price: selectedPlan.includes('49') ? '$49' : '$5', trx_id: trxId, status: 'pending', phone: 'Binance Pay', email: userEmail }
             ]);
@@ -660,16 +667,24 @@
             }
         }
 
-        function openChart(tvSymbol, name) {
+        function openChart(rawSymbol, name) {
             const modal = document.getElementById('chartModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             document.getElementById('modalTitle').innerText = `${name} - Institutional Chart`;
             
+            let clean = rawSymbol.replace(/[^a-zA-Z0-9]/g, '');
+            let tvTicker = `BINANCE:${clean}`;
+            if(state.market === 'forex') {
+                tvTicker = `FX:${clean}`;
+            } else if(state.market === 'stocks') {
+                tvTicker = `NASDAQ:${clean}`;
+            }
+
             if (window.TradingView) {
                 new window.TradingView.widget({
                     "autosize": true,
-                    "symbol": `BINANCE:${tvSymbol}`,
+                    "symbol": tvTicker,
                     "interval": "60",
                     "theme": "dark",
                     "container_id": "tv_chart_container"
