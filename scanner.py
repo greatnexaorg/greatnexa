@@ -1,206 +1,311 @@
-import os
-import requests
-import numpy as np
-from supabase import create_client, Client
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreatNexa Terminal | Institutional Multi-Asset Intelligence</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#030712">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { background-color: #030712; color: #f3f4f6; font-family: 'Inter', system-ui, sans-serif; }
+        .terminal-box { background: #0b1326; border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .control-panel { background: #0f172a; border: 1px solid rgba(59, 130, 246, 0.2); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); }
+        .terminal-card { background: #0e1628; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .select-btn { background: #1e293b; color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.2s ease; cursor: pointer; }
+        .select-btn.active { background: #2563eb !important; color: #ffffff !important; border-color: #3b82f6 !important; box-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
+        .locked-blur { filter: blur(6px); pointer-events: none; user-select: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+    </style>
+</head>
+<body class="p-4 md:p-8 antialiased max-w-7xl mx-auto">
 
-# Supabase Credentials (Environment Variable থেকে নেওয়া নিরাপদ, অন্যথায় ডিফল্ট কী কাজ করবে)
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://esqhansnosejkqapuhoo.supabase.co")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "sb_secret_dpCpv8gKC1oPYhupcZmU8w_8Yu6mC9Z")
+    <!-- Top Pro Header -->
+    <header class="terminal-box rounded-2xl px-5 md:px-6 py-4 mb-8 flex flex-wrap justify-between items-center gap-4">
+        <div class="flex items-center gap-3.5">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white text-xl shadow-lg shadow-blue-600/30 font-mono">GN</div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="font-bold text-white text-base tracking-tight">GreatNexa Terminal</h1>
+                    <span class="text-[9px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30 font-mono">PRO</span>
+                </div>
+                <p class="text-[11px] text-gray-400">Institutional Multi-Asset Research Engine</p>
+            </div>
+        </div>
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+        <div class="flex flex-wrap items-center gap-3">
+            <div class="flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl p-1 text-xs">
+                <button type="button" onclick="switchTab('active')" id="tab-active" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer shadow">Live Setups</button>
+                <button type="button" onclick="switchTab('archive')" id="tab-archive" class="px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Hall of Fame</button>
+            </div>
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-}
+            <!-- Language Selector -->
+            <div class="flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl px-3.5 py-2 text-xs">
+                <span class="text-gray-300 mr-2">🌐</span>
+                <select id="langSelect" onchange="changeLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-[#0d1424]">
+                    <option value="en" selected>English</option>
+                    <option value="bn">বাংলা (Bengali)</option>
+                    <option value="hi">हिन्दी (Hindi)</option>
+                    <option value="ur">اردو (Urdu)</option>
+                    <option value="ru">Русский (Russian)</option>
+                    <option value="es">Español (Spanish)</option>
+                    <option value="zh">中文 (Chinese)</option>
+                    <option value="ar">العربية (Arabic)</option>
+                    <option value="vi">Tiếng Việt (Vietnamese)</option>
+                    <option value="tr">Türkçe (Turkish)</option>
+                </select>
+            </div>
 
-def get_open_interest_delta(symbol):
-    """গত ৪ ঘণ্টায় ওপেন ইন্টারেস্ট (OI) কতটা বেড়েছে তা ক্যালকুলেট করে"""
-    try:
-        url = f"https://fapi.binance.com/futures/data/openInterestHist?symbol={symbol}&period=1h&limit=5"
-        res = requests.get(url, headers=HEADERS, timeout=8).json()
-        if isinstance(res, list) and len(res) >= 4:
-            initial_oi = float(res[0]['sumOpenInterestValue'])
-            current_oi = float(res[-1]['sumOpenInterestValue'])
-            if initial_oi > 0:
-                oi_change = ((current_oi - initial_oi) / initial_oi) * 100
-                return round(oi_change, 2)
-    except Exception:
-        pass
-    return 0.0
+            <!-- Digital Store Button (Restored) -->
+            <a href="/store/" class="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs font-bold transition shadow-lg shadow-indigo-600/25 border border-indigo-500/30 flex items-center gap-1.5 cursor-pointer">
+                📦 Digital Store
+            </a>
+            
+            <!-- Auth & User Info Section -->
+            <div id="authHeaderSection" class="flex items-center gap-2.5 bg-[#131d31] border border-gray-700/60 px-3.5 py-1.5 rounded-xl text-xs">
+                <button type="button" onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>
+            </div>
+        </div>
+    </header>
 
-def run_institutional_scanner():
-    print("Initiating Institutional Grade Pre-Pump & Smart Money Scanner...")
-
-    # ১. ফিউচার্স ও স্পট ২৪ ঘণ্টার মার্কেট স্ট্যাটস এবং ফান্ডিং রেট ফেচ
-    try:
-        futures_ticker_res = requests.get("https://fapi.binance.com/fapi/v1/ticker/24hr", headers=HEADERS, timeout=12)
-        if futures_ticker_res.status_code == 200:
-            tickers = futures_ticker_res.json()
-        else:
-            ticker_res = requests.get("https://api.binance.com/api/v3/ticker/24hr", headers=HEADERS, timeout=12)
-            tickers = ticker_res.json()
-
-        premium_res = requests.get("https://fapi.binance.com/fapi/v1/premiumIndex", headers=HEADERS, timeout=12).json()
-        funding_dict = {item['symbol']: float(item['lastFundingRate']) for item in premium_res if 'symbol' in item}
-    except Exception as e:
-        print(f"Error fetching foundational market data: {e}")
-        return
-
-    screened_candidates = []
-
-    # ২. ফিল্টারিং ফিল্টার: জাঙ্ক বা অতি উচ্চ ভোলাটিলিটি বাদ দিয়ে সম্ভাব্য অ্যাকুমুলেশন বাছাই
-    for t in tickers:
-        symbol = t.get('symbol', '')
-        if not symbol.endswith('USDT') or symbol in ['BTCUSDT', 'ETHUSDT', 'USDCUSDT', 'FDUSDUSDT']:
-            continue
-
-        try:
-            quote_vol = float(t.get('quoteVolume', 0))
-            price_change = float(t.get('priceChangePercent', 0))
-        except (ValueError, TypeError):
-            continue
-
-        # লিকুইডিটি ফিল্টার: ন্যূনতম $১০ মিলিয়ন ভলিউম এবং দাম এখনও ২০% এর বেশি পাম্প করেনি
-        if quote_vol < 10_000_000 or price_change > 14.0 or price_change < -8.0:
-            continue
-
-        # ৩. 1H ক্যান্ডেল ডেটা ফেচ (ভলিউম ডেল্টা, টেকার বাই রেশিও ও বলিঞ্জার ব্যান্ড কম্প্রেশন)
-        try:
-            klines = requests.get(
-                f"https://fapi.binance.com/fapi/v1/klines?symbol={symbol}&interval=1h&limit=24", 
-                headers=HEADERS, 
-                timeout=8
-            ).json()
-            if not isinstance(klines, list) or len(klines) < 24:
-                continue
-        except Exception:
-            continue
-
-        closes = np.array([float(k[4]) for k in klines])
-        vols = np.array([float(k[7]) for k in klines])           # Quote Asset Volume
-        taker_buys = np.array([float(k[10]) for k in klines])     # Taker Buy Quote Asset Volume
-
-        # ৪. ভলিউম ভেলোসিটি ও স্মার্ট মানি ডেল্টা ক্যালকুলেশন
-        recent_3h_vol = np.mean(vols[-3:])
-        base_vol = np.mean(vols[:-3]) + 1e-9
-        volume_spike = recent_3h_vol / base_vol
-
-        recent_buys = np.sum(taker_buys[-4:])
-        recent_total_vol = np.sum(vols[-4:]) + 1e-9
-        taker_buy_percentage = (recent_buys / recent_total_vol) * 100
-
-        # বলিঞ্জার ব্যান্ড কম্প্রেশন (ভোল্যাটিলিটি স্কুইজ)
-        sma20 = np.mean(closes[-20:])
-        std20 = np.std(closes[-20:])
-        bb_width = ((2 * 2 * std20) / sma20) * 100
-
-        funding_rate = funding_dict.get(symbol, 0.0) * 100
-
-        # ৫. মাল্টি-ফ্যাক্টর প্রাতিষ্ঠানিক স্কোরিং অ্যালগরিদম (Base: 50)
-        score = 50
-
-        # শর্ত ১: কম্প্রেশন রেঞ্জে ভলিউম বিস্ফোরণ (দাম আটকে আছে কিন্তু ভলিউম ঢুকছে)
-        if volume_spike >= 2.0 and abs(price_change) < 3.5:
-            score += 18
-        elif volume_spike >= 1.5:
-            score += 10
-
-        # শর্ত ২: টেকার ফ্লো ডমিন্যান্স (মার্কেট বাইয়াররা বড় অর্ডার নিচ্ছে)
-        if taker_buy_percentage >= 58.0:
-            score += 15
-        elif taker_buy_percentage >= 52.0:
-            score += 8
-
-        # শর্ত ৩: ভোল্যাটিলিটি স্কুইজ (ব্রেকআউটের আগের শান্ত অবস্থা)
-        if bb_width < 4.5:
-            score += 12
-        elif bb_width < 7.0:
-            score += 6
-
-        # শর্ত ৪: শর্ট স্কুইজ সেটআপ (নেগেটিভ ফান্ডিং রেট কিন্তু প্রাইস হোল্ড করছে)
-        is_short_squeeze = False
-        if funding_rate < -0.01:
-            score += 15
-            is_short_squeeze = True
-        elif funding_rate < 0:
-            score += 7
-
-        # ফিল্টারে শীর্ষ ২০টি কয়েনের জন্য আরও গভীরে গিয়ে Open Interest পরিবর্তন মাপা
-        if score >= 68:
-            oi_change = get_open_interest_delta(symbol)
-            if oi_change >= 8.0:
-                score += 15  # পজিশন দ্রুত বিল্ডআপ হচ্ছে
-            elif oi_change > 0:
-                score += 5
-
-            score = min(99, int(score))
-
-            screened_candidates.append({
-                "symbol": symbol,
-                "score": score,
-                "price_change": price_change,
-                "vol_spike": volume_spike,
-                "taker_buy": taker_buy_percentage,
-                "bb_width": bb_width,
-                "funding": funding_rate,
-                "oi_change": oi_change,
-                "is_squeeze": is_short_squeeze
-            })
-
-    # স্কোর অনুযায়ী সেরা সেটআপগুলোকে বাছাই করা
-    screened_candidates = sorted(screened_candidates, key=lambda x: x['score'], reverse=True)[:15]
-
-    final_payload = []
-    
-    # ৬. ফ্রন্টএন্ড টার্মিনালের জন্য রিয়েল-টাইম রিসার্চ মেকানিক্স তৈরি
-    for cand in screened_candidates:
-        sym_formatted = cand["symbol"].replace("USDT", "/USDT")
+    <!-- Professional Control Engine -->
+    <div id="controlPanel" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         
-        # স্টেজ এবং মার্কেট মেকানিক্স নির্ধারণ
-        if cand["is_squeeze"]:
-            stage = "Short Squeeze Loading"
-            catalyst = f"Negative Funding ({cand['funding']:.3f}%)"
-        elif cand["oi_change"] > 10.0:
-            stage = "Whale Accumulation"
-            catalyst = f"OI Surge: +{cand['oi_change']}% in 4h"
-        else:
-            stage = "Volatility Compression"
-            catalyst = f"BB Squeeze: {cand['bb_width']:.1f}% Width"
+        <!-- 1. Market Selector & Dynamic Execution Mode -->
+        <div class="control-panel p-6 rounded-2xl flex flex-col justify-between">
+            <div>
+                <label id="lbl-market" class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-3">1. Select Asset Market</label>
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                    <button type="button" onclick="changeFilter('market', 'crypto')" id="m-crypto" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Crypto</button>
+                    <button type="button" onclick="changeFilter('market', 'forex')" id="m-forex" class="select-btn py-2.5 rounded-xl text-xs font-bold">Forex</button>
+                    <button type="button" onclick="changeFilter('market', 'stocks')" id="m-stocks" class="select-btn py-2.5 rounded-xl text-xs font-bold">Stocks</button>
+                </div>
+            </div>
 
-        flow_metric = f"Vol: {cand['vol_spike']:.1f}x | Taker: {cand['taker_buy']:.0f}%"
+            <div class="pt-4 border-t border-gray-800 space-y-3">
+                <div>
+                    <span id="lbl-mode" class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wide">Execution Mode:</span>
+                    <div class="grid grid-cols-2 gap-2 mt-1.5">
+                        <button type="button" onclick="changeTradingMode('mode1')" id="btn-mode1" class="py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer">Spot</button>
+                        <button type="button" onclick="changeTradingMode('mode2')" id="btn-mode2" class="py-2 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer">Futures / CFD</button>
+                    </div>
+                </div>
+                <div>
+                    <span id="lbl-direction" class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wide">Direction Setup:</span>
+                    <div class="grid grid-cols-2 gap-2 mt-1.5">
+                        <button type="button" onclick="changeDirection('long')" id="dir-long" class="py-2 rounded-lg text-[11px] font-bold bg-emerald-600 text-white border border-emerald-500 transition cursor-pointer">🟢 Buy / Long</button>
+                        <button type="button" onclick="changeDirection('short')" id="dir-short" class="py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer">🔴 Sell / Short</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        for horizon, potential in [('24h', '12% - 24%'), ('1w', '35% - 65%'), ('1m', '80% - 140%')]:
-            research_note = (
-                f"Smart money footprint detected. Volume surged {cand['vol_spike']:.1f}x with {cand['taker_buy']:.0f}% aggressive buyer flow. "
-                f"Open Interest expanded {cand['oi_change']:+.1f}% while 24h delta remained at {cand['price_change']:+.1f}%."
-            )
+        <!-- 2. Time Horizon -->
+        <div class="control-panel p-6 rounded-2xl flex flex-col justify-between">
+            <div>
+                <label id="lbl-horizon" class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-3">2. Projection Horizon</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button type="button" onclick="changeFilter('horizon', '24h')" id="h-24h" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Today</button>
+                    <button type="button" onclick="changeFilter('horizon', '1w')" id="h-1w" class="select-btn py-2.5 rounded-xl text-xs font-bold">1 Week</button>
+                    <button type="button" onclick="changeFilter('horizon', '1m')" id="h-1m" class="select-btn py-2.5 rounded-xl text-xs font-bold">1 Month</button>
+                </div>
+            </div>
+            <div id="lbl-engine" class="pt-4 border-t border-gray-800 mt-4 text-[11px] text-emerald-400 font-mono flex items-center justify-between">
+                <span>✔ Real-Time Supabase Feed Active</span>
+                <button type="button" onclick="fetchLiveMarketData()" class="text-blue-400 hover:underline cursor-pointer">🔄 Sync</button>
+            </div>
+        </div>
 
-            final_payload.append({
-                "symbol": sym_formatted,
-                "market_type": "crypto",
-                "horizon": horizon,
-                "sector": "Perpetual Alpha",
-                "score": cand["score"] if horizon == '24h' else max(75, cand["score"] - 3),
-                "stage": stage,
-                "current_change_24h": round(cand["price_change"], 2),
-                "est_potential": potential,
-                "flow_metric": flow_metric,
-                "driver_metric": catalyst,
-                "mtf_alignment": "4H: Pre-Breakout | 1H: Accumulation",
-                "research_note": research_note,
-                "unlock_safe": True
-            })
+        <!-- 3. Shortlist Capacity Dropdown Box -->
+        <div class="control-panel p-6 rounded-2xl flex flex-col justify-between">
+            <div>
+                <label id="lbl-shortlist" class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-3">3. Shortlist Capacity</label>
+                <select id="shortlistSelect" onchange="updateLimit(this.value)" class="w-full bg-[#1b263b] border border-gray-700 text-white font-bold text-xs rounded-xl px-3 py-3.5 focus:outline-none focus:border-blue-500 cursor-pointer">
+                    <option value="3">Top 3 Assets (Free Limit)</option>
+                    <option value="5">Top 5 Assets</option>
+                    <option value="10" selected>Top 10 Assets</option>
+                    <option value="15">Top 15 Assets</option>
+                    <option value="20">Top 20 Assets (Max)</option>
+                </select>
+            </div>
+            <p id="limitNote" class="text-[11px] text-gray-400 mt-4 font-mono">Free plan locked to Top 3.</p>
+        </div>
 
-    # ৭. সুপাবেস ডাটাবেসে সেভ করা
-    if final_payload:
-        try:
-            supabase.table("market_research").delete().eq("market_type", "crypto").execute()
-            supabase.table("market_research").insert(final_payload).execute()
-            print(f"Successfully published {len(screened_candidates)} alpha setups ({len(final_payload)} rows) to Supabase!")
-        except Exception as db_err:
-            print(f"Supabase sync failed: {db_err}")
-    else:
-        print("No market anomalies met institutional criteria in this cycle.")
+    </div>
 
-if __name__ == "__main__":
-    run_institutional_scanner()
+    <!-- Shortlisted Assets Grid -->
+    <div id="gridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        <div class="col-span-full text-center py-16 text-gray-400 font-mono bg-[#0b1326] rounded-2xl border border-gray-800">
+            Connecting to Supabase Intelligence Engine...
+        </div>
+    </div>
+
+    <!-- SaaS Pricing Plans Section -->
+    <section class="mb-16 pt-8 border-t border-gray-800">
+        <div class="text-center mb-10">
+            <h2 id="pricing-title" class="text-2xl font-extrabold text-white mb-2">Institutional SaaS Membership Tiers</h2>
+            <p id="pricing-subtitle" class="text-xs text-gray-400">Real-time institutional screening, Telegram signals, and multi-asset projections.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="terminal-card p-6 rounded-2xl flex flex-col justify-between">
+                <div>
+                    <span class="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-xs font-bold">Free Tier</span>
+                    <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$0 <span class="text-xs text-gray-400 font-normal">/ lifetime</span></h3>
+                    <p class="text-xs text-gray-400 mb-6">Basic multi-asset research for beginners.</p>
+                    <ul class="space-y-3 text-xs text-gray-300 mb-8">
+                        <li>✔ Top 3 Assets Only</li>
+                        <li>✔ Today (24h) Horizon</li>
+                        <li>❌ 1 Week & 1 Month Locked</li>
+                        <li>❌ Telegram Bot Alerts</li>
+                    </ul>
+                </div>
+                <button class="w-full py-2.5 bg-gray-900 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed border border-gray-800">Current Plan</button>
+            </div>
+
+            <!-- Pro Trader Plan -->
+            <div class="terminal-card p-6 rounded-2xl border-2 border-blue-600/60 shadow-xl shadow-blue-600/10 flex flex-col justify-between relative">
+                <span class="absolute -top-3 right-6 bg-blue-600 text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider">Special Offer</span>
+                <div>
+                    <span class="px-3 py-1 bg-blue-500/15 text-blue-400 rounded-full text-xs font-bold border border-blue-500/30">Pro Trader</span>
+                    <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$5 <span class="text-xs text-gray-400 font-normal">/ month</span></h3>
+                    <p class="text-xs text-gray-400 mb-6">Full institutional intelligence for serious traders.</p>
+                    <ul class="space-y-3 text-xs text-gray-300 mb-8">
+                        <li>✔ Crypto, Forex & Stocks Unlocked</li>
+                        <li>✔ Up to 20 Shortlisted Assets</li>
+                        <li>✔ 1 Week & 1 Month Projections</li>
+                        <li>✔ Instant Telegram Bot Alerts</li>
+                    </ul>
+                </div>
+                <button type="button" onclick="openPaymentModal('Pro Trader ($5/mo)', '5')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-md shadow-blue-600/30 rounded-xl cursor-pointer">Upgrade to Pro ($5)</button>
+            </div>
+
+            <!-- VIP Plan -->
+            <div class="terminal-card p-6 rounded-2xl flex flex-col justify-between">
+                <div>
+                    <span class="px-3 py-1 bg-amber-500/15 text-amber-400 rounded-full text-xs font-bold border border-amber-500/30">VIP Institutional</span>
+                    <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$49 <span class="text-xs text-gray-400 font-normal">/ month</span></h3>
+                    <p class="text-xs text-gray-400 mb-6">For fund managers & high-volume traders.</p>
+                    <ul class="space-y-3 text-xs text-gray-300 mb-8">
+                        <li>✔ Real-Time Zero-Latency Feed</li>
+                        <li>✔ Custom Whale & Dark Pool Filters</li>
+                        <li>✔ Private VIP Support Channel</li>
+                        <li>✔ Lifetime Access Option Available</li>
+                    </ul>
+                </div>
+                <button type="button" onclick="openPaymentModal('VIP Institutional ($49/mo)', '49')" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-black font-extrabold rounded-xl text-xs transition shadow-md shadow-amber-500/20 cursor-pointer">Get VIP Access ($49)</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Binance Pay / Crypto Payment Modal -->
+    <div id="paymentModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
+        <div class="terminal-card w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
+            <button type="button" onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
+            <h3 class="text-lg font-bold text-white mb-2">Binance Pay Checkout</h3>
+            <p id="payPlanName" class="text-xs text-blue-400 font-semibold mb-4"></p>
+            
+            <div class="bg-[#131d31] p-4 rounded-xl border border-gray-700 mb-4 space-y-2 text-xs">
+                <p class="text-gray-300">1. Send exact amount via <b class="text-white">Binance Pay</b> or <b class="text-white">USDT (TRC20/BEP20)</b>.</p>
+                <p class="text-gray-300">2. Binance Pay UID: <b class="text-emerald-400 font-mono text-sm">520327779</b></p>
+                <p class="text-gray-300">3. After payment, submit your transaction hash/ID below:</p>
+            </div>
+
+            <div class="space-y-3">
+                <input type="text" id="payTrxId" placeholder="Enter Transaction ID / Hash" class="w-full bg-[#131d31] border border-gray-700 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
+                <button type="button" onclick="submitPaymentOrder()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Submit Payment for Approval</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Auth Modal with Feedback Box -->
+    <div id="authModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
+        <div class="terminal-card w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
+            <button type="button" onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
+            <h3 id="authTitle" class="text-lg font-bold text-white mb-2">Login to GreatNexa</h3>
+            <p class="text-xs text-gray-400 mb-4">Access institutional research setups and signals.</p>
+
+            <!-- Dynamic Feedback Box (Success / Error) -->
+            <div id="authFeedback" class="hidden text-xs p-3 rounded-xl mb-4 border font-medium"></div>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-[11px] text-gray-400 mb-1">Email Address</label>
+                    <input type="email" id="authEmail" placeholder="your@email.com" class="w-full bg-[#131d31] border border-gray-700 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-[11px] text-gray-400 mb-1">Password</label>
+                    <input type="password" id="authPassword" placeholder="••••••••" class="w-full bg-[#131d31] border border-gray-700 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
+                </div>
+                <button type="button" onclick="handleAuthAction()" id="authSubmitBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Login</button>
+                <div class="flex justify-between items-center text-xs text-gray-400 pt-2">
+                    <span id="authToggleText">Don't have an account?</span>
+                    <button type="button" onclick="toggleAuthMode()" id="authToggleBtn" class="text-blue-400 hover:underline font-semibold cursor-pointer">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live TradingView Chart Modal -->
+    <div id="chartModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
+        <div class="terminal-card w-full max-w-4xl rounded-2xl overflow-hidden border border-gray-700 shadow-2xl">
+            <div class="flex justify-between items-center px-5 py-4 border-b border-gray-800 bg-[#0b111e]">
+                <h3 id="modalTitle" class="font-bold text-white text-xs">Live Institutional Chart</h3>
+                <button type="button" onclick="closeChart()" class="text-gray-400 hover:text-white text-lg font-bold px-2 cursor-pointer">&times;</button>
+            </div>
+            <div id="tv_chart_container" class="h-[450px] w-full bg-black"></div>
+        </div>
+    </div>
+
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    <script>
+        const SUPABASE_URL = 'https://esqhansnosejkqapuhoo.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_FypTC1KRVE66YBURyEhT9A_H3fKhzLM';
+        
+        let _supabase = null;
+        try {
+            if (window.supabase) {
+                _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch (e) {
+            console.error("Supabase client initialization warning:", e);
+        }
+
+        const i18n = {
+            en: { 
+                lblMarket: "1. Select Asset Market", lblHorizon: "2. Projection Horizon", lblShortlist: "3. Shortlist Capacity", 
+                lblMode: "Execution Mode:", lblDirection: "Direction Setup:", lblEngine: "✔ Real-Time Supabase Feed Active", 
+                noteLabel: "Research Note:", flowLabel: "Institutional Flow:", catalystLabel: "Key Catalyst:", 
+                potentialLabel: "Est. Potential:", viewChart: "View Chart", verified: "Verified Setup", 
+                lockedTitle: "High-Potential Setup Locked", upgradeBtn: "Upgrade to Pro ($5/mo)", 
+                pricingTitle: "Institutional SaaS Membership Tiers", pricingSub: "Real-time institutional screening, Telegram signals, and multi-asset projections." 
+            },
+            bn: { 
+                lblMarket: "১. অ্যাসেট মার্কেট নির্বাচন করুন", lblHorizon: "২. প্রজেকশন টাইমফ্রেম", lblShortlist: "৩. শর্টলিস্ট ধারণক্ষমতা", 
+                lblMode: "এক্সিকিউশন মোড:", lblDirection: "ডিরেকশন সেটআপ:", lblEngine: "✔ লাইভ সুপাবেস রিয়েল-টাইম ফিড সক্রিয়", 
+                noteLabel: "রিসার্চ নোট:", flowLabel: "ইনস্টিটিউশনাল ফ্লো:", catalystLabel: "মূল অনুঘটক:", 
+                potentialLabel: "সম্ভাব্য প্রফিট:", viewChart: "চার্ট দেখুন", verified: "যাচাইকৃত সেটআপ", 
+                lockedTitle: "হাই-পোটেনশিয়াল সেটআপ লক করা আছে", upgradeBtn: "প্রো সংস্করণে উন্নীত করুন ($৫/মাস)", 
+                pricingTitle: "ইনস্টিটিউশনাল SaaS মেম্বারশিপ টায়ার", pricingSub: "রিয়েল-টাইম স্ক্রিনিং, টেলিগ্রাম সিগন্যাল এবং মাল্টি-অ্যাসেট প্রজেকশন।" 
+            }
+        };
+
+        let currentLang = 'en';
+        let state = { market: 'crypto', horizon: '24h', limit: 10, role: 'free', tradingMode: 'mode2', direction: 'long', viewTab: 'active' };
+        let liveMarketData = [];
+        let selectedPlan = '';
+        let isSignUpMode = false;
+
+        function changeLanguage(lang) {
+            currentLang = i18n[lang] ? lang : 'en';
+            const t = i18n[currentLang];
+            const get = (id) => document.getElementById(id);
+            if (get('lbl-market')) get('lbl-market').innerText = t.lblMarket;
+            if (get('lbl-horizon')) get('lbl-horizon').innerText = t.lblHorizon;
+            if (get('lbl-shortlist')) get('lbl-shortlist').innerText = t.lblShortlist;
+            if (get('lbl-mode')) get('lbl-mode').innerText = t.lblMode;
+            if (get('lbl-direction')) get('lbl-direction').innerText = t.lblDirection;
+            if (get('lbl-engine')) get('lbl-engine').innerHTML = `<span>
