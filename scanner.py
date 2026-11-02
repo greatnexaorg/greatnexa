@@ -3,15 +3,14 @@ import time
 import pandas as pd
 import numpy as np
 from supabase import create_client, Client
-import yfinance as yf
 
-# ১. Supabase সংযোগ (Service Role Secret Key দিয়ে সব ধরনের RLS ও পারমিশন বাইপাস)
+# ১. Supabase সংযোগ (Service Role Secret Key)
 SUPABASE_URL = "https://esqhansnosejkqapuhoo.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjcwOTQwMywiZXhwIjoyMTAyMjg1NDAzfQ.gVXQnOD9OXWCJj_MN_i6eML9dyPvZZhC1BznGE4y3Ks"
 
 try:
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-    print("[*] Supabase ক্লায়েন্ট সফলভাবে সংযুক্ত হয়েছে (Admin Mode Active)।")
+    print("[*] Supabase ক্লায়েন্ট সফলভাবে সংযুক্ত হয়েছে।")
 except Exception as e:
     print(f"[-] Supabase ক্লায়েন্ট ইনিট ব্যর্থ: {e}")
 
@@ -76,8 +75,8 @@ def analyze_crypto_setup(symbol, turnover_24h, funding_rate, price_change_24h, l
         "est_potential": "+2.5% to +5.0%",
         "flow_metric": f"${round(turnover_24h/1_000_000, 1)}M 24h Vol",
         "driver_metric": "5M Order Flow Burst",
-        "mtf_alignment": f"Entry: ${fmt_price(last_price)} \vert{} SL:${fmt_price(sl_s)}",
-        "research_note": f"৫ মিনিটের ক্যান্ডেলে সক্রিয় মোমেন্টাম ভলিউম শনাক্ত। [TP1: ${fmt_price(tp1_s)} \vert{} TP2:${fmt_price(tp2_s)}]"
+        "mtf_alignment": f"Entry: ${fmt_price(last_price)} | SL: ${fmt_price(sl_s)}",
+        "research_note": f"৫ মিনিটের ক্যান্ডেলে সক্রিয় মোমেন্টাম ভলিউম শনাক্ত। [TP1: ${fmt_price(tp1_s)} | TP2: ${fmt_price(tp2_s)}]"
     })
 
     # খ) DAY TRADER (1H)
@@ -99,8 +98,8 @@ def analyze_crypto_setup(symbol, turnover_24h, funding_rate, price_change_24h, l
         "est_potential": "+4.8% to +9.0%",
         "flow_metric": "Range Compression",
         "driver_metric": "Breakout Imbalance",
-        "mtf_alignment": f"Entry: ${fmt_price(last_price)} \vert{} SL:${fmt_price(sl_d)}",
-        "research_note": f"১ ঘণ্টার বলিঙ্গার ব্যান্ড চেপে এসেছে। বড় ব্রেকআউট প্রত্যাশিত। [TP1: ${fmt_price(tp1_d)} \vert{} TP2:${fmt_price(tp2_d)}]"
+        "mtf_alignment": f"Entry: ${fmt_price(last_price)} | SL: ${fmt_price(sl_d)}",
+        "research_note": f"১ ঘণ্টার বলিঙ্গার ব্যান্ড চেপে এসেছে। বড় ব্রেকআউট প্রত্যাশিত। [TP1: ${fmt_price(tp1_d)} | TP2: ${fmt_price(tp2_d)}]"
     })
 
     # গ) SWING TRADER (4H)
@@ -122,8 +121,8 @@ def analyze_crypto_setup(symbol, turnover_24h, funding_rate, price_change_24h, l
         "est_potential": "+8.5% to +18.0%",
         "flow_metric": f"{round(funding_rate, 4)}% Funding",
         "driver_metric": "Whale Liquidity Sweep",
-        "mtf_alignment": f"Entry: ${fmt_price(last_price)} \vert{} SL:${fmt_price(sl_w)}",
-        "research_note": f"৪ ঘণ্টার টাইমফ্রেমে প্রাতিষ্ঠানিক পজিশন নিশ্চিত। মাল্টি-ডে সুইং রান। [TP1: ${fmt_price(tp1_w)} \vert{} TP2:${fmt_price(tp2_w)}]"
+        "mtf_alignment": f"Entry: ${fmt_price(last_price)} | SL: ${fmt_price(sl_w)}",
+        "research_note": f"৪ ঘণ্টার টাইমফ্রেমে প্রাতিষ্ঠানিক পজিশন নিশ্চিত। মাল্টি-ডে সুইং রান। [TP1: ${fmt_price(tp1_w)} | TP2: ${fmt_price(tp2_w)}]"
     })
 
     return results
@@ -132,7 +131,7 @@ def analyze_crypto_setup(symbol, turnover_24h, funding_rate, price_change_24h, l
 def scan_traditional_markets():
     setups = []
     
-    # ফরেক্স
+    # ফরেক্স পেয়ার
     try:
         fx_res = requests.get("https://open.er-api.com/v6/latest/USD", timeout=8).json()
         if fx_res.get("result") == "success":
@@ -163,13 +162,13 @@ def scan_traditional_markets():
                     "est_potential": "+1.2% to +2.5%",
                     "flow_metric": "Institutional Order Flow",
                     "driver_metric": "Session Liquidity",
-                    "mtf_alignment": f"Entry: ${fmt_price(price)} \vert{} SL:${fmt_price(sl)}",
+                    "mtf_alignment": f"Entry: ${fmt_price(price)} | SL: ${fmt_price(sl)}",
                     "research_note": f"লন্ডন/নিউইয়র্ক সেশনের প্রাতিষ্ঠানিক কি-লেভেল কনফার্মেশন। [TP1: ${fmt_price(tp)}]"
                 })
     except Exception:
         pass
 
-    # স্টকস
+    # স্টকস পেয়ার
     stock_list = [
         ("NVDA", 138.50, 2.45, "long", "US Tech / AI"),
         ("TSLA", 258.20, -1.80, "short", "EV / Automotive"),
@@ -191,4 +190,64 @@ def scan_traditional_markets():
             "est_potential": "+5.5% to +10.0%",
             "flow_metric": "Block Inflow",
             "driver_metric": "Dark Pool Accumulation",
-            "mtf_
+            "mtf_alignment": f"Entry: ${fmt_price(price)} | SL: ${fmt_price(sl)}",
+            "research_note": f"অফ-মার্কেট ব্লক ট্রানজ্যাকশন এবং ট্রেন্ড কনফার্মেশন। [TP1: ${fmt_price(tp)}]"
+        })
+
+    return setups
+
+# ৫. মূল এক্সিকিউশন ও পুশ ইঞ্জিন
+def run_unified_scanner():
+    print("[*] Unified Scanner ইঞ্জিন চালু হচ্ছে...")
+    all_setups = []
+
+    # Bybit থেকে ক্রিপ্টো স্ক্যান
+    try:
+        res = requests.get("https://api.bybit.com/v5/market/tickers?category=linear", timeout=10).json()
+        if res.get("retCode") == 0:
+            tickers = res["result"]["list"]
+            valid = [t for t in tickers if t['symbol'].endswith('USDT')]
+            valid = sorted(valid, key=lambda x: float(x.get('turnover24h', 0)), reverse=True)[:15]
+            
+            print(f"[+] Bybit থেকে {len(valid)}টি শীর্ষ পেয়ার বিশ্লেষণ করা হচ্ছে...")
+            for item in valid:
+                try:
+                    sym = item['symbol']
+                    turnover = float(item.get('turnover24h', 0))
+                    funding = float(item.get('fundingRate', 0)) * 100
+                    price_change = float(item.get('price24hPcnt', 0)) * 100
+                    last_price = float(item.get('lastPrice', 0))
+                    
+                    crypto_results = analyze_crypto_setup(sym, turnover, funding, price_change, last_price)
+                    all_setups.extend(crypto_results)
+                    time.sleep(0.04)
+                except Exception:
+                    continue
+    except Exception as e:
+        print(f"[-] Bybit Error: {e}")
+
+    # ফরেক্স ও স্টকস স্ক্যান
+    trad_results = scan_traditional_markets()
+    all_setups.extend(trad_results)
+
+    print(f"\n[+] সর্বমোট সিগন্যাল তৈরি হয়েছে: {len(all_setups)}টি।")
+    print("[*] Supabase-এ ডেটা পুশ করা হচ্ছে...\n")
+
+    success_count = 0
+    fail_count = 0
+
+    for s in all_setups:
+        try:
+            supabase.table("market_research").insert(s).execute()
+            success_count += 1
+            print(f"✔ সফল পুশ: {s['symbol']} | {s['direction'].upper()} | {s['stage']}")
+        except Exception as e:
+            fail_count += 1
+            print(f"✖ পুশ ব্যর্থ [{s['symbol']}]: {str(e)}")
+
+    print(f"\n==========================================")
+    print(f"সম্পন্ন! সফল: {success_count} টি | ব্যর্থ: {fail_count} টি")
+    print(f"==========================================")
+
+if __name__ == "__main__":
+    run_unified_scanner()
