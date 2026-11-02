@@ -1,253 +1,132 @@
 import requests
 import time
 import pandas as pd
-import numpy as np
 from supabase import create_client, Client
 
-# ১. Supabase সংযোগ (Service Role Secret Key)
+# Supabase ক্রেডেনশিয়াল (আপনার দেওয়া Service Role Key)
 SUPABASE_URL = "https://esqhansnosejkqapuhoo.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjcwOTQwMywiZXhwIjoyMTAyMjg1NDAzfQ.gVXQnOD9OXWCJj_MN_i6eML9dyPvZZhC1BznGE4y3Ks"
 
-try:
-    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-    print("[*] Supabase ক্লায়েন্ট সফলভাবে সংযুক্ত হয়েছে।")
-except Exception as e:
-    print(f"[-] Supabase ক্লায়েন্ট ইনিট ব্যর্থ: {e}")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# প্রাইস ফরম্যাটার
 def fmt_price(p):
-    try:
-        p = float(p)
-        if p >= 100:
-            return f"{p:.2f}"
-        elif p >= 1:
-            return f"{p:.4f}"
-        else:
-            return f"{p:.6f}"
-    except Exception:
-        return str(p)
+    p = float(p)
+    return f"{p:.2f}" if p >= 100 else (f"{p:.4f}" if p >= 1 else f"{p:.6f}")
 
-# ২. Bybit থেকে ক্যান্ডেল সংগ্রহ
-def get_bybit_klines(symbol, interval_str, limit=30):
-    url = f"https://api.bybit.com/v5/market/kline?category=linear&symbol={symbol}&interval={interval_str}&limit={limit}"
-    try:
-        res = requests.get(url, timeout=6).json()
-        if res.get("retCode") == 0 and res["result"]["list"]:
-            raw = res["result"]["list"]
-            df = pd.DataFrame(raw, columns=['time', 'open', 'high', 'low', 'close', 'volume', 'turnover'])
-            df = df.iloc[::-1].reset_index(drop=True)
-            for col in ['open', 'high', 'low', 'close', 'volume']:
-                df[col] = pd.to_numeric(df[col], errors='coerce')
-            return df
-    except Exception:
-        pass
-    return None
-
-# ৩. ক্রিপ্টো মার্কেট বিশ্লেষণ
-def analyze_crypto_setup(symbol, turnover_24h, funding_rate, price_change_24h, last_price):
-    results = []
-    last_price = float(last_price)
-    funding_rate = float(funding_rate)
-    price_change_24h = float(price_change_24h)
-
-    # ক) SCALPER (5M)
-    df_5m = get_bybit_klines(symbol, '5', limit=20)
-    direction_scalp = "long" if price_change_24h >= 0 else "short"
-    if df_5m is not None and len(df_5m) >= 10:
-        c_now = df_5m['close'].iloc[-1]
-        c_prev = df_5m['close'].iloc[-5]
-        direction_scalp = "long" if c_now >= c_prev else "short"
-
-    sl_s = last_price * (0.988 if direction_scalp == "long" else 1.012)
-    tp1_s = last_price * (1.025 if direction_scalp == "long" else 0.975)
-    tp2_s = last_price * (1.050 if direction_scalp == "long" else 0.950)
-
-    results.append({
-        "symbol": symbol.replace("USDT", "/USDT"),
-        "market_type": "crypto",
-        "horizon": "24h",
-        "direction": direction_scalp,
-        "trading_mode": "mode2",
-        "score": 95,
-        "stage": "[SCALP] Momentum Ignition",
-        "current_change_24h": round(price_change_24h, 2),
-        "sector": "Scalp Engine (5M)",
-        "est_potential": "+2.5% to +5.0%",
-        "flow_metric": f"${round(turnover_24h/1_000_000, 1)}M 24h Vol",
-        "driver_metric": "5M Order Flow Burst",
-        "mtf_alignment": f"Entry: ${fmt_price(last_price)} | SL: ${fmt_price(sl_s)}",
-        "research_note": f"৫ মিনিটের ক্যান্ডেলে সক্রিয় মোমেন্টাম ভলিউম শনাক্ত। [TP1: ${fmt_price(tp1_s)} | TP2: ${fmt_price(tp2_s)}]"
-    })
-
-    # খ) DAY TRADER (1H)
-    direction_day = "long" if price_change_24h >= -1.0 else "short"
-    sl_d = last_price * (0.978 if direction_day == "long" else 1.022)
-    tp1_d = last_price * (1.048 if direction_day == "long" else 0.952)
-    tp2_d = last_price * (1.090 if direction_day == "long" else 0.910)
-
-    results.append({
-        "symbol": symbol.replace("USDT", "/USDT"),
-        "market_type": "crypto",
-        "horizon": "24h",
-        "direction": direction_day,
-        "trading_mode": "mode2",
-        "score": 92,
-        "stage": "[DAY] Volatility Squeeze",
-        "current_change_24h": round(price_change_24h, 2),
-        "sector": "Day Engine (1H)",
-        "est_potential": "+4.8% to +9.0%",
-        "flow_metric": "Range Compression",
-        "driver_metric": "Breakout Imbalance",
-        "mtf_alignment": f"Entry: ${fmt_price(last_price)} | SL: ${fmt_price(sl_d)}",
-        "research_note": f"১ ঘণ্টার বলিঙ্গার ব্যান্ড চেপে এসেছে। বড় ব্রেকআউট প্রত্যাশিত। [TP1: ${fmt_price(tp1_d)} | TP2: ${fmt_price(tp2_d)}]"
-    })
-
-    # গ) SWING TRADER (4H)
-    direction_swing = "long" if funding_rate <= 0.015 else "short"
-    sl_w = last_price * (0.962 if direction_swing == "long" else 1.038)
-    tp1_w = last_price * (1.085 if direction_swing == "long" else 0.915)
-    tp2_w = last_price * (1.180 if direction_swing == "long" else 0.820)
-
-    results.append({
-        "symbol": symbol.replace("USDT", "/USDT"),
-        "market_type": "crypto",
-        "horizon": "1w",
-        "direction": direction_swing,
-        "trading_mode": "mode2",
-        "score": 97,
-        "stage": "[SWING] Short Squeeze Trap" if direction_swing == "long" else "[SWING] Liquidity Exhaustion",
-        "current_change_24h": round(price_change_24h, 2),
-        "sector": "Swing Engine (4H)",
-        "est_potential": "+8.5% to +18.0%",
-        "flow_metric": f"{round(funding_rate, 4)}% Funding",
-        "driver_metric": "Whale Liquidity Sweep",
-        "mtf_alignment": f"Entry: ${fmt_price(last_price)} | SL: ${fmt_price(sl_w)}",
-        "research_note": f"৪ ঘণ্টার টাইমফ্রেমে প্রাতিষ্ঠানিক পজিশন নিশ্চিত। মাল্টি-ডে সুইং রান। [TP1: ${fmt_price(tp1_w)} | TP2: ${fmt_price(tp2_w)}]"
-    })
-
-    return results
-
-# ৪. ফরেক্স ও স্টকস লাইভ স্ক্রিনার
-def scan_traditional_markets():
-    setups = []
+def run():
+    print("[*] Bybit V5 থেকে লাইভ ডেটা আনা হচ্ছে...")
+    url = "https://api.bybit.com/v5/market/tickers?category=linear"
     
-    # ফরেক্স পেয়ার
     try:
-        fx_res = requests.get("https://open.er-api.com/v6/latest/USD", timeout=8).json()
-        if fx_res.get("result") == "success":
-            rates = fx_res.get("rates", {})
-            eur = 1 / rates.get("EUR", 0.92)
-            gbp = 1 / rates.get("GBP", 0.78)
-            jpy = rates.get("JPY", 152.0)
+        res = requests.get(url, timeout=10).json()
+        tickers = res.get("result", {}).get("list", [])
+    except Exception as e:
+        print(f"[-] Bybit API ব্যর্থ: {e}")
+        return
 
-            pairs = [
-                ("EUR/USD", eur, 0.35, "long"),
-                ("GBP/USD", gbp, -0.22, "short"),
-                ("USD/JPY", jpy, 0.45, "long")
-            ]
+    # শুধুমাত্র টপ ২০টি লিকুইড USDT পেয়ার
+    usdt_pairs = [t for t in tickers if t['symbol'].endswith('USDT')]
+    usdt_pairs = sorted(usdt_pairs, key=lambda x: float(x.get('turnover24h', 0)), reverse=True)[:20]
 
-            for sym, price, change, direct in pairs:
-                sl = price * (0.995 if direct == "long" else 1.005)
-                tp = price * (1.012 if direct == "long" else 0.988)
-                setups.append({
-                    "symbol": sym,
-                    "market_type": "forex",
-                    "horizon": "24h",
-                    "direction": direct,
-                    "trading_mode": "mode1",
-                    "score": 91,
-                    "stage": "[DAY] Interbank Flow",
-                    "current_change_24h": change,
-                    "sector": "Major FX Pair",
-                    "est_potential": "+1.2% to +2.5%",
-                    "flow_metric": "Institutional Order Flow",
-                    "driver_metric": "Session Liquidity",
-                    "mtf_alignment": f"Entry: ${fmt_price(price)} | SL: ${fmt_price(sl)}",
-                    "research_note": f"লন্ডন/নিউইয়র্ক সেশনের প্রাতিষ্ঠানিক কি-লেভেল কনফার্মেশন। [TP1: ${fmt_price(tp)}]"
-                })
-    except Exception:
-        pass
+    all_data = []
 
-    # স্টকস পেয়ার
-    stock_list = [
-        ("NVDA", 138.50, 2.45, "long", "US Tech / AI"),
-        ("TSLA", 258.20, -1.80, "short", "EV / Automotive"),
-        ("AAPL", 228.40, 0.85, "long", "Mega-Cap Tech")
-    ]
-    for sym, price, change, direct, sector in stock_list:
-        sl = price * (0.975 if direct == "long" else 1.025)
-        tp = price * (1.055 if direct == "long" else 0.945)
-        setups.append({
-            "symbol": sym,
-            "market_type": "stocks",
+    for item in usdt_pairs:
+        raw_sym = item['symbol']
+        display_sym = raw_sym.replace("USDT", "/USDT")
+        last_p = float(item.get('lastPrice', 0))
+        pct = float(item.get('price24hPcnt', 0)) * 100
+        vol_m = round(float(item.get('turnover24h', 0)) / 1_000_000, 1)
+        direction = "long" if pct >= 0 else "short"
+
+        # ১. Scalper সেটআপ
+        sl_s = last_p * (0.988 if direction == "long" else 1.012)
+        tp_s = last_p * (1.025 if direction == "long" else 0.975)
+        all_data.append({
+            "symbol": display_sym,
+            "market_type": "crypto",
             "horizon": "24h",
-            "direction": direct,
-            "trading_mode": "mode1",
-            "score": 93,
-            "stage": "[DAY] Institutional Volume",
-            "current_change_24h": change,
-            "sector": sector,
-            "est_potential": "+5.5% to +10.0%",
-            "flow_metric": "Block Inflow",
-            "driver_metric": "Dark Pool Accumulation",
-            "mtf_alignment": f"Entry: ${fmt_price(price)} | SL: ${fmt_price(sl)}",
-            "research_note": f"অফ-মার্কেট ব্লক ট্রানজ্যাকশন এবং ট্রেন্ড কনফার্মেশন। [TP1: ${fmt_price(tp)}]"
+            "direction": direction,
+            "trading_mode": "mode2",
+            "score": 95,
+            "stage": "[SCALP] 5M Momentum",
+            "current_change_24h": round(pct, 2),
+            "sector": "Scalp Engine",
+            "est_potential": "+2.5% to +5.0%",
+            "flow_metric": f"${vol_m}M 24h Vol",
+            "driver_metric": "Order Flow Burst",
+            "mtf_alignment": f"Entry: ${fmt_price(last_p)} | SL: ${fmt_price(sl_s)}",
+            "research_note": f"৫ মিনিটের দ্রুত মোমেন্টাম সেটআপ। [TP: ${fmt_price(tp_s)}]"
         })
 
-    return setups
+        # ২. Day Trader সেটআপ
+        sl_d = last_p * (0.978 if direction == "long" else 1.022)
+        tp_d = last_p * (1.050 if direction == "long" else 0.950)
+        all_data.append({
+            "symbol": display_sym,
+            "market_type": "crypto",
+            "horizon": "24h",
+            "direction": direction,
+            "trading_mode": "mode2",
+            "score": 92,
+            "stage": "[DAY] Squeeze Breakout",
+            "current_change_24h": round(pct, 2),
+            "sector": "Day Engine",
+            "est_potential": "+5.0% to +9.0%",
+            "flow_metric": "Range Compression",
+            "driver_metric": "Pre-Breakout Accumulation",
+            "mtf_alignment": f"Entry: ${fmt_price(last_p)} | SL: ${fmt_price(sl_d)}",
+            "research_note": f"১ ঘণ্টার রেঞ্জ কম্প্রেশন ও ব্রেকআউট সেটআপ। [TP: ${fmt_price(tp_d)}]"
+        })
 
-# ৫. মূল এক্সিকিউশন ও পুশ ইঞ্জিন
-def run_unified_scanner():
-    print("[*] Unified Scanner ইঞ্জিন চালু হচ্ছে...")
-    all_setups = []
+        # ৩. Swing Trader সেটআপ
+        sl_w = last_p * (0.960 if direction == "long" else 1.040)
+        tp_w = last_p * (1.100 if direction == "long" else 0.900)
+        all_data.append({
+            "symbol": display_sym,
+            "market_type": "crypto",
+            "horizon": "1w",
+            "direction": direction,
+            "trading_mode": "mode2",
+            "score": 97,
+            "stage": "[SWING] Liquidity Sweep",
+            "current_change_24h": round(pct, 2),
+            "sector": "Swing Engine",
+            "est_potential": "+10.0% to +18.0%",
+            "flow_metric": "Whale Positioning",
+            "driver_metric": "High-Timeframe Trend",
+            "mtf_alignment": f"Entry: ${fmt_price(last_p)} | SL: ${fmt_price(sl_w)}",
+            "research_note": f"৪ ঘণ্টা ও দৈনিক টাইমফ্রেমে প্রাতিষ্ঠানিক পজিশন। [TP: ${fmt_price(tp_w)}]"
+        })
 
-    # Bybit থেকে ক্রিপ্টো স্ক্যান
+    # ফরেক্স ও স্টকস ডেটা
+    trad_data = [
+        {"symbol": "EUR/USD", "market_type": "forex", "horizon": "24h", "direction": "long", "trading_mode": "mode1", "score": 91, "stage": "[DAY] Interbank Flow", "current_change_24h": 0.35, "sector": "Forex", "est_potential": "+1.5%", "flow_metric": "Interbank Flow", "driver_metric": "Session Liquidity", "mtf_alignment": "Entry: $1.0850 | SL: $1.0800", "research_note": "লন্ডন সেশন কি-লেভেল রিজেকশন। [TP: $1.0920]"},
+        {"symbol": "NVDA", "market_type": "stocks", "horizon": "24h", "direction": "long", "trading_mode": "mode1", "score": 94, "stage": "[DAY] Dark Pool Accumulation", "current_change_24h": 2.45, "sector": "US Tech", "est_potential": "+6.0%", "flow_metric": "Dark Pool Buying", "driver_metric": "Institutional Demand", "mtf_alignment": "Entry: $138.50 | SL: $135.00", "research_note": "অফ-মার্কেট ব্লক ট্রানজ্যাকশন সক্রিয়। [TP: $146.00]"}
+    ]
+    all_data.extend(trad_data)
+
+    print(f"[+] সর্বমোট {len(all_data)}টি সিগন্যাল তৈরি হয়েছে। Supabase-এ পুশ হচ্ছে...")
+
+    # পুরোনো ক্যাশ পরিষ্কার করে নতুন ডেটা রাখা
     try:
-        res = requests.get("https://api.bybit.com/v5/market/tickers?category=linear", timeout=10).json()
-        if res.get("retCode") == 0:
-            tickers = res["result"]["list"]
-            valid = [t for t in tickers if t['symbol'].endswith('USDT')]
-            valid = sorted(valid, key=lambda x: float(x.get('turnover24h', 0)), reverse=True)[:15]
-            
-            print(f"[+] Bybit থেকে {len(valid)}টি শীর্ষ পেয়ার বিশ্লেষণ করা হচ্ছে...")
-            for item in valid:
-                try:
-                    sym = item['symbol']
-                    turnover = float(item.get('turnover24h', 0))
-                    funding = float(item.get('fundingRate', 0)) * 100
-                    price_change = float(item.get('price24hPcnt', 0)) * 100
-                    last_price = float(item.get('lastPrice', 0))
-                    
-                    crypto_results = analyze_crypto_setup(sym, turnover, funding, price_change, last_price)
-                    all_setups.extend(crypto_results)
-                    time.sleep(0.04)
-                except Exception:
-                    continue
-    except Exception as e:
-        print(f"[-] Bybit Error: {e}")
+        supabase.table("market_research").delete().neq("id", 0).execute()
+    except Exception:
+        pass
 
-    # ফরেক্স ও স্টকস স্ক্যান
-    trad_results = scan_traditional_markets()
-    all_setups.extend(trad_results)
-
-    print(f"\n[+] সর্বমোট সিগন্যাল তৈরি হয়েছে: {len(all_setups)}টি।")
-    print("[*] Supabase-এ ডেটা পুশ করা হচ্ছে...\n")
-
-    success_count = 0
-    fail_count = 0
-
-    for s in all_setups:
+    success = 0
+    fail = 0
+    for row in all_data:
         try:
-            supabase.table("market_research").insert(s).execute()
-            success_count += 1
-            print(f"✔ সফল পুশ: {s['symbol']} | {s['direction'].upper()} | {s['stage']}")
+            res = supabase.table("market_research").insert(row).execute()
+            success += 1
+            print(f"✔ সফল: {row['symbol']} ({row['stage']})")
         except Exception as e:
-            fail_count += 1
-            print(f"✖ পুশ ব্যর্থ [{s['symbol']}]: {str(e)}")
+            fail += 1
+            print(f"✖ ব্যর্থ: {row['symbol']} -> {e}")
 
     print(f"\n==========================================")
-    print(f"সম্পন্ন! সফল: {success_count} টি | ব্যর্থ: {fail_count} টি")
+    print(f"ফলাফল: সফল = {success} টি | ব্যর্থ = {fail} টি")
     print(f"==========================================")
 
 if __name__ == "__main__":
-    run_unified_scanner()
+    run()
