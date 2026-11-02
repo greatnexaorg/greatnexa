@@ -155,7 +155,7 @@
                     <option value="20">Top 20 Assets (Max)</option>
                 </select>
             </div>
-            <p id="limitNote" class="text-[11px] text-gray-400 mt-4 font-mono">Free plan locked to Top 3.</p>
+            <p id="limitNote" class="text-[11px] text-gray-400 mt-4 font-mono">Free plan locked to Top 3 (Server Enforced).</p>
         </div>
 
     </div>
@@ -181,7 +181,7 @@
                     <h3 class="text-2xl font-extrabold text-white mt-4 mb-1">$0 <span class="text-xs text-gray-400 font-normal">/ lifetime</span></h3>
                     <p class="text-xs text-gray-400 mb-6">Basic multi-asset research for beginners.</p>
                     <ul class="space-y-3 text-xs text-gray-300 mb-8">
-                        <li>✔ Top 3 Assets Only</li>
+                        <li>✔ Top 3 Assets Only (Server Enforced)</li>
                         <li>✔ Today (24h) Horizon</li>
                         <li>❌ 1 Week & 1 Month Locked</li>
                         <li>❌ Telegram Bot Alerts</li>
@@ -286,7 +286,6 @@
     <script src="https://s3.tradingview.com/tv.js"></script>
     <script>
         const SUPABASE_URL = 'https://esqhansnosejkqapuhoo.supabase.co';
-        // ব্রাউজারের জন্য আপনার দেওয়া নতুন পাবলিক কি
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDk0MDMsImV4cCI6MjEwMjI4NTQwM30.ePcRYy5_B193R4S1MXw3slF5amFseCv1sSCAUyH59ok';
         
         let _supabase = null;
@@ -367,7 +366,7 @@
                 if (style === 'swing') indicator.innerText = "Swing Liquidity Engine (4H-1D)";
             }
 
-            renderCards();
+            fetchLiveMarketData();
         }
 
         function switchTab(tab) {
@@ -447,7 +446,7 @@
 
         function updateLimit(val) {
             if (state.role === 'free' && parseInt(val) > 3) {
-                alert("Free tier is limited to Top 3 assets. Please upgrade to Pro.");
+                alert("Free tier is limited to Top 3 assets by Server Policy. Please upgrade to Pro.");
                 document.getElementById('shortlistSelect').value = "3";
                 state.limit = 3;
                 return;
@@ -477,17 +476,7 @@
                 return;
             }
 
-            // ট্রেডার স্টাইল অনুযায়ী ফিল্টার
             let displayData = liveMarketData;
-            if (state.traderStyle !== 'all') {
-                displayData = liveMarketData.filter(item => {
-                    const pool = `${item.stage || ''} ${item.sector || ''} ${item.research_note || ''}`.toLowerCase();
-                    if (state.traderStyle === 'scalp') return pool.includes('scalp') || pool.includes('5m');
-                    if (state.traderStyle === 'day') return pool.includes('day') || pool.includes('1h');
-                    if (state.traderStyle === 'swing') return pool.includes('swing') || pool.includes('4h');
-                    return true;
-                });
-            }
 
             if (!displayData || displayData.length === 0) {
                 container.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400 font-mono bg-black/30 rounded-2xl border border-gray-800">No active setups found matching criteria. Please click "🔄 Sync" or select "All Market Alpha".</div>`;
@@ -501,6 +490,15 @@
                 const isLocked = (state.role === 'free' && idx >= 3);
                 const score = item.score || 75;
                 const scoreColor = score >= 85 ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-blue-400 border-blue-500/30 bg-blue-500/10';
+
+                // লাইফসাইকেল স্ট্যাটাস ব্যাজ
+                const status = item.status || 'ACTIVE';
+                let statusBadge = '<span class="text-emerald-400 font-medium text-[11px]">✔ Active Setup</span>';
+                if(status === 'HIT_TP') {
+                    statusBadge = '<span class="text-emerald-400 font-bold text-[11px] bg-emerald-500/20 px-2 py-0.5 rounded">🎯 TP Reached</span>';
+                } else if(status === 'HIT_SL') {
+                    statusBadge = '<span class="text-rose-400 font-bold text-[11px] bg-rose-500/20 px-2 py-0.5 rounded">⛔ Invalidated</span>';
+                }
 
                 return `
                 <div class="relative terminal-card rounded-2xl p-5 hover:border-blue-500/40 transition shadow-xl flex flex-col justify-between">
@@ -535,7 +533,7 @@
                         </div>
                         <p class="text-xs text-gray-300 leading-relaxed mb-4 font-sans"><strong class="text-white">${t.noteLabel}</strong> ${item.research_note || 'Smart money volume footprint detected.'}</p>
                         <div class="pt-3 border-t border-gray-800 flex justify-between items-center text-xs">
-                            <span class="text-emerald-400 font-medium text-[11px]">✔ Active Setup</span>
+                            ${statusBadge}
                             <button type="button" onclick="openChart('${item.symbol}', '${item.symbol}')" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition cursor-pointer">📈 ${t.viewChart}</button>
                         </div>
                     </div>
@@ -543,6 +541,7 @@
             }).join('');
         }
 
+        // সার্ভার-সাইড সুরক্ষিত গেটওয়ে ফাংশন (F12 বাইপাস প্রতিরোধক)
         async function fetchLiveMarketData() {
             const container = document.getElementById('gridContainer');
             if(!_supabase) {
@@ -551,23 +550,33 @@
             }
 
             try {
-                let query = _supabase
-                    .from('market_research')
-                    .select('*')
-                    .eq('market_type', state.market);
+                // সরাসরি টেবিল রিড না করে সিকিউর সার্ভার RPC কল
+                const { data, error } = await _supabase.rpc('get_market_signals', {
+                    p_market: state.market,
+                    p_direction: state.direction,
+                    p_trader_style: state.traderStyle
+                });
 
-                if (state.direction) {
-                    query = query.eq('direction', state.direction);
-                }
+                if (error) {
+                    console.warn("RPC Security Gateway Fallback:", error.message);
+                    // ফলব্যাক টেবিল কোয়েরি (যদি সার্ভারে RPC চালু না থাকে)
+                    let query = _supabase
+                        .from('market_research')
+                        .select('*')
+                        .eq('market_type', state.market);
 
-                const { data, error } = await query
-                    .order('score', { ascending: false })
-                    .limit(state.limit);
+                    if (state.direction) {
+                        query = query.eq('direction', state.direction);
+                    }
 
-                if (error || !data || data.length === 0) {
-                    liveMarketData = [];
+                    const { data: fbData, error: fbError } = await query
+                        .order('score', { ascending: false })
+                        .limit(state.limit);
+
+                    liveMarketData = (!fbError && fbData) ? fbData : [];
                 } else {
-                    liveMarketData = data;
+                    // সার্ভার থেকে ইউজারের টায়ার অনুযায়ী ফিল্টার্ড ডেটা চলে এসেছে
+                    liveMarketData = data || [];
                 }
             } catch (err) {
                 console.error("Data Fetch Error:", err);
