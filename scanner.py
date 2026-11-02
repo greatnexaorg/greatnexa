@@ -5,14 +5,13 @@ import numpy as np
 from supabase import create_client, Client
 import yfinance as yf
 
-# ১. Supabase সংযোগ কনফিগারেশন
+# ১. Supabase সংযোগ (Service Role Secret Key দিয়ে ১০০% আনলকড অ্যাক্সেস)
 SUPABASE_URL = "https://esqhansnosejkqapuhoo.supabase.co"
-# পরামর্শ: Supabase Dashboard -> Settings -> API থেকে service_role কী দিলে সবচেয়ে নিরাপদ ও দ্রুত কাজ করে
-SUPABASE_KEY = "sb_publishable_FypTC1KRVE66YBURyEhT9A_H3fKhzLM"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjcwOTQwMywiZXhwIjoyMTAyMjg1NDAzfQ.gVXQnOD9OXWCJj_MN_i6eML9dyPvZZhC1BznGE4y3Ks"
 
 try:
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-    print("[*] Supabase ক্লায়েন্ট সফলভাবে সংযুক্ত হয়েছে।")
+    print("[*] Supabase ক্লায়েন্ট সফলভাবে সংযুক্ত হয়েছে (Admin Mode Active)।")
 except Exception as e:
     print(f"[-] Supabase সংযোগ ব্যর্থ: {e}")
 
@@ -25,7 +24,7 @@ def fmt_price(p):
     else:
         return f"{p:.6f}"
 
-# ২. টেকনিক্যাল ইন্ডিকেটর ইঞ্জিন
+# ২. টেকনিক্যাল ইন্ডিকেটর গণনার ইঞ্জিন
 def calculate_indicators(df):
     if len(df) < 20:
         return None
@@ -51,7 +50,7 @@ def calculate_indicators(df):
     df['vol_ratio'] = volume / (df['vol_ma'] + 1e-9)
     return df
 
-# ৩. Bybit থেকে নির্দিষ্ট টাইমফ্রেমের ক্যান্ডেল আনা
+# ৩. Bybit থেকে নির্দিষ্ট টাইমফ্রেমের ক্যান্ডেল সংগ্রহ
 def get_bybit_klines(symbol, interval_str, limit=35):
     url = f"https://api.bybit.com/v5/market/kline?category=linear&symbol={symbol}&interval={interval_str}&limit={limit}"
     try:
@@ -89,15 +88,15 @@ def analyze_crypto_setup(symbol, turnover_24h, funding_rate, price_change_24h, l
                 "horizon": "24h",
                 "direction": direction,
                 "trading_mode": "mode2",
-                "score": 94,
+                "score": 95,
                 "stage": "[SCALP] Momentum Ignition",
                 "current_change_24h": round(price_change_24h, 2),
                 "sector": "Scalp Engine (5M)",
                 "est_potential": "+2.5% to +5.0%",
                 "flow_metric": f"{round(last['vol_ratio'], 1)}x 5M Vol Burst",
                 "driver_metric": "Aggressive Order Flow",
-                "mtf_alignment": f"Entry: ${fmt_price(entry)} | SL: ${fmt_price(sl)}",
-                "research_note": f"৫ মিনিটের ক্যান্ডেলে সক্রিয় ভলিউম স্পাইক শনাক্ত হয়েছে। [TP1: ${fmt_price(tp1)} | TP2: ${fmt_price(tp2)}]"
+                "mtf_alignment": f"Entry: ${fmt_price(entry)} \vert{} SL:${fmt_price(sl)}",
+                "research_note": f"৫ মিনিটের ক্যান্ডেলে সক্রিয় ভলিউম স্পাইক শনাক্ত হয়েছে। [TP1: ${fmt_price(tp1)} \vert{} TP2:${fmt_price(tp2)}]"
             })
 
     # খ) DAY TRADER (1H Klines)
@@ -118,15 +117,15 @@ def analyze_crypto_setup(symbol, turnover_24h, funding_rate, price_change_24h, l
                 "horizon": "24h",
                 "direction": direction,
                 "trading_mode": "mode2",
-                "score": 91,
+                "score": 92,
                 "stage": "[DAY] Volatility Squeeze",
                 "current_change_24h": round(price_change_24h, 2),
                 "sector": "Day Engine (1H)",
                 "est_potential": "+4.8% to +9.0%",
                 "flow_metric": "Range Compression",
                 "driver_metric": "Pre-Breakout Tension",
-                "mtf_alignment": f"Entry: ${fmt_price(entry)} | SL: ${fmt_price(sl)}",
-                "research_note": f"১ ঘণ্টার বলিঙ্গার ব্যান্ড চেপে এসেছে। বড় ব্রেকআউট প্রত্যাশিত। [TP1: ${fmt_price(tp1)} | TP2: ${fmt_price(tp2)}]"
+                "mtf_alignment": f"Entry: ${fmt_price(entry)} \vert{} SL:${fmt_price(sl)}",
+                "research_note": f"১ ঘণ্টার বলিঙ্গার ব্যান্ড চেপে এসেছে। বড় ব্রেকআউট প্রত্যাশিত। [TP1: ${fmt_price(tp1)} \vert{} TP2:${fmt_price(tp2)}]"
             })
 
     # গ) SWING TRADER (4H Klines)
@@ -147,15 +146,15 @@ def analyze_crypto_setup(symbol, turnover_24h, funding_rate, price_change_24h, l
                 "horizon": "1w",
                 "direction": direction,
                 "trading_mode": "mode2",
-                "score": 96,
+                "score": 97,
                 "stage": "[SWING] Short Squeeze Trap" if direction == "long" else "[SWING] Liquidity Exhaustion",
                 "current_change_24h": round(price_change_24h, 2),
                 "sector": "Swing Engine (4H)",
                 "est_potential": "+8.5% to +18.0%",
                 "flow_metric": f"{round(funding_rate, 4)}% Funding",
                 "driver_metric": "Whale Absorption",
-                "mtf_alignment": f"Entry: ${fmt_price(entry)} | SL: ${fmt_price(sl)}",
-                "research_note": f"৪ ঘণ্টার চার্টে প্রাতিষ্ঠানিক পজিশন শনাক্ত। মাল্টি-ডে সুইং সেটআপ। [TP1: ${fmt_price(tp1)} | TP2: ${fmt_price(tp2)}]"
+                "mtf_alignment": f"Entry: ${fmt_price(entry)} \vert{} SL:${fmt_price(sl)}",
+                "research_note": f"৪ ঘণ্টার চার্টে প্রাতিষ্ঠানিক পজিশন শনাক্ত। মাল্টি-ডে সুইং সেটআপ। [TP1: ${fmt_price(tp1)} \vert{} TP2:${fmt_price(tp2)}]"
             })
 
     return results
@@ -183,14 +182,14 @@ def scan_traditional_markets():
                     "horizon": "24h",
                     "direction": direction,
                     "trading_mode": "mode1",
-                    "score": 90,
+                    "score": 91,
                     "stage": "[DAY] Interbank Flow",
                     "current_change_24h": pct_change,
                     "sector": "Major FX Pair",
                     "est_potential": "+1.2% to +2.5%",
                     "flow_metric": "Interbank Liquidity",
                     "driver_metric": "Macro Session Confluence",
-                    "mtf_alignment": f"Entry: ${fmt_price(close)} | SL: ${fmt_price(sl)}",
+                    "mtf_alignment": f"Entry: ${fmt_price(close)} \vert{} SL:${fmt_price(sl)}",
                     "research_note": f"লন্ডন/নিউইয়র্ক সেশনের প্রাতিষ্ঠানিক অর্ডার ফ্লো সেটআপ। [TP1: ${fmt_price(tp1)}]"
                 })
         except Exception:
@@ -213,14 +212,14 @@ def scan_traditional_markets():
                     "horizon": "24h",
                     "direction": direction,
                     "trading_mode": "mode1",
-                    "score": 92,
+                    "score": 93,
                     "stage": "[DAY] Institutional Volume",
                     "current_change_24h": pct_change,
                     "sector": "US Mega-Cap",
                     "est_potential": "+5.5% to +10.0%",
                     "flow_metric": "Dark Pool Block Flow",
                     "driver_metric": "Institutional Accumulation",
-                    "mtf_alignment": f"Entry: ${fmt_price(close)} | SL: ${fmt_price(sl)}",
+                    "mtf_alignment": f"Entry: ${fmt_price(close)} \vert{} SL:${fmt_price(sl)}",
                     "research_note": f"অফ-মার্কেট ব্লক ট্রানজ্যাকশন এবং ট্রেন্ড কনফার্মেশন। [TP1: ${fmt_price(tp1)}]"
                 })
         except Exception:
@@ -230,7 +229,7 @@ def scan_traditional_markets():
 
 # ৬. মূল এক্সিকিউশন ও পুশ ইঞ্জিন
 def run_unified_scanner():
-    print("[*] Unified Scanner চালু হচ্ছে...")
+    print("[*] Unified Scanner ইঞ্জিন চালু হচ্ছে...")
     all_setups = []
 
     # Bybit থেকে ক্রিপ্টো স্ক্যান
@@ -262,15 +261,12 @@ def run_unified_scanner():
     print(f"\n[+] সর্বমোট সিগন্যাল তৈরি হয়েছে: {len(all_setups)}টি।")
     print("[*] Supabase-এ ডেটা ইনসার্ট করা হচ্ছে...\n")
 
-    # পুরাতন টেস্ট ডেটা ডুপ্লিকেট পরিষ্কার করতে চাইলে (ঐচ্ছিক):
-    # supabase.table("market_research").delete().neq("id", 0).execute()
-
     success_count = 0
     fail_count = 0
 
     for s in all_setups:
         try:
-            # upsert-এর বদলে সরাসরি নিশ্চিত ইনসার্ট
+            # Service role key ব্যবহারের ফলে সরাসরি ও নির্ভুল ইনসার্ট হবে
             res = supabase.table("market_research").insert(s).execute()
             success_count += 1
             print(f"✔ সফল পুশ: {s['symbol']} | {s['direction'].upper()} | {s['stage']}")
