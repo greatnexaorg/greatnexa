@@ -47,7 +47,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- গুগল ট্রান্সলেট ইঞ্জিন -->
+    <!-- Google Translate Engine -->
     <div id="google_translate_element" style="display:none !important;"></div>
     <script type="text/javascript">
         function googleTranslateElementInit() {
@@ -138,7 +138,7 @@
         .ticker-wrap {
             display: flex;
             width: max-content;
-            animation: tickerTape 28s linear infinite;
+            animation: tickerTape 30s linear infinite;
         }
         .ticker-wrap:hover { animation-play-state: paused; }
 
@@ -168,18 +168,18 @@
 </head>
 <body class="antialiased overflow-x-hidden">
 
-    <!-- Top Live Ticker Tape -->
+    <!-- Top Live Ticker Tape (Binance WebSocket Connected) -->
     <div class="w-full bg-[#030611] border-b border-white/[0.08] py-2 px-4 overflow-hidden relative z-50">
-        <div class="ticker-wrap flex items-center gap-10 font-mono text-xs">
-            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">BTC/USDT</span><span class="text-emerald-400 font-bold">$98,420.50</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+3.84%</span></div>
-            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">ETH/USDT</span><span class="text-emerald-400 font-bold">$3,420.10</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+2.15%</span></div>
-            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">EUR/USD</span><span class="text-rose-400 font-bold">1.0542</span><span class="text-[10px] bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded font-bold">-0.18%</span></div>
-            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">XAU/USD (Gold)</span><span class="text-amber-300 font-bold">$2,735.40</span><span class="text-[10px] bg-amber-500/10 text-amber-300 px-1.5 py-0.5 rounded font-bold">+0.92%</span></div>
-            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">NVDA</span><span class="text-emerald-400 font-bold">$146.80</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+4.20%</span></div>
-            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">SOL/USDT</span><span class="text-emerald-400 font-bold">$218.45</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+5.60%</span></div>
-            <!-- Loop -->
-            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">BTC/USDT</span><span class="text-emerald-400 font-bold">$98,420.50</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+3.84%</span></div>
-            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">EUR/USD</span><span class="text-rose-400 font-bold">1.0542</span><span class="text-[10px] bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded font-bold">-0.18%</span></div>
+        <div id="tickerTrack" class="ticker-wrap flex items-center gap-10 font-mono text-xs">
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">BTC/USDT</span><span id="price-btcusdt" class="text-emerald-400 font-bold">$98,420.50</span></div>
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">ETH/USDT</span><span id="price-ethusdt" class="text-emerald-400 font-bold">$3,420.10</span></div>
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">SOL/USDT</span><span id="price-solusdt" class="text-emerald-400 font-bold">$218.45</span></div>
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">EUR/USD</span><span class="text-rose-400 font-bold">1.0542</span></div>
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">XAU/USD (Gold)</span><span class="text-amber-300 font-bold">$2,735.40</span></div>
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">NVDA</span><span class="text-emerald-400 font-bold">$146.80</span></div>
+            <!-- Loop Duplication -->
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">BTC/USDT</span><span id="price-btcusdt-dup" class="text-emerald-400 font-bold">$98,420.50</span></div>
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">ETH/USDT</span><span id="price-ethusdt-dup" class="text-emerald-400 font-bold">$3,420.10</span></div>
         </div>
     </div>
 
@@ -188,7 +188,7 @@
         <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
             <a href="/" class="flex items-center gap-3.5 group">
                 <div class="relative">
-                    <img src="/store/iconpng.webp" alt="GreatNexa" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-cover border border-blue-500/40 shadow-lg shadow-blue-600/30 group-hover:scale-105 transition">
+                    <img src="/store/iconpng.webp" onerror="this.src='/store/favicon.png'" alt="GreatNexa" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-cover border border-blue-500/40 shadow-lg shadow-blue-600/30 group-hover:scale-105 transition">
                     <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-[#02040a] rounded-full"></span>
                 </div>
                 <div>
@@ -237,7 +237,7 @@
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8 space-y-8">
 
-        <!-- Wall-Street Quant HUD -->
+        <!-- Quant HUD -->
         <section class="glass-panel rounded-3xl p-6 sm:p-10 relative overflow-hidden">
             <div class="absolute -right-20 -top-20 w-80 h-80 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
             <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-purple-600/15 rounded-full blur-[100px] pointer-events-none"></div>
@@ -256,7 +256,6 @@
                         Scanning 500+ Crypto Pairs, S&P 100 Equities, and G10 Forex Pairs. Dynamically calibrated with ATR volatility stops, smart money accumulation, and zero repainting.
                     </p>
                     
-                    <!-- Institutional Metric HUD -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 font-mono text-xs">
                         <div class="p-3 bg-black/40 rounded-xl border border-white/5">
                             <span class="text-gray-400 text-[10px] block">Model Win Rate</span>
@@ -329,8 +328,7 @@
 
         <!-- Terminal Control Panels -->
         <div id="controlPanel" class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            
-            <!-- 1. Asset Universe & Execution Mode -->
+            <!-- 1. Asset Universe -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
                 <div>
                     <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">1. Asset Universe</label>
@@ -403,7 +401,6 @@
                     <p>Free tier enforces Top 3 setups automatically. Unlock all 20 setups with Pro membership.</p>
                 </div>
             </div>
-
         </div>
 
         <!-- Screener Result Header -->
@@ -420,7 +417,7 @@
             </div>
         </div>
 
-        <!-- Shortlisted Assets Grid Container -->
+        <!-- Grid Container -->
         <div id="gridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">
                 <div class="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
@@ -428,7 +425,7 @@
             </div>
         </div>
 
-        <!-- High-Converting Pricing Tiers Section -->
+        <!-- Pricing Tiers Section -->
         <section class="pt-10 border-t border-white/[0.08] space-y-8">
             <div class="text-center max-w-xl mx-auto space-y-2">
                 <span class="px-3 py-1 bg-blue-500/10 text-blue-400 text-xs font-bold rounded-full border border-blue-500/20 font-mono">INSTITUTIONAL TIER PASSES</span>
@@ -461,7 +458,7 @@
                             <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold font-mono border border-blue-500/40">Pro Monthly</span>
                             <span class="text-xs text-gray-400 line-through font-mono notranslate">$199</span>
                         </div>
-                        <h3 class="text-4xl font-extrabold text-white mt-4 notranslate">$5 <span class="text-xs text-gray-400 font-normal">/ month</span></h3>
+                        <h3 class="text-4xl font-extrabold text-white mt-4 notranslate">$5 <span class="text-xs text-gray-400 font-normal">/ month (600 BDT)</span></h3>
                         <p class="text-xs text-gray-400 mt-1">Institutional quantitative access on a flexible monthly pass.</p>
                         <ul class="space-y-3 text-xs text-gray-200 mt-6 font-mono">
                             <li class="flex items-center gap-2 text-blue-300">✔ Crypto, Forex & Stocks Unlocked</li>
@@ -470,7 +467,7 @@
                             <li class="flex items-center gap-2 text-emerald-400">✔ Instant Telegram Bot Alerts</li>
                         </ul>
                     </div>
-                    <button type="button" onclick="openPaymentModal('Pro Monthly ($5/mo)', '5')" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-blue-600/30 transition cursor-pointer font-mono">
+                    <button type="button" onclick="openPaymentModal('Pro Monthly ($5/mo)', 5, 600)" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-blue-600/30 transition cursor-pointer font-mono">
                         Get Beta Pass ($5/mo)
                     </button>
                 </div>
@@ -486,7 +483,7 @@
                         <div class="mt-4 flex items-baseline gap-2">
                             <h3 class="text-4xl font-black text-white notranslate">$49</h3>
                             <span class="text-xs text-gray-400 line-through font-mono notranslate">$499</span>
-                            <span class="text-xs text-amber-300 font-bold font-mono">/ 24 Months</span>
+                            <span class="text-xs text-amber-300 font-bold font-mono">/ 24 Months (5,900 BDT)</span>
                         </div>
                         <p class="text-xs text-gray-400 mt-1">Full quantitative power, zero limitations, and priority telegram push.</p>
                         <ul class="space-y-3 text-xs text-gray-200 mt-6 font-mono">
@@ -496,14 +493,14 @@
                             <li class="flex items-center gap-2 text-emerald-400">✔ Direct WhatsApp Priority Desk</li>
                         </ul>
                     </div>
-                    <button type="button" onclick="openPaymentModal('VIP 2-Year Special Deal ($49)', '49')" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold text-xs rounded-xl shadow-lg shadow-amber-500/30 transition cursor-pointer font-mono uppercase tracking-wider">
-                        Claim Lifetime Pass ($49)
+                    <button type="button" onclick="openPaymentModal('VIP 2-Year Special Deal ($49)', 49, 5900)" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold text-xs rounded-xl shadow-lg shadow-amber-500/30 transition cursor-pointer font-mono uppercase tracking-wider">
+                        Claim VIP Pass ($49)
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- Institutional Risk Warning & Footer -->
+        <!-- Risk Warning & Footer -->
         <footer class="pt-10 border-t border-white/[0.08] text-xs text-gray-500 space-y-6">
             <div class="p-4 rounded-xl bg-black/40 border border-white/5 text-[11px] leading-relaxed">
                 <span class="font-bold text-gray-300">Regulatory & Risk Notice:</span> 
@@ -527,7 +524,7 @@
 
             <div class="flex flex-wrap justify-between items-center gap-4 text-gray-400">
                 <div class="flex items-center gap-2.5">
-                    <img src="/store/iconpng.webp" alt="Logo" class="w-5 h-5 rounded">
+                    <img src="/store/iconpng.webp" onerror="this.src='/store/favicon.png'" alt="Logo" class="w-5 h-5 rounded">
                     <span>&copy; 2026 GreatNexa Terminal. All Rights Reserved.</span>
                 </div>
                 <div class="flex items-center gap-5">
@@ -536,10 +533,9 @@
                 </div>
             </div>
         </footer>
-
     </main>
 
-    <!-- Floating WhatsApp Contact Button -->
+    <!-- Floating WhatsApp -->
     <a href="https://wa.me/8801870978004?text=Hello%20GreatNexa,%20I%20have%20an%20inquiry%20about%20the%20Trading%20Terminal." 
        target="_blank" 
        rel="noopener noreferrer" 
@@ -550,7 +546,7 @@
         </svg>
     </a>
 
-    <!-- Position Sizing & Risk Calculator Modal (নতুন হাই-ভ্যালু প্রো টুল) -->
+    <!-- Position Sizing & Risk Calculator Modal -->
     <div id="riskCalcModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
             <button type="button" onclick="closeRiskCalc()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
@@ -578,26 +574,44 @@
         </div>
     </div>
 
-    <!-- Modals (Binance Pay & Auth & TradingView Chart) -->
+    <!-- Multi-Channel Checkout Modal (Binance Pay / bKash / Nagad) -->
     <div id="paymentModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
             <button type="button" onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
-            <h3 class="text-lg font-bold text-white mb-1">Binance Pay Checkout</h3>
-            <p id="payPlanName" class="text-xs text-blue-400 font-semibold mb-4 notranslate font-mono"></p>
+            <h3 class="text-lg font-bold text-white mb-1">Upgrade Tier Checkout</h3>
+            <p id="payPlanName" class="text-xs text-blue-400 font-semibold mb-3 notranslate font-mono"></p>
             
-            <div class="bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-2 text-xs">
+            <!-- Payment Channel Switcher -->
+            <div class="grid grid-cols-2 gap-2 mb-3">
+                <button type="button" onclick="setPaymentMethod('crypto')" id="pay-opt-crypto" class="py-2 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow">Binance Pay / USDT</button>
+                <button type="button" onclick="setPaymentMethod('local')" id="pay-opt-local" class="py-2 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10">bKash / Nagad</button>
+            </div>
+
+            <!-- Binance Pay Box -->
+            <div id="cryptoPaymentBox" class="bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-2 text-xs">
                 <p class="text-gray-300">1. Send exact amount via <b class="text-white notranslate">Binance Pay</b> or <b class="text-white notranslate">USDT (TRC20/BEP20)</b>.</p>
                 <p class="text-gray-300">2. Binance Pay UID: <b class="text-emerald-400 font-mono text-sm notranslate">520327779</b></p>
-                <p class="text-gray-300">3. Submit transaction hash/ID below:</p>
+                <p class="text-gray-300">3. Submit Transaction ID/Hash below:</p>
+            </div>
+
+            <!-- Local Payment Box (bKash & Nagad) -->
+            <div id="localPaymentBox" class="hidden bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-2 text-xs">
+                <p class="text-gray-300">১. নিচের নাম্বারে <b class="text-pink-400">bKash</b> বা <b class="text-orange-400">Nagad</b> এ সেন্ড মানি করুন।</p>
+                <p class="text-gray-300">২. পার্সোনাল নাম্বার: <b class="text-emerald-400 font-mono text-sm notranslate">01870978004</b></p>
+                <p class="text-gray-300">৩. টাকা পাঠিয়ে TrxID এবং প্রেরকের ফোন নাম্বার নিচে দিন:</p>
             </div>
 
             <div class="space-y-3">
-                <input type="text" id="payTrxId" placeholder="Enter Transaction Hash / ID" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 font-mono">
-                <button type="button" onclick="submitPaymentOrder()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer font-mono">Submit Payment for Approval</button>
+                <div id="localSenderPhoneWrap" class="hidden">
+                    <input type="text" id="paySenderPhone" placeholder="Sender bKash/Nagad Number" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 font-mono">
+                </div>
+                <input type="text" id="payTrxId" placeholder="Enter Transaction Hash / TrxID" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 font-mono">
+                <button type="button" onclick="submitPaymentOrder()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer font-mono">Submit Verification</button>
             </div>
         </div>
     </div>
 
+    <!-- Auth Modal -->
     <div id="authModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
             <button type="button" onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
@@ -624,6 +638,7 @@
         </div>
     </div>
 
+    <!-- Chart Modal -->
     <div id="chartModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-4xl rounded-2xl overflow-hidden border border-gray-700 shadow-2xl">
             <div class="flex justify-between items-center px-5 py-3.5 border-b border-white/10 bg-[#080d1a]">
@@ -661,6 +676,9 @@
         };
         let liveMarketData = [];
         let selectedPlan = '';
+        let selectedPriceUSD = 0;
+        let selectedPriceBDT = 0;
+        let activePaymentMethod = 'crypto';
         let isSignUpMode = false;
         let activeCalcItem = null;
 
@@ -867,7 +885,7 @@
                             <span class="px-4 py-2 bg-blue-500/20 text-blue-300 rounded-xl font-bold border border-blue-500/30">Target Hit Rate: 100%</span>
                         </div>
                     </div>
-                ` + data.map((item, idx) => `
+                ` + data.map((item) => `
                     <div class="glass-card rounded-2xl p-5 border border-emerald-500/20 space-y-3">
                         <div class="flex justify-between items-start">
                             <div>
@@ -934,7 +952,7 @@
                         <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold mb-2 font-mono">🔒 Institutional Signal #${idx+1}</span>
                         <h4 class="text-white font-bold text-sm mb-1">Dark Pool Block Locked</h4>
                         <p class="text-xs text-gray-400 mb-4 font-mono">Quant Confidence: ${score}/100</p>
-                        <button type="button" onclick="openPaymentModal('Pro Monthly ($5/mo)', '5')" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer font-mono">Unlock Full Signal ($5)</button>
+                        <button type="button" onclick="openPaymentModal('Pro Monthly ($5/mo)', 5, 600)" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer font-mono">Unlock Full Signal ($5)</button>
                     </div>` : ''}
                     
                     <div class="${isLocked ? 'locked-blur' : ''} space-y-4">
@@ -1024,7 +1042,7 @@
             renderCards();
         }
 
-        // ================= SUPABASE POSTGRES REALTIME LISTENER =================
+        // ================= SUPABASE REALTIME LISTENER =================
         function setupRealtimeListener() {
             if (!_supabase) return;
 
@@ -1049,6 +1067,39 @@
                 .subscribe((status) => {
                     console.log('Supabase Realtime Channel Status:', status);
                 });
+        }
+
+        // ================= BINANCE WEBSOCKET LIVE TICKER =================
+        function initBinanceTicker() {
+            try {
+                const ws = new WebSocket("wss://stream.binance.com:9443/ws/!miniTicker@arr");
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    data.forEach(item => {
+                        const s = item.s.toLowerCase();
+                        const closePrice = parseFloat(item.c);
+                        const formatted = closePrice >= 100 ? `$${closePrice.toFixed(2)}` : (closePrice >= 1 ? `$${closePrice.toFixed(4)}` : `$${closePrice.toFixed(6)}`);
+
+                        if (s === "btcusdt") {
+                            const el1 = document.getElementById("price-btcusdt");
+                            const el2 = document.getElementById("price-btcusdt-dup");
+                            if (el1) el1.innerText = formatted;
+                            if (el2) el2.innerText = formatted;
+                        } else if (s === "ethusdt") {
+                            const el1 = document.getElementById("price-ethusdt");
+                            const el2 = document.getElementById("price-ethusdt-dup");
+                            if (el1) el1.innerText = formatted;
+                            if (el2) el2.innerText = formatted;
+                        } else if (s === "solusdt") {
+                            const el = document.getElementById("price-solusdt");
+                            if (el) el.innerText = formatted;
+                        }
+                    });
+                };
+                ws.onerror = (e) => console.log("Binance WebSocket Error:", e);
+            } catch (err) {
+                console.log("WebSocket init failure:", err);
+            }
         }
 
         function showAuthFeedback(msg, isSuccess = false) {
@@ -1096,7 +1147,7 @@
             }
 
             if(isSignUpMode) {
-                const { data, error } = await _supabase.auth.signUp({ email, password });
+                const { error } = await _supabase.auth.signUp({ email, password });
                 if(error) {
                     showAuthFeedback(error.message);
                 } else {
@@ -1104,7 +1155,7 @@
                     setTimeout(() => toggleAuthMode(), 1200);
                 }
             } else {
-                const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+                const { error } = await _supabase.auth.signInWithPassword({ email, password });
                 if(error) {
                     showAuthFeedback("Invalid email or password: " + error.message);
                 } else {
@@ -1125,7 +1176,7 @@
                 const { data: { session } } = await _supabase.auth.getSession();
                 if(session && session.user) {
                     let userTier = 'free';
-                    const { data, error } = await _supabase.from('user_profiles').select('tier').eq('id', session.user.id).single();
+                    const { data } = await _supabase.from('user_profiles').select('tier').eq('id', session.user.id).single();
                     if(data && data.tier) {
                         userTier = data.tier.toLowerCase();
                     }
@@ -1169,9 +1220,37 @@
             checkUserSession();
         }
 
-        function openPaymentModal(planName, price) {
+        function setPaymentMethod(method) {
+            activePaymentMethod = method;
+            const btnCrypto = document.getElementById('pay-opt-crypto');
+            const btnLocal = document.getElementById('pay-opt-local');
+            const boxCrypto = document.getElementById('cryptoPaymentBox');
+            const boxLocal = document.getElementById('localPaymentBox');
+            const phoneWrap = document.getElementById('localSenderPhoneWrap');
+
+            if (method === 'crypto') {
+                btnCrypto.className = "py-2 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow";
+                btnLocal.className = "py-2 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10";
+                boxCrypto.classList.remove('hidden');
+                boxLocal.classList.add('hidden');
+                phoneWrap.classList.add('hidden');
+                document.getElementById('payTrxId').placeholder = "Enter Transaction Hash / ID";
+            } else {
+                btnLocal.className = "py-2 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow";
+                btnCrypto.className = "py-2 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10";
+                boxLocal.classList.remove('hidden');
+                boxCrypto.classList.add('hidden');
+                phoneWrap.classList.remove('hidden');
+                document.getElementById('payTrxId').placeholder = "Enter bKash/Nagad TrxID";
+            }
+        }
+
+        function openPaymentModal(planName, usdPrice, bdtPrice) {
             selectedPlan = planName;
-            document.getElementById('payPlanName').innerText = `Selected Plan: ${planName} ($${price})`;
+            selectedPriceUSD = usdPrice;
+            selectedPriceBDT = bdtPrice;
+            document.getElementById('payPlanName').innerText = `Selected Plan: ${planName} ($${usdPrice} / ${bdtPrice} BDT)`;
+            setPaymentMethod('crypto');
             const modal = document.getElementById('paymentModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -1185,7 +1264,10 @@
 
         async function submitPaymentOrder() {
             const trxId = document.getElementById('payTrxId').value.trim();
-            if(!trxId) { alert("Please enter transaction ID."); return; }
+            const senderPhone = document.getElementById('paySenderPhone').value.trim();
+            
+            if(!trxId) { alert("Please enter Transaction Hash or TrxID."); return; }
+            if(activePaymentMethod === 'local' && !senderPhone) { alert("Please enter your bKash/Nagad sender number."); return; }
             if(!_supabase) return;
 
             const { data: { session } } = await _supabase.auth.getSession();
@@ -1197,28 +1279,39 @@
             }
 
             const userEmail = session.user.email;
-            const numericVal = selectedPlan.includes('49') ? 49 : 5;
+            const channel = activePaymentMethod === 'local' ? `bKash/Nagad (${senderPhone})` : 'Binance Pay / USDT';
+            const priceRecorded = activePaymentMethod === 'local' ? `${selectedPriceBDT} BDT` : `$${selectedPriceUSD}`;
+
             const { error } = await _supabase.from('orders').insert([
-                { customer_name: userEmail, product_name: selectedPlan, price: '$' + numericVal, trx_id: trxId, status: 'pending', phone: 'Binance Pay', email: userEmail }
+                { 
+                    customer_name: userEmail, 
+                    product_name: selectedPlan, 
+                    price: priceRecorded, 
+                    trx_id: trxId, 
+                    status: 'pending', 
+                    phone: channel, 
+                    email: userEmail 
+                }
             ]);
 
             if(error) {
                 alert("Error: " + error.message);
             } else {
                 if (typeof gtag === 'function') {
-                    gtag('event', 'conversion', { currency: 'USD', value: numericVal, transaction_id: trxId });
+                    gtag('event', 'conversion', { currency: 'USD', value: selectedPriceUSD, transaction_id: trxId });
                 }
                 if (typeof fbq === 'function') {
-                    fbq('track', 'Purchase', { currency: 'USD', value: numericVal });
+                    fbq('track', 'Purchase', { currency: 'USD', value: selectedPriceUSD });
                 }
 
-                alert("Payment submitted successfully! Admin will verify and activate your tier.");
+                alert("Payment submitted successfully! Admin will verify and activate your tier shortly.");
                 closePaymentModal();
                 document.getElementById('payTrxId').value = '';
+                document.getElementById('paySenderPhone').value = '';
             }
         }
 
-        // ================= TRADINGVIEW MULTI-ASSET TICKER HANDLER =================
+        // ================= TRADINGVIEW CHART ENGINE =================
         function openChart(rawSymbol, name) {
             const modal = document.getElementById('chartModal');
             modal.classList.remove('hidden');
@@ -1228,7 +1321,6 @@
             let clean = rawSymbol.replace(/[^a-zA-Z0-9]/g, '');
             let tvTicker = `BINANCE:${clean}`;
 
-            // ফরেক্স ও কমোডিটিজের সঠিক ট্রেডিংভিউ চার্ট প্রোভাইডার হ্যান্ডলিং
             if(state.market === 'forex') {
                 if(clean.includes("XAU") || clean.includes("GOLD")) tvTicker = "OANDA:XAUUSD";
                 else if(clean.includes("XAG")) tvTicker = "OANDA:XAGUSD";
@@ -1236,14 +1328,9 @@
                 else if(clean.includes("NATGAS")) tvTicker = "TVC:NATGAS";
                 else tvTicker = `FX:${clean}`;
             } 
-            // ইউএস স্টকসের স্মার্ট এক্সচেঞ্জ হ্যান্ডলিং
             else if(state.market === 'stocks') {
                 const nyseTickers = ["JPM", "V", "DIS", "BA", "IBM", "CAT", "GS", "UNH", "XOM", "WMT", "KO", "MCD"];
-                if(nyseTickers.includes(clean)) {
-                    tvTicker = `NYSE:${clean}`;
-                } else {
-                    tvTicker = `NASDAQ:${clean}`;
-                }
+                tvTicker = nyseTickers.includes(clean) ? `NYSE:${clean}` : `NASDAQ:${clean}`;
             }
 
             if (window.TradingView) {
@@ -1267,6 +1354,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             checkUserSession();
             setupRealtimeListener();
+            initBinanceTicker();
         });
     </script>
 </body>
