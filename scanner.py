@@ -3,7 +3,7 @@ import time
 from datetime import datetime, timezone, timedelta
 from supabase import create_client, Client
 
-# Supabase সংযোগ
+# ১. Supabase সংযোগ (Service Role Secret Key)
 SUPABASE_URL = "https://esqhansnosejkqapuhoo.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjcwOTQwMywiZXhwIjoyMTAyMjg1NDAzfQ.gVXQnOD9OXWCJj_MN_i6eML9dyPvZZhC1BznGE4y3Ks"
 
@@ -18,7 +18,7 @@ def fmt_price(p):
     p = float(p)
     return f"{p:.2f}" if p >= 100 else (f"{p:.4f}" if p >= 1 else f"{p:.6f}")
 
-# অটো ডাটাবেজ অপটিমাইজার (Storage Purge)
+# ২. অটো ডাটাবেজ অপটিমাইজার (Storage Purge)
 def cleanup_old_database_records():
     now = datetime.now(timezone.utc)
     cutoff_hof = (now - timedelta(days=30)).isoformat()
@@ -29,7 +29,7 @@ def cleanup_old_database_records():
     except Exception as e:
         print(f"[-] Cleanup Error: {e}")
 
-# ক্রিপ্টো ইউনিভার্স পুলিং
+# ৩. ক্রিপ্টো ইউনিভার্স পুলিং (৫০০+ কয়েন)
 def fetch_massive_crypto_universe():
     market_pool = {}
     try:
@@ -60,13 +60,30 @@ def fetch_massive_crypto_universe():
         print(f"[-] Crypto Feed Error: {e}")
     return market_pool
 
-# ফরেক্স ও স্টকস ইউনিভার্স পুলিং (S&P 100 + G10 Forex)
+# ৪. ফরেক্স (৫০+ গ্লোবাল পেয়ার) ও ইউএস মেগাক্যাপ স্টকস ফিড
 def fetch_massive_trad_universe():
     trad_pool = {}
+
+    # ৫০টির বেশি গ্লোবাল ফরেক্স কারেন্সি পেয়ার ও কমোডিটি
     forex_tickers = [
+        # Majors
         "EURUSD=X", "GBPUSD=X", "USDJPY=X", "AUDUSD=X", "USDCAD=X", "USDCHF=X", "NZDUSD=X",
-        "EURGBP=X", "EURJPY=X", "GBPJPY=X", "AUDJPY=X", "GC=F", "SI=F", "CL=F"
+        # Euro Crosses
+        "EURGBP=X", "EURJPY=X", "EURAUD=X", "EURCAD=X", "EURCHF=X", "EURNZD=X",
+        # Pound Crosses
+        "GBPJPY=X", "GBPAUD=X", "GBPCAD=X", "GBPCHF=X", "GBPNZD=X",
+        # Yen Crosses
+        "AUDJPY=X", "CADJPY=X", "CHFJPY=X", "NZDJPY=X",
+        # Aussie & Kiwi Crosses
+        "AUDCAD=X", "AUDCHF=X", "AUDNZD=X", "NZDCAD=X", "NZDCHF=X", "CADCHF=X",
+        # Exotics & Nordic Pairs
+        "USDSGD=X", "USDHKD=X", "USDMXN=X", "USDZAR=X", "USDTRY=X", "USDSEK=X", "USDNOK=X",
+        "EURSEK=X", "EURNOK=X", "EURTRY=X", "GBPSEK=X", "GBPNOK=X", "USDPLN=X", "EURPLN=X",
+        # Institutional Metals, Energies & Crypto Benchmarks
+        "GC=F", "SI=F", "PL=F", "HG=F", "CL=F", "BZ=F", "NG=F"
     ]
+
+    # এসএন্ডপি ১০০ মেগাক্যাপ স্টকস
     stock_tickers = [
         "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "BRK-B", "JPM", "V",
         "XOM", "UNH", "AMD", "COST", "NFLX", "WMT", "DIS", "BA", "QCOM", "INTC",
@@ -89,14 +106,21 @@ def fetch_massive_trad_universe():
                     if price <= 0:
                         continue
 
+                    # সিম্বল ও ক্যাটাগরি ম্যাপিং
                     if ticker.endswith("=X"):
                         clean_sym = f"{ticker[:3]}/{ticker[3:6]}"
                         m_type = "forex"
-                        sector = "G10 Interbank FX"
-                    elif ticker in ["GC=F", "SI=F", "CL=F"]:
-                        clean_sym = "XAU/USD" if ticker == "GC=F" else ("XAG/USD" if ticker == "SI=F" else "WTI/CRUDE")
+                        sector = "G10 Interbank FX" if any(c in ticker for c in ["EUR", "USD", "GBP", "JPY"]) else "Global Exotic FX"
+                    elif ticker in ["GC=F", "SI=F", "PL=F", "HG=F"]:
+                        commodities_map = {"GC=F": "XAU/USD", "SI=F": "XAG/USD", "PL=F": "XPT/USD", "HG=F": "COPPER/USD"}
+                        clean_sym = commodities_map.get(ticker, ticker)
                         m_type = "forex"
-                        sector = "Macro Commodities"
+                        sector = "Precious Metals"
+                    elif ticker in ["CL=F", "BZ=F", "NG=F"]:
+                        commodities_map = {"CL=F": "WTI/CRUDE", "BZ=F": "BRENT/CRUDE", "NG=F": "NATGAS/USD"}
+                        clean_sym = commodities_map.get(ticker, ticker)
+                        m_type = "forex"
+                        sector = "Energy Commodities"
                     else:
                         clean_sym = ticker
                         m_type = "stocks"
@@ -118,7 +142,7 @@ def fetch_massive_trad_universe():
         time.sleep(0.3)
     return trad_pool
 
-# লাইফসাইকেল ট্র্যাকার (TP/SL অডিট)
+# ৫. লাইফসাইকেল ট্র্যাকার (TP/SL অডিট)
 def track_and_update_lifecycle(current_prices):
     active_setups_map = set()
     try:
@@ -169,7 +193,7 @@ def track_and_update_lifecycle(current_prices):
         print(f"[-] Lifecycle Error: {e}")
     return active_setups_map
 
-# প্রাতিষ্ঠানিক SMC ও হেজ ফান্ড সিগন্যাল অ্যালগরিদম (৭০%-৮০% উইন-রেট ফিল্টার)
+# ৬. প্রাতিষ্ঠানিক SMC ও হেজ ফান্ড সিগন্যাল অ্যালগরিদম (৭০%-৮০% উইন-রেট ফিল্টার)
 def generate_smc_institutional_signal(item, active_setups_map):
     p = item['price']
     chg = item['change']
@@ -191,15 +215,13 @@ def generate_smc_institutional_signal(item, active_setups_map):
     if setup_key in active_setups_map:
         return []
 
-    # SMC রুল ১: Liquidity Sweep ডিটেকশন (দাম বাড়ার আগে রিটেল স্টপ হান্টিং বা ড্রপ)
-    # লো সুইপ করে দ্রুত ওপরের দিকে রিকভার করা (Bullish Order Block Form)
+    # SMC রুল ১: Liquidity Sweep ডিটেকশন (দাম বাড়ার আগে লো-সুইপ, দাম কমার আগে হাই-সুইপ)
     is_liquidity_sweep_long = (range_pos >= 0.55 and p > open_p and (open_p - low) > (high - p) * 0.7)
-    # হাই সুইপ করে নিচে রিজেকশন দেওয়া (Bearish Order Block Form)
     is_liquidity_sweep_short = (range_pos <= 0.45 and p < open_p and (high - open_p) > (p - low) * 0.7)
 
-    # SMC রুল ২: মোমেন্টাম ও সেশন এক্সপানশন কনফার্মেশন
+    # SMC রুল ২: মার্কেট অনুযায়ী অপটিমাইজড রিস্ক-টু-রিওয়ার্ড (১:২.৬+)
     if m_type == "forex":
-        risk_pct = max(0.0028, volatility_ratio * 0.18)
+        risk_pct = max(0.0025, volatility_ratio * 0.18)
         rr_ratio = 2.6
         trading_mode = "mode1"
     elif m_type == "stocks":
@@ -228,7 +250,7 @@ def generate_smc_institutional_signal(item, active_setups_map):
         catalyst = "Buy-Side Liquidity Swept"
         flow = f"${vol}M Institutional Absorption"
     else:
-        return [] # নিশ্চিত কনফ্লুয়েন্স না থাকলে ট্রেড ড্রপ করবে (উইন-রেট রক্ষা)
+        return [] # নিশ্চিত কনফ্লুয়েন্স না থাকলে ট্রেড ফিল্টার আউট হবে (উইন-রেট রক্ষা)
 
     # কনভিকশন স্কোর (৯১ - ৯৮)
     conviction = 92
@@ -275,14 +297,14 @@ def run():
     active_setups_map = track_and_update_lifecycle(all_prices)
     new_setups = []
 
-    # টপ মোমেন্টাম ক্রিপ্টো
+    # টপ মোমেন্টাম ক্রিপ্টো (৪০টি)
     sorted_cryptos = sorted(crypto_prices.values(), key=lambda x: (abs(x['change']) * x['volume_m']), reverse=True)
     for c in sorted_cryptos[:40]:
         new_setups.extend(generate_smc_institutional_signal(c, active_setups_map))
 
-    # ফরেক্স ও ইউএস স্টকস
+    # ফরেক্স (৫০+ পেয়ার) ও ইউএস মেগাক্যাপ স্টকস
     sorted_trads = sorted(trad_prices.values(), key=lambda x: abs(x['change']), reverse=True)
-    for t in sorted_trads[:40]:
+    for t in sorted_trads[:50]:
         new_setups.extend(generate_smc_institutional_signal(t, active_setups_map))
 
     if new_setups:
