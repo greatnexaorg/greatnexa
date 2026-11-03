@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreatNexa Terminal | Admin Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { background: #02040a; color: #e2e8f0; font-family: system-ui, sans-serif; }
+        .glass-panel { background: rgba(10, 16, 30, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    </style>
+</head>
+<body class="min-h-screen p-4 sm:p-6 max-w-7xl mx-auto flex flex-col justify-between">
+
+    <!-- Security PIN Modal -->
+    <div id="pinLockModal" class="fixed inset-0 bg-[#02040a]/95 backdrop-blur-xl flex items-center justify-center z-50 p-4">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 sm:p-8 border border-white/10 text-center shadow-2xl relative">
+            <div class="w-14 h-14 mx-auto mb-4 bg-blue-600/20 border border-blue-500/30 rounded-2xl flex items-center justify-center text-2xl">
+                🔒
+            </div>
+            <h2 class="text-xl font-bold text-white mb-1">Terminal Security</h2>
+            <p class="text-xs text-gray-400 mb-6">Enter Admin PIN to unlock subscriber management.</p>
+
+            <form onsubmit="handlePinSubmit(event)" class="space-y-4">
+                <div>
+                    <input type="password" id="adminPinInput" maxlength="12" placeholder="••••" autofocus
+                           class="w-full text-center tracking-[0.5em] text-2xl font-mono bg-[#0b1324] border border-white/15 text-white rounded-xl py-3 focus:outline-none focus:border-blue-500">
+                </div>
+                <div id="pinError" class="text-rose-400 text-xs hidden font-medium">ইনভ্যালিড পিন! আবার চেষ্টা করুন।</div>
+                <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
+                    Unlock Portal
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="adminMainContent" class="hidden space-y-6 w-full">
+        <header class="flex flex-wrap justify-between items-center gap-4 border-b border-white/10 pb-4">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                    <span>🛡️</span> GreatNexa Order & Subscription Admin
+                </h1>
+                <p class="text-xs text-gray-400">Verify TrxIDs, Approve Tiers & Auto-Assign Expiry Days</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="loadOrders()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-xs font-bold rounded-xl transition shadow flex items-center gap-1.5 cursor-pointer">
+                    🔄 Refresh
+                </button>
+                <button onclick="logoutAdmin()" class="px-3.5 py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 text-xs font-bold rounded-xl transition cursor-pointer">
+                    Lock Portal
+                </button>
+            </div>
+        </header>
+
+        <!-- Orders Table -->
+        <div class="glass-panel rounded-2xl overflow-hidden border border-white/10">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-gray-300">
+                    <thead class="bg-[#0b1324] text-gray-400 font-mono uppercase text-[11px] border-b border-white/10">
+                        <tr>
+                            <th class="p-4">Time</th>
+                            <th class="p-4">Customer Email</th>
+                            <th class="p-4">Plan & Amount</th>
+                            <th class="p-4">TrxID / Hash</th>
+                            <th class="p-4">Method / Sender</th>
+                            <th class="p-4">Status</th>
+                            <th class="p-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody" class="divide-y divide-white/5 font-mono">
+                        <tr>
+                            <td colspan="7" class="text-center p-8 text-gray-400">Loading order queue...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://esqhansnosejkqapuhoo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDk0MDMsImV4cCI6MjEwMjI4NTQwM30.ePcRYy5_B193R4S1MXw3slF5amFseCv1sSCAUyH59ok';
+        const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // SHA-256 Hash of PIN "7581"
+        const ADMIN_PIN_HASH = "81e374f8a55e2d1bb0e97d1629fa2bb9f7bc5e59b207559c656d0d93be42bf9d";
+
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function handlePinSubmit(e) {
+            e.preventDefault();
+            const inputVal = document.getElementById('adminPinInput').value.trim();
+            const errorEl = document.getElementById('pinError');
+            
+            const hashedInput = await sha256(inputVal);
+
+            if (hashedInput === ADMIN_PIN_HASH) {
+                sessionStorage.setItem('greatnexa_admin_unlocked', 'true');
+                unlockUI();
+            } else {
+                errorEl.classList.remove('hidden');
+                document.getElementById('adminPinInput').value = '';
+            }
+        }
+
+        function unlockUI() {
+            document.getElementById('pinLockModal').classList.add('hidden');
+            document.getElementById('adminMainContent').classList.remove('hidden');
+            loadOrders();
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem('greatnexa_admin_unlocked');
+            location.reload();
+        }
+
+        async function loadOrders() {
+            const tbody = document.getElementById('ordersTableBody');
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-gray-400">Loading orders...</td></tr>';
+
+            const { data, error } = await _supabase
+                .from('orders')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(50);
+
+            if (error || !data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-gray-500">No payment orders found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(o => {
+                const isApproved = o.status === 'approved';
+                const isVIP = (o.product_name || '').includes('VIP') || (o.product_name || '').includes('49');
+                const targetTier = isVIP ? 'vip' : 'pro';
+                const days = isVIP ? 730 : 30;
+
+                return `
+                <tr class="hover:bg-white/[0.02] transition">
+                    <td class="p-4 text-gray-400">${new Date(o.created_at).toLocaleDateString()}</td>
+                    <td class="p-4 text-white font-bold">${o.email || o.customer_name}</td>
+                    <td class="p-4 text-blue-400 font-bold">${o.product_name} (${o.price})</td>
+                    <td class="p-4 text-emerald-400 select-all font-bold">${o.trx_id}</td>
+                    <td class="p-4 text-gray-300">${o.phone || 'Binance Pay'}</td>
+                    <td class="p-4">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${isApproved ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
+                            ${(o.status || 'pending').toUpperCase()}
+                        </span>
+                    </td>
+                    <td class="p-4 text-right">
+                        ${!isApproved ? `
+                        <button onclick="approveOrder(${o.id}, '${o.email || o.customer_name}', '${targetTier}', ${days})" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition cursor-pointer">
+                            Approve (${days} Days)
+                        </button>` : `<span class="text-gray-500 text-xs">Active</span>`}
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        async function approveOrder(orderId, email, tier, durationDays) {
+            if(!confirm(`Approve ${tier.toUpperCase()} for ${email} (${durationDays} days)?`)) return;
+
+            try {
+                const { error } = await _supabase.rpc('admin_approve_order', {
+                    p_order_id: orderId,
+                    p_user_email: email,
+                    p_tier: tier,
+                    p_duration_days: durationDays
+                });
+
+                if(error) {
+                    alert("Approval failed: " + error.message);
+                } else {
+                    alert(`Success! ${email} upgraded to ${tier.toUpperCase()} for ${durationDays} days.`);
+                    loadOrders();
+                }
+            } catch(e) {
+                alert("Error: " + e.message);
+            }
+        }
+
+        window.onload = () => {
+            if (sessionStorage.getItem('greatnexa_admin_unlocked') === 'true') {
+                unlockUI();
+            }
+        };
+    </script>
+</body>
+</html>
