@@ -361,7 +361,7 @@ def generate_smc_institutional_signal(item, active_setups_map):
             "sl_price": sl,
             "tp_price": tp,
             "status": "ACTIVE",
-            "mtf_alignment": f"Entry: ${fmt_price(entry)} \vert{} SL:${fmt_price(sl)}",
+            "mtf_alignment": f"Entry: ${fmt_price(entry)} | SL: ${fmt_price(sl)}",
             "research_note": f"{s['style']} SMC {direction.upper()} অর্ডারব্লক ও লিকুইডিটি পার্জ কনফার্মড। R:R = 1:{s['rr']:.1f} [TP: ${fmt_price(tp)}]"
         })
 
@@ -405,3 +405,13 @@ def run():
         try:
             batch_size = 20
             for i in range(0, len(new_setups), batch_size):
+                b = new_setups[i:i + batch_size]
+                supabase.table("market_research").insert(b).execute()
+            print(f"\n✔ Successfully pushed {len(new_setups)} Dynamic Alpha Setups across Top 100 Markets!")
+        except Exception as e:
+            print(f"[-] Batch insert error: {e}")
+    else:
+        print("\n[i] All positions working actively in target. No duplicate injection.")
+
+if __name__ == "__main__":
+    run()
