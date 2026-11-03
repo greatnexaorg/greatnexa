@@ -38,13 +38,6 @@
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://www.greatnexa.com/">
 
-    <!-- Open Graph / Meta -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.greatnexa.com/">
-    <meta property="og:title" content="GreatNexa Terminal | Institutional Multi-Asset Intelligence">
-    <meta property="og:description" content="AI Workflow Automations & High-Performance Market Screening Engine.">
-    <meta property="og:image" content="https://www.greatnexa.com/store/favicon.png">
-
     <!-- Favicon & Apple Touch Icon -->
     <link rel="icon" type="image/png" sizes="512x512" href="/store/favicon.png">
     <link rel="apple-touch-icon" sizes="512x512" href="/store/favicon.png">
@@ -53,7 +46,7 @@
     <meta name="theme-color" content="#02040a">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+
     <!-- গুগল ট্রান্সলেট ইঞ্জিন -->
     <div id="google_translate_element" style="display:none !important;"></div>
     <script type="text/javascript">
@@ -77,36 +70,33 @@
             top: 0px !important; 
             position: static !important; 
             background-image: 
-                radial-gradient(circle at 50% 0%, rgba(30, 58, 138, 0.18) 0%, transparent 60%),
+                radial-gradient(circle at 50% 0%, rgba(30, 58, 138, 0.20) 0%, transparent 60%),
                 radial-gradient(circle at 100% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
                 linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
             background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
         }
 
-        .font-mono {
-            font-family: 'JetBrains Mono', monospace;
-        }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
 
         .glass-panel {
-            background: rgba(10, 16, 30, 0.7);
+            background: rgba(10, 16, 30, 0.75);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
         }
 
         .glass-card {
-            background: rgba(13, 21, 38, 0.6);
+            background: rgba(13, 21, 38, 0.65);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.06);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .glass-card:hover {
-            background: rgba(16, 27, 49, 0.85);
-            border-color: rgba(59, 130, 246, 0.4);
+            background: rgba(16, 27, 49, 0.9);
+            border-color: rgba(59, 130, 246, 0.45);
             transform: translateY(-3px);
-            box-shadow: 0 12px 30px -10px rgba(37, 99, 235, 0.25);
+            box-shadow: 0 12px 30px -10px rgba(37, 99, 235, 0.3);
         }
 
         .select-btn { 
@@ -150,9 +140,7 @@
             width: max-content;
             animation: tickerTape 28s linear infinite;
         }
-        .ticker-wrap:hover {
-            animation-play-state: paused;
-        }
+        .ticker-wrap:hover { animation-play-state: paused; }
 
         .goog-te-banner-frame,
         .goog-te-banner-frame.skiptranslate,
@@ -180,7 +168,7 @@
 </head>
 <body class="antialiased overflow-x-hidden">
 
-    <!-- Top Live Global Market Ticker Bar -->
+    <!-- Top Live Ticker Tape -->
     <div class="w-full bg-[#030611] border-b border-white/[0.08] py-2 px-4 overflow-hidden relative z-50">
         <div class="ticker-wrap flex items-center gap-10 font-mono text-xs">
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">BTC/USDT</span><span class="text-emerald-400 font-bold">$98,420.50</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+3.84%</span></div>
@@ -189,13 +177,13 @@
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">XAU/USD (Gold)</span><span class="text-amber-300 font-bold">$2,735.40</span><span class="text-[10px] bg-amber-500/10 text-amber-300 px-1.5 py-0.5 rounded font-bold">+0.92%</span></div>
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">NVDA</span><span class="text-emerald-400 font-bold">$146.80</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+4.20%</span></div>
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">SOL/USDT</span><span class="text-emerald-400 font-bold">$218.45</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+5.60%</span></div>
+            <!-- Loop -->
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">BTC/USDT</span><span class="text-emerald-400 font-bold">$98,420.50</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+3.84%</span></div>
-            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">ETH/USDT</span><span class="text-emerald-400 font-bold">$3,420.10</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+2.15%</span></div>
-            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">XAU/USD</span><span class="text-amber-300 font-bold">$2,735.40</span><span class="text-[10px] bg-amber-500/10 text-amber-300 px-1.5 py-0.5 rounded font-bold">+0.92%</span></div>
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">EUR/USD</span><span class="text-rose-400 font-bold">1.0542</span><span class="text-[10px] bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded font-bold">-0.18%</span></div>
         </div>
     </div>
 
-    <!-- Navigation Header -->
+    <!-- Main Navigation Header -->
     <header class="sticky top-0 z-40 bg-[#02040a]/80 backdrop-blur-xl border-b border-white/[0.08] px-4 sm:px-8 py-3.5 transition-all">
         <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
             <a href="/" class="flex items-center gap-3.5 group">
@@ -206,16 +194,16 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <span class="font-extrabold text-white text-base sm:text-lg tracking-tight">GreatNexa<span class="text-blue-500">.io</span></span>
-                        <span class="text-[9px] bg-blue-500/20 text-blue-400 font-mono font-bold px-2 py-0.5 rounded border border-blue-500/30">SUPREME QUANT</span>
+                        <span class="text-[9px] bg-blue-500/20 text-blue-400 font-mono font-bold px-2 py-0.5 rounded border border-blue-500/30">HEDGE QUANT</span>
                     </div>
-                    <p class="text-[10px] text-gray-400 font-mono hidden sm:block">Institutional Multi-Asset Intelligence</p>
+                    <p class="text-[10px] text-gray-400 font-mono hidden sm:block">Cross-Asset Institutional Terminal</p>
                 </div>
             </a>
 
             <!-- Central Hub Controls -->
             <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
                 <div class="flex items-center bg-[#0d162a] border border-white/10 rounded-xl p-1 text-xs">
-                    <button type="button" onclick="switchTab('active')" id="tab-active" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow cursor-pointer">Live Setups</button>
+                    <button type="button" onclick="switchTab('active')" id="tab-active" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow cursor-pointer">Live Signals</button>
                     <button type="button" onclick="switchTab('archive')" id="tab-archive" class="px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Hall of Fame</button>
                 </div>
 
@@ -236,12 +224,10 @@
                     </select>
                 </div>
 
-                <!-- Digital Store Link -->
                 <a href="/store/" class="px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold transition shadow-lg shadow-blue-600/30 border border-blue-400/30 flex items-center gap-1.5">
                     🛍️ Digital Store
                 </a>
 
-                <!-- User Session Pill -->
                 <div id="authHeaderSection" class="flex items-center gap-2 bg-[#0d162a] border border-white/10 px-3 py-1.5 rounded-xl text-xs notranslate">
                     <button type="button" onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>
                 </div>
@@ -251,7 +237,7 @@
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8 space-y-8">
 
-        <!-- Wall-Street Quant Hero with Live Performance HUD -->
+        <!-- Wall-Street Quant HUD -->
         <section class="glass-panel rounded-3xl p-6 sm:p-10 relative overflow-hidden">
             <div class="absolute -right-20 -top-20 w-80 h-80 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
             <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-purple-600/15 rounded-full blur-[100px] pointer-events-none"></div>
@@ -260,61 +246,60 @@
                 <div class="lg:col-span-8 space-y-4">
                     <div class="inline-flex items-center gap-2 px-3 py-1 text-[11px] font-mono font-semibold tracking-wide uppercase bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/30">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        Institutional Order Flow & Liquidity Engine Active
+                        Institutional Order Flow & Liquidity Squeeze Active
                     </div>
                     <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-[1.15]">
-                        Institutional Multi-Asset Alpha <br>
-                        <span class="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Execution Before The Breakout</span>
+                        Multi-Asset Quant Terminal <br>
+                        <span class="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Math Over Guesswork</span>
                     </h1>
                     <p class="text-sm text-gray-400 max-w-2xl leading-relaxed">
-                        Autonomous quantitative order-block screening across Crypto, Forex, and Dark Pool volume anomalies. Complete with dynamic risk sizing, live hit-rate audit, and WebSocket streaming.
+                        Scanning 500+ Crypto Pairs, S&P 100 Equities, and G10 Forex Pairs. Dynamically calibrated with ATR volatility stops, smart money accumulation, and zero repainting.
                     </p>
                     
-                    <!-- Institutional Metric HUD (মাসে $২০০-$৫০০ ভ্যালু তৈরি করে) -->
+                    <!-- Institutional Metric HUD -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 font-mono text-xs">
                         <div class="p-3 bg-black/40 rounded-xl border border-white/5">
-                            <span class="text-gray-400 text-[10px] block">30D Win Rate</span>
-                            <span class="text-emerald-400 font-extrabold text-base">81.4%</span>
+                            <span class="text-gray-400 text-[10px] block">Model Win Rate</span>
+                            <span class="text-emerald-400 font-extrabold text-base">79.8%</span>
                         </div>
                         <div class="p-3 bg-black/40 rounded-xl border border-white/5">
                             <span class="text-gray-400 text-[10px] block">Profit Factor</span>
-                            <span class="text-blue-400 font-extrabold text-base">2.45</span>
+                            <span class="text-blue-400 font-extrabold text-base">2.75</span>
                         </div>
                         <div class="p-3 bg-black/40 rounded-xl border border-white/5">
                             <span class="text-gray-400 text-[10px] block">Sharpe Ratio</span>
-                            <span class="text-purple-400 font-extrabold text-base">2.18</span>
+                            <span class="text-purple-400 font-extrabold text-base">2.35</span>
                         </div>
                         <div class="p-3 bg-black/40 rounded-xl border border-white/5">
-                            <span class="text-gray-400 text-[10px] block">Avg Risk/Reward</span>
-                            <span class="text-amber-300 font-extrabold text-base">1:2.6</span>
+                            <span class="text-gray-400 text-[10px] block">Avg Risk:Reward</span>
+                            <span class="text-amber-300 font-extrabold text-base">1:2.7+</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Engine Diagnostics Display -->
                 <div class="lg:col-span-4 bg-black/50 border border-white/10 rounded-2xl p-5 font-mono text-xs space-y-3.5 backdrop-blur-md">
                     <div class="flex justify-between items-center text-gray-400 border-b border-white/10 pb-2">
-                        <span class="text-[11px] uppercase tracking-wider font-bold text-gray-300">Telemetry Status</span>
-                        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold">STREAM LIVE</span>
+                        <span class="text-[11px] uppercase tracking-wider font-bold text-gray-300">Live Architecture</span>
+                        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold">CONNECTED</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-400">WebSocket Sync:</span>
-                        <span class="text-emerald-400 font-bold">Autonomous Active</span>
+                        <span class="text-gray-400">Crypto Engine:</span>
+                        <span class="text-emerald-400 font-bold">Binance 24H Full Highway</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-400">Universe Filter:</span>
-                        <span class="text-white font-bold">500+ Liquid Pairs</span>
+                        <span class="text-gray-400">Forex Feed:</span>
+                        <span class="text-blue-400 font-bold">G10 + Commodities Interbank</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-400">Execution Guard:</span>
-                        <span class="text-blue-400 font-bold">ATR-Volatility Sl/Tp</span>
+                        <span class="text-gray-400">Equities Feed:</span>
+                        <span class="text-purple-400 font-bold">S&P 100 Dark Pool Delta</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-400">Institutional Access:</span>
+                        <span class="text-gray-400">Pass Valuation:</span>
                         <span class="text-amber-300 font-bold">$199 Regular / $5 Beta</span>
                     </div>
                     <div class="pt-2 border-t border-white/10 text-[10px] text-gray-500 text-center">
-                        Verified Non-Repainting Execution Logic
+                        Autonomous WebSocket Listening Active
                     </div>
                 </div>
             </div>
@@ -350,9 +335,9 @@
                 <div>
                     <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">1. Asset Universe</label>
                     <div class="grid grid-cols-3 gap-2">
-                        <button type="button" onclick="changeFilter('market', 'crypto')" id="m-crypto" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Crypto</button>
-                        <button type="button" onclick="changeFilter('market', 'forex')" id="m-forex" class="select-btn py-2.5 rounded-xl text-xs font-bold">Forex</button>
-                        <button type="button" onclick="changeFilter('market', 'stocks')" id="m-stocks" class="select-btn py-2.5 rounded-xl text-xs font-bold">Stocks</button>
+                        <button type="button" onclick="changeFilter('market', 'crypto')" id="m-crypto" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Crypto (500+)</button>
+                        <button type="button" onclick="changeFilter('market', 'forex')" id="m-forex" class="select-btn py-2.5 rounded-xl text-xs font-bold">Forex & Gold</button>
+                        <button type="button" onclick="changeFilter('market', 'stocks')" id="m-stocks" class="select-btn py-2.5 rounded-xl text-xs font-bold">US Equities</button>
                     </div>
                 </div>
 
@@ -360,7 +345,7 @@
                     <div>
                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide font-mono">Execution Mode:</span>
                         <div class="grid grid-cols-2 gap-2 mt-1">
-                            <button type="button" onclick="changeTradingMode('mode1')" id="btn-mode1" class="py-2 rounded-lg text-xs font-semibold bg-gray-800 text-gray-400 border border-white/5 transition cursor-pointer">Spot</button>
+                            <button type="button" onclick="changeTradingMode('mode1')" id="btn-mode1" class="py-2 rounded-lg text-xs font-semibold bg-gray-800 text-gray-400 border border-white/5 transition cursor-pointer">Spot / Cash</button>
                             <button type="button" onclick="changeTradingMode('mode2')" id="btn-mode2" class="py-2 rounded-lg text-xs font-semibold bg-blue-600 text-white border border-blue-500 transition cursor-pointer shadow">Futures / CFD</button>
                         </div>
                     </div>
@@ -391,11 +376,11 @@
                         <span class="text-emerald-400 font-bold">Auto-Listening</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span>Scanner Strategy:</span>
-                        <span class="text-blue-400 font-bold">Volume / Volatility Dynamic</span>
+                        <span>Execution Guard:</span>
+                        <span class="text-blue-400 font-bold">Dynamic ATR Ratio</span>
                     </div>
                     <div class="p-2.5 bg-black/40 rounded-lg text-[11px] text-gray-400 text-center">
-                        ডেস্কে নতুন প্রাতিষ্ঠানিক সেটআপ আসামাত্র স্ক্রিন অটোমেটিক রিফ্রেশ হবে।
+                        মার্কেটে নতুন হাই-কনভিকশন সেটআপ আসামাত্র ড্যাশবোর্ড অটোমেটিক আপডেট হবে।
                     </div>
                 </div>
             </div>
@@ -405,17 +390,17 @@
                 <div>
                     <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">3. Output Shortlist Limit</label>
                     <select id="shortlistSelect" onchange="updateLimit(this.value)" class="w-full bg-[#0d162a] border border-white/15 text-white font-bold text-xs rounded-xl px-3.5 py-3 focus:outline-none focus:border-blue-500 cursor-pointer">
-                        <option value="3">Top 3 Assets (Free Member Cap)</option>
-                        <option value="5">Top 5 Assets</option>
-                        <option value="10" selected>Top 10 Assets</option>
-                        <option value="15">Top 15 Assets</option>
-                        <option value="20">Top 20 Assets (Max Engine Output)</option>
+                        <option value="3">Top 3 Setups (Free Member Cap)</option>
+                        <option value="5">Top 5 Setups</option>
+                        <option value="10" selected>Top 10 Setups</option>
+                        <option value="15">Top 15 Setups</option>
+                        <option value="20">Top 20 Setups (Institutional Max)</option>
                     </select>
                 </div>
 
                 <div class="pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-black/30 text-[11px] font-mono text-gray-400 space-y-1">
-                    <p class="text-amber-300 font-semibold">🔒 Server Policy Guard:</p>
-                    <p>Free tier enforces Top 3 setups automatically. Unlock up to 20 setups with Pro membership.</p>
+                    <p class="text-amber-300 font-semibold">🔒 Institutional Guard:</p>
+                    <p>Free tier enforces Top 3 setups automatically. Unlock all 20 setups with Pro membership.</p>
                 </div>
             </div>
 
@@ -427,7 +412,7 @@
                 <h3 class="text-lg font-black text-white tracking-tight flex items-center gap-2">
                     <span>⚡</span> Institutional Screener Results
                 </h3>
-                <p class="text-xs text-gray-400 font-mono">Sorted by Smart Money Footprint & Volume Imbalance Score</p>
+                <p class="text-xs text-gray-400 font-mono">Filtered by Relative Volume, ATR Tolerance & Imbalance Delta</p>
             </div>
             <div class="flex items-center gap-2 text-xs font-mono text-gray-400">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -439,11 +424,11 @@
         <div id="gridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">
                 <div class="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                Connecting to Institutional Intelligence Stream...
+                Connecting to Multi-Asset Stream...
             </div>
         </div>
 
-        <!-- High-Converting Pricing Tiers Section (Value Anchoring) -->
+        <!-- High-Converting Pricing Tiers Section -->
         <section class="pt-10 border-t border-white/[0.08] space-y-8">
             <div class="text-center max-w-xl mx-auto space-y-2">
                 <span class="px-3 py-1 bg-blue-500/10 text-blue-400 text-xs font-bold rounded-full border border-blue-500/20 font-mono">INSTITUTIONAL TIER PASSES</span>
@@ -468,7 +453,7 @@
                     <button class="w-full py-2.5 bg-gray-900 text-gray-500 rounded-xl text-xs font-bold cursor-not-allowed border border-white/5 font-mono">Current Tier</button>
                 </div>
 
-                <!-- Pro Monthly (Anchor Pricing) -->
+                <!-- Pro Monthly -->
                 <div class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 border-blue-500/30 relative">
                     <span class="absolute -top-3 right-6 bg-blue-600 text-white text-[10px] font-black px-3 py-0.5 rounded-full uppercase font-mono shadow-md">97% Beta Discount</span>
                     <div>
@@ -518,14 +503,13 @@
             </div>
         </section>
 
-        <!-- Institutional Risk Warning & Complete Community Footer -->
+        <!-- Institutional Risk Warning & Footer -->
         <footer class="pt-10 border-t border-white/[0.08] text-xs text-gray-500 space-y-6">
             <div class="p-4 rounded-xl bg-black/40 border border-white/5 text-[11px] leading-relaxed">
                 <span class="font-bold text-gray-300">Regulatory & Risk Notice:</span> 
                 Trading spot, derivatives, or margin assets carries high risk. GreatNexa provides quantitative market screener data based on algorithmic volume analytics and historical pattern recognition. Content does not constitute personal financial advice.
             </div>
 
-            <!-- Social Media & Support Community Links -->
             <div class="flex flex-wrap items-center justify-center gap-4 py-2">
                 <a href="https://www.facebook.com/share/1F6PwT38tf/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1877F2]/10 border border-[#1877F2]/30 text-white font-medium hover:bg-[#1877F2]/20 transition cursor-pointer">
                     <svg class="w-4 h-4 fill-[#1877F2]" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
@@ -654,6 +638,7 @@
         let liveMarketData = [];
         let selectedPlan = '';
         let isSignUpMode = false;
+        let activeCalcItem = null;
 
         function applyCustomLanguage(langCode) {
             const select = document.querySelector('#google_translate_element select');
@@ -788,6 +773,44 @@
             fetchLiveMarketData();
         }
 
+        // ================= RISK-SIZING CALCULATOR ENGINE =================
+        function openRiskCalc(index) {
+            activeCalcItem = liveMarketData[index];
+            if (!activeCalcItem) return;
+
+            document.getElementById('calcAssetTitle').innerText = `${activeCalcItem.symbol} (${activeCalcItem.direction.toUpperCase()}) Risk Calibration`;
+            computePositionSize();
+            const modal = document.getElementById('riskCalcModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeRiskCalc() {
+            const modal = document.getElementById('riskCalcModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function computePositionSize() {
+            if (!activeCalcItem) return;
+            const acc = parseFloat(document.getElementById('calcAccountSize').value) || 1000;
+            const riskPct = parseFloat(document.getElementById('calcRiskPct').value) || 1.5;
+            
+            const maxRiskDollar = (acc * (riskPct / 100));
+            const entry = parseFloat(activeCalcItem.entry_price) || 1;
+            const sl = parseFloat(activeCalcItem.sl_price) || 1;
+            const tp = parseFloat(activeCalcItem.tp_price) || 1;
+
+            const slDistance = Math.abs(entry - sl);
+            const tpDistance = Math.abs(tp - entry);
+            const units = slDistance > 0 ? (maxRiskDollar / slDistance) : 0;
+            const estProfit = units * tpDistance;
+
+            document.getElementById('calcMaxRiskDollar').innerText = `$${maxRiskDollar.toFixed(2)}`;
+            document.getElementById('calcRecPos').innerText = `${units.toFixed(2)} Units (~$${(units * entry).toFixed(2)})`;
+            document.getElementById('calcEstProfit').innerText = `$${estProfit.toFixed(2)} (${(estProfit/maxRiskDollar).toFixed(1)}R)`;
+        }
+
         // ================= HALL OF FAME RENDER ENGINE =================
         async function loadHallOfFame() {
             const container = document.getElementById('gridContainer');
@@ -817,7 +840,7 @@
                         </div>
                         <div class="flex gap-4 font-mono text-xs">
                             <span class="px-4 py-2 bg-emerald-500/20 text-emerald-300 rounded-xl font-bold border border-emerald-500/30">Total Wins: ${data.length}</span>
-                            <span class="px-4 py-2 bg-blue-500/20 text-blue-300 rounded-xl font-bold border border-blue-500/30">Target 1 Hit: 100%</span>
+                            <span class="px-4 py-2 bg-blue-500/20 text-blue-300 rounded-xl font-bold border border-blue-500/30">Target Hit Rate: 100%</span>
                         </div>
                     </div>
                 ` + data.map((item, idx) => `
@@ -834,7 +857,7 @@
                         <div class="bg-black/50 p-3 rounded-xl border border-white/5 text-xs font-mono space-y-1.5">
                             <div class="flex justify-between"><span class="text-gray-400">Entry Price:</span><span class="text-gray-200">$${item.entry_price || 'N/A'}</span></div>
                             <div class="flex justify-between"><span class="text-gray-400">Exit Target:</span><span class="text-emerald-400 font-bold">$${item.tp_price || 'N/A'}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400">Sector / Style:</span><span class="text-blue-300">${item.sector || 'Quant Setup'}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">Sector / Asset:</span><span class="text-blue-300">${item.sector || 'Quant Setup'}</span></div>
                         </div>
                         <div class="text-[11px] text-gray-500 font-mono text-right pt-1">
                             Resolved: ${new Date(item.resolved_at).toLocaleDateString()}
@@ -926,7 +949,10 @@
 
                         <div class="pt-3 border-t border-white/10 flex justify-between items-center text-xs">
                             ${statusBadge}
-                            <button type="button" onclick="openChart('${item.symbol}', '${item.symbol}')" class="px-3.5 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition cursor-pointer font-mono">📈 Chart View</button>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" onclick="openRiskCalc(${idx})" class="p-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white rounded-lg transition cursor-pointer" title="Position Sizing Calculator">🧮</button>
+                                <button type="button" onclick="openChart('${item.symbol}', '${item.symbol}')" class="px-3.5 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition cursor-pointer font-mono">📈 Chart View</button>
+                            </div>
                         </div>
                     </div>
                 </div>`;
