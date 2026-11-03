@@ -378,7 +378,7 @@
                 </div>
             </div>
 
-            <!-- 3. Shortlist Output Limit[cite: 2] -->
+            <!-- 3. Shortlist Output Limit -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
                 <div>
                     <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">3. Output Shortlist Limit</label>
@@ -393,7 +393,7 @@
 
                 <div class="pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-black/30 text-[11px] font-mono text-gray-400 space-y-1">
                     <p class="text-amber-300 font-semibold">🔒 Institutional Guard:</p>
-                    <p>Free tier enforces Top 3 setups automatically[cite: 2]. Unlock all 20 setups with Pro membership[cite: 2].</p>
+                    <p>Free tier enforces Top 3 setups automatically. Unlock all 20 setups with Pro membership.</p>
                 </div>
             </div>
         </div>
@@ -525,6 +525,7 @@
                 <div class="flex items-center gap-5">
                     <a href="/store/" class="hover:text-white transition">Digital Store</a>
                     <a href="https://wa.me/8801870978004" target="_blank" class="hover:text-emerald-400 transition">Institutional Support</a>
+                    <a href="admin.html" class="text-gray-700 hover:text-gray-400 transition font-mono text-[10px]">Admin Gateway</a>
                 </div>
             </div>
         </footer>
@@ -583,14 +584,26 @@
 
             <div id="cryptoPaymentBox" class="bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-2 text-xs">
                 <p class="text-gray-300">1. Send exact amount via <b class="text-white notranslate">Binance Pay</b> or <b class="text-white notranslate">USDT (TRC20/BEP20)</b>.</p>
-                <p class="text-gray-300">2. Binance Pay UID: <b class="text-emerald-400 font-mono text-sm notranslate">520327779</b></p>
-                <p class="text-gray-300">3. Submit Transaction ID/Hash below:</p>
+                <div class="flex items-center justify-between p-2.5 bg-black/60 rounded-xl border border-white/5">
+                    <div>
+                        <span class="text-[10px] text-gray-400 block font-mono">Binance Pay UID:</span>
+                        <b class="text-emerald-400 font-mono text-sm notranslate">520327779</b>
+                    </div>
+                    <button type="button" onclick="navigator.clipboard.writeText('520327779'); alert('Copied Binance Pay UID: 520327779');" class="px-2.5 py-1 bg-gray-800 hover:bg-gray-700 text-[11px] rounded font-mono text-gray-200">Copy UID</button>
+                </div>
+                <p class="text-gray-300">2. Submit Binance Order ID / TxID below:</p>
             </div>
 
             <div id="localPaymentBox" class="hidden bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-2 text-xs">
                 <p class="text-gray-300">১. নিচের নাম্বারে <b class="text-pink-400">bKash</b> বা <b class="text-orange-400">Nagad</b> এ সেন্ড মানি করুন।</p>
-                <p class="text-gray-300">২. পার্সোনাল নাম্বার: <b class="text-emerald-400 font-mono text-sm notranslate">01870978004</b></p>
-                <p class="text-gray-300">৩. টাকা পাঠিয়ে TrxID এবং প্রেরকের ফোন নাম্বার নিচে দিন:</p>
+                <div class="flex items-center justify-between p-2.5 bg-black/60 rounded-xl border border-white/5">
+                    <div>
+                        <span class="text-[10px] text-gray-400 block font-mono">Personal Number:</span>
+                        <b class="text-emerald-400 font-mono text-sm notranslate">01870978004</b>
+                    </div>
+                    <button type="button" onclick="navigator.clipboard.writeText('01870978004'); alert('Copied: 01870978004');" class="px-2.5 py-1 bg-gray-800 hover:bg-gray-700 text-[11px] rounded font-mono text-gray-200">Copy Number</button>
+                </div>
+                <p class="text-gray-300">২. টাকা পাঠিয়ে TrxID এবং প্রেরকের ফোন নাম্বার নিচে দিন:</p>
             </div>
 
             <div class="space-y-3">
@@ -659,7 +672,7 @@
         let state = { 
             market: 'crypto', 
             horizon: '24h', 
-            limit: 3, // ডিফল্ট লিমিট ৩
+            limit: 3,
             role: 'free', 
             tradingMode: 'mode2', 
             direction: 'long', 
@@ -905,7 +918,7 @@
             }
         }
 
-        // ================= RENDERING ENGINE (FIXED) =================
+        // ================= RENDERING ENGINE (EXACT LIMIT ENFORCED) =================
         function renderCards() {
             const container = document.getElementById('gridContainer');
             if (!container) return;
@@ -915,7 +928,6 @@
                 return;
             }
 
-            // ড্রপডাউন লিমিট বা ফ্রি টিয়ারের ৩ ক্যাপ প্রয়োগ
             const maxAllowed = (state.role === 'free') ? 3 : Math.min(state.limit, 20);
             const displayData = (liveMarketData || []).slice(0, maxAllowed);
 
@@ -926,7 +938,6 @@
 
             const directionBadge = state.direction === 'long' ? '🟢 Buy / Long' : '🔴 Sell / Short';
 
-            // শুধুমাত্র অনুমোদিত সংখ্যার কার্ড রেন্ডার করা হবে (অপ্রয়োজনীয় লক কার্ড নয়)
             let cardsHtml = displayData.map((item, idx) => {
                 const score = item.score || 75;
                 const scoreColor = score >= 85 ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-blue-400 border-blue-500/30 bg-blue-500/10';
@@ -988,7 +999,6 @@
                 </div>`;
             }).join('');
 
-            // ফ্রি টিয়ার ইউজার হলে ৩টি কার্ডের নিচে প্রো ব্যানার
             if (state.role === 'free') {
                 cardsHtml += `
                 <div class="col-span-full glass-panel p-6 rounded-2xl border border-amber-500/30 text-center space-y-3 mt-4">
@@ -1157,7 +1167,7 @@
             } else {
                 const { error } = await _supabase.auth.signInWithPassword({ email, password });
                 if(error) {
-                    showAuthFeedback(error.message);
+                    showAuthFeedback("Invalid email or password: " + error.message);
                 } else {
                     showAuthFeedback("Login successful! Loading membership profile...", true);
                     setTimeout(() => {
@@ -1168,6 +1178,7 @@
             }
         }
 
+        // ================= SUBSCRIPTION EXPIRY & SESSION CHECK =================
         async function checkUserSession() {
             const headerSec = document.getElementById('authHeaderSection');
             if(!_supabase) return;
@@ -1175,20 +1186,35 @@
             try {
                 const { data: { session } } = await _supabase.auth.getSession();
                 if(session && session.user) {
+                    // ১. সার্ভারে মেয়াদ যাচাই ও মেয়াদোত্তীর্ণ হলে অটো-রোলব্যাক
+                    try {
+                        await _supabase.rpc('check_subscription_status', { p_user_id: session.user.id });
+                    } catch(e) {
+                        console.warn("Auto-expiry RPC not active yet:", e.message);
+                    }
+
+                    // ২. প্রোফাইল ডেটা লোড ও বাকি দিন গণনা
                     let userTier = 'free';
-                    const { data } = await _supabase.from('user_profiles').select('tier').eq('id', session.user.id).single();
+                    let daysLeft = null;
+                    const { data } = await _supabase.from('user_profiles').select('tier, expires_at').eq('id', session.user.id).single();
                     if(data && data.tier) {
                         userTier = data.tier.toLowerCase();
+                        if(data.expires_at) {
+                            const diff = new Date(data.expires_at) - new Date();
+                            daysLeft = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+                        }
                     }
 
                     state.role = (userTier === 'vip') ? 'vip' : ((userTier === 'pro') ? 'pro' : 'free');
 
                     let tierBadge = '';
                     if(state.role === 'vip') {
-                        tierBadge = '<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">VIP MEMBER</span>';
+                        const dayStr = daysLeft !== null ? ` • ${daysLeft}d left` : '';
+                        tierBadge = `<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">VIP${dayStr}</span>`;
                         state.limit = 20;
                     } else if(state.role === 'pro') {
-                        tierBadge = '<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">PRO TRADER</span>';
+                        const dayStr = daysLeft !== null ? ` • ${daysLeft}d left` : '';
+                        tierBadge = `<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">PRO${dayStr}</span>`;
                         state.limit = 10;
                     } else {
                         tierBadge = '<span class="text-[10px] bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full font-bold notranslate font-mono">FREE TIER</span>';
@@ -1237,7 +1263,7 @@
                 boxCrypto.classList.remove('hidden');
                 boxLocal.classList.add('hidden');
                 phoneWrap.classList.add('hidden');
-                document.getElementById('payTrxId').placeholder = "Enter Transaction Hash / ID";
+                document.getElementById('payTrxId').placeholder = "Enter Binance Pay Order ID / TxID";
             } else {
                 btnLocal.className = "py-2 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow";
                 btnCrypto.className = "py-2 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10";
@@ -1269,8 +1295,8 @@
             const trxId = document.getElementById('payTrxId').value.trim();
             const senderPhone = document.getElementById('paySenderPhone').value.trim();
             
-            if(!trxId) { alert("Please enter Transaction Hash or TrxID."); return; }
-            if(activePaymentMethod === 'local' && !senderPhone) { alert("Please enter your bKash/Nagad sender number."); return; }
+            if(!trxId) { alert("Please enter Transaction ID or TrxID."); return; }
+            if(activePaymentMethod === 'local' && !senderPhone) { alert("Please enter your bKash/Nagad sender phone number."); return; }
             if(!_supabase) return;
 
             const { data: { session } } = await _supabase.auth.getSession();
