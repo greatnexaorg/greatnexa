@@ -30,3 +30,5 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python scanner.py
+
+      # ফিক্সড: ক্রন শিডিউল রি-রেজিস্টার করার জন্য ট্রিগার রিফ্রেশ করা হলো
