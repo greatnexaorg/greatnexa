@@ -550,9 +550,35 @@
         </svg>
     </a>
 
-    <!-- Modals -->
+    <!-- Position Sizing & Risk Calculator Modal (নতুন হাই-ভ্যালু প্রো টুল) -->
+    <div id="riskCalcModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
+        <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
+            <button type="button" onclick="closeRiskCalc()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
+            <h3 class="text-lg font-bold text-white mb-1 flex items-center gap-2">
+                <span>🧮</span> Position Size & Risk Calculator
+            </h3>
+            <p id="calcAssetTitle" class="text-xs text-blue-400 font-semibold mb-4 font-mono notranslate">Asset Risk Engine</p>
 
-    <!-- Binance Pay Checkout Modal -->
+            <div class="space-y-3 font-mono text-xs">
+                <div>
+                    <label class="block text-[11px] text-gray-400 mb-1">Account Balance ($ USD)</label>
+                    <input type="number" id="calcAccountSize" value="1000" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-[11px] text-gray-400 mb-1">Risk Percentage (%)</label>
+                    <input type="number" id="calcRiskPct" value="1.5" step="0.5" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="p-3 bg-black/50 border border-white/5 rounded-xl space-y-1.5 text-gray-300">
+                    <div class="flex justify-between"><span>Max Dollar Risk:</span><span id="calcMaxRiskDollar" class="text-rose-400 font-bold">$15.00</span></div>
+                    <div class="flex justify-between"><span>Recommended Position:</span><span id="calcRecPos" class="text-emerald-400 font-bold">Calculating...</span></div>
+                    <div class="flex justify-between"><span>Target Profit (R:R):</span><span id="calcEstProfit" class="text-blue-400 font-bold">$39.00</span></div>
+                </div>
+                <button type="button" onclick="computePositionSize()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition cursor-pointer">Recalculate Size</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals (Binance Pay & Auth & TradingView Chart) -->
     <div id="paymentModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
             <button type="button" onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
@@ -572,7 +598,6 @@
         </div>
     </div>
 
-    <!-- Auth Modal -->
     <div id="authModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
             <button type="button" onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
@@ -599,7 +624,6 @@
         </div>
     </div>
 
-    <!-- Live TradingView Modal -->
     <div id="chartModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-4xl rounded-2xl overflow-hidden border border-gray-700 shadow-2xl">
             <div class="flex justify-between items-center px-5 py-3.5 border-b border-white/10 bg-[#080d1a]">
@@ -1194,6 +1218,7 @@
             }
         }
 
+        // ================= TRADINGVIEW MULTI-ASSET TICKER HANDLER =================
         function openChart(rawSymbol, name) {
             const modal = document.getElementById('chartModal');
             modal.classList.remove('hidden');
@@ -1202,8 +1227,24 @@
             
             let clean = rawSymbol.replace(/[^a-zA-Z0-9]/g, '');
             let tvTicker = `BINANCE:${clean}`;
-            if(state.market === 'forex') tvTicker = `FX:${clean}`;
-            else if(state.market === 'stocks') tvTicker = `NASDAQ:${clean}`;
+
+            // ফরেক্স ও কমোডিটিজের সঠিক ট্রেডিংভিউ চার্ট প্রোভাইডার হ্যান্ডলিং
+            if(state.market === 'forex') {
+                if(clean.includes("XAU") || clean.includes("GOLD")) tvTicker = "OANDA:XAUUSD";
+                else if(clean.includes("XAG")) tvTicker = "OANDA:XAGUSD";
+                else if(clean.includes("WTI") || clean.includes("CRUDE")) tvTicker = "TVC:USOIL";
+                else if(clean.includes("NATGAS")) tvTicker = "TVC:NATGAS";
+                else tvTicker = `FX:${clean}`;
+            } 
+            // ইউএস স্টকসের স্মার্ট এক্সচেঞ্জ হ্যান্ডলিং
+            else if(state.market === 'stocks') {
+                const nyseTickers = ["JPM", "V", "DIS", "BA", "IBM", "CAT", "GS", "UNH", "XOM", "WMT", "KO", "MCD"];
+                if(nyseTickers.includes(clean)) {
+                    tvTicker = `NYSE:${clean}`;
+                } else {
+                    tvTicker = `NASDAQ:${clean}`;
+                }
+            }
 
             if (window.TradingView) {
                 new window.TradingView.widget({
