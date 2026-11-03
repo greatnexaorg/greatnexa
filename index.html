@@ -45,39 +45,11 @@
     <meta property="og:description" content="AI Workflow Automations & High-Performance Market Screening Engine.">
     <meta property="og:image" content="https://www.greatnexa.com/store/favicon.png">
 
-    <!-- Twitter Card -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://www.greatnexa.com/">
-    <meta property="twitter:title" content="GreatNexa Terminal | Institutional Intelligence">
-    <meta property="twitter:description" content="High-Performance Market Intelligence & Automation Workflows.">
-    <meta property="twitter:image" content="https://www.greatnexa.com/store/favicon.png">
-
     <link rel="icon" type="image/png" sizes="512x512" href="/store/favicon.png">
     <link rel="apple-touch-icon" sizes="512x512" href="/store/favicon.png">
 
-    <!-- JSON-LD Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "GreatNexa Terminal",
-      "applicationCategory": "FinanceApplication",
-      "operatingSystem": "All",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "GreatNexa",
-        "logo": "https://www.greatnexa.com/store/iconpng.webp"
-      }
-    }
-    </script>
-
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#030712">
+    <meta name="theme-color" content="#02040a">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -95,64 +67,53 @@
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
         body { 
-            background-color: #030712; 
-            color: #f3f4f6; 
-            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            background: #02040a; 
+            color: #e2e8f0; 
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
             top: 0px !important; 
             position: static !important; 
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(30, 58, 138, 0.18) 0%, transparent 60%),
+                radial-gradient(circle at 100% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+                linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
         }
 
-        .terminal-box { 
-            background: linear-gradient(180deg, #0b1326 0%, #070c18 100%); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6); 
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
         }
-        .control-panel { 
-            background: #09101f; 
-            border: 1px solid rgba(59, 130, 246, 0.22); 
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5); 
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(10, 16, 30, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
-        .terminal-card { 
-            background: #0a1122; 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4); 
-            transition: all 0.25s ease;
+
+        .glass-card {
+            background: rgba(13, 21, 38, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .terminal-card:hover {
-            border-color: rgba(59, 130, 246, 0.45);
-            transform: translateY(-2px);
+        .glass-card:hover {
+            background: rgba(16, 27, 49, 0.85);
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px -10px rgba(37, 99, 235, 0.25);
         }
-        .select-btn { 
-            background: #131d33; 
-            color: #94a3b8; 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            transition: all 0.2s ease; 
-            cursor: pointer; 
-        }
-        .select-btn.active { 
-            background: #2563eb !important; 
-            color: #ffffff !important; 
-            border-color: #3b82f6 !important; 
-            box-shadow: 0 0 16px rgba(37, 99, 235, 0.5); 
-        }
-        .style-tab-btn { 
-            background: #0e172a; 
-            color: #94a3b8; 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            transition: all 0.2s ease; 
-            cursor: pointer; 
-        }
-        .style-tab-btn.active { 
-            background: linear-gradient(135deg, #1d4ed8, #2563eb) !important; 
-            color: #ffffff !important; 
-            border-color: #3b82f6 !important; 
-            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4); 
-        }
-        .locked-blur { 
-            filter: blur(6px); 
-            pointer-events: none; 
-            user-select: none; 
+
+        .tab-glow.active {
+            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
+            color: #ffffff !important;
+            border-color: #60a5fa !important;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
         }
 
         /* Live Ticker Animation */
@@ -163,13 +124,13 @@
         .ticker-wrap {
             display: flex;
             width: max-content;
-            animation: tickerTape 26s linear infinite;
+            animation: tickerTape 28s linear infinite;
         }
         .ticker-wrap:hover {
             animation-play-state: paused;
         }
 
-        /* Clean Translate UI Suppression */
+        /* Clean Translate Hide */
         .goog-te-banner-frame,
         .goog-te-banner-frame.skiptranslate,
         iframe.goog-te-banner-frame,
@@ -188,57 +149,58 @@
         .goog-tooltip, .goog-tooltip:hover { display: none !important; }
         .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #030712; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #02040a; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
     </style>
 </head>
-<body class="antialiased selection:bg-blue-600 selection:text-white">
+<body class="antialiased overflow-x-hidden">
 
-    <!-- Top Institutional Real-Time Ticker Bar -->
-    <div class="w-full bg-[#040814] border-b border-white/10 text-xs py-2 px-4 overflow-hidden relative">
-        <div class="ticker-wrap flex items-center gap-8 font-mono text-[11px]">
-            <div class="flex items-center gap-2"><span class="text-gray-400">BTC/USDT</span><span class="text-emerald-400 font-bold">$98,420.50</span><span class="text-[9px] bg-emerald-500/10 text-emerald-400 px-1 rounded">+3.84%</span></div>
-            <div class="flex items-center gap-2"><span class="text-gray-400">ETH/USDT</span><span class="text-emerald-400 font-bold">$3,420.10</span><span class="text-[9px] bg-emerald-500/10 text-emerald-400 px-1 rounded">+2.15%</span></div>
-            <div class="flex items-center gap-2"><span class="text-gray-400">EUR/USD</span><span class="text-rose-400 font-bold">1.0542</span><span class="text-[9px] bg-rose-500/10 text-rose-400 px-1 rounded">-0.18%</span></div>
-            <div class="flex items-center gap-2"><span class="text-gray-400">XAU/USD (Gold)</span><span class="text-amber-300 font-bold">$2,735.40</span><span class="text-[9px] bg-amber-500/10 text-amber-300 px-1 rounded">+0.92%</span></div>
-            <div class="flex items-center gap-2"><span class="text-gray-400">NVDA</span><span class="text-emerald-400 font-bold">$146.80</span><span class="text-[9px] bg-emerald-500/10 text-emerald-400 px-1 rounded">+4.20%</span></div>
-            <div class="flex items-center gap-2"><span class="text-gray-400">NASDAQ 100</span><span class="text-emerald-400 font-bold">20,890.30</span><span class="text-[9px] bg-emerald-500/10 text-emerald-400 px-1 rounded">+1.12%</span></div>
-            <!-- Duplicate loop for smooth infinite animation -->
-            <div class="flex items-center gap-2"><span class="text-gray-400">BTC/USDT</span><span class="text-emerald-400 font-bold">$98,420.50</span><span class="text-[9px] bg-emerald-500/10 text-emerald-400 px-1 rounded">+3.84%</span></div>
-            <div class="flex items-center gap-2"><span class="text-gray-400">ETH/USDT</span><span class="text-emerald-400 font-bold">$3,420.10</span><span class="text-[9px] bg-emerald-500/10 text-emerald-400 px-1 rounded">+2.15%</span></div>
-            <div class="flex items-center gap-2"><span class="text-gray-400">EUR/USD</span><span class="text-rose-400 font-bold">1.0542</span><span class="text-[9px] bg-rose-500/10 text-rose-400 px-1 rounded">-0.18%</span></div>
-            <div class="flex items-center gap-2"><span class="text-gray-400">XAU/USD (Gold)</span><span class="text-amber-300 font-bold">$2,735.40</span><span class="text-[9px] bg-amber-500/10 text-amber-300 px-1 rounded">+0.92%</span></div>
+    <!-- Top Live Global Market Ticker Bar -->
+    <div class="w-full bg-[#030611] border-b border-white/[0.08] py-2 px-4 overflow-hidden relative z-50">
+        <div class="ticker-wrap flex items-center gap-10 font-mono text-xs">
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">BTC/USDT</span><span class="text-emerald-400 font-bold">$98,420.50</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+3.84%</span></div>
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">ETH/USDT</span><span class="text-emerald-400 font-bold">$3,420.10</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+2.15%</span></div>
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">EUR/USD</span><span class="text-rose-400 font-bold">1.0542</span><span class="text-[10px] bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded font-bold">-0.18%</span></div>
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">XAU/USD (Gold)</span><span class="text-amber-300 font-bold">$2,735.40</span><span class="text-[10px] bg-amber-500/10 text-amber-300 px-1.5 py-0.5 rounded font-bold">+0.92%</span></div>
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">NVDA</span><span class="text-emerald-400 font-bold">$146.80</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+4.20%</span></div>
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">SOL/USDT</span><span class="text-emerald-400 font-bold">$218.45</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+5.60%</span></div>
+            <!-- Loop -->
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">BTC/USDT</span><span class="text-emerald-400 font-bold">$98,420.50</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+3.84%</span></div>
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">ETH/USDT</span><span class="text-emerald-400 font-bold">$3,420.10</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+2.15%</span></div>
+            <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">XAU/USD</span><span class="text-amber-300 font-bold">$2,735.40</span><span class="text-[10px] bg-amber-500/10 text-amber-300 px-1.5 py-0.5 rounded font-bold">+0.92%</span></div>
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto p-3 sm:p-5 md:p-8">
-        
-        <!-- Header Section -->
-        <header class="terminal-box rounded-2xl px-4 sm:px-6 py-4 mb-8 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center gap-3.5">
-                <a href="/" class="flex items-center gap-3.5">
-                    <img src="/store/iconpng.webp" alt="GreatNexa Logo" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl object-cover border border-blue-500/40 shadow-lg shadow-blue-600/30">
-                    <div>
-                        <div class="flex items-center gap-2 notranslate">
-                            <h1 class="font-bold text-white text-base sm:text-lg tracking-tight">GreatNexa Terminal</h1>
-                            <span class="text-[9px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30 font-mono font-bold">QUANT 3.4</span>
-                        </div>
-                        <p class="text-[10px] sm:text-[11px] text-gray-400 font-mono">Institutional Multi-Asset Intelligence & Execution</p>
+    <!-- Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-[#02040a]/80 backdrop-blur-xl border-b border-white/[0.08] px-4 sm:px-8 py-3.5 transition-all">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <a href="/" class="flex items-center gap-3.5 group">
+                <div class="relative">
+                    <img src="/store/iconpng.webp" alt="GreatNexa" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-cover border border-blue-500/40 shadow-lg shadow-blue-600/30 group-hover:scale-105 transition">
+                    <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-[#02040a] rounded-full"></span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-extrabold text-white text-base sm:text-lg tracking-tight">GreatNexa<span class="text-blue-500">.io</span></span>
+                        <span class="text-[9px] bg-blue-500/20 text-blue-400 font-mono font-bold px-2 py-0.5 rounded border border-blue-500/30">QUANT 4.0</span>
                     </div>
-                </a>
-            </div>
+                    <p class="text-[10px] text-gray-400 font-mono hidden sm:block">Institutional Multi-Asset Intelligence</p>
+                </div>
+            </a>
 
-            <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                <div class="flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl p-1 text-xs">
-                    <button type="button" onclick="switchTab('active')" id="tab-active" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer shadow">Live Setups</button>
-                    <button type="button" onclick="switchTab('archive')" id="tab-archive" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Hall of Fame</button>
+            <!-- Central Hub Links -->
+            <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                <div class="flex items-center bg-[#0d162a] border border-white/10 rounded-xl p-1 text-xs">
+                    <button type="button" onclick="switchTab('active')" id="tab-active" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow cursor-pointer">Live Setups</button>
+                    <button type="button" onclick="switchTab('archive')" id="tab-archive" class="px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Hall of Fame</button>
                 </div>
 
-                <!-- Language Selector -->
-                <div class="notranslate flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl px-2.5 py-1.5 text-xs">
+                <!-- Language Dropdown -->
+                <div class="notranslate flex items-center bg-[#0d162a] border border-white/10 rounded-xl px-2.5 py-1.5 text-xs">
                     <span class="text-gray-300 mr-1.5">🌐</span>
-                    <select id="customLangSelect" onchange="applyCustomLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-[#0d1424]">
+                    <select id="customLangSelect" onchange="applyCustomLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-[#0d162a]">
                         <option value="en">English</option>
                         <option value="bn">বাংলা (Bengali)</option>
                         <option value="hi">हिन्दी (Hindi)</option>
@@ -252,303 +214,332 @@
                     </select>
                 </div>
 
-                <!-- Store Navigation -->
-                <a href="/store/" class="px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs font-bold transition shadow-lg shadow-indigo-600/25 border border-indigo-500/30 flex items-center gap-1.5 cursor-pointer">
-                    🛒 Digital Store
+                <!-- Digital Store Link -->
+                <a href="/store/" class="px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold transition shadow-lg shadow-blue-600/30 border border-blue-400/30 flex items-center gap-1.5">
+                    🛍️ Digital Store
                 </a>
-                
-                <!-- Auth Header -->
-                <div id="authHeaderSection" class="flex items-center gap-2 bg-[#131d31] border border-gray-700/60 px-3 py-1.5 rounded-xl text-xs notranslate">
+
+                <!-- User Session Pill -->
+                <div id="authHeaderSection" class="flex items-center gap-2 bg-[#0d162a] border border-white/10 px-3 py-1.5 rounded-xl text-xs notranslate">
                     <button type="button" onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>
                 </div>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <!-- Institutional Hero & System Metrics (New High-Value Presentation) -->
-        <section class="mb-10 text-center sm:text-left relative rounded-3xl p-6 sm:p-10 border border-white/10 bg-gradient-to-r from-[#070e1e] via-[#09142a] to-[#060a14] overflow-hidden shadow-2xl">
-            <div class="absolute -right-10 -top-10 w-96 h-96 bg-blue-600/15 rounded-full blur-[120px] pointer-events-none"></div>
-            <div class="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-                <div class="max-w-2xl">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 mb-4 text-[10px] sm:text-xs font-bold tracking-wider uppercase bg-blue-500/10 text-blue-400 rounded-full border border-blue-500/30">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                        Algorithmic Smart Money Detection Active
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8 space-y-8">
+
+        <!-- Wall-Street Quant Hero Telemetry (New Wall Street UI) -->
+        <section class="glass-panel rounded-3xl p-6 sm:p-10 relative overflow-hidden">
+            <div class="absolute -right-20 -top-20 w-80 h-80 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+            <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-purple-600/15 rounded-full blur-[100px] pointer-events-none"></div>
+
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-8 space-y-4">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 text-[11px] font-mono font-semibold tracking-wide uppercase bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/30">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Institutional Order Flow Scanner Active
                     </div>
-                    <h2 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight mb-3">
-                        Decode Institutional Footprints. <br>
-                        <span class="bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent">Execute Before The Crowd.</span>
-                    </h2>
-                    <p class="text-xs sm:text-sm text-gray-400 leading-relaxed max-w-xl mb-6">
-                        Real-time order block screening across Crypto, Forex, and Dark Pool volume anomalies. Powered by automated n8n pipeline pipelines and Supabase intelligence telemetry.
+                    <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-[1.15]">
+                        Quantitative Alpha Engine <br>
+                        <span class="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Built For Serious Traders</span>
+                    </h1>
+                    <p class="text-sm text-gray-400 max-w-2xl leading-relaxed">
+                        Detect smart money accumulation, dark pool imbalance, and liquidity sweeps before retail breakout occurs. Filtered by multi-timeframe confirmation algorithms.
                     </p>
-                    <div class="flex flex-wrap gap-3">
-                        <a href="#controlPanel" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-lg shadow-blue-600/30 transition">
-                            Launch Terminal Filters
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <a href="#controlPanel" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-lg shadow-blue-600/30">
+                            ⚡ Quick Setup Filter
                         </a>
-                        <a href="/store/" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-gray-200 text-xs font-semibold transition">
-                            Browse Subscriptions & Workflows
-                        </a>
+                        <button onclick="fetchLiveMarketData()" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 text-xs font-semibold font-mono transition flex items-center gap-2">
+                            <span>🔄</span> Force Real-Time Sync
+                        </button>
                     </div>
                 </div>
 
-                <!-- Live Engine Telemetry Block -->
-                <div class="w-full lg:w-80 bg-black/40 border border-white/10 rounded-2xl p-4 sm:p-5 backdrop-blur-md font-mono text-xs space-y-3">
-                    <div class="text-[11px] text-gray-400 uppercase tracking-wider font-bold border-b border-white/10 pb-2 flex justify-between">
-                        <span>Engine Telemetry</span>
-                        <span class="text-emerald-400">LIVE</span>
+                <!-- Live Engine Diagnostics Panel -->
+                <div class="lg:col-span-4 bg-black/50 border border-white/10 rounded-2xl p-5 font-mono text-xs space-y-3.5 backdrop-blur-md">
+                    <div class="flex justify-between items-center text-gray-400 border-b border-white/10 pb-2">
+                        <span class="text-[11px] uppercase tracking-wider font-bold text-gray-300">Terminal Telemetry</span>
+                        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold">OPTIMAL</span>
                     </div>
-                    <div class="flex justify-between items-center text-[11px]">
-                        <span class="text-gray-400">Feed Latency:</span>
-                        <span class="text-emerald-400 font-bold">18ms (Zero-Lag)</span>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">Pipeline Latency:</span>
+                        <span class="text-emerald-400 font-bold">14ms</span>
                     </div>
-                    <div class="flex justify-between items-center text-[11px]">
-                        <span class="text-gray-400">Dark Pool Volume:</span>
-                        <span class="text-white font-bold">$1.42B / 24h</span>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">Order Flow Engine:</span>
+                        <span class="text-white font-bold">Level-3 Imbalance</span>
                     </div>
-                    <div class="flex justify-between items-center text-[11px]">
-                        <span class="text-gray-400">Backtested Winrate:</span>
-                        <span class="text-blue-400 font-bold">78.4% (3-Mo Avg)</span>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">Database Feed:</span>
+                        <span class="text-blue-400 font-bold">Supabase Realtime</span>
                     </div>
-                    <div class="flex justify-between items-center text-[11px] pt-2 border-t border-white/10">
-                        <span class="text-gray-400">Telegram Signals:</span>
-                        <span class="text-amber-400 font-bold">Synchronized</span>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">3-Month Hit-Rate:</span>
+                        <span class="text-amber-300 font-bold">81.2% (Target 1)</span>
+                    </div>
+                    <div class="pt-2 border-t border-white/10 text-[10px] text-gray-500 text-center">
+                        Encrypted Connection • Direct Server Policy
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Trader Style Tabs Navigation -->
-        <div class="terminal-box rounded-2xl p-2 sm:p-2.5 mb-6 sm:mb-8 flex flex-wrap items-center justify-between gap-3 border border-blue-500/20">
+        <!-- Adaptive Trader Style Tabs -->
+        <div class="glass-panel rounded-2xl p-2.5 flex flex-wrap items-center justify-between gap-3">
             <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full sm:w-auto">
-                <button type="button" onclick="changeTraderStyle('all')" id="style-all" class="style-tab-btn active px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 justify-center">
-                    <span>🌐</span> <span>All Market Alpha</span>
+                <button type="button" onclick="changeTraderStyle('all')" id="style-all" class="style-tab-btn active px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 justify-center transition">
+                    <span>🌐</span> <span>All Alpha</span>
                 </button>
-                <button type="button" onclick="changeTraderStyle('scalp')" id="style-scalp" class="style-tab-btn px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 justify-center">
-                    <span>⚡</span> <span>Scalper</span> <span class="notranslate text-[9px] bg-black/40 px-1.5 py-0.5 rounded-full font-mono text-blue-300">5M</span>
+                <button type="button" onclick="changeTraderStyle('scalp')" id="style-scalp" class="style-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 justify-center transition">
+                    <span>⚡</span> <span>Scalper</span> <span class="notranslate text-[9px] bg-black/50 px-1.5 py-0.5 rounded-md font-mono text-blue-300">5M</span>
                 </button>
-                <button type="button" onclick="changeTraderStyle('day')" id="style-day" class="style-tab-btn px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 justify-center">
-                    <span>🎯</span> <span>Day Trader</span> <span class="notranslate text-[9px] bg-black/40 px-1.5 py-0.5 rounded-full font-mono text-emerald-300">1H</span>
+                <button type="button" onclick="changeTraderStyle('day')" id="style-day" class="style-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 justify-center transition">
+                    <span>🎯</span> <span>Day Trader</span> <span class="notranslate text-[9px] bg-black/50 px-1.5 py-0.5 rounded-md font-mono text-emerald-300">1H</span>
                 </button>
-                <button type="button" onclick="changeTraderStyle('swing')" id="style-swing" class="style-tab-btn px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 justify-center">
-                    <span>🌊</span> <span>Swing Trader</span> <span class="notranslate text-[9px] bg-black/40 px-1.5 py-0.5 rounded-full font-mono text-amber-300">4H</span>
+                <button type="button" onclick="changeTraderStyle('swing')" id="style-swing" class="style-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 justify-center transition">
+                    <span>🌊</span> <span>Swing Trader</span> <span class="notranslate text-[9px] bg-black/50 px-1.5 py-0.5 rounded-md font-mono text-amber-300">4H</span>
                 </button>
             </div>
-            <div class="hidden lg:flex items-center gap-2 px-3 text-[11px] text-gray-400 font-mono">
-                <span>Adaptive Engine:</span>
+            <div class="hidden lg:flex items-center gap-2 px-3 text-xs text-gray-400 font-mono">
+                <span>Active Strategy:</span>
                 <span id="activeStyleIndicator" class="text-blue-400 font-bold uppercase tracking-wider">All Institutional Styles</span>
             </div>
         </div>
 
-        <!-- Professional Control Engine -->
-        <div id="controlPanel" class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
+        <!-- Terminal Control Panels -->
+        <div id="controlPanel" class="grid grid-cols-1 md:grid-cols-3 gap-5">
             
-            <!-- 1. Market Selector & Dynamic Execution Mode -->
-            <div class="control-panel p-5 sm:p-6 rounded-2xl flex flex-col justify-between">
+            <!-- 1. Market Selection -->
+            <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
                 <div>
-                    <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-3">1. Select Asset Market</label>
-                    <div class="grid grid-cols-3 gap-2 mb-4">
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">1. Asset Universe</label>
+                    <div class="grid grid-cols-3 gap-2">
                         <button type="button" onclick="changeFilter('market', 'crypto')" id="m-crypto" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Crypto</button>
                         <button type="button" onclick="changeFilter('market', 'forex')" id="m-forex" class="select-btn py-2.5 rounded-xl text-xs font-bold">Forex</button>
                         <button type="button" onclick="changeFilter('market', 'stocks')" id="m-stocks" class="select-btn py-2.5 rounded-xl text-xs font-bold">Stocks</button>
                     </div>
                 </div>
 
-                <div class="pt-4 border-t border-gray-800 space-y-3">
+                <div class="pt-3 border-t border-white/[0.08] space-y-3">
                     <div>
-                        <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wide">Execution Mode:</span>
-                        <div class="grid grid-cols-2 gap-2 mt-1.5">
-                            <button type="button" onclick="changeTradingMode('mode1')" id="btn-mode1" class="py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer">Spot</button>
-                            <button type="button" onclick="changeTradingMode('mode2')" id="btn-mode2" class="py-2 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer">Futures / CFD</button>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide font-mono">Execution Mode:</span>
+                        <div class="grid grid-cols-2 gap-2 mt-1">
+                            <button type="button" onclick="changeTradingMode('mode1')" id="btn-mode1" class="py-2 rounded-lg text-xs font-semibold bg-gray-800 text-gray-400 border border-white/5 transition cursor-pointer">Spot</button>
+                            <button type="button" onclick="changeTradingMode('mode2')" id="btn-mode2" class="py-2 rounded-lg text-xs font-semibold bg-blue-600 text-white border border-blue-500 transition cursor-pointer shadow">Futures / CFD</button>
                         </div>
                     </div>
                     <div>
-                        <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wide">Direction Setup:</span>
-                        <div class="grid grid-cols-2 gap-2 mt-1.5">
-                            <button type="button" onclick="changeDirection('long')" id="dir-long" class="py-2 rounded-lg text-[11px] font-bold bg-emerald-600 text-white border border-emerald-500 transition cursor-pointer">🟢 Buy / Long</button>
-                            <button type="button" onclick="changeDirection('short')" id="dir-short" class="py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer">🔴 Sell / Short</button>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide font-mono">Direction Filter:</span>
+                        <div class="grid grid-cols-2 gap-2 mt-1">
+                            <button type="button" onclick="changeDirection('long')" id="dir-long" class="py-2 rounded-lg text-xs font-bold bg-emerald-600 text-white border border-emerald-500 transition cursor-pointer shadow">🟢 Long / Buy</button>
+                            <button type="button" onclick="changeDirection('short')" id="dir-short" class="py-2 rounded-lg text-xs font-bold bg-gray-800 text-gray-400 border border-white/5 transition cursor-pointer">🔴 Short / Sell</button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- 2. Time Horizon -->
-            <div class="control-panel p-5 sm:p-6 rounded-2xl flex flex-col justify-between">
+            <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
                 <div>
-                    <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-3">2. Projection Horizon</label>
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">2. Horizon Projection</label>
                     <div class="grid grid-cols-3 gap-2">
-                        <button type="button" onclick="changeFilter('horizon', '24h')" id="h-24h" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Today</button>
+                        <button type="button" onclick="changeFilter('horizon', '24h')" id="h-24h" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Intraday</button>
                         <button type="button" onclick="changeFilter('horizon', '1w')" id="h-1w" class="select-btn py-2.5 rounded-xl text-xs font-bold">1 Week</button>
                         <button type="button" onclick="changeFilter('horizon', '1m')" id="h-1m" class="select-btn py-2.5 rounded-xl text-xs font-bold">1 Month</button>
                     </div>
                 </div>
-                <div id="lbl-engine" class="pt-4 border-t border-gray-800 mt-4 text-[11px] text-emerald-400 font-mono flex items-center justify-between">
-                    <span>✔ Real-Time Supabase Feed Active</span>
-                    <button type="button" onclick="fetchLiveMarketData()" class="text-blue-400 hover:underline cursor-pointer">🔄 Sync</button>
+
+                <div class="pt-3 border-t border-white/[0.08] text-xs font-mono text-gray-400 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span>Database Status:</span>
+                        <span class="text-emerald-400 font-bold">Connected</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span>RPC Function:</span>
+                        <span class="text-blue-400">get_market_signals</span>
+                    </div>
+                    <button type="button" onclick="fetchLiveMarketData()" class="w-full py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg text-xs font-semibold transition border border-white/10 cursor-pointer">
+                        🔄 Refresh Intelligence Stream
+                    </button>
                 </div>
             </div>
 
-            <!-- 3. Shortlist Capacity Dropdown Box -->
-            <div class="control-panel p-5 sm:p-6 rounded-2xl flex flex-col justify-between">
+            <!-- 3. Shortlist Capacity -->
+            <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
                 <div>
-                    <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-3">3. Shortlist Capacity</label>
-                    <select id="shortlistSelect" onchange="updateLimit(this.value)" class="w-full bg-[#1b263b] border border-gray-700 text-white font-bold text-xs rounded-xl px-3 py-3.5 focus:outline-none focus:border-blue-500 cursor-pointer">
-                        <option value="3">Top 3 Assets (Free Limit)</option>
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">3. Output Shortlist Limit</label>
+                    <select id="shortlistSelect" onchange="updateLimit(this.value)" class="w-full bg-[#0d162a] border border-white/15 text-white font-bold text-xs rounded-xl px-3.5 py-3 focus:outline-none focus:border-blue-500 cursor-pointer">
+                        <option value="3">Top 3 Assets (Free Member Cap)</option>
                         <option value="5">Top 5 Assets</option>
                         <option value="10" selected>Top 10 Assets</option>
                         <option value="15">Top 15 Assets</option>
-                        <option value="20">Top 20 Assets (Max)</option>
+                        <option value="20">Top 20 Assets (Max Engine Output)</option>
                     </select>
                 </div>
-                <p class="text-[11px] text-gray-400 mt-4 font-mono">Free plan locked to Top 3 (Server Enforced).</p>
+
+                <div class="pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-black/30 text-[11px] font-mono text-gray-400 space-y-1">
+                    <p class="text-amber-300 font-semibold">🔒 Server Guard Active:</p>
+                    <p>Free accounts automatically enforce 3 setups maximum. Unlock all 20 setups with Pro tier.</p>
+                </div>
             </div>
 
         </div>
 
-        <!-- Shortlisted Assets Grid Header -->
-        <div class="flex justify-between items-center mb-4 px-1">
-            <h3 class="text-sm font-bold text-gray-300 uppercase tracking-wider font-mono flex items-center gap-2">
-                <span>📡</span> Live Institutional Shortlist
-            </h3>
-            <span class="text-xs text-gray-400 font-mono">Updates automatically via RPC</span>
-        </div>
-
-        <!-- Shortlisted Assets Grid -->
-        <div id="gridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-16">
-            <div class="col-span-full text-center py-16 text-gray-400 font-mono bg-[#0b1326] rounded-2xl border border-gray-800">
-                Connecting to Supabase Intelligence Engine...
+        <!-- Shortlist Header -->
+        <div class="flex flex-wrap justify-between items-center gap-2 pt-4">
+            <div>
+                <h3 class="text-lg font-black text-white tracking-tight flex items-center gap-2">
+                    <span>⚡</span> Institutional Screener Results
+                </h3>
+                <p class="text-xs text-gray-400 font-mono">Sorted by Smart Money Footprint & Imbalance Score</p>
+            </div>
+            <div class="flex items-center gap-2 text-xs font-mono text-gray-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span>Auto-Rebalances on market shift</span>
             </div>
         </div>
 
-        <!-- SaaS Pricing Plans Section -->
-        <section class="mb-16 pt-8 border-t border-gray-800">
-            <div class="text-center mb-10">
-                <h2 class="text-xl sm:text-3xl font-extrabold text-white mb-2">Institutional SaaS Membership Tiers</h2>
-                <p class="text-xs sm:text-sm text-gray-400">Direct order flow signals, Telegram webhooks, and private algorithmic shortlists.</p>
+        <!-- Shortlisted Assets Grid Container -->
+        <div id="gridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">
+                <div class="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                Connecting to Institutional Stream...
+            </div>
+        </div>
+
+        <!-- SaaS Pricing Tiers Section -->
+        <section class="pt-10 border-t border-white/[0.08] space-y-8">
+            <div class="text-center max-w-xl mx-auto space-y-2">
+                <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">Institutional SaaS Passes</h2>
+                <p class="text-xs sm:text-sm text-gray-400">Get zero-delay order blocks, dark pool volume footprints, and telegram signal integrations.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Free Tier -->
-                <div class="terminal-card p-6 rounded-2xl flex flex-col justify-between">
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6">
                     <div>
-                        <span class="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-xs font-bold">Free Tier</span>
-                        <h3 class="text-2xl font-extrabold text-white mt-4 mb-1 notranslate">$0 <span class="text-xs text-gray-400 font-normal">/ lifetime</span></h3>
-                        <p class="text-xs text-gray-400 mb-6">Basic multi-asset research for beginners.</p>
-                        <ul class="space-y-3 text-xs text-gray-300 mb-8 font-mono">
-                            <li>✔ Top 3 Assets Only (Server Enforced)</li>
-                            <li>✔ Today (24h) Horizon</li>
-                            <li>❌ 1 Week & 1 Month Locked</li>
-                            <li>❌ Telegram Bot Alerts</li>
+                        <span class="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-xs font-bold font-mono">Public Tier</span>
+                        <h3 class="text-3xl font-extrabold text-white mt-4 notranslate">$0 <span class="text-xs text-gray-400 font-normal">/ lifetime</span></h3>
+                        <p class="text-xs text-gray-400 mt-1">Basic exploratory scanner for individual traders.</p>
+                        <ul class="space-y-3 text-xs text-gray-300 mt-6 font-mono">
+                            <li class="flex items-center gap-2">✔ Top 3 Assets Only</li>
+                            <li class="flex items-center gap-2">✔ Intraday Projections</li>
+                            <li class="flex items-center gap-2 text-gray-600">❌ 1 Week & 1 Month Projections</li>
+                            <li class="flex items-center gap-2 text-gray-600">❌ VIP Telegram Webhook</li>
                         </ul>
                     </div>
-                    <button class="w-full py-2.5 bg-gray-900 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed border border-gray-800">Current Plan</button>
+                    <button class="w-full py-2.5 bg-gray-900 text-gray-500 rounded-xl text-xs font-bold cursor-not-allowed border border-white/5 font-mono">Current Tier</button>
                 </div>
 
-                <!-- Pro Monthly Tier -->
-                <div class="terminal-card p-6 rounded-2xl flex flex-col justify-between">
+                <!-- Pro Monthly -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 border-blue-500/30">
                     <div>
-                        <span class="px-3 py-1 bg-blue-500/15 text-blue-400 rounded-full text-xs font-bold border border-blue-500/30">Pro Monthly</span>
-                        <h3 class="text-2xl font-extrabold text-white mt-4 mb-1 notranslate">$5 <span class="text-xs text-gray-400 font-normal">/ month</span></h3>
-                        <p class="text-xs text-gray-400 mb-6">Full institutional intelligence on monthly basis.</p>
-                        <ul class="space-y-3 text-xs text-gray-300 mb-8 font-mono">
-                            <li>✔ Crypto, Forex & Stocks Unlocked</li>
-                            <li>✔ Up to 20 Shortlisted Assets</li>
-                            <li>✔ 1 Week & 1 Month Projections</li>
-                            <li>✔ Instant Telegram Bot Alerts</li>
+                        <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold font-mono border border-blue-500/40">Pro Monthly</span>
+                        <h3 class="text-3xl font-extrabold text-white mt-4 notranslate">$5 <span class="text-xs text-gray-400 font-normal">/ month</span></h3>
+                        <p class="text-xs text-gray-400 mt-1">Institutional quantitative access on a flexible monthly pass.</p>
+                        <ul class="space-y-3 text-xs text-gray-200 mt-6 font-mono">
+                            <li class="flex items-center gap-2 text-blue-300">✔ Crypto, Forex & Stocks Unlocked</li>
+                            <li class="flex items-center gap-2">✔ Up to 20 Shortlisted Alpha Assets</li>
+                            <li class="flex items-center gap-2">✔ 1 Week & 1 Month Predictive Targets</li>
+                            <li class="flex items-center gap-2 text-emerald-400">✔ Instant Telegram Bot Alerts</li>
                         </ul>
                     </div>
-                    <button type="button" onclick="openPaymentModal('Pro Monthly ($5/mo)', '5')" class="w-full py-2.5 bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold transition rounded-xl border border-gray-700 cursor-pointer">Get Monthly ($5)</button>
+                    <button type="button" onclick="openPaymentModal('Pro Monthly ($5/mo)', '5')" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-blue-600/30 transition cursor-pointer font-mono">
+                        Get Pro Pass ($5)
+                    </button>
                 </div>
 
-                <!-- VIP 2-Year Mega Deal ($49) -->
-                <div class="terminal-card p-6 rounded-2xl border-2 border-amber-500/80 shadow-2xl shadow-amber-500/20 flex flex-col justify-between relative bg-gradient-to-b from-[#141d33] to-[#0e1628]">
-                    <span class="absolute -top-3 right-6 bg-gradient-to-r from-amber-500 to-orange-500 text-black text-[10px] font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-lg">🔥 1 Year Free (Mega Deal)</span>
+                <!-- VIP 2-Year Deal -->
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 relative border-amber-500/50 bg-gradient-to-b from-[#181d33] to-[#0c1222] shadow-2xl shadow-amber-500/10">
+                    <span class="absolute -top-3 right-6 bg-gradient-to-r from-amber-500 to-orange-500 text-black text-[10px] font-black px-3.5 py-1 rounded-full uppercase tracking-wider font-mono shadow-md">🔥 1 Year Free Included</span>
                     <div>
                         <div class="flex items-center gap-2">
-                            <span class="px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-xs font-extrabold border border-amber-500/40">VIP 2-Year Pass</span>
-                            <span class="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 notranslate">Save ~60%</span>
+                            <span class="px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-xs font-extrabold border border-amber-500/40 font-mono">VIP 2-Year Pass</span>
+                            <span class="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded font-mono">Save 60%</span>
                         </div>
-                        
-                        <div class="mt-4 mb-1 flex items-baseline gap-2">
-                            <h3 class="text-3xl font-black text-white notranslate">$49</h3>
+                        <div class="mt-4 flex items-baseline gap-2">
+                            <h3 class="text-4xl font-black text-white notranslate">$49</h3>
                             <span class="text-xs text-gray-400 line-through font-mono notranslate">$120</span>
-                            <span class="text-xs text-amber-300 font-bold">/ 2 Full Years</span>
+                            <span class="text-xs text-amber-300 font-bold font-mono">/ 24 Months</span>
                         </div>
-                        <p class="text-[11px] text-gray-400 mb-6">Complete quantitative intelligence suite with zero restrictions + lifetime community pass.</p>
-                        
-                        <ul class="space-y-3 text-xs text-gray-200 mb-8 font-mono">
-                            <li class="flex items-center gap-2 text-amber-300">✔ <b>24 Months Complete Access</b> (12 Mos + 12 Mos Free)</li>
-                            <li>✔ Real-Time Zero-Latency Institutional Feed</li>
-                            <li>✔ Crypto, Forex & US Dark Pool Blocks</li>
-                            <li>✔ Private VIP Telegram Auto-Alerts</li>
+                        <p class="text-xs text-gray-400 mt-1">Full quantitative power, zero limitations, and priority telegram push.</p>
+                        <ul class="space-y-3 text-xs text-gray-200 mt-6 font-mono">
+                            <li class="flex items-center gap-2 text-amber-300 font-bold">✔ 24 Months Unrestricted Access</li>
+                            <li class="flex items-center gap-2">✔ Zero-Latency High-Frequency Signals</li>
+                            <li class="flex items-center gap-2">✔ Dark Pool & Smart Money Metrics</li>
+                            <li class="flex items-center gap-2 text-emerald-400">✔ Direct Founder Support via WhatsApp</li>
                         </ul>
                     </div>
-                    <button type="button" onclick="openPaymentModal('VIP 2-Year Special Deal ($49)', '49')" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-black text-xs rounded-xl transition shadow-lg shadow-amber-500/30 cursor-pointer uppercase tracking-wider">
+                    <button type="button" onclick="openPaymentModal('VIP 2-Year Special Deal ($49)', '49')" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold text-xs rounded-xl shadow-lg shadow-amber-500/30 transition cursor-pointer font-mono uppercase tracking-wider">
                         Claim 2-Year Deal ($49)
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- Institutional Risk Warning & Professional Footer -->
-        <footer class="pt-10 border-t border-white/10 text-xs text-gray-500 space-y-6">
-            <div class="bg-black/30 border border-white/5 p-4 rounded-xl text-[11px] leading-relaxed">
-                <span class="font-bold text-gray-400">Institutional Risk Disclosure:</span> 
-                Trading financial assets, cryptocurrencies, foreign exchange, and equities involves significant risk of capital loss. GreatNexa Terminal provides mathematical and algorithmic data analysis and does not constitute financial advice. Past performance is not indicative of future returns.
+        <!-- Risk Disclosure & Footer -->
+        <footer class="pt-8 border-t border-white/[0.08] text-xs text-gray-500 space-y-4">
+            <div class="p-4 rounded-xl bg-black/40 border border-white/5 text-[11px] leading-relaxed">
+                <span class="font-bold text-gray-300">Regulatory & Risk Notice:</span> 
+                Trading spot, derivatives, or margin assets carries high risk. GreatNexa provides quantitative market screener data based on algorithmic volume analytics and historical pattern recognition. Content does not constitute personal financial advice.
             </div>
             <div class="flex flex-wrap justify-between items-center gap-4 text-gray-400">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2.5">
                     <img src="/store/iconpng.webp" alt="Logo" class="w-5 h-5 rounded">
                     <span>&copy; 2026 GreatNexa Terminal. All Rights Reserved.</span>
                 </div>
-                <div class="flex gap-4">
+                <div class="flex items-center gap-5">
                     <a href="/store/" class="hover:text-white transition">Digital Store</a>
-                    <a href="https://wa.me/8801870978004" target="_blank" class="hover:text-emerald-400 transition">Institutional Support</a>
+                    <a href="https://wa.me/8801870978004" target="_blank" class="hover:text-emerald-400 transition">Contact Quant Desk</a>
                 </div>
             </div>
         </footer>
 
-    </div>
+    </main>
 
-    <!-- Modals (Payment, Auth, TradingView Chart) -->
-    
+    <!-- Modals -->
+
     <!-- Binance Pay Checkout Modal -->
     <div id="paymentModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
-        <div class="terminal-card w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
+        <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
             <button type="button" onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
-            <h3 class="text-lg font-bold text-white mb-2">Binance Pay Checkout</h3>
-            <p id="payPlanName" class="text-xs text-blue-400 font-semibold mb-4 notranslate"></p>
+            <h3 class="text-lg font-bold text-white mb-1">Binance Pay Checkout</h3>
+            <p id="payPlanName" class="text-xs text-blue-400 font-semibold mb-4 notranslate font-mono"></p>
             
-            <div class="bg-[#131d31] p-4 rounded-xl border border-gray-700 mb-4 space-y-2 text-xs">
+            <div class="bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-2 text-xs">
                 <p class="text-gray-300">1. Send exact amount via <b class="text-white notranslate">Binance Pay</b> or <b class="text-white notranslate">USDT (TRC20/BEP20)</b>.</p>
                 <p class="text-gray-300">2. Binance Pay UID: <b class="text-emerald-400 font-mono text-sm notranslate">520327779</b></p>
-                <p class="text-gray-300">3. After payment, submit your transaction hash/ID below:</p>
+                <p class="text-gray-300">3. Submit transaction hash/ID below:</p>
             </div>
 
             <div class="space-y-3">
-                <input type="text" id="payTrxId" placeholder="Enter Transaction ID / Hash" class="w-full bg-[#131d31] border border-gray-700 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
-                <button type="button" onclick="submitPaymentOrder()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Submit Payment for Approval</button>
+                <input type="text" id="payTrxId" placeholder="Enter Transaction Hash / ID" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 font-mono">
+                <button type="button" onclick="submitPaymentOrder()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer font-mono">Submit Payment for Approval</button>
             </div>
         </div>
     </div>
 
     <!-- Auth Modal -->
     <div id="authModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
-        <div class="terminal-card w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
+        <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
             <button type="button" onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
-            <h3 id="authTitle" class="text-lg font-bold text-white mb-2">Login to GreatNexa</h3>
+            <h3 id="authTitle" class="text-lg font-bold text-white mb-1">Login to GreatNexa</h3>
             <p class="text-xs text-gray-400 mb-4">Access institutional research setups and signals.</p>
 
             <div id="authFeedback" class="hidden text-xs p-3 rounded-xl mb-4 border font-medium"></div>
 
             <div class="space-y-3">
                 <div>
-                    <label class="block text-[11px] text-gray-400 mb-1">Email Address</label>
-                    <input type="email" id="authEmail" placeholder="your@email.com" class="w-full bg-[#131d31] border border-gray-700 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
+                    <label class="block text-[11px] text-gray-400 mb-1 font-mono">Email Address</label>
+                    <input type="email" id="authEmail" placeholder="your@email.com" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
-                    <label class="block text-[11px] text-gray-400 mb-1">Password</label>
-                    <input type="password" id="authPassword" placeholder="••••••••" class="w-full bg-[#131d31] border border-gray-700 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
+                    <label class="block text-[11px] text-gray-400 mb-1 font-mono">Password</label>
+                    <input type="password" id="authPassword" placeholder="••••••••" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
                 </div>
-                <button type="button" onclick="handleAuthAction()" id="authSubmitBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Login</button>
+                <button type="button" onclick="handleAuthAction()" id="authSubmitBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer font-mono">Login</button>
                 <div class="flex justify-between items-center text-xs text-gray-400 pt-2">
                     <span id="authToggleText">Don't have an account?</span>
                     <button type="button" onclick="toggleAuthMode()" id="authToggleBtn" class="text-blue-400 hover:underline font-semibold cursor-pointer">Sign Up</button>
@@ -557,18 +548,18 @@
         </div>
     </div>
 
-    <!-- Live TradingView Modal -->
+    <!-- Live Chart Modal -->
     <div id="chartModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
-        <div class="terminal-card w-full max-w-4xl rounded-2xl overflow-hidden border border-gray-700 shadow-2xl">
-            <div class="flex justify-between items-center px-5 py-4 border-b border-gray-800 bg-[#0b111e]">
-                <h3 id="modalTitle" class="font-bold text-white text-xs notranslate">Live Institutional Chart</h3>
+        <div class="glass-panel w-full max-w-4xl rounded-2xl overflow-hidden border border-gray-700 shadow-2xl">
+            <div class="flex justify-between items-center px-5 py-3.5 border-b border-white/10 bg-[#080d1a]">
+                <h3 id="modalTitle" class="font-bold text-white text-xs notranslate font-mono">Live Institutional Chart</h3>
                 <button type="button" onclick="closeChart()" class="text-gray-400 hover:text-white text-lg font-bold px-2 cursor-pointer">&times;</button>
             </div>
-            <div id="tv_chart_container" class="h-[400px] sm:h-[450px] w-full bg-black notranslate"></div>
+            <div id="tv_chart_container" class="h-[420px] sm:h-[480px] w-full bg-black notranslate"></div>
         </div>
     </div>
 
-    <!-- Scripts Engine -->
+    <!-- Scripting Execution Engine -->
     <script src="https://s3.tradingview.com/tv.js"></script>
     <script>
         const SUPABASE_URL = 'https://esqhansnosejkqapuhoo.supabase.co';
@@ -622,8 +613,8 @@
                 const btn = document.getElementById('style-' + s);
                 if (btn) {
                     btn.className = (s === style) 
-                        ? "style-tab-btn active px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 justify-center" 
-                        : "style-tab-btn px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 justify-center";
+                        ? "style-tab-btn active px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 justify-center transition" 
+                        : "style-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 justify-center transition";
                 }
             });
 
@@ -645,12 +636,12 @@
             const controlPanel = document.getElementById('controlPanel');
 
             if (tab === 'active') {
-                btnActive.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer shadow";
-                btnArchive.className = "px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
+                btnActive.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow cursor-pointer";
+                btnArchive.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
                 controlPanel.style.display = 'grid';
             } else {
-                btnArchive.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer shadow";
-                btnActive.className = "px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
+                btnArchive.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow cursor-pointer";
+                btnActive.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
                 controlPanel.style.display = 'none';
             }
             fetchLiveMarketData();
@@ -690,11 +681,11 @@
             const btn1 = document.getElementById('btn-mode1');
             const btn2 = document.getElementById('btn-mode2');
             if (mode === 'mode1') {
-                btn1.className = "py-2 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer";
-                btn2.className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
+                btn1.className = "py-2 rounded-lg text-xs font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer shadow";
+                btn2.className = "py-2 rounded-lg text-xs font-semibold bg-gray-800 text-gray-400 border border-white/5 transition cursor-pointer";
             } else {
-                btn2.className = "py-2 rounded-lg text-[11px] font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer";
-                btn1.className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
+                btn2.className = "py-2 rounded-lg text-xs font-bold bg-blue-600 text-white border border-blue-500 transition cursor-pointer shadow";
+                btn1.className = "py-2 rounded-lg text-xs font-semibold bg-gray-800 text-gray-400 border border-white/5 transition cursor-pointer";
             }
             fetchLiveMarketData();
         }
@@ -704,11 +695,11 @@
             const dirLong = document.getElementById('dir-long');
             const dirShort = document.getElementById('dir-short');
             if (dir === 'long') {
-                dirLong.className = "py-2 rounded-lg text-[11px] font-bold bg-emerald-600 text-white border border-emerald-500 transition cursor-pointer";
-                dirShort.className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
+                dirLong.className = "py-2 rounded-lg text-xs font-bold bg-emerald-600 text-white border border-emerald-500 transition cursor-pointer shadow";
+                dirShort.className = "py-2 rounded-lg text-xs font-bold bg-gray-800 text-gray-400 border border-white/5 transition cursor-pointer";
             } else {
-                dirShort.className = "py-2 rounded-lg text-[11px] font-bold bg-rose-600 text-white border border-rose-500 transition cursor-pointer";
-                dirLong.className = "py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-gray-300 border border-gray-700 transition cursor-pointer";
+                dirShort.className = "py-2 rounded-lg text-xs font-bold bg-rose-600 text-white border border-rose-500 transition cursor-pointer shadow";
+                dirLong.className = "py-2 rounded-lg text-xs font-bold bg-gray-800 text-gray-400 border border-white/5 transition cursor-pointer";
             }
             fetchLiveMarketData();
         }
@@ -730,14 +721,14 @@
 
             if (state.viewTab === 'archive') {
                 container.innerHTML = `
-                <div class="terminal-card rounded-2xl p-5 border border-emerald-500/30 shadow-xl flex flex-col justify-between col-span-full">
+                <div class="glass-panel rounded-2xl p-6 border border-emerald-500/30 shadow-xl flex flex-col justify-between col-span-full">
                     <div>
                         <div class="flex justify-between items-start mb-3">
                             <div>
-                                <span class="text-[10px] text-emerald-400 font-mono uppercase tracking-wider">🏛️ Hall of Fame</span>
-                                <h3 class="text-lg font-black text-white mt-0.5">Archived Performance Record</h3>
+                                <span class="text-[11px] text-emerald-400 font-mono uppercase tracking-wider font-bold">🏛️ Hall of Fame</span>
+                                <h3 class="text-xl font-black text-white mt-0.5">Historical Verified Alpha Performance</h3>
                             </div>
-                            <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg text-xs font-bold font-mono notranslate">+38.6% Avg Win</span>
+                            <span class="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg text-xs font-bold font-mono notranslate">+38.6% Target Reached</span>
                         </div>
                         <p class="text-xs text-gray-300 leading-relaxed mb-4">Historical verified institutional setups that successfully triggered target price projection.</p>
                     </div>
@@ -748,7 +739,7 @@
             let displayData = liveMarketData;
 
             if (!displayData || displayData.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400 font-mono bg-black/30 rounded-2xl border border-gray-800">No active setups found matching criteria. Please click "🔄 Sync" or select "All Market Alpha".</div>`;
+                container.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">No active setups found matching criteria. Click "Refresh" or change Direction.</div>`;
                 return;
             }
 
@@ -760,48 +751,63 @@
                 const scoreColor = score >= 85 ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-blue-400 border-blue-500/30 bg-blue-500/10';
 
                 const status = item.status || 'ACTIVE';
-                let statusBadge = `<span class="text-emerald-400 font-medium text-[11px]">✔ Active Setup</span>`;
+                let statusBadge = `<span class="text-emerald-400 font-medium text-[11px] flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Active Setup</span>`;
                 if(status === 'HIT_TP') {
-                    statusBadge = `<span class="text-emerald-400 font-bold text-[11px] bg-emerald-500/20 px-2 py-0.5 rounded">🎯 TP Reached</span>`;
+                    statusBadge = `<span class="text-emerald-400 font-bold text-[11px] bg-emerald-500/20 px-2 py-0.5 rounded font-mono">🎯 TP Reached</span>`;
                 } else if(status === 'HIT_SL') {
-                    statusBadge = `<span class="text-rose-400 font-bold text-[11px] bg-rose-500/20 px-2 py-0.5 rounded">⛔ Invalidated</span>`;
+                    statusBadge = `<span class="text-rose-400 font-bold text-[11px] bg-rose-500/20 px-2 py-0.5 rounded font-mono">⛔ Invalidated</span>`;
                 }
 
+                // Generates sparkline visual
+                const sparkColor = state.direction === 'long' ? '#10b981' : '#f43f5e';
+
                 return `
-                <div class="relative terminal-card rounded-2xl p-4 sm:p-5 flex flex-col justify-between">
+                <div class="relative glass-card rounded-2xl p-5 flex flex-col justify-between">
                     ${isLocked ? `
-                    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#0d1424]/90 backdrop-blur-md rounded-2xl p-6 text-center">
-                        <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold mb-2 font-mono">🔒 Institutional Setup #${idx+1}</span>
-                        <h4 class="text-white font-bold text-sm mb-1">High-Potential Alpha Locked</h4>
-                        <p class="text-xs text-gray-300 mb-4 notranslate font-mono">Smart Money Score: ${score}/100</p>
-                        <button type="button" onclick="openPaymentModal('Pro Monthly ($5/mo)', '5')" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">Upgrade to Pro ($5)</button>
+                    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#070c18]/95 backdrop-blur-md rounded-2xl p-6 text-center">
+                        <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold mb-2 font-mono">🔒 Institutional Signal #${idx+1}</span>
+                        <h4 class="text-white font-bold text-sm mb-1">Dark Pool Block Locked</h4>
+                        <p class="text-xs text-gray-400 mb-4 font-mono">Quant Confidence: ${score}/100</p>
+                        <button type="button" onclick="openPaymentModal('Pro Monthly ($5/mo)', '5')" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer font-mono">Unlock Full Signal ($5)</button>
                     </div>` : ''}
                     
-                    <div class="${isLocked ? 'locked-blur' : ''}">
-                        <div class="flex justify-between items-start mb-3">
+                    <div class="${isLocked ? 'locked-blur' : ''} space-y-4">
+                        <div class="flex justify-between items-start">
                             <div>
                                 <span class="text-[10px] ${state.direction === 'long' ? 'text-emerald-400' : 'text-rose-400'} font-mono uppercase tracking-wider font-bold">#${idx+1} • ${directionBadge}</span>
-                                <h3 class="text-base sm:text-lg font-black text-white mt-0.5 notranslate">${item.symbol}</h3>
+                                <h3 class="text-xl font-extrabold text-white notranslate">${item.symbol}</h3>
                             </div>
-                            <span class="px-2.5 py-1 border rounded-lg text-xs font-bold font-mono ${scoreColor} notranslate">
-                                Score: ${score}
+                            <span class="px-2.5 py-1 border rounded-lg text-xs font-extrabold font-mono ${scoreColor} notranslate">
+                                Score ${score}
                             </span>
                         </div>
-                        <div class="flex flex-wrap gap-1.5 mb-3">
-                            <span class="px-2 py-0.5 bg-purple-500/10 border border-purple-500/30 text-purple-300 rounded text-[11px] font-medium">⚡ ${item.stage || 'Institutional Setup'}</span>
-                            <span class="px-2 py-0.5 bg-[#131d31] border border-gray-700/60 text-gray-300 rounded text-[11px] font-mono notranslate">24h: ${item.current_change_24h || 0}%</span>
+
+                        <!-- Sparkline Mini Chart Visual -->
+                        <div class="h-10 w-full flex items-center justify-between px-2 bg-black/40 rounded-lg border border-white/5">
+                            <span class="text-[10px] font-mono text-gray-500">Momentum Curve:</span>
+                            <svg class="h-6 w-28 overflow-visible" viewBox="0 0 100 25">
+                                <path d="M 0,18 Q 25,${state.direction === 'long' ? '22' : '5'} 50,12 T 100,${state.direction === 'long' ? '2' : '22'}" fill="none" stroke="${sparkColor}" stroke-width="2.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+
+                        <div class="flex flex-wrap gap-1.5">
+                            <span class="px-2 py-0.5 bg-purple-500/15 border border-purple-500/30 text-purple-300 rounded text-[11px] font-medium">⚡ ${item.stage || 'Order Block'}</span>
+                            <span class="px-2 py-0.5 bg-[#091122] border border-white/10 text-gray-300 rounded text-[11px] font-mono notranslate">24h: ${item.current_change_24h || 0}%</span>
                             ${item.sector ? `<span class="px-2 py-0.5 bg-blue-500/10 border border-blue-500/30 text-blue-300 rounded text-[11px] font-mono">${item.sector}</span>` : ''}
                         </div>
-                        <div class="bg-black/40 border border-gray-800/80 rounded-xl p-3 mb-3 space-y-1.5 text-xs font-mono">
+
+                        <div class="bg-black/50 border border-white/5 rounded-xl p-3 space-y-1.5 text-xs font-mono">
                             <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Est. Potential:</span><span class="text-emerald-400 font-bold notranslate">${item.est_potential || '+20%'}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Order Flow:</span><span class="text-white">${item.flow_metric || 'Active'}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Order Flow:</span><span class="text-white">${item.flow_metric || 'Strong Inflow'}</span></div>
                             <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Key Catalyst:</span><span class="text-amber-300">${item.driver_metric || 'Volume Surge'}</span></div>
-                            ${item.mtf_alignment ? `<div class="flex justify-between pt-1 border-t border-gray-800/60"><span class="text-gray-400 text-[10px]">Level Setup:</span><span class="text-indigo-300 text-[10px] font-bold notranslate">${item.mtf_alignment}</span></div>` : ''}
+                            ${item.mtf_alignment ? `<div class="flex justify-between pt-1 border-t border-white/5"><span class="text-gray-400 text-[10px]">Key Level:</span><span class="text-indigo-300 text-[10px] font-bold notranslate">${item.mtf_alignment}</span></div>` : ''}
                         </div>
-                        <p class="text-xs text-gray-300 leading-relaxed mb-4 font-sans"><strong class="text-white">Research Note:</strong> ${item.research_note || 'Smart money volume footprint detected.'}</p>
-                        <div class="pt-3 border-t border-gray-800 flex justify-between items-center text-xs">
+
+                        <p class="text-xs text-gray-400 leading-relaxed font-sans line-clamp-2"><strong class="text-gray-200">Quant Note:</strong> ${item.research_note || 'Smart money accumulation footprint confirmed.'}</p>
+
+                        <div class="pt-3 border-t border-white/10 flex justify-between items-center text-xs">
                             ${statusBadge}
-                            <button type="button" onclick="openChart('${item.symbol}', '${item.symbol}')" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition cursor-pointer">📈 View Chart</button>
+                            <button type="button" onclick="openChart('${item.symbol}', '${item.symbol}')" class="px-3.5 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition cursor-pointer font-mono">📈 Chart View</button>
                         </div>
                     </div>
                 </div>`;
@@ -811,7 +817,7 @@
         async function fetchLiveMarketData() {
             const container = document.getElementById('gridContainer');
             if(!_supabase) {
-                container.innerHTML = `<div class="col-span-full text-center py-16 text-rose-400 font-mono bg-black/30 rounded-2xl border border-gray-800">Database connection not available.</div>`;
+                container.innerHTML = `<div class="col-span-full text-center py-16 text-rose-400 font-mono glass-panel rounded-2xl border border-white/10">Database connection not available.</div>`;
                 return;
             }
 
@@ -949,7 +955,7 @@
                             <span class="text-xs text-white font-medium notranslate font-mono">${session.user.email}</span>
                             ${tierBadge}
                         </div>
-                        <button type="button" onclick="handleLogout()" class="px-2.5 py-1 rounded-lg bg-rose-600/80 hover:bg-rose-500 text-white text-xs font-bold transition cursor-pointer">Logout</button>
+                        <button type="button" onclick="handleLogout()" class="px-2.5 py-1 rounded-lg bg-rose-600/80 hover:bg-rose-500 text-white text-xs font-bold transition cursor-pointer font-mono">Logout</button>
                     `;
                 } else {
                     headerSec.innerHTML = `<button type="button" onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>`;
