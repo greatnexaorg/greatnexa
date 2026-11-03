@@ -28,10 +28,19 @@
                     <input type="email" id="adminEmail" required placeholder="admin@greatnexa.com"
                            class="w-full text-xs font-mono bg-[#0b1324] border border-white/15 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
                 </div>
+                
+                <!-- Password with Eye Toggle -->
                 <div>
                     <label class="block text-[11px] font-mono text-gray-400 mb-1">Secure Password</label>
-                    <input type="password" id="adminPassword" required placeholder="••••••••••••"
-                           class="w-full text-xs font-mono bg-[#0b1324] border border-white/15 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
+                    <div class="relative">
+                        <input type="password" id="adminPassword" required placeholder="••••••••••••"
+                               class="w-full text-xs font-mono bg-[#0b1324] border border-white/15 text-white rounded-xl pl-4 pr-10 py-3 focus:outline-none focus:border-blue-500">
+                        <button type="button" onclick="togglePasswordVisibility()" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white cursor-pointer focus:outline-none"
+                                title="Show / Hide Password">
+                            <span id="eyeIcon">👁️</span>
+                        </button>
+                    </div>
                 </div>
                 
                 <div id="loginError" class="text-rose-400 text-xs hidden font-medium"></div>
@@ -43,7 +52,7 @@
         </div>
     </div>
 
-    <!-- Main Admin Dashboard (লগইন ছাড়া দেখা যাবে না) -->
+    <!-- Main Admin Dashboard -->
     <div id="adminMainContent" class="hidden space-y-6 w-full">
         <header class="flex flex-wrap justify-between items-center gap-4 border-b border-white/10 pb-4">
             <div>
@@ -119,6 +128,19 @@
 
         const TELEGRAM_VIP_LINK = "https://t.me/+VA3Yu45-zosyOTRl";
 
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('adminPassword');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerText = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerText = '👁️';
+            }
+        }
+
         async function verifyAdminAccess() {
             const { data: { session } } = await _supabase.auth.getSession();
             if (!session) {
@@ -126,7 +148,6 @@
                 return;
             }
 
-            // ইউজারের রোল যাচাই করা (শুধুমাত্র অ্যাডমিন রোল হলে ড্যাশবোর্ড খুলবে)
             const { data, error } = await _supabase
                 .from('user_profiles')
                 .select('role')
@@ -157,7 +178,6 @@
                 const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
 
-                // রোল চেক
                 const { data: prof, error: profErr } = await _supabase
                     .from('user_profiles')
                     .select('role')
