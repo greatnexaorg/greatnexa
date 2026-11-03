@@ -5,13 +5,17 @@ from datetime import datetime, timezone, timedelta
 from supabase import create_client, Client
 
 # ==============================================================================
-# ১. SUPABASE সংযোগ কনফিগারেশন
+# ১. SUPABASE সংযোগ কনফিগারেশন (Error-Proof Fallback)
 # ==============================================================================
-SUPABASE_URL = os.getenv("SUPABASE_URL", "https://esqhansnosejkqapuhoo.supabase.co")
-# আপনার নতুন সিক্রেট কী সরাসরি কনফিগার করা হলো
+# GitHub Secrets মিসিং থাকলেও যেন supabase_url এরর না দেয়
+RAW_URL = os.getenv("SUPABASE_URL")
+SUPABASE_URL = RAW_URL.strip() if RAW_URL else "https://esqhansnosejkqapuhoo.supabase.co"
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 try:
+    if not SUPABASE_KEY:
+        raise ValueError("GitHub Secrets-এ SUPABASE_KEY পাওয়া যায়নি! দয়া করে সেটিংস চেক করুন।")
+
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
     print("✔ GreatNexa Multi-Asset Institutional SMC Engine Connected!")
 except Exception as e:
@@ -357,7 +361,7 @@ def generate_smc_institutional_signal(item, active_setups_map):
             "sl_price": sl,
             "tp_price": tp,
             "status": "ACTIVE",
-            "mtf_alignment": f"Entry: ${fmt_price(entry)} | SL: ${fmt_price(sl)}",
+            "mtf_alignment": f"Entry: ${fmt_price(entry)} \vert{} SL:${fmt_price(sl)}",
             "research_note": f"{s['style']} SMC {direction.upper()} অর্ডারব্লক ও লিকুইডিটি পার্জ কনফার্মড। R:R = 1:{s['rr']:.1f} [TP: ${fmt_price(tp)}]"
         })
 
@@ -401,13 +405,3 @@ def run():
         try:
             batch_size = 20
             for i in range(0, len(new_setups), batch_size):
-                b = new_setups[i:i + batch_size]
-                supabase.table("market_research").insert(b).execute()
-            print(f"\n✔ Successfully pushed {len(new_setups)} Dynamic Alpha Setups across Top 100 Markets!")
-        except Exception as e:
-            print(f"[-] Batch insert error: {e}")
-    else:
-        print("\n[i] All positions working actively in target. No duplicate injection.")
-
-if __name__ == "__main__":
-    run()
