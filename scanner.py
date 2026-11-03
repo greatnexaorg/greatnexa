@@ -5,10 +5,11 @@ from datetime import datetime, timezone, timedelta
 from supabase import create_client, Client
 
 # ==============================================================================
-# ১. SUPABASE সংযোগ কনফিগারেশন (সিকিউর এনভায়রনমেন্ট সাপোর্ট)
+# ১. SUPABASE সংযোগ কনফিগারেশন
 # ==============================================================================
 SUPABASE_URL = os.getenv("SUPABASE_URL", "https://esqhansnosejkqapuhoo.supabase.co")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjcwOTQwMywiZXhwIjoyMTAyMjg1NDAzfQ.gVXQnOD9OXWCJj_MN_i6eML9dyPvZZhC1BznGE4y3Ks")
+# আপনার নতুন সিক্রেট কী সরাসরি কনফিগার করা হলো
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 try:
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -21,7 +22,6 @@ def fmt_price(p):
     p = float(p)
     return f"{p:.2f}" if p >= 100 else (f"{p:.4f}" if p >= 1 else f"{p:.6f}")
 
-# রিট্রাই ও সেশন মেকানিজম
 session = requests.Session()
 session.headers.update({
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
@@ -216,7 +216,7 @@ def fetch_dynamic_forex_universe():
     return forex_pool
 
 # ==============================================================================
-# ৬. লাইফসাইকেল ট্র্যাকার (TP/SL অডিট ও ইউনিক ট্র্যাকিং কি)
+# ৬. লাইফসাইকেল ট্র্যাকার (ডুপ্লিকেট রিমুভার সহ)
 # ==============================================================================
 def track_and_update_lifecycle(current_prices):
     active_setups_map = set()
@@ -231,7 +231,6 @@ def track_and_update_lifecycle(current_prices):
             direction = sig.get("direction", "long")
             sig_id = sig.get("id")
 
-            # ইউনিক কম্পোজিট কি তৈরি
             style_tag = "Scalp" if "Scalp" in sec else ("Day" if "Day" in sec else "Swing")
             active_setups_map.add(f"{sym}_{style_tag}_{direction}")
 
@@ -272,7 +271,7 @@ def track_and_update_lifecycle(current_prices):
     return active_setups_map
 
 # ==============================================================================
-# ৭. SMC লিকুইডিটি পার্জ ও স্মার্ট মানি সিগন্যাল অ্যালগরিদম
+# ৭. SMC লিকুইডিটি পার্জ ও সিগন্যাল ইঞ্জিন
 # ==============================================================================
 def generate_smc_institutional_signal(item, active_setups_map):
     p = item['price']
@@ -309,7 +308,6 @@ def generate_smc_institutional_signal(item, active_setups_map):
 
     setups = []
 
-    # তিনটি স্টাইল জেনারেট করা (Scalp, Day, Swing) এবং 1m কভারেজ নিশ্চিতকরণ
     styles = [
         {"style": "Scalp", "tag": "Scalp Engine (5M)", "horizon": "24h", "rr": 2.4, "risk_mult": 0.16},
         {"style": "Day", "tag": "Day Engine (1H)", "horizon": "24h", "rr": 2.6, "risk_mult": 0.28},
@@ -327,7 +325,7 @@ def generate_smc_institutional_signal(item, active_setups_map):
         elif m_type == "stocks":
             risk_pct = max(0.009, volatility_ratio * s['risk_mult'])
             trading_mode = "mode1"
-        else:  # Crypto
+        else:
             risk_pct = max(0.012, volatility_ratio * s['risk_mult'])
             trading_mode = "mode2"
 
@@ -366,7 +364,7 @@ def generate_smc_institutional_signal(item, active_setups_map):
     return setups
 
 # ==============================================================================
-# ৮. মূল এক্সিকিউশন রানার
+# ৮. এক্সিকিউশন রানার
 # ==============================================================================
 def run():
     print("=" * 80)
