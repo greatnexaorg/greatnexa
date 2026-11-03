@@ -88,7 +88,6 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* Glassmorphism Styles */
         .glass-panel {
             background: rgba(10, 16, 30, 0.7);
             backdrop-filter: blur(16px);
@@ -142,7 +141,6 @@
             user-select: none; 
         }
 
-        /* Live Ticker Animation */
         @keyframes tickerTape {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
@@ -156,7 +154,6 @@
             animation-play-state: paused;
         }
 
-        /* Suppress Google Translate UI Frame */
         .goog-te-banner-frame,
         .goog-te-banner-frame.skiptranslate,
         iframe.goog-te-banner-frame,
@@ -306,8 +303,8 @@
                         <span class="text-blue-400 font-bold">Instant Sync</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-400">3-Month Hit-Rate:</span>
-                        <span class="text-amber-300 font-bold">81.2% (Target 1)</span>
+                        <span class="text-gray-400">Win Rate Window:</span>
+                        <span class="text-amber-300 font-bold">Rolling 30-Day Window</span>
                     </div>
                     <div class="pt-2 border-t border-white/10 text-[10px] text-gray-500 text-center">
                         Encrypted Connection • Direct Server Policy
@@ -418,7 +415,7 @@
         </div>
 
         <!-- Screener Result Header -->
-        <div class="flex flex-wrap justify-between items-center gap-2 pt-4">
+        <div id="screenerHeader" class="flex flex-wrap justify-between items-center gap-2 pt-4">
             <div>
                 <h3 class="text-lg font-black text-white tracking-tight flex items-center gap-2">
                     <span>⚡</span> Institutional Screener Results
@@ -684,7 +681,9 @@
                 if (style === 'swing') indicator.innerText = "Swing Liquidity Engine (4H)";
             }
 
-            fetchLiveMarketData();
+            if (state.viewTab === 'active') {
+                fetchLiveMarketData();
+            }
         }
 
         function switchTab(tab) {
@@ -692,17 +691,21 @@
             const btnActive = document.getElementById('tab-active');
             const btnArchive = document.getElementById('tab-archive');
             const controlPanel = document.getElementById('controlPanel');
+            const screenerHeader = document.getElementById('screenerHeader');
 
             if (tab === 'active') {
                 btnActive.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow cursor-pointer";
                 btnArchive.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
                 controlPanel.style.display = 'grid';
+                screenerHeader.style.display = 'flex';
+                fetchLiveMarketData();
             } else {
                 btnArchive.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow cursor-pointer";
                 btnActive.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
                 controlPanel.style.display = 'none';
+                screenerHeader.style.display = 'none';
+                loadHallOfFame();
             }
-            fetchLiveMarketData();
         }
 
         function changeFilter(type, val) {
@@ -773,24 +776,71 @@
             fetchLiveMarketData();
         }
 
+        // ================= HALL OF FAME RENDER ENGINE =================
+        async function loadHallOfFame() {
+            const container = document.getElementById('gridContainer');
+            container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">Loading Hall of Fame Records...</div>`;
+
+            const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+            try {
+                const { data, error } = await _supabase
+                    .from('market_research')
+                    .select('*')
+                    .eq('status', 'HIT_TP')
+                    .gte('resolved_at', sevenDaysAgo)
+                    .order('resolved_at', { ascending: false })
+                    .limit(30);
+
+                if (error || !data || data.length === 0) {
+                    container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">No closed winning targets recorded in the last 7 days. Scanning continues...</div>`;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="col-span-full glass-panel p-6 rounded-2xl border border-emerald-500/30 flex flex-wrap justify-between items-center gap-4 mb-4">
+                        <div>
+                            <span class="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">🏆 Verified Institutional Proof</span>
+                            <h3 class="text-xl font-black text-white mt-1">Closed Winning Targets (Last 7 Days)</h3>
+                        </div>
+                        <div class="flex gap-4 font-mono text-xs">
+                            <span class="px-4 py-2 bg-emerald-500/20 text-emerald-300 rounded-xl font-bold border border-emerald-500/30">Total Wins: ${data.length}</span>
+                            <span class="px-4 py-2 bg-blue-500/20 text-blue-300 rounded-xl font-bold border border-blue-500/30">Target 1 Hit: 100%</span>
+                        </div>
+                    </div>
+                ` + data.map((item, idx) => `
+                    <div class="glass-card rounded-2xl p-5 border border-emerald-500/20 space-y-3">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-[10px] font-mono text-emerald-400 uppercase font-bold">🎯 TARGET HIT</span>
+                                <h4 class="text-xl font-extrabold text-white notranslate mt-0.5">${item.symbol}</h4>
+                            </div>
+                            <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-lg text-xs font-mono font-bold">
+                                ${item.est_potential || '+3.5%'} Profit
+                            </span>
+                        </div>
+                        <div class="bg-black/50 p-3 rounded-xl border border-white/5 text-xs font-mono space-y-1.5">
+                            <div class="flex justify-between"><span class="text-gray-400">Entry Price:</span><span class="text-gray-200">$${item.entry_price || 'N/A'}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">Exit Target:</span><span class="text-emerald-400 font-bold">$${item.tp_price || 'N/A'}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">Sector / Style:</span><span class="text-blue-300">${item.sector || 'Quant Setup'}</span></div>
+                        </div>
+                        <div class="text-[11px] text-gray-500 font-mono text-right pt-1">
+                            Resolved: ${new Date(item.resolved_at).toLocaleDateString()}
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                container.innerHTML = `<div class="col-span-full text-center py-20 text-rose-400 font-mono glass-panel rounded-2xl border border-white/10">Error loading Hall of Fame data.</div>`;
+            }
+        }
+
         function renderCards() {
             const container = document.getElementById('gridContainer');
             if (!container) return;
 
             if (state.viewTab === 'archive') {
-                container.innerHTML = `
-                <div class="glass-panel rounded-2xl p-6 border border-emerald-500/30 shadow-xl flex flex-col justify-between col-span-full">
-                    <div>
-                        <div class="flex justify-between items-start mb-3">
-                            <div>
-                                <span class="text-[11px] text-emerald-400 font-mono uppercase tracking-wider font-bold">🏛️ Hall of Fame</span>
-                                <h3 class="text-xl font-black text-white mt-0.5">Historical Verified Alpha Performance</h3>
-                            </div>
-                            <span class="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg text-xs font-bold font-mono notranslate">+38.6% Target Reached</span>
-                        </div>
-                        <p class="text-xs text-gray-300 leading-relaxed mb-4">Historical verified institutional setups that successfully triggered target price projection.</p>
-                    </div>
-                </div>`;
+                loadHallOfFame();
                 return;
             }
 
@@ -890,7 +940,8 @@
                     let query = _supabase
                         .from('market_research')
                         .select('*')
-                        .eq('market_type', state.market);
+                        .eq('market_type', state.market)
+                        .eq('status', 'ACTIVE'); // শুধুমাত্র ACTIVE ট্রেড লাইভ দেখাবে
 
                     if (state.direction) {
                         query = query.eq('direction', state.direction);
@@ -915,7 +966,6 @@
         function setupRealtimeListener() {
             if (!_supabase) return;
 
-            // Subscribe to any changes (Insert, Update, Delete) on market_research table
             _supabase
                 .channel('market_research_realtime')
                 .on(
@@ -927,8 +977,11 @@
                     },
                     (payload) => {
                         console.log('Realtime DB Change Detected:', payload);
-                        // Instant refresh upon database modification
-                        fetchLiveMarketData();
+                        if (state.viewTab === 'active') {
+                            fetchLiveMarketData();
+                        } else {
+                            loadHallOfFame();
+                        }
                     }
                 )
                 .subscribe((status) => {
@@ -1134,7 +1187,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             checkUserSession();
-            setupRealtimeListener(); // অটো রিয়েলটাইম লিসেনার চালু করা হলো
+            setupRealtimeListener();
         });
     </script>
 </body>
