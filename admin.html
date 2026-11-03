@@ -68,9 +68,14 @@
                 <span class="text-emerald-400 block text-[10px]">APPROVED TIERS</span>
                 <span id="statApproved" class="text-lg font-bold text-emerald-400">0</span>
             </div>
-            <div class="p-4 glass-panel rounded-xl border border-blue-500/20">
-                <span class="text-blue-400 block text-[10px]">VIP CHANNEL ACCESS</span>
-                <span class="text-xs font-bold text-blue-300">Active Bot Hook</span>
+            <div class="p-4 glass-panel rounded-xl border border-blue-500/20 flex flex-col justify-between">
+                <div>
+                    <span class="text-blue-400 block text-[10px]">VIP CHANNEL LINK</span>
+                    <span class="text-xs font-bold text-blue-300">Admin Approval Link</span>
+                </div>
+                <button onclick="copyInviteLink()" class="mt-2 text-[10px] bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-2 rounded transition text-center cursor-pointer">
+                    📋 Copy Channel Link
+                </button>
             </div>
         </div>
 
@@ -107,8 +112,8 @@
         // SHA-256 Hash of PIN "7581"
         const ADMIN_PIN_HASH = "81e374f8a55e2d1bb0e97d1629fa2bb9f7bc5e59b207559c656d0d93be42bf9d";
         
-        // আপনার টেলিগ্রাম প্রাইভেট ভিআইপি চ্যানেলের লিঙ্ক (এখানে আপনার চ্যানেলের আসল ইনভাইট লিংক দিন)
-        const TELEGRAM_VIP_LINK = "https://t.me/+YOUR_PRIVATE_CHANNEL_LINK";
+        // আপনার অ্যাডমিন অ্যাপ্রুভাল টেলিগ্রাম প্রাইভেট চ্যানেল লিংক
+        const TELEGRAM_VIP_LINK = "https://t.me/+VA3Yu45-zosyOTRl";
 
         async function sha256(message) {
             const msgBuffer = new TextEncoder().encode(message);
@@ -195,7 +200,7 @@
                         </button>` : `
                         <span class="text-gray-500 text-xs">Active</span>
                         <button onclick="copyInviteLink()" class="px-2.5 py-1 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg text-[10px] transition cursor-pointer">
-                            Copy VIP Link
+                            Copy Link
                         </button>`}
                     </td>
                 </tr>
@@ -221,7 +226,8 @@
                 if(error) {
                     alert("Approval failed: " + error.message);
                 } else {
-                    alert(`✔ Success! ${email} upgraded to ${tier.toUpperCase()} for ${durationDays} days.\n\nTelegram VIP Link: ${TELEGRAM_VIP_LINK}`);
+                    navigator.clipboard.writeText(TELEGRAM_VIP_LINK);
+                    alert(`✔ Success! ${email} upgraded to ${tier.toUpperCase()} for ${durationDays} days.\n\nTelegram VIP Link copied to clipboard:\n${TELEGRAM_VIP_LINK}`);
                     loadOrders();
                 }
             } catch(e) {
@@ -230,7 +236,7 @@
         }
 
         async function rejectOrder(orderId) {
-            if(!confirm("Are you sure you want to reject and remove this order?")) return;
+            if(!confirm("Are you sure you want to reject and delete this order?")) return;
 
             try {
                 const { error } = await _supabase.from('orders').delete().eq('id', orderId);
@@ -246,7 +252,7 @@
 
         function copyInviteLink() {
             navigator.clipboard.writeText(TELEGRAM_VIP_LINK);
-            alert("Telegram VIP Channel link copied to clipboard!");
+            alert("VIP Channel Invite Link copied:\n" + TELEGRAM_VIP_LINK);
         }
 
         window.onload = () => {
