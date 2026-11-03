@@ -1,9 +1,79 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark scroll-smooth">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WPWTG3YXMT"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WPWTG3YXMT');
+    </script>
+
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '2156497468608066');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=2156497468608066&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GreatNexa Terminal | Institutional Multi-Asset Intelligence</title>
+
+    <title>GreatNexa Terminal | Institutional Multi-Asset Intelligence & AI Automations</title>
+    <meta name="title" content="GreatNexa Terminal | Institutional Multi-Asset Intelligence & AI Automations">
+    <meta name="description" content="Institutional Multi-Asset Research Engine, AI Automation Solutions, Smart Money Analytics, and Premium Subscriptions in Bangladesh.">
+    <meta name="keywords" content="GreatNexa Terminal, Crypto Signals Bangladesh, Forex Setups, Stock Intelligence, n8n automation, AI agency, GreatNexa">
+    <meta name="author" content="GreatNexa">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.greatnexa.com/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.greatnexa.com/">
+    <meta property="og:title" content="GreatNexa Terminal | Institutional Multi-Asset Intelligence">
+    <meta property="og:description" content="Institutional Multi-Asset Research Engine, AI Automation Solutions, and Premium Subscriptions.">
+    <meta property="og:image" content="https://www.greatnexa.com/store/favicon.png">
+
+    <!-- Twitter Card -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.greatnexa.com/">
+    <meta property="twitter:title" content="GreatNexa Terminal | Institutional Multi-Asset Intelligence">
+    <meta property="twitter:description" content="Institutional Multi-Asset Research Engine, AI Automation Solutions, and Premium Subscriptions.">
+    <meta property="twitter:image" content="https://www.greatnexa.com/store/favicon.png">
+
+    <!-- Favicons & Apple Touch Icon -->
+    <link rel="icon" type="image/png" sizes="512x512" href="/store/favicon.png">
+    <link rel="icon" type="image/x-icon" href="/store/favicon.ico">
+    <link rel="apple-touch-icon" sizes="512x512" href="/store/favicon.png">
+
+    <!-- Schema.org Rich Snippet -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "GreatNexa",
+      "alternateName": "GreatNexa Terminal",
+      "url": "https://www.greatnexa.com/",
+      "publisher": {
+        "@type": "Organization",
+        "name": "GreatNexa",
+        "logo": "https://www.greatnexa.com/store/iconpng.webp"
+      }
+    }
+    </script>
+
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#030712">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -40,7 +110,7 @@
         .style-tab-btn.active { background: linear-gradient(135deg, #1d4ed8, #2563eb) !important; color: #ffffff !important; border-color: #3b82f6 !important; box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4); }
         .locked-blur { filter: blur(6px); pointer-events: none; user-select: none; }
         
-        /* কোনায় ভাসমান গুগল ট্রান্সলেট আইকন, স্পিনার, ব্যানার সম্পূর্ণ ব্লক */
+        /* গুগল ট্রান্সলেট ফ্রেম ও ব্যানার সম্পূর্ণ হাইড */
         .goog-te-banner-frame,
         .goog-te-banner-frame.skiptranslate,
         iframe.goog-te-banner-frame,
@@ -75,8 +145,8 @@
     <!-- Top Pro Header -->
     <header class="terminal-box rounded-2xl px-4 sm:px-6 py-4 mb-6 flex flex-wrap justify-between items-center gap-4">
         <div class="flex items-center gap-3.5">
-            <!-- notranslate ক্লাস দিয়ে ব্র্যান্ড লোগো অক্ষত -->
-            <div class="notranslate w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white text-lg sm:text-xl shadow-lg shadow-blue-600/30 font-mono">GN</div>
+            <!-- ব্র্যান্ড লোগো ছবি যুক্ত করা হয়েছে -->
+            <img src="/store/iconpng.webp" alt="GreatNexa Logo" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl object-cover border border-blue-500/40 shadow-lg shadow-blue-600/30">
             <div>
                 <div class="flex items-center gap-2 notranslate">
                     <h1 class="font-bold text-white text-sm sm:text-base tracking-tight">GreatNexa Terminal</h1>
@@ -92,7 +162,7 @@
                 <button type="button" onclick="switchTab('archive')" id="tab-archive" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Hall of Fame</button>
             </div>
 
-            <!-- নিজস্ব ভাষায় পরিচ্ছন্ন ড্রপডাউন -->
+            <!-- নিজস্ব ভাষায় ড্রপডাউন -->
             <div class="notranslate flex items-center bg-[#131d31] border border-gray-700/60 rounded-xl px-2.5 py-1.5 text-xs">
                 <span class="text-gray-300 mr-1.5">🌐</span>
                 <select id="customLangSelect" onchange="applyCustomLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-[#0d1424]">
@@ -769,13 +839,29 @@
             }
 
             const userEmail = session.user.email;
+            const numericVal = selectedPlan.includes('49') ? 49 : 5;
             const { error } = await _supabase.from('orders').insert([
-                { customer_name: userEmail, product_name: selectedPlan, price: selectedPlan.includes('49') ? '$49' : '$5', trx_id: trxId, status: 'pending', phone: 'Binance Pay', email: userEmail }
+                { customer_name: userEmail, product_name: selectedPlan, price: '$' + numericVal, trx_id: trxId, status: 'pending', phone: 'Binance Pay', email: userEmail }
             ]);
 
             if(error) {
                 alert("Error: " + error.message);
             } else {
+                // Tracking Conversion
+                if (typeof gtag === 'function') {
+                    gtag('event', 'conversion', {
+                        currency: 'USD',
+                        value: numericVal,
+                        transaction_id: trxId
+                    });
+                }
+                if (typeof fbq === 'function') {
+                    fbq('track', 'Purchase', {
+                        currency: 'USD',
+                        value: numericVal
+                    });
+                }
+
                 alert("Payment submitted successfully! Admin will verify and activate your tier.");
                 closePaymentModal();
                 document.getElementById('payTrxId').value = '';
