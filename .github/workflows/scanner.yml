@@ -32,3 +32,4 @@ jobs:
         run: python scanner.py
 
       # ফিক্সড: ক্রন শিডিউল রি-রেজিস্টার করার জন্য ট্রিগার রিফ্রেশ করা হলো
+      # Refresh cron trigger
