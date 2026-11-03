@@ -1,13 +1,14 @@
+import os
 import requests
 import time
 from datetime import datetime, timezone, timedelta
 from supabase import create_client, Client
 
 # ==============================================================================
-# ১. SUPABASE সংযোগ কনফিগারেশন
+# ১. SUPABASE সংযোগ কনফিগারেশন (সিকিউর এনভায়রনমেন্ট সাপোর্ট)
 # ==============================================================================
-SUPABASE_URL = "https://esqhansnosejkqapuhoo.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjcwOTQwMywiZXhwIjoyMTAyMjg1NDAzfQ.gVXQnOD9OXWCJj_MN_i6eML9dyPvZZhC1BznGE4y3Ks"
+SUPABASE_URL = os.getenv("SUPABASE_URL", "https://esqhansnosejkqapuhoo.supabase.co")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjcwOTQwMywiZXhwIjoyMTAyMjg1NDAzfQ.gVXQnOD9OXWCJj_MN_i6eML9dyPvZZhC1BznGE4y3Ks")
 
 try:
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -19,6 +20,13 @@ except Exception as e:
 def fmt_price(p):
     p = float(p)
     return f"{p:.2f}" if p >= 100 else (f"{p:.4f}" if p >= 1 else f"{p:.6f}")
+
+# রিট্রাই ও সেশন মেকানিজম
+session = requests.Session()
+session.headers.update({
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+})
 
 # ==============================================================================
 # ২. অটোমেটিক ডাটাবেজ অপটিমাইজার (STORAGE PURGE)
@@ -42,8 +50,7 @@ def fetch_dynamic_crypto_top100():
     print("[*] Fetching Live Dynamic Top 100 Crypto Pairs from Binance...")
     market_pool = {}
     try:
-        headers = {"User-Agent": "Mozilla/5.0"}
-        r = requests.get("https://data-api.binance.vision/api/v3/ticker/24hr", headers=headers, timeout=12)
+        r = session.get("https://data-api.binance.vision/api/v3/ticker/24hr", timeout=12)
         if r.status_code == 200:
             all_tickers = r.json()
             usdt_pairs = [
@@ -51,7 +58,6 @@ def fetch_dynamic_crypto_top100():
                 if t['symbol'].endswith('USDT') and not any(x in t['symbol'] for x in ['UP', 'DOWN', 'BEAR', 'BULL'])
             ]
             
-            # ভলিউম ও অ্যাক্টিভিটি অনুযায়ী রিয়েল-টাইমে শীর্ষ ১০০টি কয়েন নির্বাচন
             sorted_pairs = sorted(
                 usdt_pairs, 
                 key=lambda x: float(x.get('quoteVolume', 0)) * (1 + abs(float(x.get('priceChangePercent', 0))) / 100), 
@@ -82,15 +88,14 @@ def fetch_dynamic_crypto_top100():
     return market_pool
 
 # ==============================================================================
-# ৪. ইউএস স্টকস: লাইভ মার্কেট মোস্ট অ্যাক্টিভ টপ ১০০ স্ক্রিনার
+# ৪. ইউএস স্টকস: লাইভ মার্কেট মোস্ট অ্যাক্টিভ স্ক্রিনার
 # ==============================================================================
 def fetch_dynamic_stocks_top100():
-    print("[*] Fetching Live Top 100 Most Active US Stocks from Market Screener...")
+    print("[*] Fetching Live Top US Stocks from Market Screener...")
     stock_pool = {}
     try:
         url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=most_actives&count=100"
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-        res = requests.get(url, headers=headers, timeout=12)
+        res = session.get(url, timeout=12)
         
         if res.status_code == 200:
             quotes = res.json().get('finance', {}).get('result', [{}])[0].get('quotes', [])
@@ -123,19 +128,16 @@ def fetch_dynamic_stocks_top100():
     return stock_pool
 
 # ==============================================================================
-# ৫. ফরেক্স ও কমোডিটিজ: সম্পূর্ণ ডায়নামিক লাইভ স্ক্রিনার (NO HARDCODING)
+# ৫. ফরেক্স ও কমোডিটিজ স্ক্রিনার
 # ==============================================================================
 def fetch_dynamic_forex_universe():
     print("[*] Discovering Real-Time Dynamic Forex & Commodities Universe...")
     forex_pool = {}
     discovered_quotes = []
 
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-
-    # ক) লাইভ ডায়নামিক ফরেক্স স্ক্রিনার (গ্লোবাল কারেন্সি ফিড)
     try:
         forex_screener_url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=currencies&count=60"
-        res_fx = requests.get(forex_screener_url, headers=headers, timeout=10)
+        res_fx = session.get(forex_screener_url, timeout=10)
         if res_fx.status_code == 200:
             fx_data = res_fx.json().get('finance', {}).get('result', [{}])[0].get('quotes', [])
             discovered_quotes.extend(fx_data)
@@ -143,10 +145,9 @@ def fetch_dynamic_forex_universe():
     except Exception as e:
         print(f"[-] Dynamic FX Screener Warning: {e}")
 
-    # খ) লাইভ ডায়নামিক কমোডিটিজ স্ক্রিনার (Gold, Silver, Oil, Gas etc.)
     try:
         commodities_screener_url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=all_commodities&count=25"
-        res_comm = requests.get(commodities_screener_url, headers=headers, timeout=10)
+        res_comm = session.get(commodities_screener_url, timeout=10)
         if res_comm.status_code == 200:
             comm_data = res_comm.json().get('finance', {}).get('result', [{}])[0].get('quotes', [])
             discovered_quotes.extend(comm_data)
@@ -154,7 +155,6 @@ def fetch_dynamic_forex_universe():
     except Exception as e:
         print(f"[-] Dynamic Commodities Warning: {e}")
 
-    # গ) অটোমেটিক ফলব্যাক সেফগার্ড (যাতে সার্ভার এররে ড্যাশবোর্ড শূন্য না থাকে)
     if not discovered_quotes:
         print("[!] Activating Direct Interbank Gateway Fallback...")
         fallback_tickers = [
@@ -163,13 +163,12 @@ def fetch_dynamic_forex_universe():
         ]
         try:
             url = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={','.join(fallback_tickers)}"
-            res_fb = requests.get(url, headers=headers, timeout=10)
+            res_fb = session.get(url, timeout=10)
             if res_fb.status_code == 200:
                 discovered_quotes = res_fb.json().get('quoteResponse', {}).get('result', [])
         except Exception as e:
             print(f"[-] Fallback error: {e}")
 
-    # ঘ) ডেটা নরম্যালাইজেশন ও লিকুইডিটি ফিল্টারিং
     commodities_map = {
         "GC=F": "XAU/USD", "SI=F": "XAG/USD", "PL=F": "XPT/USD", "HG=F": "COPPER/USD",
         "CL=F": "WTI/CRUDE", "BZ=F": "BRENT/CRUDE", "NG=F": "NATGAS/USD"
@@ -217,26 +216,29 @@ def fetch_dynamic_forex_universe():
     return forex_pool
 
 # ==============================================================================
-# ৬. লাইফসাইকেল ট্র্যাকার (TP/SL অডিট)
+# ৬. লাইফসাইকেল ট্র্যাকার (TP/SL অডিট ও ইউনিক ট্র্যাকিং কি)
 # ==============================================================================
 def track_and_update_lifecycle(current_prices):
     active_setups_map = set()
     try:
-        res = supabase.table("market_research").select("*").eq("status", "ACTIVE").execute()
+        res = supabase.table("market_research").select("id, symbol, sector, direction, sl_price, tp_price, created_at").eq("status", "ACTIVE").execute()
         active_signals = res.data or []
         now = datetime.now(timezone.utc)
 
         for sig in active_signals:
             sym = sig.get("symbol")
-            sec = sig.get("sector")
+            sec = sig.get("sector") or ""
+            direction = sig.get("direction", "long")
             sig_id = sig.get("id")
-            active_setups_map.add(f"{sym}_{sec}")
+
+            # ইউনিক কম্পোজিট কি তৈরি
+            style_tag = "Scalp" if "Scalp" in sec else ("Day" if "Day" in sec else "Swing")
+            active_setups_map.add(f"{sym}_{style_tag}_{direction}")
 
             if sym not in current_prices:
                 continue
 
             cur_price = current_prices[sym]["price"]
-            direction = sig.get("direction", "long")
             sl = float(sig.get("sl_price") or 0)
             tp = float(sig.get("tp_price") or 0)
             created_at_str = sig.get("created_at")
@@ -255,7 +257,7 @@ def track_and_update_lifecycle(current_prices):
 
             if not hit_status and created_at_str:
                 created_at = datetime.fromisoformat(created_at_str.replace("Z", "+00:00"))
-                if now - created_at > timedelta(hours=36):
+                if now - created_at > timedelta(hours=48):
                     hit_status = "EXPIRED"
 
             if hit_status:
@@ -289,7 +291,6 @@ def generate_smc_institutional_signal(item, active_setups_map):
     volatility_ratio = span / p
     range_pos = (p - low) / span
 
-    # SMC রুল: Liquidity Purge ডিটেকশন (উইক ও ক্যান্ডেল বডি অনুপাত)
     lower_wick = min(open_p, p) - low
     upper_wick = high - max(open_p, p)
     is_sell_side_purged = (range_pos >= 0.52 and lower_wick > upper_wick * 1.3)
@@ -308,17 +309,15 @@ def generate_smc_institutional_signal(item, active_setups_map):
 
     setups = []
 
-    # তিনটি স্টাইল জেনারেট করা (Scalp, Day, Swing)
+    # তিনটি স্টাইল জেনারেট করা (Scalp, Day, Swing) এবং 1m কভারেজ নিশ্চিতকরণ
     styles = [
         {"style": "Scalp", "tag": "Scalp Engine (5M)", "horizon": "24h", "rr": 2.4, "risk_mult": 0.16},
         {"style": "Day", "tag": "Day Engine (1H)", "horizon": "24h", "rr": 2.6, "risk_mult": 0.28},
-        {"style": "Swing", "tag": "Swing Engine (4H)", "horizon": "1w", "rr": 3.0, "risk_mult": 0.48}
+        {"style": "Swing", "tag": "Swing Engine (4H)", "horizon": "1w" if abs(chg) < 3.5 else "1m", "rr": 3.2, "risk_mult": 0.48}
     ]
 
     for s in styles:
-        full_sector = f"{s['tag']} • {base_sector}"
-        setup_key = f"{item['symbol']}_{full_sector}"
-        
+        setup_key = f"{item['symbol']}_{s['style']}_{direction}"
         if setup_key in active_setups_map:
             continue
 
@@ -328,7 +327,7 @@ def generate_smc_institutional_signal(item, active_setups_map):
         elif m_type == "stocks":
             risk_pct = max(0.009, volatility_ratio * s['risk_mult'])
             trading_mode = "mode1"
-        else: # Crypto
+        else:  # Crypto
             risk_pct = max(0.012, volatility_ratio * s['risk_mult'])
             trading_mode = "mode2"
 
@@ -340,6 +339,8 @@ def generate_smc_institutional_signal(item, active_setups_map):
         if abs(chg) >= 1.8: conviction += 3
         if vol >= 15.0: conviction += 3
         score = min(98, conviction)
+
+        full_sector = f"{s['tag']} • {base_sector}"
 
         setups.append({
             "symbol": item['symbol'],
@@ -374,7 +375,6 @@ def run():
     
     cleanup_old_database_records()
 
-    # ১. সম্পূর্ণ ডাইনামিক লাইভ পুলিং
     crypto_prices = fetch_dynamic_crypto_top100()
     stocks_prices = fetch_dynamic_stocks_top100()
     forex_prices = fetch_dynamic_forex_universe()
@@ -387,22 +387,18 @@ def run():
     active_setups_map = track_and_update_lifecycle(all_prices)
     new_setups = []
 
-    # ২. ক্রিপ্টো টপ মোমেন্টাম পেয়ার
     sorted_cryptos = sorted(crypto_prices.values(), key=lambda x: (abs(x['change']) * x['volume_m']), reverse=True)
     for c in sorted_cryptos[:35]:
         new_setups.extend(generate_smc_institutional_signal(c, active_setups_map))
 
-    # ৩. স্টকস টপ মোমেন্টাম পেয়ার
     sorted_stocks = sorted(stocks_prices.values(), key=lambda x: abs(x['change']), reverse=True)
     for s in sorted_stocks[:35]:
         new_setups.extend(generate_smc_institutional_signal(s, active_setups_map))
 
-    # ৪. ফরেক্স টপ মোমেন্টাম পেয়ার
     sorted_forex = sorted(forex_prices.values(), key=lambda x: abs(x['change']), reverse=True)
     for f in sorted_forex[:35]:
         new_setups.extend(generate_smc_institutional_signal(f, active_setups_map))
 
-    # ৫. বাল্ক ব্যাচ ইনসার্ট
     if new_setups:
         try:
             batch_size = 20
