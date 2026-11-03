@@ -125,11 +125,6 @@
             border-color: #3b82f6 !important; 
             box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4); 
         }
-        .locked-blur { 
-            filter: blur(6px); 
-            pointer-events: none; 
-            user-select: none; 
-        }
 
         @keyframes tickerTape {
             0% { transform: translateX(0); }
@@ -177,7 +172,7 @@
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">EUR/USD</span><span class="text-rose-400 font-bold">1.0542</span></div>
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">XAU/USD (Gold)</span><span class="text-amber-300 font-bold">$2,735.40</span></div>
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">NVDA</span><span class="text-emerald-400 font-bold">$146.80</span></div>
-            <!-- Loop Duplication -->
+            <!-- Duplication -->
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">BTC/USDT</span><span id="price-btcusdt-dup" class="text-emerald-400 font-bold">$98,420.50</span></div>
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">ETH/USDT</span><span id="price-ethusdt-dup" class="text-emerald-400 font-bold">$3,420.10</span></div>
         </div>
@@ -383,14 +378,14 @@
                 </div>
             </div>
 
-            <!-- 3. Shortlist Output Limit -->
+            <!-- 3. Shortlist Output Limit[cite: 2] -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
                 <div>
                     <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">3. Output Shortlist Limit</label>
                     <select id="shortlistSelect" onchange="updateLimit(this.value)" class="w-full bg-[#0d162a] border border-white/15 text-white font-bold text-xs rounded-xl px-3.5 py-3 focus:outline-none focus:border-blue-500 cursor-pointer">
-                        <option value="3">Top 3 Setups (Free Member Cap)</option>
+                        <option value="3" selected>Top 3 Setups (Free Member Cap)</option>
                         <option value="5">Top 5 Setups</option>
-                        <option value="10" selected>Top 10 Setups</option>
+                        <option value="10">Top 10 Setups</option>
                         <option value="15">Top 15 Setups</option>
                         <option value="20">Top 20 Setups (Institutional Max)</option>
                     </select>
@@ -398,7 +393,7 @@
 
                 <div class="pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-black/30 text-[11px] font-mono text-gray-400 space-y-1">
                     <p class="text-amber-300 font-semibold">🔒 Institutional Guard:</p>
-                    <p>Free tier enforces Top 3 setups automatically. Unlock all 20 setups with Pro membership.</p>
+                    <p>Free tier enforces Top 3 setups automatically[cite: 2]. Unlock all 20 setups with Pro membership[cite: 2].</p>
                 </div>
             </div>
         </div>
@@ -581,20 +576,17 @@
             <h3 class="text-lg font-bold text-white mb-1">Upgrade Tier Checkout</h3>
             <p id="payPlanName" class="text-xs text-blue-400 font-semibold mb-3 notranslate font-mono"></p>
             
-            <!-- Payment Channel Switcher -->
             <div class="grid grid-cols-2 gap-2 mb-3">
                 <button type="button" onclick="setPaymentMethod('crypto')" id="pay-opt-crypto" class="py-2 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow">Binance Pay / USDT</button>
                 <button type="button" onclick="setPaymentMethod('local')" id="pay-opt-local" class="py-2 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10">bKash / Nagad</button>
             </div>
 
-            <!-- Binance Pay Box -->
             <div id="cryptoPaymentBox" class="bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-2 text-xs">
                 <p class="text-gray-300">1. Send exact amount via <b class="text-white notranslate">Binance Pay</b> or <b class="text-white notranslate">USDT (TRC20/BEP20)</b>.</p>
                 <p class="text-gray-300">2. Binance Pay UID: <b class="text-emerald-400 font-mono text-sm notranslate">520327779</b></p>
                 <p class="text-gray-300">3. Submit Transaction ID/Hash below:</p>
             </div>
 
-            <!-- Local Payment Box (bKash & Nagad) -->
             <div id="localPaymentBox" class="hidden bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-2 text-xs">
                 <p class="text-gray-300">১. নিচের নাম্বারে <b class="text-pink-400">bKash</b> বা <b class="text-orange-400">Nagad</b> এ সেন্ড মানি করুন।</p>
                 <p class="text-gray-300">২. পার্সোনাল নাম্বার: <b class="text-emerald-400 font-mono text-sm notranslate">01870978004</b></p>
@@ -667,7 +659,7 @@
         let state = { 
             market: 'crypto', 
             horizon: '24h', 
-            limit: 10, 
+            limit: 3, // ডিফল্ট লিমিট ৩
             role: 'free', 
             tradingMode: 'mode2', 
             direction: 'long', 
@@ -805,17 +797,18 @@
         }
 
         function updateLimit(val) {
-            if (state.role === 'free' && parseInt(val) > 3) {
-                alert("Free tier is limited to Top 3 assets by Server Policy. Please upgrade to Pro.");
+            const intVal = parseInt(val);
+            if (state.role === 'free' && intVal > 3) {
+                alert("Free tier is limited to Top 3 setups. Please upgrade to Pro.");
                 document.getElementById('shortlistSelect').value = "3";
                 state.limit = 3;
                 return;
             }
-            state.limit = parseInt(val);
+            state.limit = intVal;
             fetchLiveMarketData();
         }
 
-        // ================= RISK-SIZING CALCULATOR ENGINE =================
+        // ================= RISK CALCULATOR =================
         function openRiskCalc(index) {
             activeCalcItem = liveMarketData[index];
             if (!activeCalcItem) return;
@@ -853,7 +846,7 @@
             document.getElementById('calcEstProfit').innerText = `$${estProfit.toFixed(2)} (${(estProfit/maxRiskDollar).toFixed(1)}R)`;
         }
 
-        // ================= HALL OF FAME RENDER ENGINE =================
+        // ================= HALL OF FAME =================
         async function loadHallOfFame() {
             const container = document.getElementById('gridContainer');
             container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">Loading Hall of Fame Records...</div>`;
@@ -912,6 +905,7 @@
             }
         }
 
+        // ================= RENDERING ENGINE (FIXED) =================
         function renderCards() {
             const container = document.getElementById('gridContainer');
             if (!container) return;
@@ -921,17 +915,19 @@
                 return;
             }
 
-            let displayData = liveMarketData;
+            // ড্রপডাউন লিমিট বা ফ্রি টিয়ারের ৩ ক্যাপ প্রয়োগ
+            const maxAllowed = (state.role === 'free') ? 3 : Math.min(state.limit, 20);
+            const displayData = (liveMarketData || []).slice(0, maxAllowed);
 
-            if (!displayData || displayData.length === 0) {
+            if (displayData.length === 0) {
                 container.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">No active setups found matching criteria. Live stream listening...</div>`;
                 return;
             }
 
             const directionBadge = state.direction === 'long' ? '🟢 Buy / Long' : '🔴 Sell / Short';
 
-            container.innerHTML = displayData.map((item, idx) => {
-                const isLocked = (state.role === 'free' && idx >= 3);
+            // শুধুমাত্র অনুমোদিত সংখ্যার কার্ড রেন্ডার করা হবে (অপ্রয়োজনীয় লক কার্ড নয়)
+            let cardsHtml = displayData.map((item, idx) => {
                 const score = item.score || 75;
                 const scoreColor = score >= 85 ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-blue-400 border-blue-500/30 bg-blue-500/10';
 
@@ -947,15 +943,7 @@
 
                 return `
                 <div class="relative glass-card rounded-2xl p-5 flex flex-col justify-between">
-                    ${isLocked ? `
-                    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#070c18]/95 backdrop-blur-md rounded-2xl p-6 text-center">
-                        <span class="px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold mb-2 font-mono">🔒 Institutional Signal #${idx+1}</span>
-                        <h4 class="text-white font-bold text-sm mb-1">Dark Pool Block Locked</h4>
-                        <p class="text-xs text-gray-400 mb-4 font-mono">Quant Confidence: ${score}/100</p>
-                        <button type="button" onclick="openPaymentModal('Pro Monthly ($5/mo)', 5, 600)" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer font-mono">Unlock Full Signal ($5)</button>
-                    </div>` : ''}
-                    
-                    <div class="${isLocked ? 'locked-blur' : ''} space-y-4">
+                    <div class="space-y-4">
                         <div class="flex justify-between items-start">
                             <div>
                                 <span class="text-[10px] ${state.direction === 'long' ? 'text-emerald-400' : 'text-rose-400'} font-mono uppercase tracking-wider font-bold">#${idx+1} • ${directionBadge}</span>
@@ -999,6 +987,19 @@
                     </div>
                 </div>`;
             }).join('');
+
+            // ফ্রি টিয়ার ইউজার হলে ৩টি কার্ডের নিচে প্রো ব্যানার
+            if (state.role === 'free') {
+                cardsHtml += `
+                <div class="col-span-full glass-panel p-6 rounded-2xl border border-amber-500/30 text-center space-y-3 mt-4">
+                    <span class="px-3 py-1 bg-amber-500/20 text-amber-300 rounded-full text-xs font-mono font-bold">🔒 FREE TIER ENFORCED (Top 3 Setups)</span>
+                    <h4 class="text-lg font-bold text-white">Unlock Full Top 20 Institutional Setups</h4>
+                    <p class="text-xs text-gray-400 max-w-md mx-auto">Free accounts are strictly limited to the top 3 high-probability setups. Upgrade to Pro Trader to unlock all 20 setups across Crypto, Forex, and Equities.</p>
+                    <button type="button" onclick="openPaymentModal('Pro Monthly ($5/mo)', 5, 600)" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl font-mono shadow-lg transition">Upgrade to Pro ($5/mo)</button>
+                </div>`;
+            }
+
+            container.innerHTML = cardsHtml;
         }
 
         async function fetchLiveMarketData() {
@@ -1008,11 +1009,14 @@
                 return;
             }
 
+            const currentLimit = (state.role === 'free') ? 3 : Math.min(state.limit, 20);
+
             try {
                 const { data, error } = await _supabase.rpc('get_market_signals', {
                     p_market: state.market,
                     p_direction: state.direction,
-                    p_trader_style: state.traderStyle
+                    p_trader_style: state.traderStyle,
+                    p_limit: currentLimit
                 });
 
                 if (error) {
@@ -1029,7 +1033,7 @@
 
                     const { data: fbData, error: fbError } = await query
                         .order('score', { ascending: false })
-                        .limit(state.limit);
+                        .limit(currentLimit);
 
                     liveMarketData = (!fbError && fbData) ? fbData : [];
                 } else {
@@ -1042,7 +1046,7 @@
             renderCards();
         }
 
-        // ================= SUPABASE REALTIME LISTENER =================
+        // ================= SUPABASE REALTIME =================
         function setupRealtimeListener() {
             if (!_supabase) return;
 
@@ -1055,8 +1059,7 @@
                         schema: 'public', 
                         table: 'market_research' 
                     },
-                    (payload) => {
-                        console.log('Realtime DB Change Detected:', payload);
+                    () => {
                         if (state.viewTab === 'active') {
                             fetchLiveMarketData();
                         } else {
@@ -1064,12 +1067,10 @@
                         }
                     }
                 )
-                .subscribe((status) => {
-                    console.log('Supabase Realtime Channel Status:', status);
-                });
+                .subscribe();
         }
 
-        // ================= BINANCE WEBSOCKET LIVE TICKER =================
+        // ================= BINANCE WEBSOCKET TICKER =================
         function initBinanceTicker() {
             try {
                 const ws = new WebSocket("wss://stream.binance.com:9443/ws/!miniTicker@arr");
@@ -1096,7 +1097,6 @@
                         }
                     });
                 };
-                ws.onerror = (e) => console.log("Binance WebSocket Error:", e);
             } catch (err) {
                 console.log("WebSocket init failure:", err);
             }
@@ -1157,7 +1157,7 @@
             } else {
                 const { error } = await _supabase.auth.signInWithPassword({ email, password });
                 if(error) {
-                    showAuthFeedback("Invalid email or password: " + error.message);
+                    showAuthFeedback(error.message);
                 } else {
                     showAuthFeedback("Login successful! Loading membership profile...", true);
                     setTimeout(() => {
@@ -1208,6 +1208,9 @@
                 } else {
                     headerSec.innerHTML = `<button type="button" onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>`;
                     state.role = 'free';
+                    state.limit = 3;
+                    const select = document.getElementById('shortlistSelect');
+                    if(select) select.value = "3";
                 }
             } catch (err) {
                 console.error("Session check error:", err);
@@ -1311,7 +1314,7 @@
             }
         }
 
-        // ================= TRADINGVIEW CHART ENGINE =================
+        // ================= TRADINGVIEW CHART =================
         function openChart(rawSymbol, name) {
             const modal = document.getElementById('chartModal');
             modal.classList.remove('hidden');
