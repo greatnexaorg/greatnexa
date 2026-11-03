@@ -170,7 +170,7 @@
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">EUR/USD</span><span class="text-rose-400 font-bold">1.0542</span></div>
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">XAU/USD (Gold)</span><span class="text-amber-300 font-bold">$2,735.40</span></div>
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">NVDA</span><span class="text-emerald-400 font-bold">$146.80</span></div>
-            <!-- Duplication -->
+            <!-- Duplication for Seamless Ticker Loop -->
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">BTC/USDT</span><span id="price-btcusdt-dup" class="text-emerald-400 font-bold">$98,420.50</span></div>
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">ETH/USDT</span><span id="price-ethusdt-dup" class="text-emerald-400 font-bold">$3,420.10</span></div>
         </div>
@@ -375,7 +375,7 @@
                 </div>
             </div>
 
-            <!-- 3. Shortlist Output Limit[cite: 2] -->
+            <!-- 3. Shortlist Output Limit -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
                 <div>
                     <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">3. Output Shortlist Limit</label>
@@ -388,9 +388,9 @@
                     </select>
                 </div>
 
-                <div class="pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-black/30 text-[11px] font-mono text-gray-400 space-y-1">
+                <div id="limitGuardBox" class="pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-black/30 text-[11px] font-mono text-gray-400 space-y-1">
                     <p class="text-amber-300 font-semibold">🔒 Institutional Guard:</p>
-                    <p>Free tier enforces Top 3 setups automatically[cite: 2]. Unlock all 20 setups with Pro membership[cite: 2].</p>
+                    <p id="limitGuardText">Free tier enforces Top 3 setups automatically. Unlock all 20 setups with Pro/VIP membership.</p>
                 </div>
             </div>
         </div>
@@ -1161,7 +1161,7 @@
             }
         }
 
-        // ================= সাবস্ক্রিপশন মেয়াদ ও সেশন চেকার =================
+        // ================= সাবস্ক্রিপশন মেয়াদ ও কাউন্টডাউন চেকার (UPDATED) =================
         async function checkUserSession() {
             const headerSec = document.getElementById('authHeaderSection');
             if(!_supabase) return;
@@ -1169,13 +1169,20 @@
             try {
                 const { data: { session } } = await _supabase.auth.getSession();
                 if(session && session.user) {
+                    // ১. ডেটাবেস ফাংশনে সাবস্ক্রিপশন চেক (মেয়াদ পার হলে অটোমেটিক ফ্রি হবে)
                     try {
                         await _supabase.rpc('check_subscription_status', { p_user_id: session.user.id });
                     } catch(e) {}
 
+                    // ২. প্রোফাইল ডেটা লোড
                     let userTier = 'free';
                     let daysLeft = null;
-                    const { data } = await _supabase.from('user_profiles').select('tier, expires_at').eq('id', session.user.id).single();
+                    const { data } = await _supabase
+                        .from('user_profiles')
+                        .select('tier, expires_at')
+                        .eq('id', session.user.id)
+                        .single();
+
                     if(data && data.tier) {
                         userTier = data.tier.toLowerCase();
                         if(data.expires_at) {
@@ -1187,15 +1194,30 @@
                     state.role = (userTier === 'vip') ? 'vip' : ((userTier === 'pro') ? 'pro' : 'free');
 
                     let tierBadge = '';
+                    const guardBox = document.getElementById('limitGuardBox');
+                    const guardText = document.getElementById('limitGuardText');
+
                     if(state.role === 'vip') {
-                        tierBadge = `<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">VIP (${daysLeft !== null ? daysLeft + 'd' : 'Active'})</span>`;
+                        tierBadge = `<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">VIP (${daysLeft !== null ? daysLeft + 'd left' : 'Lifetime'})</span>`;
                         state.limit = 20;
+                        if(guardBox && guardText) {
+                            guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-amber-950/30 text-[11px] font-mono text-amber-300 space-y-1";
+                            guardText.innerText = "VIP Institutional Membership Unlocked: Full Top 20 Alpha Access.";
+                        }
                     } else if(state.role === 'pro') {
-                        tierBadge = `<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">PRO (${daysLeft !== null ? daysLeft + 'd' : 'Active'})</span>`;
+                        tierBadge = `<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">PRO (${daysLeft !== null ? daysLeft + 'd left' : 'Active'})</span>`;
                         state.limit = 10;
+                        if(guardBox && guardText) {
+                            guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-blue-950/30 text-[11px] font-mono text-blue-300 space-y-1";
+                            guardText.innerText = "Pro Trader Pass Active: Unlocked Up to 10 Alpha Setups.";
+                        }
                     } else {
                         tierBadge = '<span class="text-[10px] bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full font-bold notranslate font-mono">FREE TIER</span>';
                         state.limit = 3;
+                        if(guardBox && guardText) {
+                            guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-black/30 text-[11px] font-mono text-gray-400 space-y-1";
+                            guardText.innerText = "Free tier enforces Top 3 setups automatically. Unlock all 20 setups with Pro/VIP membership.";
+                        }
                     }
 
                     const select = document.getElementById('shortlistSelect');
