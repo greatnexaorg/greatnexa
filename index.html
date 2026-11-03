@@ -45,6 +45,7 @@
     <meta property="og:description" content="AI Workflow Automations & High-Performance Market Screening Engine.">
     <meta property="og:image" content="https://www.greatnexa.com/store/favicon.png">
 
+    <!-- Favicon & Apple Touch Icon -->
     <link rel="icon" type="image/png" sizes="512x512" href="/store/favicon.png">
     <link rel="apple-touch-icon" sizes="512x512" href="/store/favicon.png">
 
@@ -87,7 +88,7 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* Glassmorphism Classes */
+        /* Glassmorphism Styles */
         .glass-panel {
             background: rgba(10, 16, 30, 0.7);
             backdrop-filter: blur(16px);
@@ -109,11 +110,36 @@
             box-shadow: 0 12px 30px -10px rgba(37, 99, 235, 0.25);
         }
 
-        .tab-glow.active {
-            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
-            color: #ffffff !important;
-            border-color: #60a5fa !important;
-            box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+        .select-btn { 
+            background: #131d33; 
+            color: #94a3b8; 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            transition: all 0.2s ease; 
+            cursor: pointer; 
+        }
+        .select-btn.active { 
+            background: #2563eb !important; 
+            color: #ffffff !important; 
+            border-color: #3b82f6 !important; 
+            box-shadow: 0 0 16px rgba(37, 99, 235, 0.5); 
+        }
+        .style-tab-btn { 
+            background: #0e172a; 
+            color: #94a3b8; 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            transition: all 0.2s ease; 
+            cursor: pointer; 
+        }
+        .style-tab-btn.active { 
+            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important; 
+            color: #ffffff !important; 
+            border-color: #3b82f6 !important; 
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4); 
+        }
+        .locked-blur { 
+            filter: blur(6px); 
+            pointer-events: none; 
+            user-select: none; 
         }
 
         /* Live Ticker Animation */
@@ -130,7 +156,7 @@
             animation-play-state: paused;
         }
 
-        /* Clean Translate Hide */
+        /* Suppress Google Translate UI Frame */
         .goog-te-banner-frame,
         .goog-te-banner-frame.skiptranslate,
         iframe.goog-te-banner-frame,
@@ -166,14 +192,13 @@
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">XAU/USD (Gold)</span><span class="text-amber-300 font-bold">$2,735.40</span><span class="text-[10px] bg-amber-500/10 text-amber-300 px-1.5 py-0.5 rounded font-bold">+0.92%</span></div>
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">NVDA</span><span class="text-emerald-400 font-bold">$146.80</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+4.20%</span></div>
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">SOL/USDT</span><span class="text-emerald-400 font-bold">$218.45</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+5.60%</span></div>
-            <!-- Loop -->
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">BTC/USDT</span><span class="text-emerald-400 font-bold">$98,420.50</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+3.84%</span></div>
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">ETH/USDT</span><span class="text-emerald-400 font-bold">$3,420.10</span><span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded font-bold">+2.15%</span></div>
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">XAU/USD</span><span class="text-amber-300 font-bold">$2,735.40</span><span class="text-[10px] bg-amber-500/10 text-amber-300 px-1.5 py-0.5 rounded font-bold">+0.92%</span></div>
         </div>
     </div>
 
-    <!-- Navigation Bar -->
+    <!-- Navigation Header -->
     <header class="sticky top-0 z-40 bg-[#02040a]/80 backdrop-blur-xl border-b border-white/[0.08] px-4 sm:px-8 py-3.5 transition-all">
         <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
             <a href="/" class="flex items-center gap-3.5 group">
@@ -190,7 +215,7 @@
                 </div>
             </a>
 
-            <!-- Central Hub Links -->
+            <!-- Central Hub Controls -->
             <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
                 <div class="flex items-center bg-[#0d162a] border border-white/10 rounded-xl p-1 text-xs">
                     <button type="button" onclick="switchTab('active')" id="tab-active" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow cursor-pointer">Live Setups</button>
@@ -229,7 +254,7 @@
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8 space-y-8">
 
-        <!-- Wall-Street Quant Hero Telemetry (New Wall Street UI) -->
+        <!-- Hero Section with Active Telemetry -->
         <section class="glass-panel rounded-3xl p-6 sm:p-10 relative overflow-hidden">
             <div class="absolute -right-20 -top-20 w-80 h-80 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
             <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-purple-600/15 rounded-full blur-[100px] pointer-events-none"></div>
@@ -247,25 +272,30 @@
                     <p class="text-sm text-gray-400 max-w-2xl leading-relaxed">
                         Detect smart money accumulation, dark pool imbalance, and liquidity sweeps before retail breakout occurs. Filtered by multi-timeframe confirmation algorithms.
                     </p>
-                    <div class="flex flex-wrap gap-3 pt-2">
+                    <div class="flex flex-wrap items-center gap-3 pt-2">
                         <a href="#controlPanel" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-lg shadow-blue-600/30">
                             ⚡ Quick Setup Filter
                         </a>
-                        <button onclick="fetchLiveMarketData()" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 text-xs font-semibold font-mono transition flex items-center gap-2">
-                            <span>🔄</span> Force Real-Time Sync
-                        </button>
+                        <!-- Auto-Realtime Live Indicator Badge -->
+                        <div class="px-4 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-semibold flex items-center gap-2">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                            <span>Live Auto-Sync Active</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Live Engine Diagnostics Panel -->
+                <!-- Engine Diagnostics Display -->
                 <div class="lg:col-span-4 bg-black/50 border border-white/10 rounded-2xl p-5 font-mono text-xs space-y-3.5 backdrop-blur-md">
                     <div class="flex justify-between items-center text-gray-400 border-b border-white/10 pb-2">
                         <span class="text-[11px] uppercase tracking-wider font-bold text-gray-300">Terminal Telemetry</span>
                         <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold">OPTIMAL</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-400">Pipeline Latency:</span>
-                        <span class="text-emerald-400 font-bold">14ms</span>
+                        <span class="text-gray-400">Stream Protocol:</span>
+                        <span class="text-emerald-400 font-bold">Postgres Realtime WebSocket</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-400">Order Flow Engine:</span>
@@ -273,7 +303,7 @@
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-400">Database Feed:</span>
-                        <span class="text-blue-400 font-bold">Supabase Realtime</span>
+                        <span class="text-blue-400 font-bold">Instant Sync</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-400">3-Month Hit-Rate:</span>
@@ -286,7 +316,7 @@
             </div>
         </section>
 
-        <!-- Adaptive Trader Style Tabs -->
+        <!-- Trader Style Navigation -->
         <div class="glass-panel rounded-2xl p-2.5 flex flex-wrap items-center justify-between gap-3">
             <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full sm:w-auto">
                 <button type="button" onclick="changeTraderStyle('all')" id="style-all" class="style-tab-btn active px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 justify-center transition">
@@ -311,7 +341,7 @@
         <!-- Terminal Control Panels -->
         <div id="controlPanel" class="grid grid-cols-1 md:grid-cols-3 gap-5">
             
-            <!-- 1. Market Selection -->
+            <!-- 1. Asset Universe & Execution Mode -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
                 <div>
                     <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">1. Asset Universe</label>
@@ -340,7 +370,7 @@
                 </div>
             </div>
 
-            <!-- 2. Time Horizon -->
+            <!-- 2. Projection Horizon -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
                 <div>
                     <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">2. Horizon Projection</label>
@@ -357,16 +387,16 @@
                         <span class="text-emerald-400 font-bold">Connected</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span>RPC Function:</span>
-                        <span class="text-blue-400">get_market_signals</span>
+                        <span>Realtime Updates:</span>
+                        <span class="text-emerald-400 font-bold">Auto-Listening</span>
                     </div>
-                    <button type="button" onclick="fetchLiveMarketData()" class="w-full py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg text-xs font-semibold transition border border-white/10 cursor-pointer">
-                        🔄 Refresh Intelligence Stream
-                    </button>
+                    <div class="p-2.5 bg-black/40 rounded-lg text-[11px] text-gray-400 text-center">
+                        Supabase-এ নতুন সিগন্যাল আসলেই অটোমেটিক স্ক্রিনে আপডেট হবে।
+                    </div>
                 </div>
             </div>
 
-            <!-- 3. Shortlist Capacity -->
+            <!-- 3. Shortlist Output Limit -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
                 <div>
                     <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">3. Output Shortlist Limit</label>
@@ -380,24 +410,24 @@
                 </div>
 
                 <div class="pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-black/30 text-[11px] font-mono text-gray-400 space-y-1">
-                    <p class="text-amber-300 font-semibold">🔒 Server Guard Active:</p>
-                    <p>Free accounts automatically enforce 3 setups maximum. Unlock all 20 setups with Pro tier.</p>
+                    <p class="text-amber-300 font-semibold">🔒 Server Policy Guard:</p>
+                    <p>Free tier enforces Top 3 setups automatically. Unlock up to 20 setups with Pro membership.</p>
                 </div>
             </div>
 
         </div>
 
-        <!-- Shortlist Header -->
+        <!-- Screener Result Header -->
         <div class="flex flex-wrap justify-between items-center gap-2 pt-4">
             <div>
                 <h3 class="text-lg font-black text-white tracking-tight flex items-center gap-2">
                     <span>⚡</span> Institutional Screener Results
                 </h3>
-                <p class="text-xs text-gray-400 font-mono">Sorted by Smart Money Footprint & Imbalance Score</p>
+                <p class="text-xs text-gray-400 font-mono">Sorted by Smart Money Footprint & Volume Imbalance Score</p>
             </div>
             <div class="flex items-center gap-2 text-xs font-mono text-gray-400">
-                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span>Auto-Rebalances on market shift</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Auto-Refreshes instantly on DB change</span>
             </div>
         </div>
 
@@ -405,7 +435,7 @@
         <div id="gridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">
                 <div class="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                Connecting to Institutional Stream...
+                Connecting to Institutional Intelligence Stream...
             </div>
         </div>
 
@@ -451,7 +481,7 @@
                     </button>
                 </div>
 
-                <!-- VIP 2-Year Deal -->
+                <!-- VIP 2-Year Pass -->
                 <div class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 relative border-amber-500/50 bg-gradient-to-b from-[#181d33] to-[#0c1222] shadow-2xl shadow-amber-500/10">
                     <span class="absolute -top-3 right-6 bg-gradient-to-r from-amber-500 to-orange-500 text-black text-[10px] font-black px-3.5 py-1 rounded-full uppercase tracking-wider font-mono shadow-md">🔥 1 Year Free Included</span>
                     <div>
@@ -469,7 +499,7 @@
                             <li class="flex items-center gap-2 text-amber-300 font-bold">✔ 24 Months Unrestricted Access</li>
                             <li class="flex items-center gap-2">✔ Zero-Latency High-Frequency Signals</li>
                             <li class="flex items-center gap-2">✔ Dark Pool & Smart Money Metrics</li>
-                            <li class="flex items-center gap-2 text-emerald-400">✔ Direct Founder Support via WhatsApp</li>
+                            <li class="flex items-center gap-2 text-emerald-400">✔ Direct WhatsApp Priority Desk</li>
                         </ul>
                     </div>
                     <button type="button" onclick="openPaymentModal('VIP 2-Year Special Deal ($49)', '49')" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold text-xs rounded-xl shadow-lg shadow-amber-500/30 transition cursor-pointer font-mono uppercase tracking-wider">
@@ -479,12 +509,29 @@
             </div>
         </section>
 
-        <!-- Risk Disclosure & Footer -->
-        <footer class="pt-8 border-t border-white/[0.08] text-xs text-gray-500 space-y-4">
+        <!-- Institutional Risk Warning & Complete Community Footer -->
+        <footer class="pt-10 border-t border-white/[0.08] text-xs text-gray-500 space-y-6">
             <div class="p-4 rounded-xl bg-black/40 border border-white/5 text-[11px] leading-relaxed">
                 <span class="font-bold text-gray-300">Regulatory & Risk Notice:</span> 
                 Trading spot, derivatives, or margin assets carries high risk. GreatNexa provides quantitative market screener data based on algorithmic volume analytics and historical pattern recognition. Content does not constitute personal financial advice.
             </div>
+
+            <!-- Social Media & Support Community Links -->
+            <div class="flex flex-wrap items-center justify-center gap-4 py-2">
+                <a href="https://www.facebook.com/share/1F6PwT38tf/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1877F2]/10 border border-[#1877F2]/30 text-white font-medium hover:bg-[#1877F2]/20 transition cursor-pointer">
+                    <svg class="w-4 h-4 fill-[#1877F2]" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                    <span>Facebook Page</span>
+                </a>
+                <a href="https://www.instagram.com/greatnexa/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#E4405F]/10 border border-[#E4405F]/30 text-white font-medium hover:bg-[#E4405F]/20 transition cursor-pointer">
+                    <svg class="w-4 h-4 fill-[#E4405F]" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.13-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    <span>Instagram</span>
+                </a>
+                <a href="https://wa.me/8801870978004?text=Hello%20GreatNexa,%20I%20have%20an%20inquiry%20about%20the%20Trading%20Terminal." target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#25D366]/10 border border-[#25D366]/30 text-white font-medium hover:bg-[#25D366]/20 transition cursor-pointer">
+                    <svg class="w-4 h-4 fill-[#25D366]" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                    <span>WhatsApp Desk</span>
+                </a>
+            </div>
+
             <div class="flex flex-wrap justify-between items-center gap-4 text-gray-400">
                 <div class="flex items-center gap-2.5">
                     <img src="/store/iconpng.webp" alt="Logo" class="w-5 h-5 rounded">
@@ -492,12 +539,23 @@
                 </div>
                 <div class="flex items-center gap-5">
                     <a href="/store/" class="hover:text-white transition">Digital Store</a>
-                    <a href="https://wa.me/8801870978004" target="_blank" class="hover:text-emerald-400 transition">Contact Quant Desk</a>
+                    <a href="https://wa.me/8801870978004" target="_blank" class="hover:text-emerald-400 transition">Institutional Support</a>
                 </div>
             </div>
         </footer>
 
     </main>
+
+    <!-- Floating WhatsApp Contact Button -->
+    <a href="https://wa.me/8801870978004?text=Hello%20GreatNexa,%20I%20have%20an%20inquiry%20about%20the%20Trading%20Terminal." 
+       target="_blank" 
+       rel="noopener noreferrer" 
+       class="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20ba5a] text-white p-3.5 rounded-full shadow-2xl shadow-green-500/40 transition transform hover:scale-110 flex items-center justify-center cursor-pointer"
+       title="Chat on WhatsApp">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#ffffff" viewBox="0 0 16 16">
+            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.707 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.862.114-.944-.05-.082-.182-.132-.38-.23z"/>
+        </svg>
+    </a>
 
     <!-- Modals -->
 
@@ -548,7 +606,7 @@
         </div>
     </div>
 
-    <!-- Live Chart Modal -->
+    <!-- Live TradingView Modal -->
     <div id="chartModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-4xl rounded-2xl overflow-hidden border border-gray-700 shadow-2xl">
             <div class="flex justify-between items-center px-5 py-3.5 border-b border-white/10 bg-[#080d1a]">
@@ -739,7 +797,7 @@
             let displayData = liveMarketData;
 
             if (!displayData || displayData.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">No active setups found matching criteria. Click "Refresh" or change Direction.</div>`;
+                container.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">No active setups found matching criteria. Live stream listening...</div>`;
                 return;
             }
 
@@ -758,7 +816,6 @@
                     statusBadge = `<span class="text-rose-400 font-bold text-[11px] bg-rose-500/20 px-2 py-0.5 rounded font-mono">⛔ Invalidated</span>`;
                 }
 
-                // Generates sparkline visual
                 const sparkColor = state.direction === 'long' ? '#10b981' : '#f43f5e';
 
                 return `
@@ -852,6 +909,31 @@
                 liveMarketData = [];
             }
             renderCards();
+        }
+
+        // ================= SUPABASE POSTGRES REALTIME LISTENER =================
+        function setupRealtimeListener() {
+            if (!_supabase) return;
+
+            // Subscribe to any changes (Insert, Update, Delete) on market_research table
+            _supabase
+                .channel('market_research_realtime')
+                .on(
+                    'postgres_changes',
+                    { 
+                        event: '*', 
+                        schema: 'public', 
+                        table: 'market_research' 
+                    },
+                    (payload) => {
+                        console.log('Realtime DB Change Detected:', payload);
+                        // Instant refresh upon database modification
+                        fetchLiveMarketData();
+                    }
+                )
+                .subscribe((status) => {
+                    console.log('Supabase Realtime Channel Status:', status);
+                });
         }
 
         function showAuthFeedback(msg, isSuccess = false) {
@@ -1052,6 +1134,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             checkUserSession();
+            setupRealtimeListener(); // অটো রিয়েলটাইম লিসেনার চালু করা হলো
         });
     </script>
 </body>
