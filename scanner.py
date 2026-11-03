@@ -68,10 +68,15 @@ def send_telegram_alert(signal):
 
 def send_telegram_status(text):
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        print("[-] Telegram Bot Token or Chat ID missing for status.")
         return
     try:
         url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-        session.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": text, "parse_mode": "Markdown"}, timeout=8)
+        res = session.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": text, "parse_mode": "Markdown"}, timeout=8)
+        if res.status_code == 200:
+            print("✔ Telegram Status Message Sent Successfully!")
+        else:
+            print(f"[-] Telegram Status Error Response: {res.text}")
     except Exception as e:
         print(f"[-] Telegram status error: {e}")
 
@@ -82,7 +87,6 @@ def process_automatic_subscriptions():
     print("[*] Processing Autonomous Subscription Lifecycle & Payment Verification...")
     now = datetime.now(timezone.utc)
     
-    # ক) মেয়াদোত্তীর্ণ ইউজারদের স্বয়ংক্রিয় ফ্রি টিয়ারে নামানো (Auto-Rollback)
     try:
         expired_res = supabase.table("user_profiles").select("id, email, tier, expires_at").neq("tier", "free").lt("expires_at", now.isoformat()).execute()
         expired_users = expired_res.data or []
@@ -96,7 +100,6 @@ def process_automatic_subscriptions():
     except Exception as e:
         print(f"[-] Auto-Rollback Engine Error: {e}")
 
-    # খ) পেন্ডিং বাইন্যান্স পে ভেরিফিকেশন ও এক্টিভেশন
     try:
         pending_orders = supabase.table("orders").select("*").eq("status", "pending").execute().data or []
         for o in pending_orders:
@@ -507,11 +510,12 @@ def run():
                 supabase.table("market_research").insert(b).execute()
             print(f"\n✔ Successfully pushed {len(new_setups)} Dynamic Alpha Setups across Top 100 Markets!")
             
-            # টেলিগ্রাম বট অ্যালার্ট পাঠানো (হাই-কনভিকশন সিগন্যাল ফিল্টার)
+            # টেলিগ্রাম বট অ্যালার্ট পাঠানো (রেট লিমিট এড়াতে time.sleep সহ)
             for s in new_setups:
                 if s.get("score", 0) >= 92:
                     send_telegram_alert(s)
-                    
+                    time.sleep(1.5) # টেলিগ্রাম এপিআই ব্লক এড়াতে প্রতি মেসেজের মাঝে ১.৫ সেকেন্ড বিরতি
+                
         except Exception as e:
             print(f"[-] Batch insert error: {e}")
     else:
