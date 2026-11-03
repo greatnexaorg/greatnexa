@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GreatNexa Terminal | Admin Portal</title>
+    <title>GreatNexa Terminal | Institutional Admin Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -13,43 +13,51 @@
 </head>
 <body class="min-h-screen p-4 sm:p-6 max-w-7xl mx-auto flex flex-col justify-between">
 
-    <!-- Security PIN Modal -->
-    <div id="pinLockModal" class="fixed inset-0 bg-[#02040a]/95 backdrop-blur-xl flex items-center justify-center z-50 p-4">
+    <!-- Admin Login Modal -->
+    <div id="adminAuthModal" class="fixed inset-0 bg-[#02040a]/95 backdrop-blur-xl flex items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-sm rounded-3xl p-6 sm:p-8 border border-white/10 text-center shadow-2xl relative">
             <div class="w-14 h-14 mx-auto mb-4 bg-blue-600/20 border border-blue-500/30 rounded-2xl flex items-center justify-center text-2xl">
-                🔒
+                🛡️
             </div>
-            <h2 class="text-xl font-bold text-white mb-1">Terminal Security</h2>
-            <p class="text-xs text-gray-400 mb-6">Enter Admin PIN to unlock subscriber management.</p>
+            <h2 class="text-xl font-bold text-white mb-1">Admin Authentication</h2>
+            <p class="text-xs text-gray-400 mb-6">Supabase Institutional Security Gateway</p>
 
-            <form onsubmit="handlePinSubmit(event)" class="space-y-4">
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4 text-left">
                 <div>
-                    <input type="password" id="adminPinInput" maxlength="12" placeholder="••••" autofocus
-                           class="w-full text-center tracking-[0.5em] text-2xl font-mono bg-[#0b1324] border border-white/15 text-white rounded-xl py-3 focus:outline-none focus:border-blue-500">
+                    <label class="block text-[11px] font-mono text-gray-400 mb-1">Admin Email</label>
+                    <input type="email" id="adminEmail" required placeholder="admin@greatnexa.com"
+                           class="w-full text-xs font-mono bg-[#0b1324] border border-white/15 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
                 </div>
-                <div id="pinError" class="text-rose-400 text-xs hidden font-medium">ইনভ্যালিড পিন! আবার চেষ্টা করুন।</div>
-                <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
-                    Unlock Portal
+                <div>
+                    <label class="block text-[11px] font-mono text-gray-400 mb-1">Secure Password</label>
+                    <input type="password" id="adminPassword" required placeholder="••••••••••••"
+                           class="w-full text-xs font-mono bg-[#0b1324] border border-white/15 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
+                </div>
+                
+                <div id="loginError" class="text-rose-400 text-xs hidden font-medium"></div>
+
+                <button type="submit" id="btnAdminLogin" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer font-mono">
+                    Verify & Unlock
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- Main Admin Dashboard (লগইন ছাড়া দেখা যাবে না) -->
     <div id="adminMainContent" class="hidden space-y-6 w-full">
         <header class="flex flex-wrap justify-between items-center gap-4 border-b border-white/10 pb-4">
             <div>
                 <h1 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
                     <span>🛡️</span> GreatNexa Order & Subscription Admin
                 </h1>
-                <p class="text-xs text-gray-400">Verify TrxIDs, Approve Tiers & Auto-Assign Expiry Days</p>
+                <p class="text-xs text-gray-400">Connected: <span id="adminSessionEmail" class="text-blue-400 font-mono"></span></p>
             </div>
             <div class="flex items-center gap-3">
-                <button onclick="loadOrders()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-xs font-bold rounded-xl transition shadow flex items-center gap-1.5 cursor-pointer">
+                <button onclick="loadOrders()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-xs font-bold rounded-xl transition shadow flex items-center gap-1.5 cursor-pointer font-mono">
                     🔄 Refresh
                 </button>
-                <button onclick="logoutAdmin()" class="px-3.5 py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 text-xs font-bold rounded-xl transition cursor-pointer">
-                    Lock Portal
+                <button onclick="handleAdminLogout()" class="px-3.5 py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 text-xs font-bold rounded-xl transition cursor-pointer font-mono">
+                    Sign Out
                 </button>
             </div>
         </header>
@@ -109,49 +117,93 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDk0MDMsImV4cCI6MjEwMjI4NTQwM30.ePcRYy5_B193R4S1MXw3slF5amFseCv1sSCAUyH59ok';
         const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // SHA-256 Hash of PIN "7581"
-        const ADMIN_PIN_HASH = "81e374f8a55e2d1bb0e97d1629fa2bb9f7bc5e59b207559c656d0d93be42bf9d";
-        
-        // আপনার অ্যাডমিন অ্যাপ্রুভাল টেলিগ্রাম প্রাইভেট চ্যানেল লিংক
         const TELEGRAM_VIP_LINK = "https://t.me/+VA3Yu45-zosyOTRl";
 
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
+        async function verifyAdminAccess() {
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (!session) {
+                showAuthModal();
+                return;
+            }
 
-        async function handlePinSubmit(e) {
-            e.preventDefault();
-            const inputVal = document.getElementById('adminPinInput').value.trim();
-            const errorEl = document.getElementById('pinError');
-            
-            const hashedInput = await sha256(inputVal);
+            // ইউজারের রোল যাচাই করা (শুধুমাত্র অ্যাডমিন রোল হলে ড্যাশবোর্ড খুলবে)
+            const { data, error } = await _supabase
+                .from('user_profiles')
+                .select('role')
+                .eq('id', session.user.id)
+                .single();
 
-            if (hashedInput === ADMIN_PIN_HASH) {
-                sessionStorage.setItem('greatnexa_admin_unlocked', 'true');
+            if (data && data.role === 'admin') {
+                document.getElementById('adminSessionEmail').innerText = session.user.email;
                 unlockUI();
             } else {
-                errorEl.classList.remove('hidden');
-                document.getElementById('adminPinInput').value = '';
+                showAuthModal("অ্যাক্সেস ডিনাইড! এই অ্যাকাউন্টের অ্যাডমিন পারমিশন নেই।");
+                await _supabase.auth.signOut();
+            }
+        }
+
+        async function handleAdminLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value.trim();
+            const errBox = document.getElementById('loginError');
+            const submitBtn = document.getElementById('btnAdminLogin');
+
+            submitBtn.innerText = "Verifying...";
+            submitBtn.disabled = true;
+            errBox.classList.add('hidden');
+
+            try {
+                const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+
+                // রোল চেক
+                const { data: prof, error: profErr } = await _supabase
+                    .from('user_profiles')
+                    .select('role')
+                    .eq('id', data.user.id)
+                    .single();
+
+                if (prof && prof.role === 'admin') {
+                    document.getElementById('adminSessionEmail').innerText = data.user.email;
+                    unlockUI();
+                } else {
+                    await _supabase.auth.signOut();
+                    throw new Error("অননুমোদিত অ্যাকাউন্ট! আপনি অ্যাডমিন নন।");
+                }
+            } catch (err) {
+                errBox.innerText = err.message || "লগইন ব্যর্থ হয়েছে!";
+                errBox.classList.remove('hidden');
+            } finally {
+                submitBtn.innerText = "Verify & Unlock";
+                submitBtn.disabled = false;
             }
         }
 
         function unlockUI() {
-            document.getElementById('pinLockModal').classList.add('hidden');
+            document.getElementById('adminAuthModal').classList.add('hidden');
             document.getElementById('adminMainContent').classList.remove('hidden');
             loadOrders();
         }
 
-        function logoutAdmin() {
-            sessionStorage.removeItem('greatnexa_admin_unlocked');
+        function showAuthModal(errMsg = '') {
+            document.getElementById('adminAuthModal').classList.remove('hidden');
+            document.getElementById('adminMainContent').classList.add('hidden');
+            if (errMsg) {
+                const errBox = document.getElementById('loginError');
+                errBox.innerText = errMsg;
+                errBox.classList.remove('hidden');
+            }
+        }
+
+        async function handleAdminLogout() {
+            await _supabase.auth.signOut();
             location.reload();
         }
 
         async function loadOrders() {
             const tbody = document.getElementById('ordersTableBody');
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-gray-400">Loading orders...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-gray-400 font-mono">Loading orders from database...</td></tr>';
 
             const { data, error } = await _supabase
                 .from('orders')
@@ -160,7 +212,7 @@
                 .limit(50);
 
             if (error || !data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-gray-500">No payment orders found.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-gray-500 font-mono">No payment orders found.</td></tr>';
                 document.getElementById('statTotal').innerText = '0';
                 document.getElementById('statPending').innerText = '0';
                 document.getElementById('statApproved').innerText = '0';
@@ -256,9 +308,7 @@
         }
 
         window.onload = () => {
-            if (sessionStorage.getItem('greatnexa_admin_unlocked') === 'true') {
-                unlockUI();
-            }
+            verifyAdminAccess();
         };
     </script>
 </body>
