@@ -7,14 +7,13 @@ from supabase import create_client, Client
 # ==============================================================================
 # ১. SUPABASE সংযোগ কনফিগারেশন (Error-Proof Fallback)
 # ==============================================================================
-# GitHub Secrets মিসিং থাকলেও যেন supabase_url এরর না দেয়
 RAW_URL = os.getenv("SUPABASE_URL")
 SUPABASE_URL = RAW_URL.strip() if RAW_URL else "https://esqhansnosejkqapuhoo.supabase.co"
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 try:
     if not SUPABASE_KEY:
-        raise ValueError("GitHub Secrets-এ SUPABASE_KEY পাওয়া যায়নি! দয়া করে সেটিংস চেক করুন।")
+        raise ValueError("GitHub Secrets-এ SUPABASE_KEY পাওয়া যায়নি! দয়া করে সেটিংস চেক করুন।")
 
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
     print("✔ GreatNexa Multi-Asset Institutional SMC Engine Connected!")
@@ -33,7 +32,88 @@ session.headers.update({
 })
 
 # ==============================================================================
-# ২. অটোমেটিক ডাটাবেজ অপটিমাইজার (STORAGE PURGE)
+# ২. টেলিগ্রাম ভিআইপি সিগন্যাল অ্যালার্ট ইঞ্জিন
+# ==============================================================================
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+
+def send_telegram_alert(signal):
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        return
+    try:
+        sym = signal['symbol']
+        direction = "🟢 LONG / BUY" if signal['direction'] == 'long' else "🔴 SHORT / SELL"
+        msg = (
+            f"⚡ *GREATNEXA INSTITUTIONAL ALPHA SIGNAL*\n\n"
+            f"📌 *Asset:* `{sym}`\n"
+            f"📊 *Direction:* {direction}\n"
+            f"🎯 *Conviction Score:* `{signal['score']}/100`\n"
+            f"⚡ *Style:* {signal['stage']}\n\n"
+            f"💵 *Entry:* `${fmt_price(signal['entry_price'])}`\n"
+            f"🛑 *Stop Loss:* `${fmt_price(signal['sl_price'])}`\n"
+            f"🎯 *Take Profit:* `${fmt_price(signal['tp_price'])}`\n\n"
+            f"📈 *Est. Potential:* `{signal['est_potential']}`\n"
+            f"🧠 *Institutional Note:* {signal['research_note']}\n\n"
+            f"🌐 [Open Terminal Dashboard](https://greatnexa.com/)"
+        )
+        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+        session.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": msg, "parse_mode": "Markdown"}, timeout=6)
+    except Exception as e:
+        print(f"[-] Telegram Alert Notification Error: {e}")
+
+# ==============================================================================
+# ৩. অটোমেটিক বাইন্যান্স পে ভেরিফায়ার ও সাবস্ক্রিপশন এক্সপায়ারি রোলব্যাক
+# ==============================================================================
+def process_automatic_subscriptions():
+    print("[*] Processing Autonomous Subscription Lifecycle & Payment Verification...")
+    now = datetime.now(timezone.utc)
+    
+    # ক) মেয়াদোত্তীর্ণ ইউজারদের স্বয়ংক্রিয় ফ্রি টিয়ারে নামানো (Auto-Rollback)
+    try:
+        expired_res = supabase.table("user_profiles").select("id, email, tier, expires_at").neq("tier", "free").lt("expires_at", now.isoformat()).execute()
+        expired_users = expired_res.data or []
+        for u in expired_users:
+            supabase.table("user_profiles").update({
+                "tier": "free",
+                "expires_at": None,
+                "updated_at": now.isoformat()
+            }).eq("id", u["id"]).execute()
+            print(f"  -> [EXPIRED] Subscription ended for {u.get('email', u['id'])}. Reverted to Free Tier.")
+    except Exception as e:
+        print(f"[-] Auto-Rollback Engine Error: {e}")
+
+    # খ) পেন্ডিং বাইন্যান্স পে ভেরিফিকেশন ও এক্টিভেশন
+    try:
+        pending_orders = supabase.table("orders").select("*").eq("status", "pending").execute().data or []
+        for o in pending_orders:
+            trx = str(o.get("trx_id", "")).strip()
+            phone_method = str(o.get("phone", ""))
+            user_email = o.get("email") or o.get("customer_name")
+            order_id = o.get("id")
+            plan_name = o.get("product_name", "")
+
+            # বাইন্যান্স ট্রানজেকশন আইডি ফরম্যাট ভ্যালিডেশন (কমপক্ষে ৮ ডিজিট/হেক্স)
+            if "Binance" in phone_method and len(trx) >= 8 and user_email:
+                is_vip = "VIP" in plan_name or "49" in plan_name
+                target_tier = "vip" if is_vip else "pro"
+                days = 730 if is_vip else 30
+                
+                try:
+                    # ডাটাবেজ আরপিসি কল দিয়ে মেয়াদ ও এক্টিভেশন সেট করা
+                    supabase.rpc("admin_approve_order", {
+                        "p_order_id": order_id,
+                        "p_user_email": user_email,
+                        "p_tier": target_tier,
+                        "p_duration_days": days
+                    }).execute()
+                    print(f"  -> [AUTO-APPROVED] Order #{order_id} verified for {user_email}. Tier: {target_tier.upper()} ({days} Days).")
+                except Exception as approve_err:
+                    print(f"[-] Auto-Approve RPC Error for Order #{order_id}: {approve_err}")
+    except Exception as e:
+        print(f"[-] Subscription Processor Error: {e}")
+
+# ==============================================================================
+# ৪. ডাটাবেজ অপটিমাইজার (STORAGE PURGE)
 # ==============================================================================
 def cleanup_old_database_records():
     print("[*] Running Autonomous Database Storage Optimizer...")
@@ -48,7 +128,7 @@ def cleanup_old_database_records():
         print(f"[-] Cleanup Error: {e}")
 
 # ==============================================================================
-# ৩. ক্রিপ্টো: ৫০০+ পেয়ারের লাইভ ডায়নামিক টপ ১০০ স্ক্রিনার
+# ৫. ক্রিপ্টো: ৫০০+ পেয়ারের লাইভ ডায়নামিক টপ ১০০ স্ক্রিনার
 # ==============================================================================
 def fetch_dynamic_crypto_top100():
     print("[*] Fetching Live Dynamic Top 100 Crypto Pairs from Binance...")
@@ -92,7 +172,7 @@ def fetch_dynamic_crypto_top100():
     return market_pool
 
 # ==============================================================================
-# ৪. ইউএস স্টকস: লাইভ মার্কেট মোস্ট অ্যাক্টিভ স্ক্রিনার
+# ৬. ইউএস স্টকস: লাইভ মার্কেট মোস্ট অ্যাক্টিভ স্ক্রিনার
 # ==============================================================================
 def fetch_dynamic_stocks_top100():
     print("[*] Fetching Live Top US Stocks from Market Screener...")
@@ -132,7 +212,7 @@ def fetch_dynamic_stocks_top100():
     return stock_pool
 
 # ==============================================================================
-# ৫. ফরেক্স ও কমোডিটিজ স্ক্রিনার
+# ৭. ফরেক্স ও কমোডিটিজ স্ক্রিনার
 # ==============================================================================
 def fetch_dynamic_forex_universe():
     print("[*] Discovering Real-Time Dynamic Forex & Commodities Universe...")
@@ -220,7 +300,7 @@ def fetch_dynamic_forex_universe():
     return forex_pool
 
 # ==============================================================================
-# ৬. লাইফসাইকেল ট্র্যাকার (ডুপ্লিকেট রিমুভার সহ)
+# ৮. লাইফসাইকেল ট্র্যাকার (ডুপ্লিকেট রিমুভার সহ)
 # ==============================================================================
 def track_and_update_lifecycle(current_prices):
     active_setups_map = set()
@@ -275,7 +355,7 @@ def track_and_update_lifecycle(current_prices):
     return active_setups_map
 
 # ==============================================================================
-# ৭. SMC লিকুইডিটি পার্জ ও সিগন্যাল ইঞ্জিন
+# ৯. SMC লিকুইডিটি পার্জ ও সিগন্যাল ইঞ্জিন
 # ==============================================================================
 def generate_smc_institutional_signal(item, active_setups_map):
     p = item['price']
@@ -368,15 +448,18 @@ def generate_smc_institutional_signal(item, active_setups_map):
     return setups
 
 # ==============================================================================
-# ৮. এক্সিকিউশন রানার
+# ১০. এক্সিকিউশন রানার
 # ==============================================================================
 def run():
     print("=" * 80)
     print(f"[*] RUNNING TOP 100 REAL-TIME DYNAMIC QUANT ENGINE: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
     print("=" * 80)
     
+    # সাবস্ক্রিপশন ও স্টোরেজ অপ্টিমাইজেশন
+    process_automatic_subscriptions()
     cleanup_old_database_records()
 
+    # মার্কেট পুলিং
     crypto_prices = fetch_dynamic_crypto_top100()
     stocks_prices = fetch_dynamic_stocks_top100()
     forex_prices = fetch_dynamic_forex_universe()
@@ -408,6 +491,12 @@ def run():
                 b = new_setups[i:i + batch_size]
                 supabase.table("market_research").insert(b).execute()
             print(f"\n✔ Successfully pushed {len(new_setups)} Dynamic Alpha Setups across Top 100 Markets!")
+            
+            # টেলিগ্রাম বট অ্যালার্ট পাঠানো (হাই-কনভিকশন সিগন্যাল ফিল্টার)
+            for s in new_setups:
+                if s.get("score", 0) >= 94:
+                    send_telegram_alert(s)
+                    
         except Exception as e:
             print(f"[-] Batch insert error: {e}")
     else:
