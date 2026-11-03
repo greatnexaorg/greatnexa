@@ -39,6 +39,7 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 def send_telegram_alert(signal):
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        print("[-] Telegram Bot Token or Chat ID not found in environment.")
         return
     try:
         sym = signal['symbol']
@@ -57,12 +58,25 @@ def send_telegram_alert(signal):
             f"🌐 [Open Terminal Dashboard](https://greatnexa.com/)"
         )
         url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-        session.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": msg, "parse_mode": "Markdown"}, timeout=6)
+        res = session.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": msg, "parse_mode": "Markdown"}, timeout=8)
+        if res.status_code == 200:
+            print(f"✔ Telegram Alert Pushed: {sym} ({direction})")
+        else:
+            print(f"[-] Telegram API Response: {res.text}")
     except Exception as e:
         print(f"[-] Telegram Alert Notification Error: {e}")
 
+def send_telegram_status(text):
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        return
+    try:
+        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+        session.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": text, "parse_mode": "Markdown"}, timeout=8)
+    except Exception as e:
+        print(f"[-] Telegram status error: {e}")
+
 # ==============================================================================
-# ৩. অটোমেটিক বাইন্যান্স পে ভেরিফায়ার ও সাবস্ক্রিপশন এক্সপায়ারি রোলব্যাক
+# ৩. অটোমেটিক বাইন্যান্স পে ভেরিফায়ার ও সাবস্ক্রিপশন এক্সপায়ারি রোলব্যাক
 # ==============================================================================
 def process_automatic_subscriptions():
     print("[*] Processing Autonomous Subscription Lifecycle & Payment Verification...")
@@ -92,14 +106,12 @@ def process_automatic_subscriptions():
             order_id = o.get("id")
             plan_name = o.get("product_name", "")
 
-            # বাইন্যান্স ট্রানজেকশন আইডি ফরম্যাট ভ্যালিডেশন (কমপক্ষে ৮ ডিজিট/হেক্স)
             if "Binance" in phone_method and len(trx) >= 8 and user_email:
                 is_vip = "VIP" in plan_name or "49" in plan_name
                 target_tier = "vip" if is_vip else "pro"
                 days = 730 if is_vip else 30
                 
                 try:
-                    # ডাটাবেজ আরপিসি কল দিয়ে মেয়াদ ও এক্টিভেশন সেট করা
                     supabase.rpc("admin_approve_order", {
                         "p_order_id": order_id,
                         "p_user_email": user_email,
@@ -455,6 +467,9 @@ def run():
     print(f"[*] RUNNING TOP 100 REAL-TIME DYNAMIC QUANT ENGINE: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
     print("=" * 80)
     
+    # টেলিগ্রাম কানেকশন কনফার্মেশন টেস্ট
+    send_telegram_status("⚡ *GreatNexa Institutional Engine Active & Scanning Top 100 Markets...*")
+
     # সাবস্ক্রিপশন ও স্টোরেজ অপ্টিমাইজেশন
     process_automatic_subscriptions()
     cleanup_old_database_records()
@@ -494,7 +509,7 @@ def run():
             
             # টেলিগ্রাম বট অ্যালার্ট পাঠানো (হাই-কনভিকশন সিগন্যাল ফিল্টার)
             for s in new_setups:
-                if s.get("score", 0) >= 94:
+                if s.get("score", 0) >= 92:
                     send_telegram_alert(s)
                     
         except Exception as e:
