@@ -54,6 +54,26 @@
             </div>
         </header>
 
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono text-xs">
+            <div class="p-4 glass-panel rounded-xl border border-white/5">
+                <span class="text-gray-400 block text-[10px]">TOTAL ORDERS</span>
+                <span id="statTotal" class="text-lg font-bold text-white">0</span>
+            </div>
+            <div class="p-4 glass-panel rounded-xl border border-amber-500/20">
+                <span class="text-amber-400 block text-[10px]">PENDING APPROVAL</span>
+                <span id="statPending" class="text-lg font-bold text-amber-300">0</span>
+            </div>
+            <div class="p-4 glass-panel rounded-xl border border-emerald-500/20">
+                <span class="text-emerald-400 block text-[10px]">APPROVED TIERS</span>
+                <span id="statApproved" class="text-lg font-bold text-emerald-400">0</span>
+            </div>
+            <div class="p-4 glass-panel rounded-xl border border-blue-500/20">
+                <span class="text-blue-400 block text-[10px]">VIP CHANNEL ACCESS</span>
+                <span class="text-xs font-bold text-blue-300">Active Bot Hook</span>
+            </div>
+        </div>
+
         <!-- Orders Table -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10">
             <div class="overflow-x-auto">
@@ -86,6 +106,9 @@
 
         // SHA-256 Hash of PIN "7581"
         const ADMIN_PIN_HASH = "81e374f8a55e2d1bb0e97d1629fa2bb9f7bc5e59b207559c656d0d93be42bf9d";
+        
+        // আপনার টেলিগ্রাম প্রাইভেট ভিআইপি চ্যানেলের লিঙ্ক (এখানে আপনার চ্যানেলের আসল ইনভাইট লিংক দিন)
+        const TELEGRAM_VIP_LINK = "https://t.me/+YOUR_PRIVATE_CHANNEL_LINK";
 
         async function sha256(message) {
             const msgBuffer = new TextEncoder().encode(message);
@@ -133,11 +156,19 @@
 
             if (error || !data || data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-gray-500">No payment orders found.</td></tr>';
+                document.getElementById('statTotal').innerText = '0';
+                document.getElementById('statPending').innerText = '0';
+                document.getElementById('statApproved').innerText = '0';
                 return;
             }
 
+            let pendingCount = 0;
+            let approvedCount = 0;
+
             tbody.innerHTML = data.map(o => {
                 const isApproved = o.status === 'approved';
+                if(isApproved) approvedCount++; else pendingCount++;
+
                 const isVIP = (o.product_name || '').includes('VIP') || (o.product_name || '').includes('49');
                 const targetTier = isVIP ? 'vip' : 'pro';
                 const days = isVIP ? 730 : 30;
@@ -154,15 +185,26 @@
                             ${(o.status || 'pending').toUpperCase()}
                         </span>
                     </td>
-                    <td class="p-4 text-right">
+                    <td class="p-4 text-right space-x-2">
                         ${!isApproved ? `
                         <button onclick="approveOrder(${o.id}, '${o.email || o.customer_name}', '${targetTier}', ${days})" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition cursor-pointer">
-                            Approve (${days} Days)
-                        </button>` : `<span class="text-gray-500 text-xs">Active</span>`}
+                            Approve (${days}d)
+                        </button>
+                        <button onclick="rejectOrder(${o.id})" class="px-2.5 py-1.5 bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 font-bold rounded-lg text-xs transition cursor-pointer" title="Cancel/Delete">
+                            ✕
+                        </button>` : `
+                        <span class="text-gray-500 text-xs">Active</span>
+                        <button onclick="copyInviteLink()" class="px-2.5 py-1 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg text-[10px] transition cursor-pointer">
+                            Copy VIP Link
+                        </button>`}
                     </td>
                 </tr>
                 `;
             }).join('');
+
+            document.getElementById('statTotal').innerText = String(data.length);
+            document.getElementById('statPending').innerText = String(pendingCount);
+            document.getElementById('statApproved').innerText = String(approvedCount);
         }
 
         async function approveOrder(orderId, email, tier, durationDays) {
@@ -179,12 +221,32 @@
                 if(error) {
                     alert("Approval failed: " + error.message);
                 } else {
-                    alert(`Success! ${email} upgraded to ${tier.toUpperCase()} for ${durationDays} days.`);
+                    alert(`✔ Success! ${email} upgraded to ${tier.toUpperCase()} for ${durationDays} days.\n\nTelegram VIP Link: ${TELEGRAM_VIP_LINK}`);
                     loadOrders();
                 }
             } catch(e) {
                 alert("Error: " + e.message);
             }
+        }
+
+        async function rejectOrder(orderId) {
+            if(!confirm("Are you sure you want to reject and remove this order?")) return;
+
+            try {
+                const { error } = await _supabase.from('orders').delete().eq('id', orderId);
+                if(error) {
+                    alert("Delete failed: " + error.message);
+                } else {
+                    loadOrders();
+                }
+            } catch(e) {
+                alert("Error: " + e.message);
+            }
+        }
+
+        function copyInviteLink() {
+            navigator.clipboard.writeText(TELEGRAM_VIP_LINK);
+            alert("Telegram VIP Channel link copied to clipboard!");
         }
 
         window.onload = () => {
