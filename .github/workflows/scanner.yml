@@ -1,29 +1,30 @@
-name: Run Institutional Scanner Engine
+name: GreatNexa Institutional Quant Engine Runner
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/20 * * * *'
   workflow_dispatch:
 
 jobs:
-  run-scanner:
-    runs-on: ubuntu-24.04 # নির্দিষ্ট স্থির ও স্থিতিশীল রানার
+  run-quant-engine:
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install requests supabase
 
-      - name: Run Python Script
-        run: |
-          python scanner.py
+      - name: Run SMC Quant Engine
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python engine.py
