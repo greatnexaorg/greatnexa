@@ -220,7 +220,6 @@
                     🛍️ Digital Store
                 </a>
 
-                <!-- Support Ticket Button (New Feature) -->
                 <button onclick="openSupportModal()" class="px-3 py-2 rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600 hover:text-white text-xs font-bold transition cursor-pointer">
                     🎫 Support Ticket
                 </button>
@@ -375,7 +374,7 @@
                         <span class="text-blue-400 font-bold">Dynamic ATR Ratio</span>
                     </div>
                     <div class="p-2.5 bg-black/40 rounded-lg text-[11px] text-gray-400 text-center">
-                        মার্কেটে নতুন হাই-কনভিকশন সেটআপ আসামাত্র ড্যাশবোর্ড অটোমেটিক আপডেট হবে।
+                        मार्केটে নতুন হাই-কনভিকশন সেটআপ আসামাত্র ড্যাশবোর্ড অটোমেটিক আপডেট হবে।
                     </div>
                 </div>
             </div>
@@ -571,7 +570,7 @@
         </div>
     </div>
 
-    <!-- Multi-Channel Checkout Modal (Binance Pay / bKash / Nagad) with Coupon Support -->
+    <!-- Multi-Channel Checkout Modal -->
     <div id="paymentModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
             <button type="button" onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
@@ -613,7 +612,7 @@
         </div>
     </div>
 
-    <!-- Support Ticket Modal (New Feature) -->
+    <!-- Support Ticket Modal -->
     <div id="supportModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative space-y-4">
             <button type="button" onclick="closeSupportModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
@@ -703,7 +702,6 @@
         let isSignUpMode = false;
         let activeCalcItem = null;
 
-        // Support Ticket Functions
         function openSupportModal() {
             document.getElementById('supportModal').classList.remove('hidden');
             document.getElementById('supportModal').classList.add('flex');
@@ -732,7 +730,6 @@
             }
         }
 
-        // Coupon Application Functions
         async function applyDiscountCoupon() {
             const codeInput = document.getElementById('appliedCouponCode').value.trim().toUpperCase();
             const msgBox = document.getElementById('couponMsg');
@@ -1099,7 +1096,6 @@
                 });
 
                 if (error) {
-                    console.warn("RPC Fallback Triggered:", error.message);
                     let query = _supabase
                         .from('market_research')
                         .select('*')
@@ -1119,7 +1115,6 @@
                     liveMarketData = data || [];
                 }
             } catch (err) {
-                console.error("Data Fetch Error:", err);
                 liveMarketData = [];
             }
             renderCards();
@@ -1127,22 +1122,14 @@
 
         function setupRealtimeListener() {
             if (!_supabase) return;
-
             _supabase
                 .channel('market_research_realtime')
                 .on(
                     'postgres_changes',
-                    { 
-                        event: '*', 
-                        schema: 'public', 
-                        table: 'market_research' 
-                    },
+                    { event: '*', schema: 'public', table: 'market_research' },
                     () => {
-                        if (state.viewTab === 'active') {
-                            fetchLiveMarketData();
-                        } else {
-                            loadHallOfFame();
-                        }
+                        if (state.viewTab === 'active') fetchLiveMarketData();
+                        else loadHallOfFame();
                     }
                 )
                 .subscribe();
@@ -1174,9 +1161,7 @@
                         }
                     });
                 };
-            } catch (err) {
-                console.log("WebSocket init failure:", err);
-            }
+            } catch (err) {}
         }
 
         function showAuthFeedback(msg, isSuccess = false) {
@@ -1216,24 +1201,19 @@
                 showAuthFeedback("Please enter both email and password.");
                 return;
             }
-            if(!_supabase) {
-                showAuthFeedback("Authentication service currently unavailable.");
-                return;
-            }
+            if(!_supabase) return;
 
             if(isSignUpMode) {
                 const { error } = await _supabase.auth.signUp({ email, password });
-                if(error) {
-                    showAuthFeedback(error.message);
-                } else {
+                if(error) showAuthFeedback(error.message);
+                else {
                     showAuthFeedback("Registration successful! You can now log in.", true);
                     setTimeout(() => toggleAuthMode(), 1200);
                 }
             } else {
                 const { error } = await _supabase.auth.signInWithPassword({ email, password });
-                if(error) {
-                    showAuthFeedback(error.message);
-                } else {
+                if(error) showAuthFeedback(error.message);
+                else {
                     showAuthFeedback("Login successful! Loading membership profile...", true);
                     setTimeout(() => {
                         closeAuthModal();
@@ -1305,7 +1285,7 @@
                     const vipTelegramBtn = (state.role === 'pro' || state.role === 'vip') 
                         ? `<a href="https://t.me/+VA3Yu45-zosyOTRl" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition font-mono flex items-center gap-1 shadow-md shadow-blue-600/30">
                            <span>✈️</span> Join VIP Channel
-                          </a>` 
+                           </a>` 
                         : '';
 
                     headerSec.innerHTML = `
@@ -1321,9 +1301,7 @@
                     state.role = 'free';
                     state.limit = 3;
                 }
-            } catch (err) {
-                console.error("Session check error:", err);
-            }
+            } catch (err) {}
             fetchLiveMarketData();
         }
 
@@ -1470,5 +1448,9 @@
             initBinanceTicker();
         });
     </script>
+
+    <!-- Botpress Webchat Integration -->
+    <script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
+    <script src="https://files.bpcontent.cloud/2026/09/03/11/20260903111718-R8N17E0S.js" defer></script>
 </body>
 </html>
