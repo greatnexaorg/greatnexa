@@ -29,7 +29,6 @@
                            class="w-full text-xs font-mono bg-[#0b1324] border border-white/15 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
                 </div>
                 
-                <!-- Password with Eye Toggle -->
                 <div>
                     <label class="block text-[11px] font-mono text-gray-400 mb-1">Secure Password</label>
                     <div class="relative">
@@ -192,7 +191,7 @@
                     throw new Error("অননুমোদিত অ্যাকাউন্ট! আপনি অ্যাডমিন নন।");
                 }
             } catch (err) {
-                errBox.innerText = err.message || "লগইন ব্যর্থ হয়েছে!";
+                errBox.innerText = err.message || "লগইন ব্যর্থ হয়েছে!";
                 errBox.classList.remove('hidden');
             } finally {
                 submitBtn.innerText = "Verify & Unlock";
@@ -218,6 +217,8 @@
 
         async function handleAdminLogout() {
             await _supabase.auth.signOut();
+            localStorage.clear();
+            sessionStorage.clear();
             location.reload();
         }
 
