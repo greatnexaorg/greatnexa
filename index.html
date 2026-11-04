@@ -434,10 +434,10 @@
                     <div>
                         <div class="flex items-center justify-between">
                             <span class="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-xs font-bold font-mono">Public Tier</span>
-                            <span id="badgeTierFree" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-gray-500/20 text-gray-300 border border-gray-500/40">Active Plan</span>
                         </div>
                         <div class="mt-4 flex items-baseline justify-between">
                             <h3 class="text-3xl font-extrabold text-white notranslate">$0 <span class="text-xs text-gray-400 font-normal">/ lifetime</span></h3>
+                            <span id="countdownFree" class="text-[11px] font-mono text-gray-300 bg-black/40 px-2.5 py-1 rounded-lg border border-white/10 hidden">⭐ Active Plan • Lifetime</span>
                         </div>
                         <p class="text-xs text-gray-400 mt-1">Basic exploratory scanner for individual traders.</p>
                         <ul class="space-y-3 text-xs text-gray-300 mt-6 font-mono">
@@ -447,7 +447,7 @@
                             <li class="flex items-center gap-2 text-gray-600">❌ VIP Telegram Webhook</li>
                         </ul>
                     </div>
-                    <button id="btnTierFree" disabled class="w-full py-2.5 bg-gray-800/50 text-gray-400 rounded-xl text-xs font-bold border border-white/5 font-mono cursor-not-allowed">Active Plan</button>
+                    <button id="btnTierFree" class="w-full py-2.5 bg-gray-800 text-gray-300 rounded-xl text-xs font-bold border border-white/10 font-mono">Current Tier</button>
                 </div>
 
                 <!-- Pro Monthly -->
@@ -459,7 +459,6 @@
                                 <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold font-mono border border-blue-500/40">Pro Monthly</span>
                                 <span class="text-xs text-gray-400 line-through font-mono notranslate">$199</span>
                             </div>
-                            <span id="badgeTierPro" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40 animate-pulse">Active Plan</span>
                         </div>
                         <div class="mt-4 flex items-baseline justify-between">
                             <h3 class="text-4xl font-extrabold text-white notranslate">$5 <span class="text-xs text-gray-400 font-normal">/ mo</span></h3>
@@ -487,7 +486,6 @@
                                 <span class="px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-xs font-extrabold border border-amber-500/40 font-mono">VIP 2-Year Pass</span>
                                 <span class="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded font-mono">Save $400+</span>
                             </div>
-                            <span id="badgeTierVip" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">Active Plan</span>
                         </div>
                         <div class="mt-4 flex items-baseline justify-between">
                             <div class="flex items-baseline gap-2">
@@ -715,7 +713,7 @@
         </div>
     </div>
 
-    <!-- Auth Modal -->
+    <!-- Auth Modal (Login / Signup) -->
     <div id="authModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
             <button type="button" onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
@@ -733,10 +731,38 @@
                     <label class="block text-[11px] text-gray-400 mb-1 font-mono">Password</label>
                     <input type="password" id="authPassword" placeholder="••••••••" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
                 </div>
+                
+                <!-- Forgot Password Link -->
+                <div class="text-right">
+                    <button type="button" onclick="openForgotPasswordModal()" class="text-[11px] text-blue-400 hover:underline font-mono">Forgot Password?</button>
+                </div>
+
                 <button type="button" onclick="handleAuthAction()" id="authSubmitBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer font-mono">Login</button>
                 <div class="flex justify-between items-center text-xs text-gray-400 pt-2">
                     <span id="authToggleText">Don't have an account?</span>
                     <button type="button" onclick="toggleAuthMode()" id="authToggleBtn" class="text-blue-400 hover:underline font-semibold cursor-pointer">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal (NEW FEATURE) -->
+    <div id="forgotPasswordModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
+        <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
+            <button type="button" onclick="closeForgotPasswordModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
+            <h3 class="text-lg font-bold text-white mb-1">Reset Password</h3>
+            <p class="text-xs text-gray-400 mb-4">Enter your registered email to receive a password reset link.</p>
+
+            <div id="forgotFeedback" class="hidden text-xs p-3 rounded-xl mb-4 border font-medium"></div>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-[11px] text-gray-400 mb-1 font-mono">Email Address</label>
+                    <input type="email" id="forgotEmail" placeholder="your@email.com" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 font-mono">
+                </div>
+                <button type="button" onclick="handlePasswordReset()" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer font-mono">Send Reset Link</button>
+                <div class="text-center pt-2">
+                    <button type="button" onclick="backToLoginModal()" class="text-xs text-gray-400 hover:text-white underline font-semibold cursor-pointer">Back to Login</button>
                 </div>
             </div>
         </div>
@@ -797,6 +823,49 @@
         function closeSupportModal() {
             document.getElementById('supportModal').classList.add('hidden');
             document.getElementById('supportModal').classList.remove('flex');
+        }
+
+        // Forgot Password Modal Handlers
+        function openForgotPasswordModal() {
+            closeAuthModal();
+            document.getElementById('forgotFeedback').className = "hidden";
+            document.getElementById('forgotEmail').value = "";
+            document.getElementById('forgotPasswordModal').classList.remove('hidden');
+            document.getElementById('forgotPasswordModal').classList.add('flex');
+        }
+
+        function closeForgotPasswordModal() {
+            document.getElementById('forgotPasswordModal').classList.add('hidden');
+            document.getElementById('forgotPasswordModal').classList.remove('flex');
+        }
+
+        function backToLoginModal() {
+            closeForgotPasswordModal();
+            openAuthModal('login');
+        }
+
+        async function handlePasswordReset() {
+            const email = document.getElementById('forgotEmail').value.trim();
+            const feedbackBox = document.getElementById('forgotFeedback');
+
+            if(!email) {
+                feedbackBox.className = "text-xs p-3 rounded-xl mb-4 border bg-rose-950/40 text-rose-300 border-rose-500/30 block font-mono";
+                feedbackBox.innerText = "Please enter your registered email address.";
+                return;
+            }
+            if(!_supabase) return;
+
+            const { error } = await _supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.origin + '/'
+            });
+
+            if(error) {
+                feedbackBox.className = "text-xs p-3 rounded-xl mb-4 border bg-rose-950/40 text-rose-300 border-rose-500/30 block font-mono";
+                feedbackBox.innerText = error.message;
+            } else {
+                feedbackBox.className = "text-xs p-3 rounded-xl mb-4 border bg-emerald-950/40 text-emerald-300 border-emerald-500/30 block font-mono";
+                feedbackBox.innerText = "✔ Password reset link sent! Check your email inbox.";
+            }
         }
 
         async function submitSupportTicket(e) {
@@ -1099,8 +1168,8 @@
             if(countdownVip) countdownVip.classList.add('hidden');
 
             if(btnFree) {
-                btnFree.innerText = "Public Tier";
-                btnFree.className = "w-full py-2.5 bg-gray-800 text-gray-300 rounded-xl text-xs font-bold border border-white/10 font-mono";
+                btnFree.innerText = "Current Tier";
+                btnFree.className = "w-full py-2.5 bg-gray-900 text-gray-500 rounded-xl text-xs font-bold cursor-not-allowed border border-white/5 font-mono";
                 btnFree.disabled = false;
             }
             if(btnPro) {
