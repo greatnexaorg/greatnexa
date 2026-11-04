@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GreatNexa Terminal | Institutional Admin Portal</title>
+    <title>GreatNexa Terminal | Advanced Institutional Admin Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -56,13 +56,13 @@
         <header class="flex flex-wrap justify-between items-center gap-4 border-b border-white/10 pb-4">
             <div>
                 <h1 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-                    <span>🛡️</span> GreatNexa Institutional Admin & Automation Center
+                    <span>🛡️</span> GreatNexa Advanced Admin & Automation Suite
                 </h1>
                 <p class="text-xs text-gray-400">Connected: <span id="adminSessionEmail" class="text-blue-400 font-mono"></span></p>
             </div>
             <div class="flex items-center gap-3">
                 <button onclick="loadAdminData()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-xs font-bold rounded-xl transition shadow flex items-center gap-1.5 cursor-pointer font-mono">
-                    🔄 Refresh
+                    🔄 Refresh All
                 </button>
                 <button onclick="handleAdminLogout()" class="px-3.5 py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 text-xs font-bold rounded-xl transition cursor-pointer font-mono">
                     Sign Out
@@ -95,7 +95,7 @@
             </div>
         </div>
 
-        <!-- 5. লাইভ সেলস অ্যানালিটিক্স ও রেভিনিউ চার্ট (Chart.js) -->
+        <!-- Analytics & Coupons Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-2 glass-panel p-5 rounded-2xl border border-white/10">
                 <h3 class="text-xs font-bold text-gray-300 mb-3 font-mono uppercase">📊 Revenue Analytics & Sales Growth</h3>
@@ -104,7 +104,7 @@
                 </div>
             </div>
 
-            <!-- 4. প্রোমো কোড ও ডিসকাউন্ট কুপন ম্যানেজমেন্ট -->
+            <!-- 3. প্রোমো কোড ও ডিসকাউন্ট কুপন সিস্টেম -->
             <div class="glass-panel p-5 rounded-2xl border border-white/10 flex flex-col justify-between space-y-4">
                 <div>
                     <h3 class="text-xs font-bold text-blue-400 mb-3 font-mono uppercase">🎟️ Create Discount Coupon</h3>
@@ -120,11 +120,28 @@
             </div>
         </div>
 
-        <!-- Orders Table & 3. WhatsApp/Email Auto-Notification -->
+        <!-- 1. ইউজার ও সাবস্ক্রিপশন ম্যানেজমেন্ট (User & Tier Control) -->
+        <div class="glass-panel p-5 rounded-2xl border border-white/10 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-bold text-white font-mono">👥 User & Tier Management (Pro / VIP Override)</h3>
+                <span class="text-xs text-gray-400 font-mono">Manage user access manually</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
+                <input type="email" id="targetUserEmail" placeholder="User Email (e.g. user@gmail.com)" class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2.5">
+                <select id="targetUserTier" class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2.5 [&>option]:bg-[#0b1324]">
+                    <option value="free">Free Tier</option>
+                    <option value="pro">Pro Tier (30 Days)</option>
+                    <option value="vip">VIP Tier (2 Years)</option>
+                </select>
+                <button onclick="handleManualUserUpgrade()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl transition cursor-pointer">Update User Tier</button>
+            </div>
+        </div>
+
+        <!-- Orders Table & 2. WhatsApp/Email Auto-Notification & TrxID Verification -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10">
             <div class="p-4 border-b border-white/10 flex justify-between items-center">
                 <h3 class="text-sm font-bold text-white font-mono">⚡ Pending Orders & Auto-Delivery Gateway</h3>
-                <span class="text-xs text-gray-400 font-mono">Click 'Approve & Send' for Instant WA/Email Push</span>
+                <span class="text-xs text-gray-400 font-mono">Duplicate TrxID Protection Active</span>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-gray-300">
@@ -144,6 +161,17 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- 4. টিকিট বা কাস্টমার সাপোর্ট সিস্টেম (Support Desk) -->
+        <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 p-5 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-bold text-white font-mono">🎫 Customer Support Helpdesk Tickets</h3>
+                <span class="text-xs text-gray-400 font-mono">Inquiries & Issue Reports</span>
+            </div>
+            <div id="supportTicketsList" class="space-y-3 font-mono text-xs">
+                <p class="text-gray-400">Loading support tickets...</p>
             </div>
         </div>
     </div>
@@ -259,6 +287,7 @@
         async function loadAdminData() {
             await loadOrders();
             await loadCoupons();
+            await loadSupportTickets();
         }
 
         async function loadOrders() {
@@ -318,6 +347,7 @@
             renderRevenueChart(chartDates);
         }
 
+        // 2. ডুপ্লিকেট TrxID প্রতিরোধ সহ অর্ডার অ্যাপ্রুভ ও অটো-নোটিফিকেশন
         function openDeliveryModal(order) {
             currentActiveOrder = order;
             document.getElementById('modalCustomerInfo').innerText = `Customer: ${order.email || order.customer_name} | Product: ${order.product_name}`;
@@ -332,7 +362,6 @@
             currentActiveOrder = null;
         }
 
-        // 3. হোয়াটসঅ্যাপ ও ইমেল অটোমেশন (Auto-Notification & Approval)
         async function executeAutoApproveAndSend() {
             if (!currentActiveOrder) return;
             const creds = document.getElementById('deliveryCredentials').value.trim();
@@ -341,7 +370,13 @@
             const days = isVIP ? 730 : 30;
 
             try {
-                // ১. ডাটাবেজে অর্ডার এপ্রুভ ও ডেলিভারি ডেটা সেভ
+                // ডুপ্লিকেট TrxID চেক
+                const { data: existingTrx } = await _supabase.from('orders').select('id').eq('trx_id', currentActiveOrder.trx_id).eq('status', 'approved');
+                if (existingTrx && existingTrx.length > 0) {
+                    alert("⚠️ সতর্কতা: এই TrxID দিয়ে ইতিপূর্বেই একটি অর্ডার অ্যাপ্রুভ করা হয়েছে!");
+                    return;
+                }
+
                 const { error } = await _supabase.rpc('admin_approve_order', {
                     p_order_id: currentActiveOrder.id,
                     p_user_email: currentActiveOrder.email || currentActiveOrder.customer_name,
@@ -350,17 +385,15 @@
                 });
 
                 if (error) throw error;
-
                 await _supabase.from('orders').update({ delivery_data: creds }).eq('id', currentActiveOrder.id);
 
-                // ২. অটোমেটিক WhatsApp Web / API ফ্লো ওপেন করা
                 const phoneNum = (currentActiveOrder.whatsapp || currentActiveOrder.phone || '').replace(/[^0-9]/g, '');
                 if (phoneNum) {
                     const waText = encodeURIComponent(`Hi ${currentActiveOrder.customer_name || 'Customer'}, your GreatNexa order (${currentActiveOrder.product_name}) is approved!\n\n${creds}\n\nTelegram VIP: ${TELEGRAM_VIP_LINK}`);
                     window.open(`https://wa.me/${phoneNum.startsWith('88') ? phoneNum : '88' + phoneNum}?text=${waText}`, '_blank');
                 }
 
-                alert("✔ Order approved successfully and WhatsApp notification triggered!");
+                alert("✔ Order approved successfully & WhatsApp notification sent!");
                 closeDeliveryModal();
                 loadOrders();
 
@@ -369,7 +402,25 @@
             }
         }
 
-        // 4. প্রোমো কোড ও ডিসকাউন্ট কুপন সিস্টেম
+        // 1. ম্যানুয়াল ইউজার ও টিয়ার ম্যানেজমেন্ট
+        async function handleManualUserUpgrade() {
+            const email = document.getElementById('targetUserEmail').value.trim();
+            const tier = document.getElementById('targetUserTier').value;
+            if(!email) { alert("Please enter user email."); return; }
+
+            const expiryDays = tier === 'vip' ? 730 : (tier === 'pro' ? 30 : null);
+            let expiresAt = expiryDays ? new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000).toISOString() : null;
+
+            const { error } = await _supabase.from('user_profiles').update({ tier: tier, expires_at: expiresAt }).eq('email', email);
+            if(error) {
+                alert("Failed to update user tier: " + error.message);
+            } else {
+                alert(`✔ Success! User ${email} updated to ${tier.toUpperCase()} tier.`);
+                document.getElementById('targetUserEmail').value = '';
+            }
+        }
+
+        // 3. কুপন ম্যানেজমেন্ট
         async function handleCreateCoupon(e) {
             e.preventDefault();
             const code = document.getElementById('couponCode').value.trim().toUpperCase();
@@ -379,7 +430,7 @@
             if (error) {
                 alert("Error creating coupon: " + error.message);
             } else {
-                alert(`✔ Coupon ${code} (${discount}%) created successfully!`);
+                alert(`✔ Coupon ${code} (${discount}%) created!`);
                 document.getElementById('couponCode').value = '';
                 document.getElementById('couponDiscount').value = '';
                 loadCoupons();
@@ -389,22 +440,36 @@
         async function loadCoupons() {
             const listDiv = document.getElementById('activeCouponsList');
             const { data } = await _supabase.from('coupons').select('*').eq('is_active', true);
-            if (!data || data.length === 0) {
-                listDiv.innerHTML = "No active coupons found.";
-                return;
-            }
+            if (!data || data.length === 0) { listDiv.innerHTML = "No active coupons."; return; }
             listDiv.innerHTML = data.map(c => `<div><b>${c.code}</b>: ${c.discount_pct}% OFF</div>`).join('');
         }
 
-        // 5. লাইভ সেলস অ্যানালিটিক্স ও রেভিনিউ চার্ট (Chart.js)
+        // 4. সাপোর্ট টিকিট সিস্টেম
+        async function loadSupportTickets() {
+            const ticketDiv = document.getElementById('supportTicketsList');
+            const { data, error } = await _supabase.from('support_tickets').select('*').order('created_at', { ascending: false }).limit(10);
+            if (error || !data || data.length === 0) {
+                ticketDiv.innerHTML = `<p class="text-gray-400">No support tickets found.</p>`;
+                return;
+            }
+            ticketDiv.innerHTML = data.map(t => `
+                <div class="p-3 bg-[#0b1324] border border-white/10 rounded-xl flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-white">${t.subject} <span class="text-xs text-blue-400">(${t.email})</span></p>
+                        <p class="text-gray-300 text-xs mt-0.5">${t.message}</p>
+                    </div>
+                    <span class="px-2.5 py-1 bg-amber-500/20 text-amber-300 rounded text-[10px] font-bold">${(t.status || 'open').toUpperCase()}</span>
+                </div>
+            `).join('');
+        }
+
+        // 5. রেভিনিউ চার্ট (Chart.js)
         function renderRevenueChart(dateMap) {
             const ctx = document.getElementById('salesRevenueChart').getContext('2d');
             const labels = Object.keys(dateMap).sort();
             const counts = labels.map(l => dateMap[l]);
 
-            if (revenueChartInstance) {
-                revenueChartInstance.destroy();
-            }
+            if (revenueChartInstance) { revenueChartInstance.destroy(); }
 
             revenueChartInstance = new Chart(ctx, {
                 type: 'line',
