@@ -32,7 +32,7 @@ session.headers.update({
 })
 
 # ==============================================================================
-# ২. টেলিগ্রাম ভিআইপি সিগন্যাল অ্যালার্ট ইঞ্জিন
+# ২. টেলিগ্রাম ভিআইপি সিগন্যাল অ্যালার্ট ইঞ্জিন (Rate-Limit Safe Delay)
 # ==============================================================================
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
@@ -61,6 +61,11 @@ def send_telegram_alert(signal):
         res = session.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": msg, "parse_mode": "Markdown"}, timeout=8)
         if res.status_code == 200:
             print(f"✔ Telegram Alert Pushed: {sym} ({direction})")
+        elif res.status_code == 429:
+            retry_after = res.json().get('parameters', {}).get('retry_after', 10)
+            print(f"[-] Telegram Rate Limited (429). Waiting {retry_after}s...")
+            time.sleep(retry_after)
+            session.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": msg, "parse_mode": "Markdown"}, timeout=8)
         else:
             print(f"[-] Telegram API Response: {res.text}")
     except Exception as e:
@@ -511,7 +516,7 @@ def run():
             for s in new_setups:
                 if s.get("score", 0) >= 92:
                     send_telegram_alert(s)
-                    time.sleep(1.5)
+                    time.sleep(3.5)  # টেলিগ্রাম রেট লিমিট এড়াতে বিরতি
                 
         except Exception as e:
             print(f"[-] Batch insert error: {e}")
