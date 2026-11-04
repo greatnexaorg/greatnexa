@@ -220,8 +220,8 @@
                     🛍️ Digital Store
                 </a>
 
-                <!-- Support Ticket Button -->
-                <button onclick="openSupportModal()" class="px-3.5 py-2 rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600 hover:text-white text-xs font-bold transition cursor-pointer">
+                <!-- Support Ticket Button (New Feature) -->
+                <button onclick="openSupportModal()" class="px-3 py-2 rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600 hover:text-white text-xs font-bold transition cursor-pointer">
                     🎫 Support Ticket
                 </button>
 
@@ -571,20 +571,21 @@
         </div>
     </div>
 
-    <!-- Multi-Channel Checkout Modal with Coupon Support -->
+    <!-- Multi-Channel Checkout Modal (Binance Pay / bKash / Nagad) with Coupon Support -->
     <div id="paymentModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
             <button type="button" onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
             <h3 class="text-lg font-bold text-white mb-1">Upgrade Tier Checkout</h3>
             <p id="payPlanName" class="text-xs text-blue-400 font-semibold mb-2 notranslate font-mono"></p>
             <p id="displayPrice" class="text-xs font-bold text-emerald-400 font-mono mb-3"></p>
-            
+
+            <!-- Coupon Input Box -->
             <div class="flex gap-2 mb-3">
                 <input type="text" id="appliedCouponCode" placeholder="Enter Coupon (e.g. NEXA20)" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-3 py-2 uppercase font-mono">
                 <button type="button" onclick="applyDiscountCoupon()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl transition cursor-pointer">Apply</button>
             </div>
             <div id="couponMsg" class="text-xs font-mono mb-3"></div>
-
+            
             <div class="grid grid-cols-2 gap-2 mb-3">
                 <button type="button" onclick="setPaymentMethod('crypto')" id="pay-opt-crypto" class="py-2 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow">Binance Pay / USDT</button>
                 <button type="button" onclick="setPaymentMethod('local')" id="pay-opt-local" class="py-2 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10">bKash / Nagad</button>
@@ -612,7 +613,7 @@
         </div>
     </div>
 
-    <!-- Support Ticket Modal -->
+    <!-- Support Ticket Modal (New Feature) -->
     <div id="supportModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative space-y-4">
             <button type="button" onclick="closeSupportModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
@@ -693,6 +694,8 @@
         };
         let liveMarketData = [];
         let selectedPlan = '';
+        let selectedPriceUSD = 0;
+        let selectedPriceBDT = 0;
         let basePriceUSD = 0;
         let basePriceBDT = 0;
         let currentDiscountPct = 0;
@@ -700,6 +703,7 @@
         let isSignUpMode = false;
         let activeCalcItem = null;
 
+        // Support Ticket Functions
         function openSupportModal() {
             document.getElementById('supportModal').classList.remove('hidden');
             document.getElementById('supportModal').classList.add('flex');
@@ -728,6 +732,7 @@
             }
         }
 
+        // Coupon Application Functions
         async function applyDiscountCoupon() {
             const codeInput = document.getElementById('appliedCouponCode').value.trim().toUpperCase();
             const msgBox = document.getElementById('couponMsg');
@@ -1174,6 +1179,70 @@
             }
         }
 
+        function showAuthFeedback(msg, isSuccess = false) {
+            const box = document.getElementById('authFeedback');
+            box.className = isSuccess 
+                ? "text-xs p-3 rounded-xl mb-4 border bg-emerald-950/40 text-emerald-300 border-emerald-500/30 block font-mono"
+                : "text-xs p-3 rounded-xl mb-4 border bg-rose-950/40 text-rose-300 border-rose-500/30 block font-mono";
+            box.innerText = msg;
+        }
+
+        function openAuthModal(mode) {
+            isSignUpMode = (mode === 'signup');
+            document.getElementById('authTitle').innerText = isSignUpMode ? "Create GreatNexa Account" : "Login to GreatNexa";
+            document.getElementById('authSubmitBtn').innerText = isSignUpMode ? "Sign Up" : "Login";
+            document.getElementById('authFeedback').className = "hidden";
+            
+            const modal = document.getElementById('authModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeAuthModal() {
+            const modal = document.getElementById('authModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function toggleAuthMode() {
+            openAuthModal(isSignUpMode ? 'login' : 'signup');
+        }
+
+        async function handleAuthAction() {
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+            
+            if(!email || !password) {
+                showAuthFeedback("Please enter both email and password.");
+                return;
+            }
+            if(!_supabase) {
+                showAuthFeedback("Authentication service currently unavailable.");
+                return;
+            }
+
+            if(isSignUpMode) {
+                const { error } = await _supabase.auth.signUp({ email, password });
+                if(error) {
+                    showAuthFeedback(error.message);
+                } else {
+                    showAuthFeedback("Registration successful! You can now log in.", true);
+                    setTimeout(() => toggleAuthMode(), 1200);
+                }
+            } else {
+                const { error } = await _supabase.auth.signInWithPassword({ email, password });
+                if(error) {
+                    showAuthFeedback(error.message);
+                } else {
+                    showAuthFeedback("Login successful! Loading membership profile...", true);
+                    setTimeout(() => {
+                        closeAuthModal();
+                        checkUserSession();
+                    }, 800);
+                }
+            }
+        }
+
         async function checkUserSession() {
             const headerSec = document.getElementById('authHeaderSection');
             if(!_supabase) return;
@@ -1203,21 +1272,58 @@
 
                     state.role = (userTier === 'vip') ? 'vip' : ((userTier === 'pro') ? 'pro' : 'free');
 
-                    let tierBadge = (state.role === 'vip') ? `<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold">VIP (${daysLeft !== null ? daysLeft + 'd left' : 'Lifetime'})</span>` : 
-                                    (state.role === 'pro') ? `<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-full font-bold">PRO (${daysLeft !== null ? daysLeft + 'd left' : 'Active'})</span>` : 
-                                    '<span class="text-[10px] bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full">FREE</span>';
+                    let tierBadge = '';
+                    const guardBox = document.getElementById('limitGuardBox');
+                    const guardText = document.getElementById('limitGuardText');
+
+                    if(state.role === 'vip') {
+                        tierBadge = `<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">VIP (${daysLeft !== null ? daysLeft + 'd left' : 'Lifetime'})</span>`;
+                        state.limit = 20;
+                        if(guardBox && guardText) {
+                            guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-amber-950/30 text-[11px] font-mono text-amber-300 space-y-1";
+                            guardText.innerText = "VIP Institutional Membership Unlocked: Full Top 20 Alpha Access.";
+                        }
+                    } else if(state.role === 'pro') {
+                        tierBadge = `<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">PRO (${daysLeft !== null ? daysLeft + 'd left' : 'Active'})</span>`;
+                        state.limit = 10;
+                        if(guardBox && guardText) {
+                            guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-blue-950/30 text-[11px] font-mono text-blue-300 space-y-1";
+                            guardText.innerText = "Pro Trader Pass Active: Unlocked Up to 10 Alpha Setups.";
+                        }
+                    } else {
+                        tierBadge = '<span class="text-[10px] bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full font-bold notranslate font-mono">FREE TIER</span>';
+                        state.limit = 3;
+                        if(guardBox && guardText) {
+                            guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-black/30 text-[11px] font-mono text-gray-400 space-y-1";
+                            guardText.innerText = "Free tier enforces Top 3 setups automatically. Unlock all 20 setups with Pro/VIP membership.";
+                        }
+                    }
+
+                    const select = document.getElementById('shortlistSelect');
+                    if(select) select.value = String(state.limit);
+
+                    const vipTelegramBtn = (state.role === 'pro' || state.role === 'vip') 
+                        ? `<a href="https://t.me/+VA3Yu45-zosyOTRl" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition font-mono flex items-center gap-1 shadow-md shadow-blue-600/30">
+                           <span>✈️</span> Join VIP Channel
+                          </a>` 
+                        : '';
 
                     headerSec.innerHTML = `
                         <div class="flex items-center gap-2">
-                            <span class="text-xs text-white">${session.user.email}</span>
+                            <span class="text-xs text-white font-medium notranslate font-mono">${session.user.email}</span>
                             ${tierBadge}
+                            ${vipTelegramBtn}
                         </div>
-                        <button type="button" onclick="handleLogout()" class="px-2.5 py-1 bg-rose-600 text-white text-xs font-bold rounded-lg cursor-pointer">Logout</button>
+                        <button type="button" onclick="handleLogout()" class="px-2.5 py-1 rounded-lg bg-rose-600/80 hover:bg-rose-500 text-white text-xs font-bold transition cursor-pointer font-mono">Logout</button>
                     `;
                 } else {
                     headerSec.innerHTML = `<button type="button" onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>`;
+                    state.role = 'free';
+                    state.limit = 3;
                 }
-            } catch (err) { console.error("Session error:", err); }
+            } catch (err) {
+                console.error("Session check error:", err);
+            }
             fetchLiveMarketData();
         }
 
@@ -1226,21 +1332,136 @@
             checkUserSession();
         }
 
-        function openAuthModal() {
-            document.getElementById('authModal').classList.remove('hidden');
-            document.getElementById('authModal').classList.add('flex');
+        function setPaymentMethod(method) {
+            activePaymentMethod = method;
+            const btnCrypto = document.getElementById('pay-opt-crypto');
+            const btnLocal = document.getElementById('pay-opt-local');
+            const boxCrypto = document.getElementById('cryptoPaymentBox');
+            const boxLocal = document.getElementById('localPaymentBox');
+            const phoneWrap = document.getElementById('localSenderPhoneWrap');
+
+            if (method === 'crypto') {
+                btnCrypto.className = "py-2 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow";
+                btnLocal.className = "py-2 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10";
+                boxCrypto.classList.remove('hidden');
+                boxLocal.classList.add('hidden');
+                phoneWrap.classList.add('hidden');
+                document.getElementById('payTrxId').placeholder = "Enter Transaction Hash / ID";
+            } else {
+                btnLocal.className = "py-2 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow";
+                btnCrypto.className = "py-2 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10";
+                boxLocal.classList.remove('hidden');
+                boxCrypto.classList.add('hidden');
+                phoneWrap.classList.remove('hidden');
+                document.getElementById('payTrxId').placeholder = "Enter bKash/Nagad TrxID";
+            }
         }
 
-        function closeAuthModal() {
-            document.getElementById('authModal').classList.add('hidden');
-            document.getElementById('authModal').classList.remove('flex');
+        function openPaymentModal(planName, usdPrice, bdtPrice) {
+            selectedPlan = planName;
+            basePriceUSD = usdPrice;
+            basePriceBDT = bdtPrice;
+            currentDiscountPct = 0;
+            document.getElementById('payPlanName').innerText = `Selected Plan: ${planName}`;
+            document.getElementById('appliedCouponCode').value = '';
+            document.getElementById('couponMsg').innerText = '';
+            updateModalPricingDisplay();
+            setPaymentMethod('crypto');
+
+            const modal = document.getElementById('paymentModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
-        async function handleAuthAction() {
-            const email = document.getElementById('authEmail').value.trim();
-            const password = document.getElementById('authPassword').value.trim();
-            const { error } = await _supabase.auth.signInWithPassword({ email, password });
-            if(error) { alert(error.message); } else { closeAuthModal(); checkUserSession(); }
+        function closePaymentModal() {
+            const modal = document.getElementById('paymentModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function submitPaymentOrder() {
+            const trxId = document.getElementById('payTrxId').value.trim();
+            const senderPhone = document.getElementById('paySenderPhone').value.trim();
+            
+            if(!trxId) { alert("Please enter Transaction Hash or TrxID."); return; }
+            if(activePaymentMethod === 'local' && !senderPhone) { alert("Please enter your bKash/Nagad sender number."); return; }
+            if(!_supabase) return;
+
+            const { data: { session } } = await _supabase.auth.getSession();
+            if(!session) {
+                alert("Please log in first to submit your payment verification.");
+                closePaymentModal();
+                openAuthModal('login');
+                return;
+            }
+
+            const userEmail = session.user.email;
+            const channel = activePaymentMethod === 'local' ? `bKash/Nagad (${senderPhone})` : 'Binance Pay / USDT';
+            
+            const finalUSD = (basePriceUSD * (1 - currentDiscountPct / 100)).toFixed(2);
+            const finalBDT = Math.round(basePriceBDT * (1 - currentDiscountPct / 100));
+            const priceRecorded = activePaymentMethod === 'local' ? `${finalBDT} BDT` : `$${finalUSD}`;
+
+            const { error } = await _supabase.from('orders').insert([
+                { 
+                    customer_name: userEmail, 
+                    product_name: selectedPlan + (currentDiscountPct > 0 ? ` [Coupon: ${currentDiscountPct}% OFF]` : ''), 
+                    price: priceRecorded, 
+                    trx_id: trxId, 
+                    status: 'pending', 
+                    phone: channel, 
+                    email: userEmail 
+                }
+            ]);
+
+            if(error) {
+                alert("Error: " + error.message);
+            } else {
+                alert("Payment submitted successfully! Admin will verify and activate your tier shortly.");
+                closePaymentModal();
+                document.getElementById('payTrxId').value = '';
+                document.getElementById('paySenderPhone').value = '';
+            }
+        }
+
+        // ================= TRADINGVIEW CHART =================
+        function openChart(rawSymbol, name) {
+            const modal = document.getElementById('chartModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('modalTitle').innerText = `${name} - Institutional Chart`;
+            
+            let clean = rawSymbol.replace(/[^a-zA-Z0-9]/g, '');
+            let tvTicker = `BINANCE:${clean}`;
+
+            if(state.market === 'forex') {
+                if(clean.includes("XAU") || clean.includes("GOLD")) tvTicker = "OANDA:XAUUSD";
+                else if(clean.includes("XAG")) tvTicker = "OANDA:XAGUSD";
+                else if(clean.includes("WTI") || clean.includes("CRUDE")) tvTicker = "TVC:USOIL";
+                else if(clean.includes("NATGAS")) tvTicker = "TVC:NATGAS";
+                else tvTicker = `FX:${clean}`;
+            } 
+            else if(state.market === 'stocks') {
+                const nyseTickers = ["JPM", "V", "DIS", "BA", "IBM", "CAT", "GS", "UNH", "XOM", "WMT", "KO", "MCD"];
+                tvTicker = nyseTickers.includes(clean) ? `NYSE:${clean}` : `NASDAQ:${clean}`;
+            }
+
+            if (window.TradingView) {
+                new window.TradingView.widget({
+                    "autosize": true,
+                    "symbol": tvTicker,
+                    "interval": "60",
+                    "theme": "dark",
+                    "container_id": "tv_chart_container"
+                });
+            }
+        }
+
+        function closeChart() {
+            const modal = document.getElementById('chartModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.getElementById('tv_chart_container').innerHTML = "";
         }
 
         window.addEventListener('DOMContentLoaded', () => {
