@@ -727,13 +727,31 @@
                     <label class="block text-[11px] text-gray-400 mb-1 font-mono">Email Address</label>
                     <input type="email" id="authEmail" placeholder="your@email.com" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
                 </div>
+                
+                <!-- Password with Eye Icon -->
                 <div>
                     <label class="block text-[11px] text-gray-400 mb-1 font-mono">Password</label>
-                    <input type="password" id="authPassword" placeholder="••••••••" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
+                    <div class="relative">
+                        <input type="password" id="authPassword" placeholder="••••••••" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 pr-10 focus:outline-none focus:border-blue-500">
+                        <button type="button" onclick="togglePasswordVisibility('authPassword', 'eyeIconLogin')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white focus:outline-none cursor-pointer">
+                            <span id="eyeIconLogin">👁️</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Confirm Password (Only for Signup) -->
+                <div id="confirmPasswordGroup" class="hidden">
+                    <label class="block text-[11px] text-gray-400 mb-1 font-mono">Confirm Password</label>
+                    <div class="relative">
+                        <input type="password" id="authConfirmPassword" placeholder="••••••••" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 pr-10 focus:outline-none focus:border-blue-500">
+                        <button type="button" onclick="togglePasswordVisibility('authConfirmPassword', 'eyeIconConfirm')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white focus:outline-none cursor-pointer">
+                            <span id="eyeIconConfirm">👁️</span>
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Forgot Password Link -->
-                <div class="text-right">
+                <div id="forgotPassWrapper" class="text-right">
                     <button type="button" onclick="openForgotPasswordModal()" class="text-[11px] text-blue-400 hover:underline font-mono">Forgot Password?</button>
                 </div>
 
@@ -772,14 +790,28 @@
     <div id="newPasswordModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-[80] p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-blue-500/40 shadow-2xl relative">
             <h3 class="text-lg font-bold text-white mb-1">Set New Password</h3>
-            <p class="text-xs text-gray-400 mb-4">Please enter your new secure password below.</p>
+            <p class="text-xs text-gray-400 mb-4">Please enter your new secure password and confirm it below.</p>
 
             <div id="newPassFeedback" class="hidden text-xs p-3 rounded-xl mb-4 border font-medium"></div>
 
             <div class="space-y-3">
                 <div>
                     <label class="block text-[11px] text-gray-400 mb-1 font-mono">New Password</label>
-                    <input type="password" id="userNewPassword" placeholder="••••••••" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 font-mono">
+                    <div class="relative">
+                        <input type="password" id="userNewPassword" placeholder="••••••••" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 pr-10 focus:outline-none focus:border-blue-500 font-mono">
+                        <button type="button" onclick="togglePasswordVisibility('userNewPassword', 'eyeNewPass')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white focus:outline-none cursor-pointer">
+                            <span id="eyeNewPass">👁️</span>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] text-gray-400 mb-1 font-mono">Confirm New Password</label>
+                    <div class="relative">
+                        <input type="password" id="userConfirmNewPassword" placeholder="••••••••" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 pr-10 focus:outline-none focus:border-blue-500 font-mono">
+                        <button type="button" onclick="togglePasswordVisibility('userConfirmNewPassword', 'eyeConfirmNewPass')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white focus:outline-none cursor-pointer">
+                            <span id="eyeConfirmNewPass">👁️</span>
+                        </button>
+                    </div>
                 </div>
                 <button type="button" onclick="saveNewPassword()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer font-mono">Update Password & Login</button>
             </div>
@@ -832,6 +864,19 @@
         let activePaymentMethod = 'crypto';
         let isSignUpMode = false;
         let activeCalcItem = null;
+
+        // Toggle Password Visibility (Eye Icon)
+        function togglePasswordVisibility(fieldId, iconId) {
+            const inputField = document.getElementById(fieldId);
+            const iconSpan = document.getElementById(iconId);
+            if (inputField.type === "password") {
+                inputField.type = "text";
+                iconSpan.innerText = "🙈";
+            } else {
+                inputField.type = "password";
+                iconSpan.innerText = "👁️";
+            }
+        }
 
         function openSupportModal() {
             document.getElementById('supportModal').classList.remove('hidden');
@@ -886,7 +931,7 @@
             }
         }
 
-        // NEW: Check Recovery Token on Load & Update Password Logic
+        // Check Recovery Token on Load
         window.addEventListener('DOMContentLoaded', () => {
             if (_supabase) {
                 const hash = window.location.hash;
@@ -905,11 +950,18 @@
 
         async function saveNewPassword() {
             const newPassword = document.getElementById('userNewPassword').value.trim();
+            const confirmNewPassword = document.getElementById('userConfirmNewPassword').value.trim();
             const feedbackBox = document.getElementById('newPassFeedback');
 
             if (!newPassword || newPassword.length < 6) {
                 feedbackBox.className = "text-xs p-3 rounded-xl mb-4 border bg-rose-950/40 text-rose-300 border-rose-500/30 block font-mono";
                 feedbackBox.innerText = "Password must be at least 6 characters long.";
+                return;
+            }
+
+            if (newPassword !== confirmNewPassword) {
+                feedbackBox.className = "text-xs p-3 rounded-xl mb-4 border bg-rose-950/40 text-rose-300 border-rose-500/30 block font-mono";
+                feedbackBox.innerText = "Passwords do not match. Please check again.";
                 return;
             }
 
@@ -1480,6 +1532,23 @@
             document.getElementById('authSubmitBtn').innerText = isSignUpMode ? "Sign Up" : "Login";
             document.getElementById('authFeedback').className = "hidden";
             
+            const confirmGroup = document.getElementById('confirmPasswordGroup');
+            const forgotWrapper = document.getElementById('forgotPassWrapper');
+            const toggleText = document.getElementById('authToggleText');
+            const toggleBtn = document.getElementById('authToggleBtn');
+
+            if (isSignUpMode) {
+                confirmGroup.classList.remove('hidden');
+                forgotWrapper.classList.add('hidden');
+                toggleText.innerText = "Already have an account?";
+                toggleBtn.innerText = "Login";
+            } else {
+                confirmGroup.classList.add('hidden');
+                forgotWrapper.classList.remove('hidden');
+                toggleText.innerText = "Don't have an account?";
+                toggleBtn.innerText = "Sign Up";
+            }
+            
             const modal = document.getElementById('authModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -1498,11 +1567,24 @@
         async function handleAuthAction() {
             const email = document.getElementById('authEmail').value.trim();
             const password = document.getElementById('authPassword').value.trim();
+            const confirmPassword = document.getElementById('authConfirmPassword').value.trim();
             
             if(!email || !password) {
                 showAuthFeedback("Please enter both email and password.");
                 return;
             }
+
+            if(isSignUpMode) {
+                if(password !== confirmPassword) {
+                    showAuthFeedback("Passwords do not match. Please check again.");
+                    return;
+                }
+                if(password.length < 6) {
+                    showAuthFeedback("Password must be at least 6 characters long.");
+                    return;
+                }
+            }
+
             if(!_supabase) return;
 
             if(isSignUpMode) {
@@ -1510,8 +1592,7 @@
                 if(error) {
                     showAuthFeedback(error.message);
                 } else {
-                    showAuthFeedback("Registration successful! You can now log in.", true);
-                    setTimeout(() => toggleAuthMode(), 1200);
+                    showAuthFeedback("✔ Registration Successful! A verification link has been sent to your email. Please check your inbox (and spam folder) to activate your account.", true);
                 }
             } else {
                 const { error } = await _supabase.auth.signInWithPassword({ email, password });
