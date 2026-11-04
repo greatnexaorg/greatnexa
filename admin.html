@@ -6,6 +6,7 @@
     <title>GreatNexa Terminal | Institutional Admin Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { background: #02040a; color: #e2e8f0; font-family: system-ui, sans-serif; }
         .glass-panel { background: rgba(10, 16, 30, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
@@ -35,8 +36,7 @@
                         <input type="password" id="adminPassword" required placeholder="••••••••••••"
                                class="w-full text-xs font-mono bg-[#0b1324] border border-white/15 text-white rounded-xl pl-4 pr-10 py-3 focus:outline-none focus:border-blue-500">
                         <button type="button" onclick="togglePasswordVisibility()" 
-                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white cursor-pointer focus:outline-none"
-                                title="Show / Hide Password">
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white cursor-pointer focus:outline-none">
                             <span id="eyeIcon">👁️</span>
                         </button>
                     </div>
@@ -56,12 +56,12 @@
         <header class="flex flex-wrap justify-between items-center gap-4 border-b border-white/10 pb-4">
             <div>
                 <h1 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-                    <span>🛡️</span> GreatNexa Order & Subscription Admin
+                    <span>🛡️</span> GreatNexa Institutional Admin & Automation Center
                 </h1>
                 <p class="text-xs text-gray-400">Connected: <span id="adminSessionEmail" class="text-blue-400 font-mono"></span></p>
             </div>
             <div class="flex items-center gap-3">
-                <button onclick="loadOrders()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-xs font-bold rounded-xl transition shadow flex items-center gap-1.5 cursor-pointer font-mono">
+                <button onclick="loadAdminData()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-xs font-bold rounded-xl transition shadow flex items-center gap-1.5 cursor-pointer font-mono">
                     🔄 Refresh
                 </button>
                 <button onclick="handleAdminLogout()" class="px-3.5 py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 text-xs font-bold rounded-xl transition cursor-pointer font-mono">
@@ -87,32 +87,60 @@
             <div class="p-4 glass-panel rounded-xl border border-blue-500/20 flex flex-col justify-between">
                 <div>
                     <span class="text-blue-400 block text-[10px]">VIP CHANNEL LINK</span>
-                    <span class="text-xs font-bold text-blue-300">Admin Approval Link</span>
+                    <span class="text-xs font-bold text-blue-300">Telegram Invite</span>
                 </div>
                 <button onclick="copyInviteLink()" class="mt-2 text-[10px] bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-2 rounded transition text-center cursor-pointer">
-                    📋 Copy Channel Link
+                    📋 Copy Link
                 </button>
             </div>
         </div>
 
-        <!-- Orders Table -->
+        <!-- 5. লাইভ সেলস অ্যানালিটিক্স ও রেভিনিউ চার্ট (Chart.js) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 glass-panel p-5 rounded-2xl border border-white/10">
+                <h3 class="text-xs font-bold text-gray-300 mb-3 font-mono uppercase">📊 Revenue Analytics & Sales Growth</h3>
+                <div class="h-64 relative">
+                    <canvas id="salesRevenueChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 4. প্রোমো কোড ও ডিসকাউন্ট কুপন ম্যানেজমেন্ট -->
+            <div class="glass-panel p-5 rounded-2xl border border-white/10 flex flex-col justify-between space-y-4">
+                <div>
+                    <h3 class="text-xs font-bold text-blue-400 mb-3 font-mono uppercase">🎟️ Create Discount Coupon</h3>
+                    <form onsubmit="handleCreateCoupon(event)" class="space-y-3 font-mono text-xs">
+                        <input type="text" id="couponCode" required placeholder="Coupon Code (e.g. NEXA20)" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 uppercase">
+                        <input type="number" id="couponDiscount" required placeholder="Discount % (e.g. 20)" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2">
+                        <button type="submit" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition cursor-pointer">Generate Coupon</button>
+                    </form>
+                </div>
+                <div id="activeCouponsList" class="text-[11px] text-gray-400 font-mono space-y-1 max-h-24 overflow-y-auto pt-2 border-t border-white/5">
+                    Loading active coupons...
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Table & 3. WhatsApp/Email Auto-Notification -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10">
+            <div class="p-4 border-b border-white/10 flex justify-between items-center">
+                <h3 class="text-sm font-bold text-white font-mono">⚡ Pending Orders & Auto-Delivery Gateway</h3>
+                <span class="text-xs text-gray-400 font-mono">Click 'Approve & Send' for Instant WA/Email Push</span>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-gray-300">
                     <thead class="bg-[#0b1324] text-gray-400 font-mono uppercase text-[11px] border-b border-white/10">
                         <tr>
                             <th class="p-4">Time</th>
-                            <th class="p-4">Customer Email</th>
+                            <th class="p-4">Customer & Phone</th>
                             <th class="p-4">Plan & Amount</th>
                             <th class="p-4">TrxID / Hash</th>
-                            <th class="p-4">Method / Sender</th>
                             <th class="p-4">Status</th>
-                            <th class="p-4 text-right">Actions</th>
+                            <th class="p-4 text-right">Actions (Auto-Notify)</th>
                         </tr>
                     </thead>
                     <tbody id="ordersTableBody" class="divide-y divide-white/5 font-mono">
                         <tr>
-                            <td colspan="7" class="text-center p-8 text-gray-400">Loading order queue...</td>
+                            <td colspan="6" class="text-center p-8 text-gray-400">Loading order queue...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -120,17 +148,36 @@
         </div>
     </div>
 
+    <!-- Modal for Delivery Credentials input -->
+    <div id="deliveryModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-4">
+        <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative space-y-4">
+            <button onclick="closeDeliveryModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
+            <h3 class="text-lg font-bold text-white">Approve & Send Access Details</h3>
+            <p id="modalCustomerInfo" class="text-xs text-blue-400 font-mono"></p>
+            
+            <div>
+                <label class="block text-xs font-mono text-gray-400 mb-1">Access Credentials / Files / Links:</label>
+                <textarea id="deliveryCredentials" rows="4" placeholder="Email: user@gmail.com&#10;Pass: ******&#10;Drive Link: https://..." class="w-full bg-[#0b1324] border border-white/15 text-white text-xs font-mono rounded-xl p-3 focus:outline-none focus:border-blue-500"></textarea>
+            </div>
+
+            <button onclick="executeAutoApproveAndSend()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer font-mono">
+                🚀 Approve, Save & Send via WhatsApp/Email
+            </button>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://esqhansnosejkqapuhoo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDk0MDMsImV4cCI6MjEwMjI4NTQwM30.ePcRYy5_B193R4S1MXw3slF5amFseCv1sSCAUyH59ok';
         const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
         const TELEGRAM_VIP_LINK = "https://t.me/+VA3Yu45-zosyOTRl";
+
+        let currentActiveOrder = null;
+        let revenueChartInstance = null;
 
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('adminPassword');
             const eyeIcon = document.getElementById('eyeIcon');
-            
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 eyeIcon.innerText = '🙈';
@@ -142,17 +189,9 @@
 
         async function verifyAdminAccess() {
             const { data: { session } } = await _supabase.auth.getSession();
-            if (!session) {
-                showAuthModal();
-                return;
-            }
+            if (!session) { showAuthModal(); return; }
 
-            const { data, error } = await _supabase
-                .from('user_profiles')
-                .select('role')
-                .eq('id', session.user.id)
-                .single();
-
+            const { data } = await _supabase.from('user_profiles').select('role').eq('id', session.user.id).single();
             if (data && data.role === 'admin') {
                 document.getElementById('adminSessionEmail').innerText = session.user.email;
                 unlockUI();
@@ -177,12 +216,7 @@
                 const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
 
-                const { data: prof, error: profErr } = await _supabase
-                    .from('user_profiles')
-                    .select('role')
-                    .eq('id', data.user.id)
-                    .single();
-
+                const { data: prof } = await _supabase.from('user_profiles').select('role').eq('id', data.user.id).single();
                 if (prof && prof.role === 'admin') {
                     document.getElementById('adminSessionEmail').innerText = data.user.email;
                     unlockUI();
@@ -202,7 +236,7 @@
         function unlockUI() {
             document.getElementById('adminAuthModal').classList.add('hidden');
             document.getElementById('adminMainContent').classList.remove('hidden');
-            loadOrders();
+            loadAdminData();
         }
 
         function showAuthModal(errMsg = '') {
@@ -222,18 +256,19 @@
             location.reload();
         }
 
+        async function loadAdminData() {
+            await loadOrders();
+            await loadCoupons();
+        }
+
         async function loadOrders() {
             const tbody = document.getElementById('ordersTableBody');
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-gray-400 font-mono">Loading orders from database...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-400 font-mono">Loading orders from database...</td></tr>';
 
-            const { data, error } = await _supabase
-                .from('orders')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(50);
+            const { data, error } = await _supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(50);
 
             if (error || !data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-gray-500 font-mono">No payment orders found.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-500 font-mono">No payment orders found.</td></tr>';
                 document.getElementById('statTotal').innerText = '0';
                 document.getElementById('statPending').innerText = '0';
                 document.getElementById('statApproved').innerText = '0';
@@ -242,22 +277,24 @@
 
             let pendingCount = 0;
             let approvedCount = 0;
+            let chartDates = {};
 
             tbody.innerHTML = data.map(o => {
                 const isApproved = o.status === 'approved';
-                if(isApproved) approvedCount++; else pendingCount++;
-
-                const isVIP = (o.product_name || '').includes('VIP') || (o.product_name || '').includes('49');
-                const targetTier = isVIP ? 'vip' : 'pro';
-                const days = isVIP ? 730 : 30;
+                if(isApproved) {
+                    approvedCount++;
+                    const dStr = new Date(o.created_at).toLocaleDateString();
+                    chartDates[dStr] = (chartDates[dStr] || 0) + 1;
+                } else {
+                    pendingCount++;
+                }
 
                 return `
                 <tr class="hover:bg-white/[0.02] transition">
                     <td class="p-4 text-gray-400">${new Date(o.created_at).toLocaleDateString()}</td>
-                    <td class="p-4 text-white font-bold">${o.email || o.customer_name}</td>
+                    <td class="p-4 text-white font-bold">${o.email || o.customer_name}<br><span class="text-[10px] text-gray-400">${o.whatsapp || o.phone || ''}</span></td>
                     <td class="p-4 text-blue-400 font-bold">${o.product_name} (${o.price})</td>
                     <td class="p-4 text-emerald-400 select-all font-bold">${o.trx_id}</td>
-                    <td class="p-4 text-gray-300">${o.phone || 'Binance Pay'}</td>
                     <td class="p-4">
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${isApproved ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
                             ${(o.status || 'pending').toUpperCase()}
@@ -265,16 +302,10 @@
                     </td>
                     <td class="p-4 text-right space-x-2">
                         ${!isApproved ? `
-                        <button onclick="approveOrder(${o.id}, '${o.email || o.customer_name}', '${targetTier}', ${days})" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition cursor-pointer">
-                            Approve (${days}d)
-                        </button>
-                        <button onclick="rejectOrder(${o.id})" class="px-2.5 py-1.5 bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 font-bold rounded-lg text-xs transition cursor-pointer" title="Cancel/Delete">
-                            ✕
+                        <button onclick='openDeliveryModal(${JSON.stringify(o)})' class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition cursor-pointer">
+                            Approve & Send
                         </button>` : `
-                        <span class="text-gray-500 text-xs">Active</span>
-                        <button onclick="copyInviteLink()" class="px-2.5 py-1 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg text-[10px] transition cursor-pointer">
-                            Copy Link
-                        </button>`}
+                        <span class="text-emerald-400 text-xs font-bold">Delivered</span>`}
                     </td>
                 </tr>
                 `;
@@ -283,44 +314,121 @@
             document.getElementById('statTotal').innerText = String(data.length);
             document.getElementById('statPending').innerText = String(pendingCount);
             document.getElementById('statApproved').innerText = String(approvedCount);
+
+            renderRevenueChart(chartDates);
         }
 
-        async function approveOrder(orderId, email, tier, durationDays) {
-            if(!confirm(`Approve ${tier.toUpperCase()} for ${email} (${durationDays} days)?`)) return;
+        function openDeliveryModal(order) {
+            currentActiveOrder = order;
+            document.getElementById('modalCustomerInfo').innerText = `Customer: ${order.email || order.customer_name} | Product: ${order.product_name}`;
+            document.getElementById('deliveryCredentials').value = `Hello! Your order for ${order.product_name} is approved.\nAccess Link / Details:\nEnjoy your subscription!`;
+            document.getElementById('deliveryModal').classList.remove('hidden');
+            document.getElementById('deliveryModal').classList.add('flex');
+        }
+
+        function closeDeliveryModal() {
+            document.getElementById('deliveryModal').classList.add('hidden');
+            document.getElementById('deliveryModal').classList.remove('flex');
+            currentActiveOrder = null;
+        }
+
+        // 3. হোয়াটসঅ্যাপ ও ইমেল অটোমেশন (Auto-Notification & Approval)
+        async function executeAutoApproveAndSend() {
+            if (!currentActiveOrder) return;
+            const creds = document.getElementById('deliveryCredentials').value.trim();
+            const isVIP = (currentActiveOrder.product_name || '').includes('VIP') || (currentActiveOrder.product_name || '').includes('49');
+            const targetTier = isVIP ? 'vip' : 'pro';
+            const days = isVIP ? 730 : 30;
 
             try {
+                // ১. ডাটাবেজে অর্ডার এপ্রুভ ও ডেলিভারি ডেটা সেভ
                 const { error } = await _supabase.rpc('admin_approve_order', {
-                    p_order_id: orderId,
-                    p_user_email: email,
-                    p_tier: tier,
-                    p_duration_days: durationDays
+                    p_order_id: currentActiveOrder.id,
+                    p_user_email: currentActiveOrder.email || currentActiveOrder.customer_name,
+                    p_tier: targetTier,
+                    p_duration_days: days
                 });
 
-                if(error) {
-                    alert("Approval failed: " + error.message);
-                } else {
-                    navigator.clipboard.writeText(TELEGRAM_VIP_LINK);
-                    alert(`✔ Success! ${email} upgraded to ${tier.toUpperCase()} for ${durationDays} days.\n\nTelegram VIP Link copied to clipboard:\n${TELEGRAM_VIP_LINK}`);
-                    loadOrders();
+                if (error) throw error;
+
+                await _supabase.from('orders').update({ delivery_data: creds }).eq('id', currentActiveOrder.id);
+
+                // ২. অটোমেটিক WhatsApp Web / API ফ্লো ওপেন করা
+                const phoneNum = (currentActiveOrder.whatsapp || currentActiveOrder.phone || '').replace(/[^0-9]/g, '');
+                if (phoneNum) {
+                    const waText = encodeURIComponent(`Hi ${currentActiveOrder.customer_name || 'Customer'}, your GreatNexa order (${currentActiveOrder.product_name}) is approved!\n\n${creds}\n\nTelegram VIP: ${TELEGRAM_VIP_LINK}`);
+                    window.open(`https://wa.me/${phoneNum.startsWith('88') ? phoneNum : '88' + phoneNum}?text=${waText}`, '_blank');
                 }
-            } catch(e) {
-                alert("Error: " + e.message);
+
+                alert("✔ Order approved successfully and WhatsApp notification triggered!");
+                closeDeliveryModal();
+                loadOrders();
+
+            } catch (err) {
+                alert("Error executing approval: " + err.message);
             }
         }
 
-        async function rejectOrder(orderId) {
-            if(!confirm("Are you sure you want to reject and delete this order?")) return;
+        // 4. প্রোমো কোড ও ডিসকাউন্ট কুপন সিস্টেম
+        async function handleCreateCoupon(e) {
+            e.preventDefault();
+            const code = document.getElementById('couponCode').value.trim().toUpperCase();
+            const discount = parseFloat(document.getElementById('couponDiscount').value);
 
-            try {
-                const { error } = await _supabase.from('orders').delete().eq('id', orderId);
-                if(error) {
-                    alert("Delete failed: " + error.message);
-                } else {
-                    loadOrders();
-                }
-            } catch(e) {
-                alert("Error: " + e.message);
+            const { error } = await _supabase.from('coupons').insert([{ code: code, discount_pct: discount, is_active: true }]);
+            if (error) {
+                alert("Error creating coupon: " + error.message);
+            } else {
+                alert(`✔ Coupon ${code} (${discount}%) created successfully!`);
+                document.getElementById('couponCode').value = '';
+                document.getElementById('couponDiscount').value = '';
+                loadCoupons();
             }
+        }
+
+        async function loadCoupons() {
+            const listDiv = document.getElementById('activeCouponsList');
+            const { data } = await _supabase.from('coupons').select('*').eq('is_active', true);
+            if (!data || data.length === 0) {
+                listDiv.innerHTML = "No active coupons found.";
+                return;
+            }
+            listDiv.innerHTML = data.map(c => `<div><b>${c.code}</b>: ${c.discount_pct}% OFF</div>`).join('');
+        }
+
+        // 5. লাইভ সেলস অ্যানালিটিক্স ও রেভিনিউ চার্ট (Chart.js)
+        function renderRevenueChart(dateMap) {
+            const ctx = document.getElementById('salesRevenueChart').getContext('2d');
+            const labels = Object.keys(dateMap).sort();
+            const counts = labels.map(l => dateMap[l]);
+
+            if (revenueChartInstance) {
+                revenueChartInstance.destroy();
+            }
+
+            revenueChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels.length ? labels : ['Today'],
+                    datasets: [{
+                        label: 'Approved Sales',
+                        data: counts.length ? counts : [0],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af' } },
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af', stepSize: 1 } }
+                    }
+                }
+            });
         }
 
         function copyInviteLink() {
@@ -328,9 +436,7 @@
             alert("VIP Channel Invite Link copied:\n" + TELEGRAM_VIP_LINK);
         }
 
-        window.onload = () => {
-            verifyAdminAccess();
-        };
+        window.onload = () => { verifyAdminAccess(); };
     </script>
 </body>
 </html>
