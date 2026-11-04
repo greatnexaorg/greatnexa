@@ -143,13 +143,13 @@ def cleanup_old_database_records():
         print(f"[-] Cleanup Error: {e}")
 
 # ==============================================================================
-# ৫. ক্রিপ্টো: ৫০০+ পেয়ারের লাইভ ডায়নামিক টপ ১০০ স্ক্রিনার
+# ৫. ক্রিপ্টো: টপ ৫০০ পেয়ারের লাইভ ডায়নামিক স্ক্রিনার
 # ==============================================================================
-def fetch_dynamic_crypto_top100():
-    print("[*] Fetching Live Dynamic Top 100 Crypto Pairs from Binance...")
+def fetch_top_500_crypto():
+    print("[*] Fetching Top 500 Crypto Pairs from Binance...")
     market_pool = {}
     try:
-        r = session.get("https://data-api.binance.vision/api/v3/ticker/24hr", timeout=12)
+        r = session.get("https://data-api.binance.vision/api/v3/ticker/24hr", timeout=15)
         if r.status_code == 200:
             all_tickers = r.json()
             usdt_pairs = [
@@ -161,7 +161,7 @@ def fetch_dynamic_crypto_top100():
                 usdt_pairs, 
                 key=lambda x: float(x.get('quoteVolume', 0)) * (1 + abs(float(x.get('priceChangePercent', 0))) / 100), 
                 reverse=True
-            )[:100]
+            )[:500]
 
             for t in sorted_pairs:
                 price = float(t.get('lastPrice', 0))
@@ -181,16 +181,16 @@ def fetch_dynamic_crypto_top100():
                     "change": float(t.get('priceChangePercent', 0)),
                     "volume_m": vol_m
                 }
-            print(f"[i] Successfully Loaded {len(market_pool)} Live Active Crypto Pairs.")
+            print(f"[i] Successfully Loaded {len(market_pool)} Live Active Crypto Pairs (Top 500).")
     except Exception as e:
-        print(f"[-] Crypto Universe Error: {e}")
+        print(f"[-] Top 500 Crypto Universe Error: {e}")
     return market_pool
 
 # ==============================================================================
-# ৬. ইউএস স্টকস: লাইভ মার্কেট মোস্ট অ্যাক্টিভ স্ক্রিনার
+# ৬. ইউএস স্টকস: লাইভ মার্কেট টপ ১০০ স্টক স্ক্রিনার
 # ==============================================================================
-def fetch_dynamic_stocks_top100():
-    print("[*] Fetching Live Top US Stocks from Market Screener...")
+def fetch_top_100_stocks():
+    print("[*] Fetching Top 100 US Stocks from Market Screener...")
     stock_pool = {}
     try:
         url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=most_actives&count=100"
@@ -221,16 +221,16 @@ def fetch_dynamic_stocks_top100():
                     "change": chg,
                     "volume_m": vol_m
                 }
-            print(f"[i] Successfully Loaded {len(stock_pool)} Real-Time Most Active US Stocks.")
+            print(f"[i] Successfully Loaded {len(stock_pool)} Real-Time Top 100 US Stocks.")
     except Exception as e:
-        print(f"[-] Dynamic Stock Screener Warning: {e}")
+        print(f"[-] Top 100 Stock Screener Warning: {e}")
     return stock_pool
 
 # ==============================================================================
-# ৭. ফরেক্স ও কমোডিটিজ স্ক্রিনার
+# ৭. ফরেক্স ও কমোডিটিজ: টপ ১০০ স্ক্রিনার
 # ==============================================================================
-def fetch_dynamic_forex_universe():
-    print("[*] Discovering Real-Time Dynamic Forex & Commodities Universe...")
+def fetch_top_100_forex_universe():
+    print("[*] Discovering Real-Time Top 100 Forex & Commodities Universe...")
     forex_pool = {}
     discovered_quotes = []
 
@@ -240,22 +240,19 @@ def fetch_dynamic_forex_universe():
         if res_fx.status_code == 200:
             fx_data = res_fx.json().get('finance', {}).get('result', [{}])[0].get('quotes', [])
             discovered_quotes.extend(fx_data)
-            print(f"[i] Dynamic Forex Discovery: {len(fx_data)} Live Currencies Pulled.")
     except Exception as e:
-        print(f"[-] Dynamic FX Screener Warning: {e}")
+        print(f"[-] Forex Screener Warning: {e}")
 
     try:
-        commodities_screener_url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=all_commodities&count=25"
+        commodities_screener_url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=all_commodities&count=40"
         res_comm = session.get(commodities_screener_url, timeout=10)
         if res_comm.status_code == 200:
             comm_data = res_comm.json().get('finance', {}).get('result', [{}])[0].get('quotes', [])
             discovered_quotes.extend(comm_data)
-            print(f"[i] Dynamic Commodities Discovery: {len(comm_data)} Active Contracts Pulled.")
     except Exception as e:
-        print(f"[-] Dynamic Commodities Warning: {e}")
+        print(f"[-] Commodities Warning: {e}")
 
     if not discovered_quotes:
-        print("[!] Activating Direct Interbank Gateway Fallback...")
         fallback_tickers = [
             "EURUSD=X", "GBPUSD=X", "USDJPY=X", "AUDUSD=X", "USDCAD=X", "USDCHF=X", "NZDUSD=X",
             "EURJPY=X", "GBPJPY=X", "AUDJPY=X", "EURGBP=X", "GC=F", "SI=F", "CL=F", "NG=F"
@@ -311,7 +308,7 @@ def fetch_dynamic_forex_universe():
             "volume_m": vol_m
         }
 
-    print(f"[✔] Total Real-Time Dynamic Forex & Commodities Parsed: {len(forex_pool)}")
+    print(f"[✔] Total Real-Time Top 100 Forex & Commodities Parsed: {len(forex_pool)}")
     return forex_pool
 
 # ==============================================================================
@@ -463,24 +460,22 @@ def generate_smc_institutional_signal(item, active_setups_map):
     return setups
 
 # ==============================================================================
-# ১০. এক্সিকিউশন রানার
+# ১০. এক্সিকিউশন রানার (Top 500 Crypto + Top 100 Stocks + Top 100 Forex)
 # ==============================================================================
 def run():
     print("=" * 80)
-    print(f"[*] RUNNING TOP 100 REAL-TIME DYNAMIC QUANT ENGINE: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
+    print(f"[*] RUNNING TOP 500 CRYPTO + TOP 100 STOCKS + TOP 100 FOREX ENGINE: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
     print("=" * 80)
     
-    # টেলিগ্রাম কানেকশন কনফার্মেশন টেস্ট
-    send_telegram_status("⚡ *GreatNexa Institutional Engine Active & Scanning Top 100 Markets...*")
+    send_telegram_status("⚡ *GreatNexa Institutional Engine Active & Scanning Top 700+ Assets (500 Crypto, 100 Stocks, 100 Forex)...*")
 
-    # সাবস্ক্রিপশন ও স্টোরেজ অপ্টিমাইজেশন
     process_automatic_subscriptions()
     cleanup_old_database_records()
 
-    # মার্কেট পুলিং
-    crypto_prices = fetch_dynamic_crypto_top100()
-    stocks_prices = fetch_dynamic_stocks_top100()
-    forex_prices = fetch_dynamic_forex_universe()
+    # মার্কেট পুলিং (টপ ৫০০ ক্রিপ্টো, টপ ১০০ স্টক ও টপ ১০০ ফরেক্স)
+    crypto_prices = fetch_top_500_crypto()
+    stocks_prices = fetch_top_100_stocks()
+    forex_prices = fetch_top_100_forex_universe()
     
     all_prices = {**crypto_prices, **stocks_prices, **forex_prices}
     if not all_prices:
@@ -490,31 +485,33 @@ def run():
     active_setups_map = track_and_update_lifecycle(all_prices)
     new_setups = []
 
+    # ক্রিপ্টো থেকে শীর্ষ ৫০টি সুযোগ স্ক্যান
     sorted_cryptos = sorted(crypto_prices.values(), key=lambda x: (abs(x['change']) * x['volume_m']), reverse=True)
-    for c in sorted_cryptos[:35]:
+    for c in sorted_cryptos[:50]:
         new_setups.extend(generate_smc_institutional_signal(c, active_setups_map))
 
+    # স্টক থেকে শীর্ষ ৩০টি সুযোগ স্ক্যান
     sorted_stocks = sorted(stocks_prices.values(), key=lambda x: abs(x['change']), reverse=True)
-    for s in sorted_stocks[:35]:
+    for s in sorted_stocks[:30]:
         new_setups.extend(generate_smc_institutional_signal(s, active_setups_map))
 
+    # ফরেক্স থেকে শীর্ষ ৩০টি সুযোগ স্ক্যান
     sorted_forex = sorted(forex_prices.values(), key=lambda x: abs(x['change']), reverse=True)
-    for f in sorted_forex[:35]:
+    for f in sorted_forex[:30]:
         new_setups.extend(generate_smc_institutional_signal(f, active_setups_map))
 
     if new_setups:
         try:
-            batch_size = 20
+            batch_size = 30
             for i in range(0, len(new_setups), batch_size):
                 b = new_setups[i:i + batch_size]
                 supabase.table("market_research").insert(b).execute()
-            print(f"\n✔ Successfully pushed {len(new_setups)} Dynamic Alpha Setups across Top 100 Markets!")
+            print(f"\n✔ Successfully pushed {len(new_setups)} Dynamic Alpha Setups across Top 700+ Markets!")
             
-            # টেলিগ্রাম বট অ্যালার্ট পাঠানো (রেট লিমিট এড়াতে time.sleep সহ)
             for s in new_setups:
                 if s.get("score", 0) >= 92:
                     send_telegram_alert(s)
-                    time.sleep(1.5) # টেলিগ্রাম এপিআই ব্লক এড়াতে প্রতি মেসেজের মাঝে ১.৫ সেকেন্ড বিরতি
+                    time.sleep(1.5)
                 
         except Exception as e:
             print(f"[-] Batch insert error: {e}")
