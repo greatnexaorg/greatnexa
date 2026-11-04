@@ -438,7 +438,6 @@
                         </div>
                         <div class="mt-4 flex items-baseline justify-between">
                             <h3 class="text-3xl font-extrabold text-white notranslate">$0 <span class="text-xs text-gray-400 font-normal">/ lifetime</span></h3>
-                            <span id="countdownFree" class="text-[11px] font-mono text-gray-400 bg-black/40 px-2 py-1 rounded-lg border border-white/5">Active (Lifetime)</span>
                         </div>
                         <p class="text-xs text-gray-400 mt-1">Basic exploratory scanner for individual traders.</p>
                         <ul class="space-y-3 text-xs text-gray-300 mt-6 font-mono">
@@ -448,7 +447,7 @@
                             <li class="flex items-center gap-2 text-gray-600">❌ VIP Telegram Webhook</li>
                         </ul>
                     </div>
-                    <button id="btnTierFree" class="w-full py-2.5 bg-gray-800 text-gray-300 rounded-xl text-xs font-bold border border-white/10 font-mono">Active Tier</button>
+                    <button id="btnTierFree" disabled class="w-full py-2.5 bg-gray-800/50 text-gray-400 rounded-xl text-xs font-bold border border-white/5 font-mono cursor-not-allowed">Active Plan</button>
                 </div>
 
                 <!-- Pro Monthly -->
@@ -464,7 +463,7 @@
                         </div>
                         <div class="mt-4 flex items-baseline justify-between">
                             <h3 class="text-4xl font-extrabold text-white notranslate">$5 <span class="text-xs text-gray-400 font-normal">/ mo</span></h3>
-                            <span id="countdownPro" class="text-[11px] font-mono text-blue-400 bg-black/40 px-2 py-1 rounded-lg border border-blue-500/20 hidden">⏳ 30 days left</span>
+                            <span id="countdownPro" class="text-[11px] font-mono text-blue-300 bg-blue-950/40 px-2.5 py-1 rounded-lg border border-blue-500/30 hidden">⭐ Active Plan • 30 days left</span>
                         </div>
                         <p class="text-xs text-gray-400 mt-1">Institutional quantitative access on a flexible monthly pass.</p>
                         <ul class="space-y-3 text-xs text-gray-200 mt-6 font-mono">
@@ -495,7 +494,7 @@
                                 <h3 class="text-4xl font-black text-white notranslate">$49</h3>
                                 <span class="text-xs text-gray-400 line-through font-mono notranslate">$499</span>
                             </div>
-                            <span id="countdownVip" class="text-[11px] font-mono text-amber-300 bg-black/40 px-2 py-1 rounded-lg border border-amber-500/20 hidden">⏳ 730 days left</span>
+                            <span id="countdownVip" class="text-[11px] font-mono text-amber-300 bg-amber-950/40 px-2.5 py-1 rounded-lg border border-amber-500/30 hidden">⭐ Active Plan • 730 days left</span>
                         </div>
                         <p class="text-xs text-gray-400 mt-1">Full quantitative power, zero limitations, and priority telegram push.</p>
                         <ul class="space-y-3 text-xs text-gray-200 mt-6 font-mono">
@@ -1078,61 +1077,78 @@
             const container = document.getElementById('gridContainer');
             if (!container) return;
 
-            // Highlight active pricing card and update card pricing area with "Active Plan" & countdown days
             const cardFree = document.getElementById('cardTierFree');
             const cardPro = document.getElementById('cardTierPro');
             const cardVip = document.getElementById('cardTierVip');
             
-            const badgeFree = document.getElementById('badgeTierFree');
-            const badgePro = document.getElementById('badgeTierPro');
-            const badgeVip = document.getElementById('badgeTierVip');
+            const btnFree = document.getElementById('btnTierFree');
+            const btnPro = document.getElementById('btnPricingPro');
+            const btnVip = document.getElementById('btnPricingVip');
 
             const countdownFree = document.getElementById('countdownFree');
             const countdownPro = document.getElementById('countdownPro');
             const countdownVip = document.getElementById('countdownVip');
 
-            const btnFree = document.getElementById('btnTierFree');
-
-            // Reset all card styles and hide countdowns/badges
+            // Reset all cards, badges and buttons to default
             if(cardFree) cardFree.className = "glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 relative transition-all";
             if(cardPro) cardPro.className = "glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 border-blue-500/30 relative transition-all";
             if(cardVip) cardVip.className = "glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 relative border-amber-500/50 bg-gradient-to-b from-[#181d33] to-[#0c1222] shadow-2xl shadow-amber-500/10 transition-all";
-            
-            if(badgeFree) badgeFree.classList.add('hidden');
-            if(badgePro) badgePro.classList.add('hidden');
-            if(badgeVip) badgeVip.classList.add('hidden');
             
             if(countdownFree) countdownFree.classList.add('hidden');
             if(countdownPro) countdownPro.classList.add('hidden');
             if(countdownVip) countdownVip.classList.add('hidden');
 
-            if(btnFree) btnFree.innerText = "Public Tier";
+            if(btnFree) {
+                btnFree.innerText = "Public Tier";
+                btnFree.className = "w-full py-2.5 bg-gray-800 text-gray-300 rounded-xl text-xs font-bold border border-white/10 font-mono";
+                btnFree.disabled = false;
+            }
+            if(btnPro) {
+                btnPro.innerText = "Get Beta Pass ($5/mo)";
+                btnPro.className = "w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-blue-600/30 transition cursor-pointer font-mono";
+                btnPro.disabled = false;
+            }
+            if(btnVip) {
+                btnVip.innerText = "Claim VIP Pass ($49)";
+                btnVip.className = "w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold text-xs rounded-xl shadow-lg shadow-amber-500/30 transition cursor-pointer font-mono uppercase tracking-wider";
+                btnVip.disabled = false;
+            }
 
-            // Determine active days remaining (defaulting to 30 for Pro, 730 for VIP, or calculated from expires_at if available)
-            let userDaysLeft = window.userSubscriptionDays || (state.role === 'vip' ? 730 : (state.role === 'pro' ? 30 : null));
+            let userDaysLeft = window.userSubscriptionDays !== undefined ? window.userSubscriptionDays : (state.role === 'vip' ? 730 : (state.role === 'pro' ? 30 : 365));
 
             if (state.role === 'vip' && cardVip) {
                 cardVip.className += " ring-2 ring-amber-400 shadow-2xl shadow-amber-500/30 scale-[1.02]";
-                if(badgeVip) badgeVip.classList.remove('hidden');
                 if(countdownVip) {
                     countdownVip.classList.remove('hidden');
-                    countdownVip.innerHTML = `⭐ Active Plan • <b class="text-amber-300">${userDaysLeft !== null ? userDaysLeft + ' days left' : 'Lifetime'}</b>`;
+                    countdownVip.innerHTML = `⭐ Active Plan • <b class="text-amber-300">${userDaysLeft} days left</b>`;
+                }
+                if(btnVip) {
+                    btnVip.innerText = "Active Plan";
+                    btnVip.className = "w-full py-3.5 bg-gray-800/80 text-amber-400 border border-amber-500/30 rounded-xl font-extrabold text-xs font-mono uppercase tracking-wider cursor-not-allowed opacity-80";
+                    btnVip.disabled = true;
                 }
             } else if (state.role === 'pro' && cardPro) {
                 cardPro.className += " ring-2 ring-blue-500 shadow-2xl shadow-blue-500/30 scale-[1.02]";
-                if(badgePro) badgePro.classList.remove('hidden');
                 if(countdownPro) {
                     countdownPro.classList.remove('hidden');
-                    countdownPro.innerHTML = `⭐ Active Plan • <b class="text-blue-300">${userDaysLeft !== null ? userDaysLeft + ' days left' : '30 days left'}</b>`;
+                    countdownPro.innerHTML = `⭐ Active Plan • <b class="text-blue-300">${userDaysLeft} days left</b>`;
+                }
+                if(btnPro) {
+                    btnPro.innerText = "Active Plan";
+                    btnPro.className = "w-full py-3 bg-gray-800/80 text-blue-400 border border-blue-500/30 rounded-xl font-bold text-xs font-mono cursor-not-allowed opacity-80";
+                    btnPro.disabled = true;
                 }
             } else if (cardFree) {
                 cardFree.className += " ring-1 ring-gray-500/50 bg-gray-900/60";
-                if(badgeFree) badgeFree.classList.remove('hidden');
                 if(countdownFree) {
                     countdownFree.classList.remove('hidden');
                     countdownFree.innerHTML = `⭐ Active Plan • <b class="text-gray-300">Lifetime</b>`;
                 }
-                if(btnFree) btnFree.innerText = "Current Active Tier";
+                if(btnFree) {
+                    btnFree.innerText = "Active Plan";
+                    btnFree.className = "w-full py-2.5 bg-gray-800/80 text-gray-400 rounded-xl text-xs font-bold border border-white/10 font-mono cursor-not-allowed opacity-80";
+                    btnFree.disabled = true;
+                }
             }
 
             if (state.viewTab === 'archive') {
@@ -1406,21 +1422,21 @@
                     }
 
                     state.role = (userTier === 'vip') ? 'vip' : ((userTier === 'pro') ? 'pro' : 'free');
-                    window.userSubscriptionDays = daysLeft;
+                    window.userSubscriptionDays = daysLeft !== null ? daysLeft : (state.role === 'vip' ? 730 : (state.role === 'pro' ? 30 : 365));
 
                     let tierBadge = '';
                     const guardBox = document.getElementById('limitGuardBox');
                     const guardText = document.getElementById('limitGuardText');
 
                     if(state.role === 'vip') {
-                        tierBadge = `<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">VIP (${daysLeft !== null ? daysLeft + 'd left' : 'Lifetime'})</span>`;
+                        tierBadge = `<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">VIP</span>`;
                         state.limit = 20;
                         if(guardBox && guardText) {
                             guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-amber-950/30 text-[11px] font-mono text-amber-300 space-y-1";
                             guardText.innerText = "VIP Institutional Membership Unlocked: Full Top 20 Alpha Access.";
                         }
                     } else if(state.role === 'pro') {
-                        tierBadge = `<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">PRO (${daysLeft !== null ? daysLeft + 'd left' : 'Active'})</span>`;
+                        tierBadge = `<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">PRO</span>`;
                         state.limit = 10;
                         if(guardBox && guardText) {
                             guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-blue-950/30 text-[11px] font-mono text-blue-300 space-y-1";
@@ -1456,6 +1472,7 @@
                     headerSec.innerHTML = `<button type="button" onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>`;
                     state.role = 'free';
                     state.limit = 3;
+                    window.userSubscriptionDays = 365;
                 }
             } catch (err) {}
             fetchLiveMarketData();
