@@ -422,7 +422,7 @@
             </div>
         </div>
 
-        <!-- Pricing Tiers Section -->
+        <!-- Pricing Tiers Section (Updated with Dynamic Active Tier Highlighting) -->
         <section class="pt-10 border-t border-white/[0.08] space-y-8">
             <div class="text-center max-w-xl mx-auto space-y-2">
                 <span class="px-3 py-1 bg-blue-500/10 text-blue-400 text-xs font-bold rounded-full border border-blue-500/20 font-mono">INSTITUTIONAL TIER PASSES</span>
@@ -432,9 +432,12 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Free Tier -->
-                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6">
+                <div id="cardTierFree" class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 relative transition-all">
                     <div>
-                        <span class="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-xs font-bold font-mono">Public Tier</span>
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-xs font-bold font-mono">Public Tier</span>
+                            <span id="badgeTierFree" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-gray-500/20 text-gray-300 border border-gray-500/40">Active Tier</span>
+                        </div>
                         <h3 class="text-3xl font-extrabold text-white mt-4 notranslate">$0 <span class="text-xs text-gray-400 font-normal">/ lifetime</span></h3>
                         <p class="text-xs text-gray-400 mt-1">Basic exploratory scanner for individual traders.</p>
                         <ul class="space-y-3 text-xs text-gray-300 mt-6 font-mono">
@@ -444,16 +447,19 @@
                             <li class="flex items-center gap-2 text-gray-600">❌ VIP Telegram Webhook</li>
                         </ul>
                     </div>
-                    <button id="btnFreeTier" class="w-full py-2.5 bg-gray-900 text-gray-500 rounded-xl text-xs font-bold cursor-not-allowed border border-white/5 font-mono">Current Tier</button>
+                    <button id="btnTierFree" class="w-full py-2.5 bg-gray-800 text-gray-300 rounded-xl text-xs font-bold border border-white/10 font-mono">Active Tier</button>
                 </div>
 
                 <!-- Pro Monthly -->
-                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 border-blue-500/30 relative">
+                <div id="cardTierPro" class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 border-blue-500/30 relative transition-all">
                     <span class="absolute -top-3 right-6 bg-blue-600 text-white text-[10px] font-black px-3 py-0.5 rounded-full uppercase font-mono shadow-md">97% Beta Discount</span>
                     <div>
-                        <div class="flex items-center gap-2">
-                            <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold font-mono border border-blue-500/40">Pro Monthly</span>
-                            <span class="text-xs text-gray-400 line-through font-mono notranslate">$199</span>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold font-mono border border-blue-500/40">Pro Monthly</span>
+                                <span class="text-xs text-gray-400 line-through font-mono notranslate">$199</span>
+                            </div>
+                            <span id="badgeTierPro" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40 animate-pulse">Active Plan</span>
                         </div>
                         <h3 class="text-4xl font-extrabold text-white mt-4 notranslate">$5 <span class="text-xs text-gray-400 font-normal">/ month (600 BDT)</span></h3>
                         <p class="text-xs text-gray-400 mt-1">Institutional quantitative access on a flexible monthly pass.</p>
@@ -470,12 +476,15 @@
                 </div>
 
                 <!-- VIP 2-Year Pass -->
-                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 relative border-amber-500/50 bg-gradient-to-b from-[#181d33] to-[#0c1222] shadow-2xl shadow-amber-500/10">
+                <div id="cardTierVip" class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 relative border-amber-500/50 bg-gradient-to-b from-[#181d33] to-[#0c1222] shadow-2xl shadow-amber-500/10 transition-all">
                     <span class="absolute -top-3 right-6 bg-gradient-to-r from-amber-500 to-orange-500 text-black text-[10px] font-black px-3.5 py-1 rounded-full uppercase tracking-wider font-mono shadow-md">🔥 1 Year Free Included</span>
                     <div>
-                        <div class="flex items-center gap-2">
-                            <span class="px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-xs font-extrabold border border-amber-500/40 font-mono">VIP 2-Year Pass</span>
-                            <span class="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded font-mono">Save $400+</span>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-xs font-extrabold border border-amber-500/40 font-mono">VIP 2-Year Pass</span>
+                                <span class="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded font-mono">Save $400+</span>
+                            </div>
+                            <span id="badgeTierVip" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">Active Plan</span>
                         </div>
                         <div class="mt-4 flex items-baseline gap-2">
                             <h3 class="text-4xl font-black text-white notranslate">$49</h3>
@@ -571,7 +580,7 @@
         </div>
     </div>
 
-    <!-- Multi-Channel Checkout Modal (Updated with Binance Pay, BEP20, TRC20 & bKash/Nagad) -->
+    <!-- Multi-Channel Checkout Modal -->
     <div id="paymentModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-lg rounded-2xl p-6 border border-gray-700 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button type="button" onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
@@ -592,7 +601,7 @@
                 <button type="button" onclick="setPaymentMethod('local')" id="pay-opt-local" class="py-2.5 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10">bKash / Nagad</button>
             </div>
 
-            <!-- Crypto Payment Box with Tabs (Binance Pay, BEP20, TRC20) -->
+            <!-- Crypto Payment Box with Tabs -->
             <div id="cryptoPaymentBox" class="bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-3 text-xs">
                 <div class="flex justify-between items-center border-b border-white/10 pb-2">
                     <span class="text-gray-300 font-bold">Select Crypto Method:</span>
@@ -618,7 +627,7 @@
                     </div>
                 </div>
 
-                <!-- BEP20 Content (Hidden by default) -->
+                <!-- BEP20 Content -->
                 <div id="content-bep20" class="space-y-3 text-center hidden">
                     <div class="bg-white p-2.5 rounded-xl inline-block shadow-md">
                         <img src="BEP20.png" alt="BEP20 QR Code" class="w-36 h-36 mx-auto object-contain">
@@ -633,7 +642,7 @@
                     </div>
                 </div>
 
-                <!-- TRC20 Content (Hidden by default) -->
+                <!-- TRC20 Content -->
                 <div id="content-trc20" class="space-y-3 text-center hidden">
                     <div class="bg-white p-2.5 rounded-xl inline-block shadow-md">
                         <img src="TRC20.png" alt="TRC20 QR Code" class="w-36 h-36 mx-auto object-contain">
@@ -651,7 +660,7 @@
                 <p class="text-[11px] text-amber-300/90 pt-1 border-t border-white/10">⚠️ Send exact amount only. Verify network before transferring.</p>
             </div>
 
-            <!-- Local Payment Box (bKash / Nagad) -->
+            <!-- Local Payment Box -->
             <div id="localPaymentBox" class="hidden bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-2 text-xs">
                 <p class="text-gray-300">১. নিচের নাম্বারে <b class="text-pink-400">bKash</b> বা <b class="text-orange-400">Nagad</b> এ সেন্ড মানি করুন।</p>
                 <p class="text-gray-300">২. পার্সোনাল নাম্বার: <b class="text-emerald-400 font-mono text-sm notranslate">01870978004</b></p>
@@ -1058,10 +1067,40 @@
             }
         }
 
-        // ================= RENDERING ENGINE =================
+        // ================= RENDERING ENGINE & ACTIVE TIER HIGHLIGHTER =================
         function renderCards() {
             const container = document.getElementById('gridContainer');
             if (!container) return;
+
+            // Highlight active pricing card based on user state.role ('free', 'pro', 'vip')
+            const cardFree = document.getElementById('cardTierFree');
+            const cardPro = document.getElementById('cardTierPro');
+            const cardVip = document.getElementById('cardTierVip');
+            const btnFree = document.getElementById('btnTierFree');
+            const badgeFree = document.getElementById('badgeTierFree');
+            const badgePro = document.getElementById('badgeTierPro');
+            const badgeVip = document.getElementById('badgeTierVip');
+
+            // Reset all card highlights
+            if(cardFree) cardFree.className = "glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 relative transition-all";
+            if(cardPro) cardPro.className = "glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 border-blue-500/30 relative transition-all";
+            if(cardVip) cardVip.className = "glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 relative border-amber-500/50 bg-gradient-to-b from-[#181d33] to-[#0c1222] shadow-2xl shadow-amber-500/10 transition-all";
+            if(badgeFree) badgeFree.classList.add('hidden');
+            if(badgePro) badgePro.classList.add('hidden');
+            if(badgeVip) badgeVip.classList.add('hidden');
+            if(btnFree) btnFree.innerText = "Public Tier";
+
+            if (state.role === 'vip' && cardVip) {
+                cardVip.className += " ring-2 ring-amber-400 shadow-2xl shadow-amber-500/30 scale-[1.02]";
+                if(badgeVip) badgeVip.classList.remove('hidden');
+            } else if (state.role === 'pro' && cardPro) {
+                cardPro.className += " ring-2 ring-blue-500 shadow-2xl shadow-blue-500/30 scale-[1.02]";
+                if(badgePro) badgePro.classList.remove('hidden');
+            } else if (cardFree) {
+                cardFree.className += " ring-1 ring-gray-500/50 bg-gray-900/60";
+                if(badgeFree) badgeFree.classList.remove('hidden');
+                if(btnFree) btnFree.innerText = "Current Active Tier";
+            }
 
             if (state.viewTab === 'archive') {
                 loadHallOfFame();
