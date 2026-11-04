@@ -532,7 +532,7 @@
         </footer>
     </main>
 
-    <!-- Floating WhatsApp (Position updated to bottom-24 / 96px to sit cleanly above Botpress chat bubble) -->
+    <!-- Floating WhatsApp -->
     <a href="https://wa.me/8801870978004?text=Hello%20GreatNexa,%20I%20have%20an%20inquiry%20about%20the%20Trading%20Terminal." 
        target="_blank" 
        rel="noopener noreferrer" 
@@ -571,9 +571,9 @@
         </div>
     </div>
 
-    <!-- Multi-Channel Checkout Modal -->
+    <!-- Multi-Channel Checkout Modal (Updated with QR Codes & Copy Address) -->
     <div id="paymentModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
-        <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
+        <div class="glass-panel w-full max-w-lg rounded-2xl p-6 border border-gray-700 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button type="button" onclick="closePaymentModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
             <h3 class="text-lg font-bold text-white mb-1">Upgrade Tier Checkout</h3>
             <p id="payPlanName" class="text-xs text-blue-400 font-semibold mb-2 notranslate font-mono"></p>
@@ -586,23 +586,63 @@
             </div>
             <div id="couponMsg" class="text-xs font-mono mb-3"></div>
             
-            <div class="grid grid-cols-2 gap-2 mb-3">
-                <button type="button" onclick="setPaymentMethod('crypto')" id="pay-opt-crypto" class="py-2 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow">Binance Pay / USDT</button>
-                <button type="button" onclick="setPaymentMethod('local')" id="pay-opt-local" class="py-2 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10">bKash / Nagad</button>
+            <!-- Payment Method Switcher -->
+            <div class="grid grid-cols-2 gap-2 mb-4">
+                <button type="button" onclick="setPaymentMethod('crypto')" id="pay-opt-crypto" class="py-2.5 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow">USDT Crypto (QR & Address)</button>
+                <button type="button" onclick="setPaymentMethod('local')" id="pay-opt-local" class="py-2.5 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10">bKash / Nagad</button>
             </div>
 
-            <div id="cryptoPaymentBox" class="bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-2 text-xs">
-                <p class="text-gray-300">1. Send exact amount via <b class="text-white notranslate">Binance Pay</b> or <b class="text-white notranslate">USDT (TRC20/BEP20)</b>.</p>
-                <p class="text-gray-300">2. Binance Pay UID: <b class="text-emerald-400 font-mono text-sm notranslate">520327779</b></p>
-                <p class="text-gray-300">3. Submit Transaction ID/Hash below:</p>
+            <!-- Crypto Payment Box with Network Tabs (BEP20 & TRC20) -->
+            <div id="cryptoPaymentBox" class="bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-3 text-xs">
+                <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                    <span class="text-gray-300 font-bold">Select USDT Network:</span>
+                    <div class="flex gap-1.5">
+                        <button type="button" onclick="switchCryptoNetwork('bep20')" id="net-bep20" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-bold text-[11px] transition">BEP20</button>
+                        <button type="button" onclick="switchCryptoNetwork('trc20')" id="net-trc20" class="px-3 py-1 rounded-lg bg-gray-800 text-gray-300 font-bold text-[11px] transition">TRC20</button>
+                    </div>
+                </div>
+
+                <!-- BEP20 Content -->
+                <div id="content-bep20" class="space-y-3 text-center">
+                    <div class="bg-white p-2.5 rounded-xl inline-block shadow-md">
+                        <img src="BEP20.png" alt="BEP20 QR Code" class="w-36 h-36 mx-auto object-contain">
+                    </div>
+                    <div class="text-left space-y-1">
+                        <p class="text-[11px] text-gray-400 font-mono">Network: <b class="text-white">BNB Smart Chain (BEP20)</b></p>
+                        <p class="text-[11px] text-gray-400 font-mono">Wallet Address:</p>
+                        <div class="flex items-center gap-2 bg-black/60 p-2 rounded-lg border border-white/10">
+                            <span id="addr-bep20" class="font-mono text-[11px] text-emerald-400 break-all select-all">0x833f26cb028d148588cc7165d991ff01c8d63c26</span>
+                            <button type="button" onclick="copyCryptoAddress('addr-bep20', this)" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded shrink-0 transition">Copy</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TRC20 Content (Hidden by default) -->
+                <div id="content-trc20" class="space-y-3 text-center hidden">
+                    <div class="bg-white p-2.5 rounded-xl inline-block shadow-md">
+                        <img src="TRC20.png" alt="TRC20 QR Code" class="w-36 h-36 mx-auto object-contain">
+                    </div>
+                    <div class="text-left space-y-1">
+                        <p class="text-[11px] text-gray-400 font-mono">Network: <b class="text-white">Tron (TRC20)</b></p>
+                        <p class="text-[11px] text-gray-400 font-mono">Wallet Address:</p>
+                        <div class="flex items-center gap-2 bg-black/60 p-2 rounded-lg border border-white/10">
+                            <span id="addr-trc20" class="font-mono text-[11px] text-emerald-400 break-all select-all">TFBvsK8nDQuEgzdn3chRrxjhX48ZC84oMf</span>
+                            <button type="button" onclick="copyCryptoAddress('addr-trc20', this)" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded shrink-0 transition">Copy</button>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-[11px] text-amber-300/90 pt-1 border-t border-white/10">⚠️ Send exact amount only. Don't send NFTs to this address.</p>
             </div>
 
+            <!-- Local Payment Box (bKash / Nagad) -->
             <div id="localPaymentBox" class="hidden bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-2 text-xs">
                 <p class="text-gray-300">১. নিচের নাম্বারে <b class="text-pink-400">bKash</b> বা <b class="text-orange-400">Nagad</b> এ সেন্ড মানি করুন।</p>
                 <p class="text-gray-300">২. পার্সোনাল নাম্বার: <b class="text-emerald-400 font-mono text-sm notranslate">01870978004</b></p>
                 <p class="text-gray-300">৩. টাকা পাঠিয়ে TrxID এবং প্রেরকের ফোন নাম্বার নিচে দিন:</p>
             </div>
 
+            <!-- Form Submission Fields -->
             <div class="space-y-3">
                 <div id="localSenderPhoneWrap" class="hidden">
                     <input type="text" id="paySenderPhone" placeholder="Sender bKash/Nagad Number" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 font-mono">
@@ -610,6 +650,22 @@
                 <input type="text" id="payTrxId" placeholder="Enter Transaction Hash / TrxID" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 font-mono">
                 <button type="button" onclick="submitPaymentOrder()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer font-mono">Submit Verification</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Modern Success Modal Popup (New Feature) -->
+    <div id="successModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-[70] p-4">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-emerald-500/40 shadow-2xl text-center space-y-4 relative">
+            <div class="w-16 h-16 bg-emerald-500/20 border border-emerald-500/40 rounded-full flex items-center justify-center mx-auto text-3xl animate-bounce">
+                🎉
+            </div>
+            <h3 class="text-xl font-black text-white">Payment Submitted!</h3>
+            <p class="text-xs text-gray-300 leading-relaxed">
+                আপনার পেমেন্ট ভেরিফিকেশন সফলভাবে জমা হয়েছে। অ্যাডমিন চেক করে শীঘ্রই আপনার অ্যাকাউন্ট ও পাস একটিভ করে দেবেন।
+            </p>
+            <button type="button" onclick="closeSuccessModal()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">
+                Got It, Thanks!
+            </button>
         </div>
     </div>
 
@@ -1330,20 +1386,52 @@
             const phoneWrap = document.getElementById('localSenderPhoneWrap');
 
             if (method === 'crypto') {
-                btnCrypto.className = "py-2 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow";
-                btnLocal.className = "py-2 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10";
+                btnCrypto.className = "py-2.5 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow";
+                btnLocal.className = "py-2.5 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10";
                 boxCrypto.classList.remove('hidden');
                 boxLocal.classList.add('hidden');
                 phoneWrap.classList.add('hidden');
                 document.getElementById('payTrxId').placeholder = "Enter Transaction Hash / ID";
             } else {
-                btnLocal.className = "py-2 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow";
-                btnCrypto.className = "py-2 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10";
+                btnLocal.className = "py-2.5 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow";
+                btnCrypto.className = "py-2.5 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10";
                 boxLocal.classList.remove('hidden');
                 boxCrypto.classList.add('hidden');
                 phoneWrap.classList.remove('hidden');
                 document.getElementById('payTrxId').placeholder = "Enter bKash/Nagad TrxID";
             }
+        }
+
+        function switchCryptoNetwork(net) {
+            const btnBep20 = document.getElementById('net-bep20');
+            const btnTrc20 = document.getElementById('net-trc20');
+            const contentBep20 = document.getElementById('content-bep20');
+            const contentTrc20 = document.getElementById('content-trc20');
+
+            if (net === 'bep20') {
+                btnBep20.className = "px-3 py-1 rounded-lg bg-blue-600 text-white font-bold text-[11px] transition";
+                btnTrc20.className = "px-3 py-1 rounded-lg bg-gray-800 text-gray-300 font-bold text-[11px] transition";
+                contentBep20.classList.remove('hidden');
+                contentTrc20.classList.add('hidden');
+            } else {
+                btnTrc20.className = "px-3 py-1 rounded-lg bg-blue-600 text-white font-bold text-[11px] transition";
+                btnBep20.className = "px-3 py-1 rounded-lg bg-gray-800 text-gray-300 font-bold text-[11px] transition";
+                contentTrc20.classList.remove('hidden');
+                contentBep20.classList.add('hidden');
+            }
+        }
+
+        function copyCryptoAddress(elementId, btnElem) {
+            const addrText = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(addrText).then(() => {
+                const originalText = btnElem.innerText;
+                btnElem.innerText = 'Copied!';
+                btnElem.className = "px-2.5 py-1 bg-emerald-600 text-white text-[10px] font-bold rounded shrink-0 transition";
+                setTimeout(() => {
+                    btnElem.innerText = originalText;
+                    btnElem.className = "px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded shrink-0 transition";
+                }, 2000);
+            });
         }
 
         function openPaymentModal(planName, usdPrice, bdtPrice) {
@@ -1356,6 +1444,7 @@
             document.getElementById('couponMsg').innerText = '';
             updateModalPricingDisplay();
             setPaymentMethod('crypto');
+            switchCryptoNetwork('bep20');
 
             const modal = document.getElementById('paymentModal');
             modal.classList.remove('hidden');
@@ -1364,6 +1453,18 @@
 
         function closePaymentModal() {
             const modal = document.getElementById('paymentModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function openSuccessModal() {
+            const modal = document.getElementById('successModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeSuccessModal() {
+            const modal = document.getElementById('successModal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         }
@@ -1385,7 +1486,7 @@
             }
 
             const userEmail = session.user.email;
-            const channel = activePaymentMethod === 'local' ? `bKash/Nagad (${senderPhone})` : 'Binance Pay / USDT';
+            const channel = activePaymentMethod === 'local' ? `bKash/Nagad (${senderPhone})` : 'USDT Crypto Direct';
             
             const finalUSD = (basePriceUSD * (1 - currentDiscountPct / 100)).toFixed(2);
             const finalBDT = Math.round(basePriceBDT * (1 - currentDiscountPct / 100));
@@ -1406,8 +1507,8 @@
             if(error) {
                 alert("Error: " + error.message);
             } else {
-                alert("Payment submitted successfully! Admin will verify and activate your tier shortly.");
                 closePaymentModal();
+                openSuccessModal();
                 document.getElementById('payTrxId').value = '';
                 document.getElementById('paySenderPhone').value = '';
             }
