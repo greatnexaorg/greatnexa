@@ -161,7 +161,7 @@
 </head>
 <body class="antialiased overflow-x-hidden">
 
-    <!-- Top Live Ticker Tape (Binance WebSocket Connected) -->
+    <!-- Top Live Ticker Tape -->
     <div class="w-full bg-[#030611] border-b border-white/[0.08] py-2 px-4 overflow-hidden relative z-50">
         <div id="tickerTrack" class="ticker-wrap flex items-center gap-10 font-mono text-xs">
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">BTC/USDT</span><span id="price-btcusdt" class="text-emerald-400 font-bold">$98,420.50</span></div>
@@ -170,7 +170,6 @@
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">EUR/USD</span><span class="text-rose-400 font-bold">1.0542</span></div>
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">XAU/USD (Gold)</span><span class="text-amber-300 font-bold">$2,735.40</span></div>
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">NVDA</span><span class="text-emerald-400 font-bold">$146.80</span></div>
-            <!-- Duplication for Seamless Ticker Loop -->
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">BTC/USDT</span><span id="price-btcusdt-dup" class="text-emerald-400 font-bold">$98,420.50</span></div>
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">ETH/USDT</span><span id="price-ethusdt-dup" class="text-emerald-400 font-bold">$3,420.10</span></div>
         </div>
@@ -220,7 +219,6 @@
                     🛍️ Digital Store
                 </a>
 
-                <!-- Support Ticket Button -->
                 <button onclick="openSupportModal()" class="px-3 py-2 rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600 hover:text-white text-xs font-bold transition cursor-pointer">
                     🎫 Support Ticket
                 </button>
@@ -422,7 +420,7 @@
             </div>
         </div>
 
-        <!-- Pricing Tiers Section (Updated with Dynamic Active Tier Highlighting) -->
+        <!-- Pricing Tiers Section -->
         <section class="pt-10 border-t border-white/[0.08] space-y-8">
             <div class="text-center max-w-xl mx-auto space-y-2">
                 <span class="px-3 py-1 bg-blue-500/10 text-blue-400 text-xs font-bold rounded-full border border-blue-500/20 font-mono">INSTITUTIONAL TIER PASSES</span>
@@ -436,9 +434,12 @@
                     <div>
                         <div class="flex items-center justify-between">
                             <span class="px-3 py-1 bg-gray-800 text-gray-300 rounded-full text-xs font-bold font-mono">Public Tier</span>
-                            <span id="badgeTierFree" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-gray-500/20 text-gray-300 border border-gray-500/40">Active Tier</span>
+                            <span id="badgeTierFree" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-gray-500/20 text-gray-300 border border-gray-500/40">Active Plan</span>
                         </div>
-                        <h3 class="text-3xl font-extrabold text-white mt-4 notranslate">$0 <span class="text-xs text-gray-400 font-normal">/ lifetime</span></h3>
+                        <div class="mt-4 flex items-baseline justify-between">
+                            <h3 class="text-3xl font-extrabold text-white notranslate">$0 <span class="text-xs text-gray-400 font-normal">/ lifetime</span></h3>
+                            <span id="countdownFree" class="text-[11px] font-mono text-gray-400 bg-black/40 px-2 py-1 rounded-lg border border-white/5">Active (Lifetime)</span>
+                        </div>
                         <p class="text-xs text-gray-400 mt-1">Basic exploratory scanner for individual traders.</p>
                         <ul class="space-y-3 text-xs text-gray-300 mt-6 font-mono">
                             <li class="flex items-center gap-2">✔ Top 3 Assets Only</li>
@@ -461,7 +462,10 @@
                             </div>
                             <span id="badgeTierPro" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40 animate-pulse">Active Plan</span>
                         </div>
-                        <h3 class="text-4xl font-extrabold text-white mt-4 notranslate">$5 <span class="text-xs text-gray-400 font-normal">/ month (600 BDT)</span></h3>
+                        <div class="mt-4 flex items-baseline justify-between">
+                            <h3 class="text-4xl font-extrabold text-white notranslate">$5 <span class="text-xs text-gray-400 font-normal">/ mo</span></h3>
+                            <span id="countdownPro" class="text-[11px] font-mono text-blue-400 bg-black/40 px-2 py-1 rounded-lg border border-blue-500/20 hidden">⏳ 30 days left</span>
+                        </div>
                         <p class="text-xs text-gray-400 mt-1">Institutional quantitative access on a flexible monthly pass.</p>
                         <ul class="space-y-3 text-xs text-gray-200 mt-6 font-mono">
                             <li class="flex items-center gap-2 text-blue-300">✔ Crypto, Forex & Stocks Unlocked</li>
@@ -486,10 +490,12 @@
                             </div>
                             <span id="badgeTierVip" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">Active Plan</span>
                         </div>
-                        <div class="mt-4 flex items-baseline gap-2">
-                            <h3 class="text-4xl font-black text-white notranslate">$49</h3>
-                            <span class="text-xs text-gray-400 line-through font-mono notranslate">$499</span>
-                            <span class="text-xs text-amber-300 font-bold font-mono">/ 24 Months (5,900 BDT)</span>
+                        <div class="mt-4 flex items-baseline justify-between">
+                            <div class="flex items-baseline gap-2">
+                                <h3 class="text-4xl font-black text-white notranslate">$49</h3>
+                                <span class="text-xs text-gray-400 line-through font-mono notranslate">$499</span>
+                            </div>
+                            <span id="countdownVip" class="text-[11px] font-mono text-amber-300 bg-black/40 px-2 py-1 rounded-lg border border-amber-500/20 hidden">⏳ 730 days left</span>
                         </div>
                         <p class="text-xs text-gray-400 mt-1">Full quantitative power, zero limitations, and priority telegram push.</p>
                         <ul class="space-y-3 text-xs text-gray-200 mt-6 font-mono">
@@ -1067,38 +1073,65 @@
             }
         }
 
-        // ================= RENDERING ENGINE & ACTIVE TIER HIGHLIGHTER =================
+        // ================= RENDERING ENGINE & ACTIVE PLAN COUNTDOWN =================
         function renderCards() {
             const container = document.getElementById('gridContainer');
             if (!container) return;
 
-            // Highlight active pricing card based on user state.role ('free', 'pro', 'vip')
+            // Highlight active pricing card and update card pricing area with "Active Plan" & countdown days
             const cardFree = document.getElementById('cardTierFree');
             const cardPro = document.getElementById('cardTierPro');
             const cardVip = document.getElementById('cardTierVip');
-            const btnFree = document.getElementById('btnTierFree');
+            
             const badgeFree = document.getElementById('badgeTierFree');
             const badgePro = document.getElementById('badgeTierPro');
             const badgeVip = document.getElementById('badgeTierVip');
 
-            // Reset all card highlights
+            const countdownFree = document.getElementById('countdownFree');
+            const countdownPro = document.getElementById('countdownPro');
+            const countdownVip = document.getElementById('countdownVip');
+
+            const btnFree = document.getElementById('btnTierFree');
+
+            // Reset all card styles and hide countdowns/badges
             if(cardFree) cardFree.className = "glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 relative transition-all";
             if(cardPro) cardPro.className = "glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 border-blue-500/30 relative transition-all";
             if(cardVip) cardVip.className = "glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 relative border-amber-500/50 bg-gradient-to-b from-[#181d33] to-[#0c1222] shadow-2xl shadow-amber-500/10 transition-all";
+            
             if(badgeFree) badgeFree.classList.add('hidden');
             if(badgePro) badgePro.classList.add('hidden');
             if(badgeVip) badgeVip.classList.add('hidden');
+            
+            if(countdownFree) countdownFree.classList.add('hidden');
+            if(countdownPro) countdownPro.classList.add('hidden');
+            if(countdownVip) countdownVip.classList.add('hidden');
+
             if(btnFree) btnFree.innerText = "Public Tier";
+
+            // Determine active days remaining (defaulting to 30 for Pro, 730 for VIP, or calculated from expires_at if available)
+            let userDaysLeft = window.userSubscriptionDays || (state.role === 'vip' ? 730 : (state.role === 'pro' ? 30 : null));
 
             if (state.role === 'vip' && cardVip) {
                 cardVip.className += " ring-2 ring-amber-400 shadow-2xl shadow-amber-500/30 scale-[1.02]";
                 if(badgeVip) badgeVip.classList.remove('hidden');
+                if(countdownVip) {
+                    countdownVip.classList.remove('hidden');
+                    countdownVip.innerHTML = `⭐ Active Plan • <b class="text-amber-300">${userDaysLeft !== null ? userDaysLeft + ' days left' : 'Lifetime'}</b>`;
+                }
             } else if (state.role === 'pro' && cardPro) {
                 cardPro.className += " ring-2 ring-blue-500 shadow-2xl shadow-blue-500/30 scale-[1.02]";
                 if(badgePro) badgePro.classList.remove('hidden');
+                if(countdownPro) {
+                    countdownPro.classList.remove('hidden');
+                    countdownPro.innerHTML = `⭐ Active Plan • <b class="text-blue-300">${userDaysLeft !== null ? userDaysLeft + ' days left' : '30 days left'}</b>`;
+                }
             } else if (cardFree) {
                 cardFree.className += " ring-1 ring-gray-500/50 bg-gray-900/60";
                 if(badgeFree) badgeFree.classList.remove('hidden');
+                if(countdownFree) {
+                    countdownFree.classList.remove('hidden');
+                    countdownFree.innerHTML = `⭐ Active Plan • <b class="text-gray-300">Lifetime</b>`;
+                }
                 if(btnFree) btnFree.innerText = "Current Active Tier";
             }
 
@@ -1373,6 +1406,7 @@
                     }
 
                     state.role = (userTier === 'vip') ? 'vip' : ((userTier === 'pro') ? 'pro' : 'free');
+                    window.userSubscriptionDays = daysLeft;
 
                     let tierBadge = '';
                     const guardBox = document.getElementById('limitGuardBox');
