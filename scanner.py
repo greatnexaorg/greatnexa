@@ -49,7 +49,8 @@ def send_telegram_alert(signal):
             f"📌 *Asset:* `{sym}`\n"
             f"📊 *Direction:* {direction}\n"
             f"🎯 *Conviction Score:* `{signal['score']}/100`\n"
-            f"⚡ *Style:* {signal['stage']}\n\n"
+            f"⚡ *Style:* {signal['stage']} ({signal['trader_style'].upper()})\n"
+            f"⏳ *Horizon:* {signal['projection_horizon'].upper()}\n\n"
             f"💵 *Entry:* `${fmt_price(signal['entry_price'])}`\n"
             f"🛑 *Stop Loss:* `${fmt_price(signal['sl_price'])}`\n"
             f"🎯 *Take Profit:* `${fmt_price(signal['tp_price'])}`\n\n"
@@ -246,7 +247,7 @@ def fetch_top_100_forex_universe():
             clean_sym = f"{raw_sym[:3]}/{raw_sym[3:]}" if len(raw_sym) == 6 else raw_sym
             m_type, sector = "forex", "G10 Interbank FX"
         elif ticker in commodities_map:
-            clean_sym, m_type, sector = commodities_map[ticker], "forex", "Precious Metals"
+            clean_sym, m_type, sector = commodities_map[ticker], "forex", "Precious Metals & Gold"
         else:
             clean_sym, m_type, sector = ticker.replace("=F", ""), "forex", "Global Commodity"
 
@@ -311,7 +312,7 @@ def track_and_update_lifecycle(current_prices):
     return active_setups_map
 
 # ==============================================================================
-# ৯. SMC লিকুইডিটি পার্জ ও সিগন্যাল জেনারেটর
+# ৯. SMC লিকুইডিটি পার্জ ও সিগন্যাল জেনারেটর (Updated for Exact Styles & Horizons)
 # ==============================================================================
 def generate_smc_institutional_signal(item, active_setups_map):
     p = item['price']
@@ -339,10 +340,35 @@ def generate_smc_institutional_signal(item, active_setups_map):
         return []
 
     setups = []
+    # FIX: trader_style, timeframe, horizon এবং stage স্পষ্টভাবে ডিফাইন করা হয়েছে
     styles = [
-        {"style": "Scalp", "tag": "Scalp Engine (5M)", "horizon": "24h", "rr": 2.4, "risk_mult": 0.16},
-        {"style": "Day", "tag": "Day Engine (1H)", "horizon": "24h", "rr": 2.6, "risk_mult": 0.28},
-        {"style": "Swing", "tag": "Swing Engine (4H)", "horizon": "1w", "rr": 3.2, "risk_mult": 0.48}
+        {
+            "style": "Scalp", 
+            "trader_style": "scalp", 
+            "timeframe": "5m", 
+            "tag": "Scalp Engine (5M)", 
+            "horizon": "24h", 
+            "rr": 2.4, 
+            "risk_mult": 0.16
+        },
+        {
+            "style": "Day", 
+            "trader_style": "day", 
+            "timeframe": "1h", 
+            "tag": "Day Engine (1H)", 
+            "horizon": "24h", 
+            "rr": 2.6, 
+            "risk_mult": 0.28
+        },
+        {
+            "style": "Swing", 
+            "trader_style": "swing", 
+            "timeframe": "4h", 
+            "tag": "Swing Engine (4H)", 
+            "horizon": "1w", 
+            "rr": 3.2, 
+            "risk_mult": 0.48
+        }
     ]
 
     for s in styles:
@@ -360,19 +386,32 @@ def generate_smc_institutional_signal(item, active_setups_map):
         score = min(98, conviction)
 
         setups.append({
-            "symbol": item['symbol'], "market_type": m_type, "horizon": s['horizon'], "direction": direction,
-            "trading_mode": "mode2" if m_type == "crypto" else "mode1", "score": score,
-            "stage": f"[{s['style'].upper()}] Institutional Squeeze", "current_change_24h": round(chg, 2),
-            "sector": f"{s['tag']} • {base_sector}", "est_potential": f"+{round(risk_pct * s['rr'] * 100, 1)}%",
-            "flow_metric": flow_delta, "driver_metric": purge_catalyst,
-            "entry_price": entry, "sl_price": sl, "tp_price": tp, "status": "ACTIVE",
+            "symbol": item['symbol'], 
+            "market_type": m_type, 
+            "horizon": s['horizon'],
+            "projection_horizon": s['horizon'],        # FIX: ফ্রন্টএন্ড 1w, 1m ও 24h ফিল্টারের জন্য
+            "trader_style": s['trader_style'],          # FIX: ফ্রন্টএন্ড scalp, day, swing ফিল্টারের জন্য
+            "timeframe": s['timeframe'],
+            "direction": direction,
+            "trading_mode": "mode2" if m_type == "crypto" else "mode1", 
+            "score": score,
+            "stage": f"[{s['style'].upper()}] Institutional Squeeze", 
+            "current_change_24h": round(chg, 2),
+            "sector": f"{s['tag']} • {base_sector}", 
+            "est_potential": f"+{round(risk_pct * s['rr'] * 100, 1)}%",
+            "flow_metric": flow_delta, 
+            "driver_metric": purge_catalyst,
+            "entry_price": entry, 
+            "sl_price": sl, 
+            "tp_price": tp, 
+            "status": "ACTIVE",
             "mtf_alignment": f"Entry: ${fmt_price(entry)} | SL: ${fmt_price(sl)}",
             "research_note": f"{s['style']} SMC {direction.upper()} অর্ডারব্লক ও লিকুইডিটি পার্জ কনফার্মড। R:R = 1:{s['rr']:.1f}"
         })
     return setups
 
 # ==============================================================================
-# ১০. এক্সিকিউশন রানার (Optimized Telegram Filtering & Multi-Asset Scan)
+# ১০. এক্সিকিউশন রানার (Optimized Telegram vs Website Data Separation)
 # ==============================================================================
 def run():
     print("=" * 80)
@@ -394,33 +433,39 @@ def run():
     active_setups_map = track_and_update_lifecycle(all_prices)
     crypto_setups, stock_setups, forex_setups = [], [], []
 
-    for c in sorted(crypto_prices.values(), key=lambda x: (abs(x['change']) * x['volume_m']), reverse=True)[:50]:
+    # পর্যাপ্ত পরিমাণে সিগন্যাল তৈরি যাতে ওয়েবসাইটে সব স্টাইল (Scalp/Day/Swing) ও হরাইজন থাকে
+    for c in sorted(crypto_prices.values(), key=lambda x: (abs(x['change']) * x['volume_m']), reverse=True)[:60]:
         crypto_setups.extend(generate_smc_institutional_signal(c, active_setups_map))
 
-    for s in sorted(stocks_prices.values(), key=lambda x: abs(x['change']), reverse=True)[:30]:
+    for s in sorted(stocks_prices.values(), key=lambda x: abs(x['change']), reverse=True)[:35]:
         stock_setups.extend(generate_smc_institutional_signal(s, active_setups_map))
 
-    for f in sorted(forex_prices.values(), key=lambda x: abs(x['change']), reverse=True)[:30]:
+    for f in sorted(forex_prices.values(), key=lambda x: abs(x['change']), reverse=True)[:35]:
         forex_setups.extend(generate_smc_institutional_signal(f, active_setups_map))
 
-    # Quality Filter: Top 5 Crypto, Top 3 Stocks, Top 3 Forex with Score >= 92
-    top_crypto = sorted([x for x in crypto_setups if x['score'] >= 92], key=lambda x: x['score'], reverse=True)[:5]
-    top_stocks = sorted([x for x in stock_setups if x['score'] >= 92], key=lambda x: x['score'], reverse=True)[:3]
-    top_forex = sorted([x for x in forex_setups if x['score'] >= 92], key=lambda x: x['score'], reverse=True)[:3]
+    # ওয়েবসাইটের জন্য সব হাই-কোয়ালিটি ডেটা ডাটাবেজে পাঠানো
+    website_batch = [x for x in (crypto_setups + stock_setups + forex_setups) if x['score'] >= 92]
 
-    final_batch = top_crypto + top_stocks + top_forex
-
-    if final_batch:
+    if website_batch:
         try:
-            supabase.table("market_research").insert(final_batch).execute()
-            print(f"\n✔ Successfully pushed {len(final_batch)} High-Conviction Setups to Database!")
-            
-            # Optimized Telegram Filtering: Prevents spamming 30-40 signals at once
-            for s in final_batch:
-                send_telegram_alert(s)
-                time.sleep(4.0)
+            supabase.table("market_research").insert(website_batch).execute()
+            print(f"\n✔ Successfully pushed {len(website_batch)} High-Conviction Setups to Website Database!")
         except Exception as e:
             print(f"[-] Batch insert error: {e}")
+
+        # ======================================================================
+        # টেলিগ্রাম অ্যালার্ট ফিল্টার (কঠোর নিয়ন্ত্রণ: টপ ৫ ক্রিপ্টো, ৩ স্টক, ৩ ফরেক্স)
+        # ======================================================================
+        top_telegram_crypto = sorted([x for x in crypto_setups if x['score'] >= 92], key=lambda x: x['score'], reverse=True)[:5]
+        top_telegram_stocks = sorted([x for x in stock_setups if x['score'] >= 92], key=lambda x: x['score'], reverse=True)[:3]
+        top_telegram_forex = sorted([x for x in forex_setups if x['score'] >= 92], key=lambda x: x['score'], reverse=True)[:3]
+
+        telegram_queue = top_telegram_crypto + top_telegram_stocks + top_telegram_forex
+
+        print(f"\n[*] Pushing {len(telegram_queue)} Curated Signals to Telegram Channel...")
+        for s in telegram_queue:
+            send_telegram_alert(s)
+            time.sleep(3.5) # Rate-limit safe delay
     else:
         print("\n[i] No high-conviction setups meeting threshold at this cycle.")
 
