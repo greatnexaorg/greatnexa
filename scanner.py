@@ -32,7 +32,7 @@ session.headers.update({
 })
 
 # ==============================================================================
-# ২. টেলিগ্রাম ভিআইপি সিগন্যাল অ্যালার্ট ইঞ্জিন (Rate-Limit Safe Delay)
+# ২. টেলিগ্রাম ভিআইপি সিগন্যাল অ্যালার্ট ইঞ্জিন (Optimized & Rate-Limit Safe)
 # ==============================================================================
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
@@ -86,12 +86,11 @@ def send_telegram_status(text):
         print(f"[-] Telegram status error: {e}")
 
 # ==============================================================================
-# ৩. অটোমেটিক বাইন্যান্স পে ভেরিফায়ার ও সাবস্ক্রিপশন এক্সপায়ারি রোলব্যাক
+# ৩. অটোমেটিক সাবস্ক্রিপশন ও পেমেন্ট প্রসেসর
 # ==============================================================================
 def process_automatic_subscriptions():
     print("[*] Processing Autonomous Subscription Lifecycle & Payment Verification...")
     now = datetime.now(timezone.utc)
-    
     try:
         expired_res = supabase.table("user_profiles").select("id, email, tier, expires_at").neq("tier", "free").lt("expires_at", now.isoformat()).execute()
         expired_users = expired_res.data or []
@@ -118,7 +117,6 @@ def process_automatic_subscriptions():
                 is_vip = "VIP" in plan_name or "49" in plan_name
                 target_tier = "vip" if is_vip else "pro"
                 days = 730 if is_vip else 30
-                
                 try:
                     supabase.rpc("admin_approve_order", {
                         "p_order_id": order_id,
@@ -126,26 +124,34 @@ def process_automatic_subscriptions():
                         "p_tier": target_tier,
                         "p_duration_days": days
                     }).execute()
-                    print(f"  -> [AUTO-APPROVED] Order #{order_id} verified for {user_email}. Tier: {target_tier.upper()} ({days} Days).")
+                    print(f"  -> [AUTO-APPROVED] Order #{order_id} verified for {user_email}.")
                 except Exception as approve_err:
-                    print(f"[-] Auto-Approve RPC Error for Order #{order_id}: {approve_err}")
+                    print(f"[-] Auto-Approve RPC Error: {approve_err}")
     except Exception as e:
         print(f"[-] Subscription Processor Error: {e}")
 
 # ==============================================================================
-# ৪. ডাটাবেজ অপটিমাইজার (STORAGE PURGE)
+# ৪. ডাটাবেজ অপটিমাইজার ও Strict 24h TTL & Hall of Fame 7 Days Purge
 # ==============================================================================
 def cleanup_old_database_records():
-    print("[*] Running Autonomous Database Storage Optimizer...")
+    print("[*] Running Autonomous Database Storage Optimizer & TTL Expiry...")
     now = datetime.now(timezone.utc)
-    cutoff_hof = (now - timedelta(days=30)).isoformat()
+    
+    cutoff_ttl = (now - timedelta(hours=24)).isoformat()
+    cutoff_hof = (now - timedelta(days=7)).isoformat() # Hall of Fame strict 7 days retention
     cutoff_failures = (now - timedelta(days=3)).isoformat()
+    
     try:
+        # ২৪ ঘণ্টার বেশি পুরোনো ACTIVE সিগন্যালগুলোর স্ট্যাটাস EXPIRED করা (Live Stream TTL)
+        supabase.table("market_research").update({"status": "EXPIRED", "resolved_at": now.isoformat()}).eq("status", "ACTIVE").lt("created_at", cutoff_ttl).execute()
+        
+        # Hall of Fame এ শুধুমাত্র গত ৭ দিনের উইনিং প্রুফ রাখা
         supabase.table("market_research").delete().eq("status", "HIT_TP").lt("resolved_at", cutoff_hof).execute()
         supabase.table("market_research").delete().in_("status", ["HIT_SL", "EXPIRED"]).lt("resolved_at", cutoff_failures).execute()
-        print("✔ Database Cleaned: Zero-bloat storage maintained.")
+        
+        print("✔ Database Cleaned: Stale signals expired & Hall of Fame restricted to 7 days.")
     except Exception as e:
-        print(f"[-] Cleanup Error: {e}")
+        print(f"[-] Cleanup & TTL Error: {e}")
 
 # ==============================================================================
 # ৫. ক্রিপ্টো: টপ ৫০০ পেয়ারের লাইভ ডায়নামিক স্ক্রিনার
@@ -161,7 +167,6 @@ def fetch_top_500_crypto():
                 t for t in all_tickers 
                 if t['symbol'].endswith('USDT') and not any(x in t['symbol'] for x in ['UP', 'DOWN', 'BEAR', 'BULL'])
             ]
-            
             sorted_pairs = sorted(
                 usdt_pairs, 
                 key=lambda x: float(x.get('quoteVolume', 0)) * (1 + abs(float(x.get('priceChangePercent', 0))) / 100), 
@@ -171,153 +176,92 @@ def fetch_top_500_crypto():
             for t in sorted_pairs:
                 price = float(t.get('lastPrice', 0))
                 vol_m = round(float(t.get('quoteVolume', 0)) / 1_000_000, 2)
-                if price <= 0:
-                    continue
+                if price <= 0: continue
 
                 sym = t['symbol'].replace("USDT", "/USDT")
                 market_pool[sym] = {
-                    "symbol": sym,
-                    "market_type": "crypto",
+                    "symbol": sym, "market_type": "crypto",
                     "sector": "Layer-1 Major" if any(k in sym for k in ["BTC", "ETH", "SOL", "BNB", "XRP"]) else "High-Beta Altcoin",
-                    "price": price,
-                    "high": float(t.get('highPrice', 0)),
-                    "low": float(t.get('lowPrice', 0)),
-                    "open": float(t.get('openPrice', 0)),
-                    "change": float(t.get('priceChangePercent', 0)),
-                    "volume_m": vol_m
+                    "price": price, "high": float(t.get('highPrice', 0)), "low": float(t.get('lowPrice', 0)),
+                    "open": float(t.get('openPrice', 0)), "change": float(t.get('priceChangePercent', 0)), "volume_m": vol_m
                 }
-            print(f"[i] Successfully Loaded {len(market_pool)} Live Active Crypto Pairs (Top 500).")
     except Exception as e:
-        print(f"[-] Top 500 Crypto Universe Error: {e}")
+        print(f"[-] Top 500 Crypto Error: {e}")
     return market_pool
 
 # ==============================================================================
 # ৬. ইউএস স্টকস: লাইভ মার্কেট টপ ১০০ স্টক স্ক্রিনার
 # ==============================================================================
 def fetch_top_100_stocks():
-    print("[*] Fetching Top 100 US Stocks from Market Screener...")
+    print("[*] Fetching Top 100 US Stocks...")
     stock_pool = {}
     try:
         url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=most_actives&count=100"
         res = session.get(url, timeout=12)
-        
         if res.status_code == 200:
             quotes = res.json().get('finance', {}).get('result', [{}])[0].get('quotes', [])
             for q in quotes:
                 ticker = q.get('symbol', '').replace(".", "-")
                 price = float(q.get('regularMarketPrice') or 0)
-                if not ticker or price <= 0 or "^" in ticker:
-                    continue
-
-                high = float(q.get('regularMarketDayHigh') or (price * 1.01))
-                low = float(q.get('regularMarketDayLow') or (price * 0.99))
-                open_p = float(q.get('regularMarketOpen') or price)
-                chg = float(q.get('regularMarketChangePercent') or 0)
-                vol_m = round(float(q.get('regularMarketVolume') or 1000000) / 1_000_000, 2)
+                if not ticker or price <= 0 or "^" in ticker: continue
 
                 stock_pool[ticker] = {
-                    "symbol": ticker,
-                    "market_type": "stocks",
-                    "sector": "US Dynamic Equity",
-                    "price": price,
-                    "high": high,
-                    "low": low,
-                    "open": open_p,
-                    "change": chg,
-                    "volume_m": vol_m
+                    "symbol": ticker, "market_type": "stocks", "sector": "US Dynamic Equity",
+                    "price": price, "high": float(q.get('regularMarketDayHigh') or (price * 1.01)),
+                    "low": float(q.get('regularMarketDayLow') or (price * 0.99)),
+                    "open": float(q.get('regularMarketOpen') or price),
+                    "change": float(q.get('regularMarketChangePercent') or 0),
+                    "volume_m": round(float(q.get('regularMarketVolume') or 1000000) / 1_000_000, 2)
                 }
-            print(f"[i] Successfully Loaded {len(stock_pool)} Real-Time Top 100 US Stocks.")
     except Exception as e:
-        print(f"[-] Top 100 Stock Screener Warning: {e}")
+        print(f"[-] Stock Screener Warning: {e}")
     return stock_pool
 
 # ==============================================================================
 # ৭. ফরেক্স ও কমোডিটিজ: টপ ১০০ স্ক্রিনার
 # ==============================================================================
 def fetch_top_100_forex_universe():
-    print("[*] Discovering Real-Time Top 100 Forex & Commodities Universe...")
+    print("[*] Discovering Forex & Commodities Universe...")
     forex_pool = {}
     discovered_quotes = []
+    try:
+        res_fx = session.get("https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=currencies&count=60", timeout=10)
+        if res_fx.status_code == 200: discovered_quotes.extend(res_fx.json().get('finance', {}).get('result', [{}])[0].get('quotes', []))
+    except Exception: pass
 
     try:
-        forex_screener_url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=currencies&count=60"
-        res_fx = session.get(forex_screener_url, timeout=10)
-        if res_fx.status_code == 200:
-            fx_data = res_fx.json().get('finance', {}).get('result', [{}])[0].get('quotes', [])
-            discovered_quotes.extend(fx_data)
-    except Exception as e:
-        print(f"[-] Forex Screener Warning: {e}")
+        res_comm = session.get("https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=all_commodities&count=40", timeout=10)
+        if res_comm.status_code == 200: discovered_quotes.extend(res_comm.json().get('finance', {}).get('result', [{}])[0].get('quotes', []))
+    except Exception: pass
 
-    try:
-        commodities_screener_url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=all_commodities&count=40"
-        res_comm = session.get(commodities_screener_url, timeout=10)
-        if res_comm.status_code == 200:
-            comm_data = res_comm.json().get('finance', {}).get('result', [{}])[0].get('quotes', [])
-            discovered_quotes.extend(comm_data)
-    except Exception as e:
-        print(f"[-] Commodities Warning: {e}")
-
-    if not discovered_quotes:
-        fallback_tickers = [
-            "EURUSD=X", "GBPUSD=X", "USDJPY=X", "AUDUSD=X", "USDCAD=X", "USDCHF=X", "NZDUSD=X",
-            "EURJPY=X", "GBPJPY=X", "AUDJPY=X", "EURGBP=X", "GC=F", "SI=F", "CL=F", "NG=F"
-        ]
-        try:
-            url = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={','.join(fallback_tickers)}"
-            res_fb = session.get(url, timeout=10)
-            if res_fb.status_code == 200:
-                discovered_quotes = res_fb.json().get('quoteResponse', {}).get('result', [])
-        except Exception as e:
-            print(f"[-] Fallback error: {e}")
-
-    commodities_map = {
-        "GC=F": "XAU/USD", "SI=F": "XAG/USD", "PL=F": "XPT/USD", "HG=F": "COPPER/USD",
-        "CL=F": "WTI/CRUDE", "BZ=F": "BRENT/CRUDE", "NG=F": "NATGAS/USD"
-    }
+    commodities_map = {"GC=F": "XAU/USD", "SI=F": "XAG/USD", "CL=F": "WTI/CRUDE", "NG=F": "NATGAS/USD"}
 
     for item in discovered_quotes:
         ticker = item.get('symbol', '')
         price = float(item.get('regularMarketPrice') or item.get('price') or 0)
-        if not ticker or price <= 0 or "^" in ticker:
-            continue
+        if not ticker or price <= 0 or "^" in ticker: continue
 
         if ticker.endswith("=X"):
             raw_sym = ticker.replace("=X", "")
             clean_sym = f"{raw_sym[:3]}/{raw_sym[3:]}" if len(raw_sym) == 6 else raw_sym
-            m_type = "forex"
-            sector = "G10 Interbank FX" if any(c in ticker for c in ["EUR", "USD", "GBP", "JPY", "AUD", "CAD", "CHF"]) else "Exotic Cross FX"
+            m_type, sector = "forex", "G10 Interbank FX"
         elif ticker in commodities_map:
-            clean_sym = commodities_map[ticker]
-            m_type = "forex"
-            sector = "Precious Metals" if "XAU" in clean_sym or "XAG" in clean_sym or "XPT" in clean_sym else "Energy Commodities"
+            clean_sym, m_type, sector = commodities_map[ticker], "forex", "Precious Metals"
         else:
-            clean_sym = ticker.replace("=F", "")
-            m_type = "forex"
-            sector = "Global Commodity"
-
-        high = float(item.get('regularMarketDayHigh') or (price * 1.008))
-        low = float(item.get('regularMarketDayLow') or (price * 0.992))
-        open_p = float(item.get('regularMarketOpen') or price)
-        chg = float(item.get('regularMarketChangePercent') or 0)
-        vol_m = round(float(item.get('regularMarketVolume') or 1500000) / 1_000_000, 2)
+            clean_sym, m_type, sector = ticker.replace("=F", ""), "forex", "Global Commodity"
 
         forex_pool[clean_sym] = {
-            "symbol": clean_sym,
-            "market_type": m_type,
-            "sector": sector,
-            "price": price,
-            "high": high,
-            "low": low,
-            "open": open_p,
-            "change": chg,
-            "volume_m": vol_m
+            "symbol": clean_sym, "market_type": m_type, "sector": sector, "price": price,
+            "high": float(item.get('regularMarketDayHigh') or (price * 1.008)),
+            "low": float(item.get('regularMarketDayLow') or (price * 0.992)),
+            "open": float(item.get('regularMarketOpen') or price),
+            "change": float(item.get('regularMarketChangePercent') or 0),
+            "volume_m": round(float(item.get('regularMarketVolume') or 1500000) / 1_000_000, 2)
         }
-
-    print(f"[✔] Total Real-Time Top 100 Forex & Commodities Parsed: {len(forex_pool)}")
     return forex_pool
 
 # ==============================================================================
-# ৮. লাইফসাইকেল ট্র্যাকার (ডুপ্লিকেট রিমুভার সহ)
+# ৮. লাইফসাইকেল ট্র্যাকার (TP/SL Check & Active Trades Management)
 # ==============================================================================
 def track_and_update_lifecycle(current_prices):
     active_setups_map = set()
@@ -335,8 +279,7 @@ def track_and_update_lifecycle(current_prices):
             style_tag = "Scalp" if "Scalp" in sec else ("Day" if "Day" in sec else "Swing")
             active_setups_map.add(f"{sym}_{style_tag}_{direction}")
 
-            if sym not in current_prices:
-                continue
+            if sym not in current_prices: continue
 
             cur_price = current_prices[sym]["price"]
             sl = float(sig.get("sl_price") or 0)
@@ -345,19 +288,15 @@ def track_and_update_lifecycle(current_prices):
 
             hit_status = None
             if direction == "long":
-                if cur_price >= tp and tp > 0:
-                    hit_status = "HIT_TP"
-                elif cur_price <= sl and sl > 0:
-                    hit_status = "HIT_SL"
+                if cur_price >= tp and tp > 0: hit_status = "HIT_TP"
+                elif cur_price <= sl and sl > 0: hit_status = "HIT_SL"
             else:
-                if cur_price <= tp and tp > 0:
-                    hit_status = "HIT_TP"
-                elif cur_price >= sl and sl > 0:
-                    hit_status = "HIT_SL"
+                if cur_price <= tp and tp > 0: hit_status = "HIT_TP"
+                elif cur_price >= sl and sl > 0: hit_status = "HIT_SL"
 
             if not hit_status and created_at_str:
                 created_at = datetime.fromisoformat(created_at_str.replace("Z", "+00:00"))
-                if now - created_at > timedelta(hours=48):
+                if now - created_at > timedelta(hours=24): # TTL 24 hours expiry
                     hit_status = "EXPIRED"
 
             if hit_status:
@@ -365,14 +304,14 @@ def track_and_update_lifecycle(current_prices):
                     "status": hit_status,
                     "resolved_at": now.isoformat()
                 }).eq("id", sig_id).execute()
-                print(f"  -> [{hit_status}] {sym} ({sec}) Closed at ${fmt_price(cur_price)}")
+                print(f"  -> [{hit_status}] {sym} Closed at ${fmt_price(cur_price)}")
 
     except Exception as e:
         print(f"[-] Lifecycle Error: {e}")
     return active_setups_map
 
 # ==============================================================================
-# ৯. SMC লিকুইডিটি পার্জ ও সিগন্যাল ইঞ্জিন
+# ৯. SMC লিকুইডিটি পার্জ ও সিগন্যাল জেনারেটর
 # ==============================================================================
 def generate_smc_institutional_signal(item, active_setups_map):
     p = item['price']
@@ -385,51 +324,32 @@ def generate_smc_institutional_signal(item, active_setups_map):
     base_sector = item.get('sector', 'Core Market')
 
     span = high - low
-    if span <= 0 or p <= 0:
-        return []
+    if span <= 0 or p <= 0: return []
 
     volatility_ratio = span / p
     range_pos = (p - low) / span
-
     lower_wick = min(open_p, p) - low
     upper_wick = high - max(open_p, p)
-    is_sell_side_purged = (range_pos >= 0.52 and lower_wick > upper_wick * 1.3)
-    is_buy_side_purged = (range_pos <= 0.48 and upper_wick > lower_wick * 1.3)
 
-    if is_sell_side_purged or (range_pos >= 0.60 and chg >= 1.2):
-        direction = "long"
-        purge_catalyst = "Sell-Side Liquidity Purged"
-        flow_delta = f"${vol}M Smart Money Accumulation"
-    elif is_buy_side_purged or (range_pos <= 0.40 and chg <= -1.2):
-        direction = "short"
-        purge_catalyst = "Buy-Side Liquidity Swept"
-        flow_delta = f"${vol}M Institutional Distribution"
+    if (range_pos >= 0.52 and lower_wick > upper_wick * 1.3) or (range_pos >= 0.60 and chg >= 1.2):
+        direction, purge_catalyst, flow_delta = "long", "Sell-Side Liquidity Purged", f"${vol}M Smart Money Accumulation"
+    elif (range_pos <= 0.48 and upper_wick > lower_wick * 1.3) or (range_pos <= 0.40 and chg <= -1.2):
+        direction, purge_catalyst, flow_delta = "short", "Buy-Side Liquidity Swept", f"${vol}M Institutional Distribution"
     else:
         return []
 
     setups = []
-
     styles = [
         {"style": "Scalp", "tag": "Scalp Engine (5M)", "horizon": "24h", "rr": 2.4, "risk_mult": 0.16},
         {"style": "Day", "tag": "Day Engine (1H)", "horizon": "24h", "rr": 2.6, "risk_mult": 0.28},
-        {"style": "Swing", "tag": "Swing Engine (4H)", "horizon": "1w" if abs(chg) < 3.5 else "1m", "rr": 3.2, "risk_mult": 0.48}
+        {"style": "Swing", "tag": "Swing Engine (4H)", "horizon": "1w", "rr": 3.2, "risk_mult": 0.48}
     ]
 
     for s in styles:
         setup_key = f"{item['symbol']}_{s['style']}_{direction}"
-        if setup_key in active_setups_map:
-            continue
+        if setup_key in active_setups_map: continue
 
-        if m_type == "forex":
-            risk_pct = max(0.0024, volatility_ratio * s['risk_mult'])
-            trading_mode = "mode1"
-        elif m_type == "stocks":
-            risk_pct = max(0.009, volatility_ratio * s['risk_mult'])
-            trading_mode = "mode1"
-        else:
-            risk_pct = max(0.012, volatility_ratio * s['risk_mult'])
-            trading_mode = "mode2"
-
+        risk_pct = max(0.012 if m_type == "crypto" else 0.005, volatility_ratio * s['risk_mult'])
         entry = p
         sl = p * (1 - risk_pct) if direction == "long" else p * (1 + risk_pct)
         tp = p * (1 + (risk_pct * s['rr'])) if direction == "long" else p * (1 - (risk_pct * s['rr']))
@@ -439,89 +359,70 @@ def generate_smc_institutional_signal(item, active_setups_map):
         if vol >= 15.0: conviction += 3
         score = min(98, conviction)
 
-        full_sector = f"{s['tag']} • {base_sector}"
-
         setups.append({
-            "symbol": item['symbol'],
-            "market_type": m_type,
-            "horizon": s['horizon'],
-            "direction": direction,
-            "trading_mode": trading_mode,
-            "score": score,
-            "stage": f"[{s['style'].upper()}] Institutional Squeeze",
-            "current_change_24h": round(chg, 2),
-            "sector": full_sector,
-            "est_potential": f"+{round(risk_pct * s['rr'] * 100, 1)}%",
-            "flow_metric": flow_delta if m_type == "crypto" else ("Interbank Delta Flow" if m_type == "forex" else "Dark Pool Block Flow"),
-            "driver_metric": purge_catalyst,
-            "entry_price": entry,
-            "sl_price": sl,
-            "tp_price": tp,
-            "status": "ACTIVE",
+            "symbol": item['symbol'], "market_type": m_type, "horizon": s['horizon'], "direction": direction,
+            "trading_mode": "mode2" if m_type == "crypto" else "mode1", "score": score,
+            "stage": f"[{s['style'].upper()}] Institutional Squeeze", "current_change_24h": round(chg, 2),
+            "sector": f"{s['tag']} • {base_sector}", "est_potential": f"+{round(risk_pct * s['rr'] * 100, 1)}%",
+            "flow_metric": flow_delta, "driver_metric": purge_catalyst,
+            "entry_price": entry, "sl_price": sl, "tp_price": tp, "status": "ACTIVE",
             "mtf_alignment": f"Entry: ${fmt_price(entry)} | SL: ${fmt_price(sl)}",
-            "research_note": f"{s['style']} SMC {direction.upper()} অর্ডারব্লক ও লিকুইডিটি পার্জ কনফার্মড। R:R = 1:{s['rr']:.1f} [TP: ${fmt_price(tp)}]"
+            "research_note": f"{s['style']} SMC {direction.upper()} অর্ডারব্লক ও লিকুইডিটি পার্জ কনফার্মড। R:R = 1:{s['rr']:.1f}"
         })
-
     return setups
 
 # ==============================================================================
-# ১০. এক্সিকিউশন রানার (Top 500 Crypto + Top 100 Stocks + Top 100 Forex)
+# ১০. এক্সিকিউশন রানার (Telegram Optimization & Multi-Asset Scan)
 # ==============================================================================
 def run():
     print("=" * 80)
-    print(f"[*] RUNNING TOP 500 CRYPTO + TOP 100 STOCKS + TOP 100 FOREX ENGINE: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
+    print(f"[*] RUNNING GREATNEXA QUANT ENGINE: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
     print("=" * 80)
     
-    send_telegram_status("⚡ *GreatNexa Institutional Engine Active & Scanning Top 700+ Assets (500 Crypto, 100 Stocks, 100 Forex)...*")
+    send_telegram_status("⚡ *GreatNexa Institutional Engine Active & Scanning Markets...*")
 
     process_automatic_subscriptions()
     cleanup_old_database_records()
 
-    # মার্কেট পুলিং (টপ ৫০০ ক্রিপ্টো, টপ ১০০ স্টক ও টপ ১০০ ফরেক্স)
     crypto_prices = fetch_top_500_crypto()
     stocks_prices = fetch_top_100_stocks()
     forex_prices = fetch_top_100_forex_universe()
     
     all_prices = {**crypto_prices, **stocks_prices, **forex_prices}
-    if not all_prices:
-        print("[-] Market feeds unavailable.")
-        return
+    if not all_prices: return
 
     active_setups_map = track_and_update_lifecycle(all_prices)
-    new_setups = []
+    crypto_setups, stock_setups, forex_setups = [], [], []
 
-    # ক্রিপ্টো থেকে শীর্ষ ৫০টি সুযোগ স্ক্যান
-    sorted_cryptos = sorted(crypto_prices.values(), key=lambda x: (abs(x['change']) * x['volume_m']), reverse=True)
-    for c in sorted_cryptos[:50]:
-        new_setups.extend(generate_smc_institutional_signal(c, active_setups_map))
+    for c in sorted(crypto_prices.values(), key=lambda x: (abs(x['change']) * x['volume_m']), reverse=True)[:50]:
+        crypto_setups.extend(generate_smc_institutional_signal(c, active_setups_map))
 
-    # স্টক থেকে শীর্ষ ৩০টি সুযোগ স্ক্যান
-    sorted_stocks = sorted(stocks_prices.values(), key=lambda x: abs(x['change']), reverse=True)
-    for s in sorted_stocks[:30]:
-        new_setups.extend(generate_smc_institutional_signal(s, active_setups_map))
+    for s in sorted(stocks_prices.values(), key=lambda x: abs(x['change']), reverse=True)[:30]:
+        stock_setups.extend(generate_smc_institutional_signal(s, active_setups_map))
 
-    # ফরেক্স থেকে শীর্ষ ৩০টি সুযোগ স্ক্যান
-    sorted_forex = sorted(forex_prices.values(), key=lambda x: abs(x['change']), reverse=True)
-    for f in sorted_forex[:30]:
-        new_setups.extend(generate_smc_institutional_signal(f, active_setups_map))
+    for f in sorted(forex_prices.values(), key=lambda x: abs(x['change']), reverse=True)[:30]:
+        forex_setups.extend(generate_smc_institutional_signal(f, active_setups_map))
 
-    if new_setups:
+    # Quality Filter: Top 5 Crypto, Top 3 Stocks, Top 3 Forex with Score >= 92
+    top_crypto = sorted([x for x in crypto_setups if x['score'] >= 92], key=lambda x: x['score'], reverse=True)[:5]
+    top_stocks = sorted([x for x in stock_setups if x['score'] >= 92], key=lambda x: x['score'], reverse=True)[:3]
+    top_forex = sorted([x for x in forex_setups if x['score'] >= 92], key=lambda x: x['score'], reverse=True)[:3]
+
+    final_batch = top_crypto + top_stocks + top_forex
+
+    if final_batch:
         try:
-            batch_size = 30
-            for i in range(0, len(new_setups), batch_size):
-                b = new_setups[i:i + batch_size]
-                supabase.table("market_research").insert(b).execute()
-            print(f"\n✔ Successfully pushed {len(new_setups)} Dynamic Alpha Setups across Top 700+ Markets!")
+            supabase.table("market_research").insert(final_batch).execute()
+            print(f"\n✔ Successfully pushed {len(final_batch)} High-Conviction Setups to Database!")
             
-            for s in new_setups:
-                if s.get("score", 0) >= 92:
-                    send_telegram_alert(s)
-                    time.sleep(3.5)  # টেলিগ্রাম রেট লিমিট এড়াতে বিরতি
-                
+            # Telegram Optimization: Send max 5-8 top quality signals instead of 30-40 spam
+            for s in final_batch:
+                send_telegram_alert(s)
+                time.sleep(4.0)
         except Exception as e:
             print(f"[-] Batch insert error: {e}")
     else:
-        print("\n[i] All positions working actively in target. No duplicate injection.")
+        print("\n[i] No high-conviction setups meeting threshold at this cycle.")
 
 if __name__ == "__main__":
     run()
