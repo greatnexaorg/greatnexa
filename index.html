@@ -176,26 +176,27 @@
     </div>
 
     <!-- Main Navigation Header -->
-    <header class="sticky top-0 z-40 bg-[#02040a]/80 backdrop-blur-xl border-b border-white/[0.08] px-4 sm:px-8 py-3.5 transition-all">
-        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
-            <a href="/" class="flex items-center gap-3.5 group">
-                <div class="relative">
-                    <img src="/store/iconpng.webp" onerror="this.src='/store/favicon.png'" alt="GreatNexa" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-cover border border-blue-500/40 shadow-lg shadow-blue-600/30 group-hover:scale-105 transition">
-                    <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-[#02040a] rounded-full"></span>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="font-extrabold text-white text-base sm:text-lg tracking-tight">GreatNexa<span class="text-blue-500">.io</span></span>
-                        <span class="text-[9px] bg-blue-500/20 text-blue-400 font-mono font-bold px-2 py-0.5 rounded border border-blue-500/30">HEDGE QUANT</span>
+    <header class="sticky top-0 z-40 bg-[#02040a]/85 backdrop-blur-xl border-b border-white/[0.08] px-4 sm:px-8 py-3.5 transition-all">
+        <div class="max-w-7xl mx-auto space-y-3">
+            <!-- Top Line: Logo (Left) & Language Selector (Right) -->
+            <div class="flex justify-between items-center w-full">
+                <a href="/" class="flex items-center gap-3.5 group">
+                    <div class="relative">
+                        <img src="/store/iconpng.webp" onerror="this.src='/store/favicon.png'" alt="GreatNexa" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-cover border border-blue-500/40 shadow-lg shadow-blue-600/30 group-hover:scale-105 transition">
+                        <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-[#02040a] rounded-full"></span>
                     </div>
-                    <p class="text-[10px] text-gray-400 font-mono hidden sm:block">Cross-Asset Institutional Terminal</p>
-                </div>
-            </a>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-extrabold text-white text-base sm:text-lg tracking-tight">GreatNexa<span class="text-blue-500">.io</span></span>
+                            <span class="text-[9px] bg-blue-500/20 text-blue-400 font-mono font-bold px-2 py-0.5 rounded border border-blue-500/30">HEDGE QUANT</span>
+                        </div>
+                        <p class="text-[10px] text-gray-400 font-mono hidden sm:block">Cross-Asset Institutional Terminal</p>
+                    </div>
+                </a>
 
-            <!-- Central Nav Items -->
-            <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-                <div class="notranslate flex items-center bg-[#0d162a] border border-white/10 rounded-xl px-2.5 py-1.5 text-xs">
-                    <span class="text-gray-300 mr-1.5">🌐</span>
+                <!-- Language Selector Up Right -->
+                <div class="notranslate flex items-center bg-[#0d162a] border border-white/10 rounded-xl px-3 py-1.5 text-xs shadow-inner">
+                    <span class="text-gray-300 mr-2">🌐</span>
                     <select id="customLangSelect" onchange="applyCustomLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-[#0d162a]">
                         <option value="en">English</option>
                         <option value="bn">বাংলা (Bengali)</option>
@@ -209,20 +210,29 @@
                         <option value="tr">Türkçe (Turkish)</option>
                     </select>
                 </div>
+            </div>
 
-                <a href="/about/" class="px-3.5 sm:px-4 py-2 rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600 hover:text-white text-xs font-bold transition flex items-center gap-1.5">
-                    🛡️ About Us
-                </a>
+            <!-- Bottom Line: Digital Store first, About Us, Support Ticket & User Status / Actions -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/[0.05]">
+                <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+                    <!-- 1. Digital Store First -->
+                    <a href="/store/" class="px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold transition shadow-lg shadow-blue-600/30 border border-blue-400/30 flex items-center gap-1.5">
+                        🛍️ Digital Store
+                    </a>
 
-                <a href="/store/" class="px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold transition shadow-lg shadow-blue-600/30 border border-blue-400/30 flex items-center gap-1.5">
-                    🛍️ Digital Store
-                </a>
+                    <!-- 2. About Us -->
+                    <a href="/about/" class="px-3.5 sm:px-4 py-2 rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600 hover:text-white text-xs font-bold transition flex items-center gap-1.5">
+                        🛡️ About Us
+                    </a>
 
-                <button onclick="openSupportModal()" class="px-3 py-2 rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600 hover:text-white text-xs font-bold transition cursor-pointer">
-                    🎫 Support Ticket
-                </button>
+                    <!-- 3. Support Ticket -->
+                    <button onclick="openSupportModal()" class="px-3 py-2 rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600 hover:text-white text-xs font-bold transition cursor-pointer">
+                        🎫 Support Ticket
+                    </button>
+                </div>
 
-                <div id="authHeaderSection" class="flex items-center gap-2 bg-[#0d162a] border border-white/10 px-3 py-1.5 rounded-xl text-xs notranslate">
+                <!-- User Session / Account Dashboard Header Section -->
+                <div id="authHeaderSection" class="flex items-center gap-2 bg-[#0d162a] border border-white/10 px-3 py-1.5 rounded-xl text-xs notranslate flex-wrap">
                     <button type="button" onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>
                 </div>
             </div>
@@ -403,7 +413,7 @@
             </div>
         </div>
 
-        <!-- 4-Pillar Tabs Section (MOVED DIRECTLY ABOVE COIN CARDS) -->
+        <!-- 4-Pillar Tabs Section -->
         <div class="flex items-center justify-between flex-wrap gap-3 pt-4 border-t border-white/[0.08]">
             <div class="flex items-center bg-[#0d162a] border border-white/10 rounded-2xl p-1.5 text-xs">
                 <button type="button" onclick="switchTab('active')" id="tab-active" class="px-4 py-2 rounded-xl bg-blue-600 text-white font-bold transition shadow cursor-pointer">⚡ Live Alpha</button>
@@ -851,12 +861,12 @@
         let state = { 
             market: 'crypto', 
             horizon: '24h', 
-            limit: 100, // ওয়েবসাইটে সব ডেটা দেখতে যেন কোনো মিস না হয়
+            limit: 100,
             role: 'free', 
             tradingMode: 'mode2', 
             direction: 'long', 
-            viewTab: 'active', // 'active' (Live Alpha), 'monitoring' (Ongoing Trades), 'portfolio' (Saved), 'archive' (Hall of Fame)
-            traderStyle: 'all' // 'all', 'scalp', 'day', 'swing'
+            viewTab: 'active',
+            traderStyle: 'all'
         };
         let liveMarketData = [];
         let selectedPlan = '';
@@ -869,7 +879,6 @@
         let isSignUpMode = false;
         let activeCalcItem = null;
 
-        // User Portfolio Persistence Helpers
         function getSavedPortfolio() {
             try {
                 return JSON.parse(localStorage.getItem('gn_saved_setups') || '[]');
@@ -907,7 +916,6 @@
             }
         }
 
-        // Toggle Password Visibility (Eye Icon)
         function togglePasswordVisibility(fieldId, iconId) {
             const inputField = document.getElementById(fieldId);
             const iconSpan = document.getElementById(iconId);
@@ -930,7 +938,6 @@
             document.getElementById('supportModal').classList.remove('flex');
         }
 
-        // Forgot Password Modal Handlers
         function openForgotPasswordModal() {
             closeAuthModal();
             document.getElementById('forgotFeedback').className = "hidden";
@@ -1086,7 +1093,6 @@
             }
         }
 
-        // FIX: Scalper, Day, Swing Trader বাটন ফিল্টারিং ফিক্স
         function changeTraderStyle(style) {
             state.traderStyle = style;
             const styles = ['all', 'scalp', 'day', 'swing'];
@@ -1110,7 +1116,6 @@
             fetchLiveMarketData();
         }
 
-        // 4-Pillar Tabs Switcher
         function switchTab(tab) {
             state.viewTab = tab;
             const tabs = ['active', 'monitoring', 'portfolio', 'archive'];
@@ -1158,7 +1163,6 @@
             }
         }
 
-        // FIX: Asset Universe & Horizon Filter ফিক্স
         function changeFilter(type, val) {
             if (type === 'market') {
                 state.market = val;
@@ -1176,7 +1180,7 @@
                 }
             } else if (type === 'horizon') {
                 if (state.role === 'free' && (val === '1w' || val === '1m')) {
-                    alert("1 Week এবং 1 Month প্রেডিকশন প্রো/ভিআইপি মেম্বারদের জন্য সংরক্ষিত। দয়া করে আপনার প্ল্যান আপগ্রেড করুন।");
+                    alert("1 Week এবং 1 Month প্রেডিকশন প্রো/ভিআইপি মেম্বারদের জন্য সংরক্ষিত। দয়া করে আপনার প্ল্যান আপগ্রেড করুন।");
                     openPaymentModal('Pro Monthly ($5/mo)', 5, 600);
                     return;
                 }
@@ -1229,7 +1233,6 @@
             fetchLiveMarketData();
         }
 
-        // ================= RISK CALCULATOR =================
         function openRiskCalc(index) {
             activeCalcItem = liveMarketData[index];
             if (!activeCalcItem) return;
@@ -1267,7 +1270,6 @@
             document.getElementById('calcEstProfit').innerText = `$${estProfit.toFixed(2)} (${(estProfit/maxRiskDollar).toFixed(1)}R)`;
         }
 
-        // ================= USER PORTFOLIO TAB =================
         function loadUserPortfolio() {
             const container = document.getElementById('gridContainer');
             const savedList = getSavedPortfolio();
@@ -1335,7 +1337,6 @@
             }).join('');
         }
 
-        // ================= HALL OF FAME =================
         async function loadHallOfFame() {
             const container = document.getElementById('gridContainer');
             container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">Loading Hall of Fame Records...</div>`;
@@ -1394,7 +1395,6 @@
             }
         }
 
-        // ================= RENDERING ENGINE =================
         function renderCards() {
             const container = document.getElementById('gridContainer');
             if (!container) return;
@@ -1480,19 +1480,12 @@
                 return;
             }
 
-            // Client-side filtering verification to prevent wrong styles from showing
             let filteredData = (liveMarketData || []).filter(item => {
                 if (state.traderStyle === 'all') return true;
-                
                 const styleStr = ((item.trader_style || '') + ' ' + (item.stage || '') + ' ' + (item.timeframe || '')).toLowerCase();
-                
-                if (state.traderStyle === 'scalp') {
-                    return styleStr.includes('scalp') || styleStr.includes('5m');
-                } else if (state.traderStyle === 'day') {
-                    return styleStr.includes('day') || styleStr.includes('1h');
-                } else if (state.traderStyle === 'swing') {
-                    return styleStr.includes('swing') || styleStr.includes('4h') || styleStr.includes('1d');
-                }
+                if (state.traderStyle === 'scalp') return styleStr.includes('scalp') || styleStr.includes('5m');
+                if (state.traderStyle === 'day') return styleStr.includes('day') || styleStr.includes('1h');
+                if (state.traderStyle === 'swing') return styleStr.includes('swing') || styleStr.includes('4h') || styleStr.includes('1d');
                 return true;
             });
 
@@ -1587,7 +1580,7 @@
             container.innerHTML = cardsHtml;
         }
 
-        // ================= FIX: DATA FETCHING & MULTI-FILTER LOGIC =================
+        // ================= FIX: DATA FETCHING & 1 MONTH / 1 WEEK RESOLVER =================
         async function fetchLiveMarketData() {
             const container = document.getElementById('gridContainer');
             if(!_supabase) {
@@ -1609,17 +1602,16 @@
                     query = query.eq('market_type', 'crypto');
                 }
 
-                // 2. Tab Filter (Live Alpha 24H TTL vs Active Monitoring)
+                // 2. Horizon Filter & TTL FIX:
+                // ১ মাস বা ১ সপ্তাহের সিগন্যাল যাতে হার্ডকোডেড টাইমের কারণে ড্রপ না খায়
                 if (state.viewTab === 'active') {
                     if (state.horizon === '24h') {
                         const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
                         query = query.gte('created_at', twentyFourHoursAgo);
                     } else if (state.horizon === '1w') {
-                        const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-                        query = query.gte('created_at', oneWeekAgo);
+                        query = query.or('projection_horizon.ilike.%1w%,projection_horizon.ilike.%week%,timeframe.ilike.%4h%,timeframe.ilike.%1d%');
                     } else if (state.horizon === '1m') {
-                        const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-                        query = query.gte('created_at', oneMonthAgo);
+                        query = query.or('projection_horizon.ilike.%1m%,projection_horizon.ilike.%month%,timeframe.ilike.%1d%,timeframe.ilike.%1w%');
                     }
                 } else if (state.viewTab === 'monitoring') {
                     query = query.eq('status', 'ACTIVE');
@@ -1630,7 +1622,7 @@
                     query = query.eq('direction', state.direction);
                 }
 
-                // 4. FIX: Trader Style Server Filtering
+                // 4. Trader Style Server Filtering
                 if (state.traderStyle && state.traderStyle !== 'all') {
                     if (state.traderStyle === 'scalp') {
                         query = query.or('trader_style.ilike.%scalp%,timeframe.ilike.%5m%,stage.ilike.%scalp%');
@@ -1639,11 +1631,6 @@
                     } else if (state.traderStyle === 'swing') {
                         query = query.or('trader_style.ilike.%swing%,timeframe.ilike.%4h%,stage.ilike.%swing%');
                     }
-                }
-
-                // 5. FIX: Projection Horizon Filter
-                if (state.horizon && state.horizon !== '24h') {
-                    query = query.or(`projection_horizon.ilike.%${state.horizon}%,projection_horizon.ilike.%week%,projection_horizon.ilike.%month%`);
                 }
 
                 // Sorting
@@ -1850,21 +1837,21 @@
                     const guardText = document.getElementById('limitGuardText');
 
                     if(state.role === 'vip') {
-                        tierBadge = `<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">VIP</span>`;
+                        tierBadge = `<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2.5 py-0.5 rounded-full font-bold notranslate font-mono">VIP</span>`;
                         state.limit = 100;
                         if(guardBox && guardText) {
                             guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-amber-950/30 text-[11px] font-mono text-amber-300 space-y-1";
                             guardText.innerText = "VIP Institutional Membership Unlocked: Full Alpha Access.";
                         }
                     } else if(state.role === 'pro') {
-                        tierBadge = `<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">PRO</span>`;
+                        tierBadge = `<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2.5 py-0.5 rounded-full font-bold notranslate font-mono">PRO</span>`;
                         state.limit = 100;
                         if(guardBox && guardText) {
                             guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-blue-950/30 text-[11px] font-mono text-blue-300 space-y-1";
                             guardText.innerText = "Pro Trader Pass Active: Unlocked Alpha Setups.";
                         }
                     } else {
-                        tierBadge = '<span class="text-[10px] bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full font-bold notranslate font-mono">FREE TIER</span>';
+                        tierBadge = '<span class="text-[10px] bg-gray-700 text-gray-300 px-2.5 py-0.5 rounded-full font-bold notranslate font-mono">FREE TIER</span>';
                         state.limit = 3;
                         if(guardBox && guardText) {
                             guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-black/30 text-[11px] font-mono text-gray-400 space-y-1";
@@ -1876,18 +1863,18 @@
                     if(select) select.value = String(state.limit);
 
                     const vipTelegramBtn = (state.role === 'pro' || state.role === 'vip') 
-                        ? `<a href="https://t.me/+VA3Yu45-zosyOTRl" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition font-mono flex items-center gap-1 shadow-md shadow-blue-600/30">
+                        ? `<a href="https://t.me/+VA3Yu45-zosyOTRl" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition font-mono flex items-center gap-1.5 shadow-md shadow-blue-600/30">
                            <span>✈️</span> Join VIP Channel
                            </a>` 
                         : '';
 
                     headerSec.innerHTML = `
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs text-white font-medium notranslate font-mono">${session.user.email}</span>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-xs text-white font-medium notranslate font-mono bg-black/40 px-2.5 py-1 rounded-lg border border-white/5">${session.user.email}</span>
                             ${tierBadge}
                             ${vipTelegramBtn}
+                            <button type="button" onclick="handleLogout()" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition cursor-pointer font-mono">Logout</button>
                         </div>
-                        <button type="button" onclick="handleLogout()" class="px-2.5 py-1 rounded-lg bg-rose-600/80 hover:bg-rose-500 text-white text-xs font-bold transition cursor-pointer font-mono">Logout</button>
                     `;
                 } else {
                     headerSec.innerHTML = `<button type="button" onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>`;
@@ -2049,7 +2036,6 @@
             }
         }
 
-        // ================= TRADINGVIEW CHART =================
         function openChart(rawSymbol, name) {
             const modal = document.getElementById('chartModal');
             modal.classList.remove('hidden');
