@@ -217,7 +217,6 @@
                     </select>
                 </div>
 
-                <!-- About Us Button -->
                 <a href="/about/" class="px-3.5 sm:px-4 py-2 rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600 hover:text-white text-xs font-bold transition flex items-center gap-1.5">
                     🛡️ About Us
                 </a>
@@ -287,15 +286,15 @@
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-400">Crypto Engine:</span>
-                        <span class="text-emerald-400 font-bold">Top 5 Strict High-Conviction</span>
+                        <span class="text-emerald-400 font-bold">24H High-Conviction Flow</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-400">Forex & Stocks:</span>
-                        <span class="text-blue-400 font-bold">Top 3 Alpha Setup Gate</span>
+                        <span class="text-gray-400">Forex & Gold:</span>
+                        <span class="text-blue-400 font-bold">G10 + Metals Interbank</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-400">Stream TTL:</span>
-                        <span class="text-purple-400 font-bold">24-Hour Active Window</span>
+                        <span class="text-gray-400">US Equities:</span>
+                        <span class="text-purple-400 font-bold">Dark Pool Imbalance Delta</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-400">Pass Valuation:</span>
@@ -303,7 +302,7 @@
                     </div>
                     <div class="pt-2 border-t border-white/10 text-[10px] text-gray-400 text-center flex items-center justify-center gap-1.5">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                        Zero-Latency Cache-Busting Sync Active
+                        Zero-Latency Realtime Stream Active
                     </div>
                 </div>
             </div>
@@ -338,7 +337,7 @@
                 <div>
                     <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">1. Asset Universe</label>
                     <div class="grid grid-cols-3 gap-2">
-                        <button type="button" onclick="changeFilter('market', 'crypto')" id="m-crypto" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Crypto (Top 5)</button>
+                        <button type="button" onclick="changeFilter('market', 'crypto')" id="m-crypto" class="select-btn active py-2.5 rounded-xl text-xs font-bold">Crypto</button>
                         <button type="button" onclick="changeFilter('market', 'forex')" id="m-forex" class="select-btn py-2.5 rounded-xl text-xs font-bold">Forex & Gold</button>
                         <button type="button" onclick="changeFilter('market', 'stocks')" id="m-stocks" class="select-btn py-2.5 rounded-xl text-xs font-bold">US Equities</button>
                     </div>
@@ -385,7 +384,7 @@
                         <span class="text-blue-400 font-bold">Dynamic ATR Ratio</span>
                     </div>
                     <div class="p-2.5 bg-black/40 rounded-lg text-[11px] text-gray-400 text-center">
-                        মার্কেটে নতুন হাই-কনভিকশন সেটআপ আসামাত্র ড্যাশবোর্ড অটোমেটিক আপডেট হবে।
+                        মার্কেটে নতুন হাই-কনভিকশন সেটআপ আসামাত্র ড্যাশবোর্ড লাইভ রিফ্রেশ হবে।
                     </div>
                 </div>
             </div>
@@ -400,6 +399,7 @@
                         <option value="10">Top 10 Setups</option>
                         <option value="15">Top 15 Setups</option>
                         <option value="20">Top 20 Setups (Institutional Max)</option>
+                        <option value="100">All Available Data (No Limit)</option>
                     </select>
                 </div>
 
@@ -416,7 +416,7 @@
                 <h3 id="screenerTitle" class="text-lg font-black text-white tracking-tight flex items-center gap-2">
                     <span>⚡</span> Live Alpha Stream (Strict 24H TTL)
                 </h3>
-                <p id="screenerSubtitle" class="text-xs text-gray-400 font-mono">Quality Over Quantity: Only Grade-A Institutional Setups</p>
+                <p id="screenerSubtitle" class="text-xs text-gray-400 font-mono">Live Institutional Setups</p>
             </div>
             <div class="flex items-center gap-2 text-xs font-mono text-gray-400">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -479,7 +479,7 @@
                         <p class="text-xs text-gray-400 mt-1">Institutional quantitative access on a flexible monthly pass.</p>
                         <ul class="space-y-3 text-xs text-gray-200 mt-6 font-mono">
                             <li class="flex items-center gap-2 text-blue-300">✔ Crypto, Forex & Stocks Unlocked</li>
-                            <li class="flex items-center gap-2">✔ Up to 20 Shortlisted Alpha Assets</li>
+                            <li class="flex items-center gap-2">✔ Unrestricted All Alpha Assets</li>
                             <li class="flex items-center gap-2">✔ 1 Week & 1 Month Predictive Targets</li>
                             <li class="flex items-center gap-2 text-emerald-400">✔ Instant Telegram Bot Alerts</li>
                         </ul>
@@ -859,12 +859,12 @@
         let state = { 
             market: 'crypto', 
             horizon: '24h', 
-            limit: 3, 
+            limit: 100, // ওয়েবসাইটে সমস্ত সেটআপ দেখানোর জন্য ডিফল্ট লিমিট ১০০ করা হয়েছে
             role: 'free', 
             tradingMode: 'mode2', 
             direction: 'long', 
             viewTab: 'active', // 'active' (Live Alpha), 'monitoring' (Ongoing Trades), 'portfolio' (Saved), 'archive' (Hall of Fame)
-            traderStyle: 'all'
+            traderStyle: 'all' // 'all', 'scalp', 'day', 'swing'
         };
         let liveMarketData = [];
         let selectedPlan = '';
@@ -981,7 +981,6 @@
             }
         }
 
-        // Check Recovery Token on Load
         window.addEventListener('DOMContentLoaded', () => {
             if (_supabase) {
                 const hash = window.location.hash;
@@ -1095,6 +1094,7 @@
             }
         }
 
+        // FIX: Scalper, Day, Swing Trader বাটন ক্লিক হ্যান্ডলার
         function changeTraderStyle(style) {
             state.traderStyle = style;
             const styles = ['all', 'scalp', 'day', 'swing'];
@@ -1115,9 +1115,7 @@
                 if (style === 'swing') indicator.innerText = "Swing Liquidity Engine (4H)";
             }
 
-            if (state.viewTab === 'active' || state.viewTab === 'monitoring') {
-                fetchLiveMarketData();
-            }
+            fetchLiveMarketData();
         }
 
         // 4-Pillar Tabs Switcher
@@ -1146,14 +1144,14 @@
                 styleNavPanel.style.display = 'flex';
                 screenerHeader.style.display = 'flex';
                 screenerTitle.innerHTML = `<span>⚡</span> Live Alpha Stream (Strict 24H TTL)`;
-                screenerSubtitle.innerText = "Quality Over Quantity: Top-tier High-Conviction setups generated in the last 24h";
+                screenerSubtitle.innerText = "High-Conviction fresh setups generated in the last 24 hours";
                 fetchLiveMarketData();
             } else if (tab === 'monitoring') {
                 controlPanel.style.display = 'grid';
                 styleNavPanel.style.display = 'flex';
                 screenerHeader.style.display = 'flex';
                 screenerTitle.innerHTML = `<span>🛰️</span> Active Ongoing Trades (Market Tracking)`;
-                screenerSubtitle.innerText = "Ongoing Trades monitoring: Setups still running in market (Pending TP/SL)";
+                screenerSubtitle.innerText = "Setups currently active in the market (monitoring TP/SL targets)";
                 fetchLiveMarketData();
             } else if (tab === 'portfolio') {
                 controlPanel.style.display = 'none';
@@ -1168,9 +1166,10 @@
             }
         }
 
+        // FIX: Asset Universe & Horizon Filter
         function changeFilter(type, val) {
-            state[type] = val;
             if (type === 'market') {
+                state.market = val;
                 ['crypto', 'forex', 'stocks'].forEach(m => {
                     const btn = document.getElementById('m-' + m);
                     if (btn) btn.className = (m === val) ? "select-btn active py-2.5 rounded-xl text-xs font-bold" : "select-btn py-2.5 rounded-xl text-xs font-bold";
@@ -1184,11 +1183,13 @@
                     else if (val === 'stocks') { btn1.innerText = "Cash Market"; btn2.innerText = "F&O / Derivatives"; }
                 }
             } else if (type === 'horizon') {
+                // FIX: 1w ও 1m প্রিমিয়াম ফিচার চেকিং ও সক্রিয়করণ
                 if (state.role === 'free' && (val === '1w' || val === '1m')) {
-                    alert("1 Week and 1 Month projections are locked for Pro / VIP members. Please upgrade.");
-                    openAuthModal('signup');
+                    alert("1 Week এবং 1 Month প্রেডিকশন প্রো/ভিআইপি মেম্বারদের জন্য সংরক্ষিত। দয়া করে আপনার প্ল্যান আপগ্রেড করুন।");
+                    openPaymentModal('Pro Monthly ($5/mo)', 5, 600);
                     return;
                 }
+                state.horizon = val;
                 ['24h', '1w', '1m'].forEach(h => {
                     const btn = document.getElementById('h-' + h);
                     if (btn) btn.className = (h === val) ? "select-btn active py-2.5 rounded-xl text-xs font-bold" : "select-btn py-2.5 rounded-xl text-xs font-bold";
@@ -1275,7 +1276,7 @@
             document.getElementById('calcEstProfit').innerText = `$${estProfit.toFixed(2)} (${(estProfit/maxRiskDollar).toFixed(1)}R)`;
         }
 
-        // ================= USER PORTFOLIO TAB (Anti-Panic System) =================
+        // ================= USER PORTFOLIO TAB =================
         function loadUserPortfolio() {
             const container = document.getElementById('gridContainer');
             const savedList = getSavedPortfolio();
@@ -1285,7 +1286,7 @@
                     <div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10 space-y-3">
                         <div class="text-3xl">📌</div>
                         <h4 class="text-lg font-bold text-white">Your Saved Portfolio is Empty</h4>
-                        <p class="text-xs text-gray-400 max-w-md mx-auto">Click the "📌 Save Setup" button on any active signal to store it here permanently. Even if a signal expires from the public stream, your trades stay saved.</p>
+                        <p class="text-xs text-gray-400 max-w-md mx-auto">Click the "📌 Save" button on any active signal to store it here permanently. It will not disappear even after 24h.</p>
                         <button onclick="switchTab('active')" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs font-mono transition">Explore Live Alpha</button>
                     </div>`;
                 return;
@@ -1315,7 +1316,7 @@
                                 <span class="text-[10px] ${item.direction === 'long' ? 'text-emerald-400' : 'text-rose-400'} font-mono uppercase tracking-wider font-bold">#${idx+1} • ${dirBadge}</span>
                                 <h3 class="text-xl font-extrabold text-white notranslate">${item.symbol}</h3>
                             </div>
-                            <button onclick="toggleSaveSetup('${encodedItem}')" class="px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-lg text-xs font-mono font-bold transition hover:bg-amber-500 hover:text-black" title="Remove from Saved">
+                            <button onclick="toggleSaveSetup('${encodedItem}')" class="px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-lg text-xs font-mono font-bold transition hover:bg-amber-500 hover:text-black">
                                 📌 Unpin
                             </button>
                         </div>
@@ -1348,7 +1349,6 @@
             const container = document.getElementById('gridContainer');
             container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">Loading Hall of Fame Records...</div>`;
 
-            // Strict 7-Day Window Filter
             const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
             try {
@@ -1358,7 +1358,7 @@
                     .eq('status', 'HIT_TP')
                     .gte('resolved_at', sevenDaysAgo)
                     .order('resolved_at', { ascending: false })
-                    .limit(30);
+                    .limit(50);
 
                 if (error || !data || data.length === 0) {
                     container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">No closed winning targets recorded in the last 7 days. Scanning continues...</div>`;
@@ -1420,7 +1420,6 @@
             const countdownPro = document.getElementById('countdownPro');
             const countdownVip = document.getElementById('countdownVip');
 
-            // Reset all cards, badges and buttons to default
             if(cardFree) cardFree.className = "glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 relative transition-all";
             if(cardPro) cardPro.className = "glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 border-blue-500/30 relative transition-all";
             if(cardVip) cardVip.className = "glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 relative border-amber-500/50 bg-gradient-to-b from-[#181d33] to-[#0c1222] shadow-2xl shadow-amber-500/10 transition-all";
@@ -1490,12 +1489,8 @@
                 return;
             }
 
-            // Quality Over Quantity Cap
-            let qualityCap = state.market === 'crypto' ? 5 : 3;
-            if (state.role !== 'free') {
-                qualityCap = Math.max(qualityCap, state.limit);
-            }
-            const maxAllowed = (state.role === 'free') ? 3 : Math.min(qualityCap, 20);
+            // FIX: ওয়েবসাইটে সমস্ত সেটআপ ডিসপ্লে নিশ্চিতকরণ
+            const maxAllowed = (state.role === 'free') ? 3 : state.limit;
             const displayData = (liveMarketData || []).slice(0, maxAllowed);
 
             if (displayData.length === 0) {
@@ -1578,7 +1573,7 @@
                 <div class="col-span-full glass-panel p-6 rounded-2xl border border-amber-500/30 text-center space-y-3 mt-4">
                     <span class="px-3 py-1 bg-amber-500/20 text-amber-300 rounded-full text-xs font-mono font-bold">🔒 FREE TIER ENFORCED (Top 3 Setups)</span>
                     <h4 class="text-lg font-bold text-white">Unlock Full Institutional Alpha Stream</h4>
-                    <p class="text-xs text-gray-400 max-w-md mx-auto">Free accounts are strictly limited to the top 3 high-probability setups. Upgrade to Pro Trader to unlock up to 20 setups across Crypto, Forex, and Equities.</p>
+                    <p class="text-xs text-gray-400 max-w-md mx-auto">Free accounts are strictly limited to the top 3 high-probability setups. Upgrade to Pro Trader to unlock all setups across Crypto, Forex, and Equities.</p>
                     <button type="button" onclick="openPaymentModal('Pro Monthly ($5/mo)', 5, 600)" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl font-mono shadow-lg transition">Upgrade to Pro ($5/mo)</button>
                 </div>`;
             }
@@ -1586,6 +1581,7 @@
             container.innerHTML = cardsHtml;
         }
 
+        // ================= FIX: DATA FETCHING & MULTI-FILTER LOGIC =================
         async function fetchLiveMarketData() {
             const container = document.getElementById('gridContainer');
             if(!_supabase) {
@@ -1593,42 +1589,63 @@
                 return;
             }
 
-            const currentLimit = (state.role === 'free') ? 3 : Math.min(state.limit, 20);
+            const currentLimit = (state.role === 'free') ? 3 : state.limit;
 
             try {
-                // Strict 24h TTL Calculation
-                const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+                let query = _supabase.from('market_research').select('*');
 
-                let query = _supabase
-                    .from('market_research')
-                    .select('*')
-                    .eq('market_type', state.market);
+                // 1. Market Universe Filter (Forex + Commodities Gold Support)
+                if (state.market === 'forex') {
+                    query = query.or('market_type.eq.forex,market_type.eq.commodities,sector.ilike.%Gold%,sector.ilike.%Metals%');
+                } else if (state.market === 'stocks') {
+                    query = query.or('market_type.eq.stocks,market_type.eq.equities');
+                } else {
+                    query = query.eq('market_type', 'crypto');
+                }
 
-                // Live Alpha vs Active Monitoring Filter
+                // 2. Tab Filter (Live Alpha 24H TTL vs Active Ongoing Trades)
                 if (state.viewTab === 'active') {
-                    // Only Fresh Setups (Last 24h)
+                    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
                     query = query.gte('created_at', twentyFourHoursAgo);
                 } else if (state.viewTab === 'monitoring') {
-                    // Ongoing Trades running in market
                     query = query.eq('status', 'ACTIVE');
                 }
 
+                // 3. Direction Filter
                 if (state.direction) {
                     query = query.eq('direction', state.direction);
                 }
 
-                // Zero-Latency Sorting: Order by created_at DESC for instant new arrivals, then by Score
+                // 4. FIX: Trader Style Filtering (Scalp 5M, Day 1H, Swing 4H)
+                if (state.traderStyle && state.traderStyle !== 'all') {
+                    if (state.traderStyle === 'scalp') {
+                        query = query.or('trader_style.ilike.%scalp%,timeframe.eq.5m,stage.ilike.%scalp%');
+                    } else if (state.traderStyle === 'day') {
+                        query = query.or('trader_style.ilike.%day%,timeframe.eq.1h,stage.ilike.%day%');
+                    } else if (state.traderStyle === 'swing') {
+                        query = query.or('trader_style.ilike.%swing%,timeframe.eq.4h,stage.ilike.%swing%');
+                    }
+                }
+
+                // 5. FIX: Projection Horizon Filter (Intraday vs 1w vs 1m)
+                if (state.horizon && state.horizon !== '24h') {
+                    query = query.eq('projection_horizon', state.horizon);
+                }
+
+                // Sorting
                 const { data, error } = await query
                     .order('created_at', { ascending: false })
                     .order('score', { ascending: false })
                     .limit(currentLimit);
 
                 if (error) {
+                    console.error("Query Error:", error);
                     liveMarketData = [];
                 } else {
                     liveMarketData = data || [];
                 }
             } catch (err) {
+                console.error("Fetch Live Data Exception:", err);
                 liveMarketData = [];
             }
             renderCards();
@@ -1637,7 +1654,6 @@
         function setupRealtimeListener() {
             if (!_supabase) return;
 
-            // Supabase Realtime Channel with Cache-Busting Pulse
             _supabase
                 .channel('market_research_realtime')
                 .on(
@@ -1821,24 +1837,24 @@
 
                     if(state.role === 'vip') {
                         tierBadge = `<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">VIP</span>`;
-                        state.limit = 20;
+                        state.limit = 100;
                         if(guardBox && guardText) {
                             guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-amber-950/30 text-[11px] font-mono text-amber-300 space-y-1";
-                            guardText.innerText = "VIP Institutional Membership Unlocked: Full Top 20 Alpha Access.";
+                            guardText.innerText = "VIP Institutional Membership Unlocked: Full Alpha Access.";
                         }
                     } else if(state.role === 'pro') {
                         tierBadge = `<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-full font-bold notranslate font-mono">PRO</span>`;
-                        state.limit = 10;
+                        state.limit = 100;
                         if(guardBox && guardText) {
                             guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-blue-950/30 text-[11px] font-mono text-blue-300 space-y-1";
-                            guardText.innerText = "Pro Trader Pass Active: Unlocked Up to 10 Alpha Setups.";
+                            guardText.innerText = "Pro Trader Pass Active: Unlocked Alpha Setups.";
                         }
                     } else {
                         tierBadge = '<span class="text-[10px] bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full font-bold notranslate font-mono">FREE TIER</span>';
                         state.limit = 3;
                         if(guardBox && guardText) {
                             guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-black/30 text-[11px] font-mono text-gray-400 space-y-1";
-                            guardText.innerText = "Free tier enforces Top 3 setups automatically. Unlock all 20 setups with Pro/VIP membership.";
+                            guardText.innerText = "Free tier enforces Top 3 setups automatically. Unlock all setups with Pro/VIP membership.";
                         }
                     }
 
