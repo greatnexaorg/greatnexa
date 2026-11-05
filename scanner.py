@@ -131,7 +131,7 @@ def process_automatic_subscriptions():
         print(f"[-] Subscription Processor Error: {e}")
 
 # ==============================================================================
-# ৪. ডাটাবেজ অপটিমাইজার ও Strict 24h TTL & Hall of Fame 7 Days Purge
+# ৪. ডাটাবেজ অপটিমাইজার ও Strict 24h TTL & Hall of Fame 7 Days Retention
 # ==============================================================================
 def cleanup_old_database_records():
     print("[*] Running Autonomous Database Storage Optimizer & TTL Expiry...")
@@ -296,7 +296,7 @@ def track_and_update_lifecycle(current_prices):
 
             if not hit_status and created_at_str:
                 created_at = datetime.fromisoformat(created_at_str.replace("Z", "+00:00"))
-                if now - created_at > timedelta(hours=24): # TTL 24 hours expiry
+                if now - created_at > timedelta(hours=24):
                     hit_status = "EXPIRED"
 
             if hit_status:
@@ -372,7 +372,7 @@ def generate_smc_institutional_signal(item, active_setups_map):
     return setups
 
 # ==============================================================================
-# ১০. এক্সিকিউশন রানার (Telegram Optimization & Multi-Asset Scan)
+# ১০. এক্সিকিউশন রানার (Optimized Telegram Filtering & Multi-Asset Scan)
 # ==============================================================================
 def run():
     print("=" * 80)
@@ -415,7 +415,7 @@ def run():
             supabase.table("market_research").insert(final_batch).execute()
             print(f"\n✔ Successfully pushed {len(final_batch)} High-Conviction Setups to Database!")
             
-            # Telegram Optimization: Send max 5-8 top quality signals instead of 30-40 spam
+            # Optimized Telegram Filtering: Prevents spamming 30-40 signals at once
             for s in final_batch:
                 send_telegram_alert(s)
                 time.sleep(4.0)
