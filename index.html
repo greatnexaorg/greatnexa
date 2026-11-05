@@ -580,36 +580,72 @@
         </svg>
     </a>
 
-    <!-- User Profile Dashboard Modal -->
+    <!-- User Profile Dashboard Modal (Newly Designed) -->
     <div id="userDashboardModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-[75] p-4">
-        <div class="glass-panel w-full max-w-md rounded-3xl p-6 border border-blue-500/40 shadow-2xl relative space-y-4 font-mono">
-            <button type="button" onclick="closeUserDashboard()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
-            <div class="flex items-center gap-3 border-b border-white/10 pb-3">
-                <div class="w-10 h-10 rounded-xl bg-blue-600/30 border border-blue-500/50 flex items-center justify-center text-xl">👤</div>
+        <div class="glass-panel w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-blue-500/40 shadow-2xl relative space-y-6 font-mono">
+            <button type="button" onclick="closeUserDashboard()" class="absolute top-5 right-5 text-gray-400 hover:text-white text-xl font-bold cursor-pointer">&times;</button>
+            
+            <!-- Header Title -->
+            <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600/40 to-purple-600/40 border border-blue-500/50 flex items-center justify-center text-2xl shadow-lg">👑</div>
                 <div>
-                    <h3 class="text-sm font-bold text-white" id="dashUserEmail">user@example.com</h3>
-                    <p class="text-[11px] text-gray-400">Institutional Member Profile</p>
+                    <h3 class="text-base font-extrabold text-white">Institutional Member Dashboard</h3>
+                    <p class="text-xs text-blue-400 font-mono" id="dashUserEmail">user@example.com</p>
                 </div>
             </div>
 
-            <div class="space-y-2 text-xs">
-                <div class="flex justify-between p-3 rounded-xl bg-black/40 border border-white/5">
-                    <span class="text-gray-400">Access Tier:</span>
-                    <span id="dashUserTier" class="font-bold text-amber-400 uppercase">VIP INSTITUTIONAL</span>
+            <!-- Dashboard Grid Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <!-- Tier Status Card -->
+                <div class="p-4 rounded-2xl bg-black/50 border border-amber-500/30 relative overflow-hidden space-y-1">
+                    <div class="absolute -right-6 -bottom-6 w-20 h-20 bg-amber-500/10 rounded-full blur-xl pointer-events-none"></div>
+                    <span class="text-[10px] text-gray-400 uppercase tracking-wider">Tier Status</span>
+                    <div class="flex items-center gap-2 pt-1">
+                        <span id="dashUserTier" class="font-black text-amber-300 text-base uppercase tracking-wide">VIP INSTITUTIONAL</span>
+                        <span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded text-[10px] font-bold border border-amber-500/30">GOLDEN GLOW</span>
+                    </div>
                 </div>
-                <div class="flex justify-between p-3 rounded-xl bg-black/40 border border-white/5">
-                    <span class="text-gray-400">Days Remaining:</span>
-                    <span id="dashUserDays" class="font-bold text-emerald-400">730 Days</span>
-                </div>
-                <div class="flex justify-between p-3 rounded-xl bg-black/40 border border-white/5">
-                    <span class="text-gray-400">Shortlist Limit:</span>
-                    <span class="font-bold text-blue-400">Full Unrestricted</span>
+
+                <!-- Large Days Left Counter -->
+                <div class="p-4 rounded-2xl bg-black/50 border border-emerald-500/30 relative overflow-hidden space-y-1">
+                    <div class="absolute -right-6 -bottom-6 w-20 h-20 bg-emerald-500/10 rounded-full blur-xl pointer-events-none"></div>
+                    <span class="text-[10px] text-gray-400 uppercase tracking-wider">Subscription Validity</span>
+                    <div class="flex items-baseline gap-1.5 pt-1">
+                        <span id="dashUserDays" class="font-black text-emerald-400 text-2xl">730</span>
+                        <span class="text-xs text-emerald-300 font-bold">Days Remaining</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="pt-2 flex gap-2">
-                <a href="https://t.me/+VA3Yu45-zosyOTRl" target="_blank" rel="noopener noreferrer" class="w-1/2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs text-center transition">✈️ VIP Telegram</a>
-                <button type="button" onclick="closeUserDashboard(); openSupportModal();" class="w-1/2 py-2.5 rounded-xl bg-purple-600/30 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/40 font-bold text-xs transition">Support Ticket</button>
+            <!-- Live Terminal Quota Card -->
+            <div class="p-4 rounded-2xl bg-black/50 border border-blue-500/30 space-y-2 text-xs">
+                <div class="flex justify-between items-center text-gray-400">
+                    <span>Terminal Quota & Access:</span>
+                    <span class="text-blue-400 font-bold">Unlimited Alpha Access</span>
+                </div>
+                <div class="w-full bg-blue-950/40 rounded-full h-2 overflow-hidden border border-blue-500/20">
+                    <div class="bg-gradient-to-r from-blue-500 to-emerald-400 h-full w-full rounded-full"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-gray-500">
+                    <span>Crypto, Forex, Equities Unlocked</span>
+                    <span>100% Limit Uncapped</span>
+                </div>
+            </div>
+
+            <!-- Quick Action Center -->
+            <div class="space-y-2 pt-2 border-t border-white/10 text-xs">
+                <span class="text-[11px] text-gray-400 uppercase tracking-wider block font-bold mb-2">⚡ Quick Action Center</span>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <a href="https://t.me/+VA3Yu45-zosyOTRl" target="_blank" rel="noopener noreferrer" class="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-center transition flex items-center justify-center gap-1.5 shadow-md shadow-blue-600/30">
+                        <span>✈️</span> VIP Telegram
+                    </a>
+                    <button type="button" onclick="closeUserDashboard(); openForgotPasswordModal();" class="py-2.5 px-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 border border-white/10 font-bold transition flex items-center justify-center gap-1.5">
+                        <span>🔑</span> Reset Password
+                    </button>
+                    <button type="button" onclick="closeUserDashboard(); openSupportModal();" class="py-2.5 px-3 rounded-xl bg-purple-600/30 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/40 font-bold transition flex items-center justify-center gap-1.5">
+                        <span>🎫</span> Support Ticket
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -974,7 +1010,7 @@
         function openUserDashboard() {
             document.getElementById('dashUserEmail').innerText = currentUserEmail || 'Guest User';
             document.getElementById('dashUserTier').innerText = state.role.toUpperCase() + " TIER";
-            document.getElementById('dashUserDays').innerText = (window.userSubscriptionDays || 365) + " Days Active";
+            document.getElementById('dashUserDays').innerText = (window.userSubscriptionDays || 365);
             const modal = document.getElementById('userDashboardModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -1896,19 +1932,19 @@
                     if(select) select.value = String(state.limit);
 
                     const vipTelegramBtn = (state.role === 'pro' || state.role === 'vip') 
-                        ? `<a href="https://t.me/+VA3Yu45-zosyOTRl" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition font-mono flex items-center gap-1.5 shadow-md shadow-blue-600/30">
+                        ? `<a href="https://t.me/+VA3Yu45-zosyOTRl" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold transition font-mono flex items-center gap-1.5 shadow-lg shadow-blue-600/30 border border-blue-400/30">
                            <span>✈️</span> Join VIP Channel
                            </a>` 
                         : '';
 
                     headerSec.innerHTML = `
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <button type="button" onclick="openUserDashboard()" class="text-xs text-white font-medium notranslate font-mono bg-black/40 px-2.5 py-1.5 rounded-xl border border-white/10 hover:border-blue-500 transition cursor-pointer flex items-center gap-1.5 shadow-inner">
+                        <div class="flex items-center gap-2.5 flex-wrap">
+                            <button type="button" onclick="openUserDashboard()" class="px-3.5 py-2 rounded-xl bg-[#131d33] hover:bg-blue-600/20 text-white text-xs font-bold transition font-mono border border-white/10 flex items-center gap-1.5 shadow-inner cursor-pointer">
                                 📊 Account Dashboard
                             </button>
                             ${tierBadge}
                             ${vipTelegramBtn}
-                            <button type="button" onclick="handleLogout()" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition cursor-pointer font-mono">Logout</button>
+                            <button type="button" onclick="handleLogout()" class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition cursor-pointer font-mono shadow-lg shadow-rose-600/20">Logout</button>
                         </div>
                     `;
                 } else {
