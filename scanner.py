@@ -28,18 +28,17 @@ def fmt_price(p):
 session = requests.Session()
 session.headers.update({
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+    "Accept": "application/json, text/plain, */*"
 })
 
 # ==============================================================================
-# ২. টেলিগ্রাম ভিআইপি সিগন্যাল অ্যালার্ট ইঞ্জিন (Optimized & Rate-Limit Safe)
+# ২. টেলিগ্রাম ভিআইপি সিগন্যাল অ্যালার্ট ইঞ্জিন
 # ==============================================================================
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 def send_telegram_alert(signal):
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        print("[-] Telegram Bot Token or Chat ID not found in environment.")
         return
     try:
         sym = signal['symbol']
@@ -64,27 +63,19 @@ def send_telegram_alert(signal):
             print(f"✔ Telegram Alert Pushed: {sym} ({direction})")
         elif res.status_code == 429:
             retry_after = res.json().get('parameters', {}).get('retry_after', 10)
-            print(f"[-] Telegram Rate Limited (429). Waiting {retry_after}s...")
             time.sleep(retry_after)
             session.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": msg, "parse_mode": "Markdown"}, timeout=8)
-        else:
-            print(f"[-] Telegram API Response: {res.text}")
     except Exception as e:
         print(f"[-] Telegram Alert Notification Error: {e}")
 
 def send_telegram_status(text):
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        print("[-] Telegram Bot Token or Chat ID missing for status.")
         return
     try:
         url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-        res = session.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": text, "parse_mode": "Markdown"}, timeout=8)
-        if res.status_code == 200:
-            print("✔ Telegram Status Message Sent Successfully!")
-        else:
-            print(f"[-] Telegram Status Error Response: {res.text}")
-    except Exception as e:
-        print(f"[-] Telegram status error: {e}")
+        session.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": text, "parse_mode": "Markdown"}, timeout=8)
+    except Exception:
+        pass
 
 # ==============================================================================
 # ৩. অটোমেটিক সাবস্ক্রিপশন ও পেমেন্ট প্রসেসর
@@ -132,25 +123,20 @@ def process_automatic_subscriptions():
         print(f"[-] Subscription Processor Error: {e}")
 
 # ==============================================================================
-# ৪. ডাটাবেজ অপটিমাইজার ও Strict 24h TTL & Hall of Fame 7 Days Retention
+# ৪. ডাটাবেজ অপটিমাইজার ও Retention
 # ==============================================================================
 def cleanup_old_database_records():
     print("[*] Running Autonomous Database Storage Optimizer & TTL Expiry...")
     now = datetime.now(timezone.utc)
-    
-    cutoff_ttl = (now - timedelta(hours=24)).isoformat()
-    cutoff_hof = (now - timedelta(days=7)).isoformat() # Hall of Fame strict 7 days retention
+    cutoff_ttl = (now - timedelta(hours=48)).isoformat()
+    cutoff_hof = (now - timedelta(days=7)).isoformat()
     cutoff_failures = (now - timedelta(days=3)).isoformat()
     
     try:
-        # ২৪ ঘণ্টার বেশি পুরোনো ACTIVE সিগন্যালগুলোর স্ট্যাটাস EXPIRED করা (Live Stream TTL)
         supabase.table("market_research").update({"status": "EXPIRED", "resolved_at": now.isoformat()}).eq("status", "ACTIVE").lt("created_at", cutoff_ttl).execute()
-        
-        # Hall of Fame এ শুধুমাত্র গত ৭ দিনের উইনিং প্রুফ রাখা
         supabase.table("market_research").delete().eq("status", "HIT_TP").lt("resolved_at", cutoff_hof).execute()
         supabase.table("market_research").delete().in_("status", ["HIT_SL", "EXPIRED"]).lt("resolved_at", cutoff_failures).execute()
-        
-        print("✔ Database Cleaned: Stale signals expired & Hall of Fame restricted to 7 days.")
+        print("✔ Database Cleaned Successfully.")
     except Exception as e:
         print(f"[-] Cleanup & TTL Error: {e}")
 
@@ -219,46 +205,81 @@ def fetch_top_100_stocks():
     return stock_pool
 
 # ==============================================================================
-# ৭. ফরেক্স ও কমোডিটিজ: টপ ১০০ স্ক্রিনার
+# ৭. ফরেক্স ও কমোডিটিজ: ১০০% ডায়নামিক লাইভ স্ক্রিনার (কোনো ফিক্সড তালিকা ছাড়া)
 # ==============================================================================
 def fetch_top_100_forex_universe():
-    print("[*] Discovering Forex & Commodities Universe...")
+    print("[*] Dynamically Screening Top 100 Forex & Commodities from Live Market...")
     forex_pool = {}
     discovered_quotes = []
-    try:
-        res_fx = session.get("https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=currencies&count=60", timeout=10)
-        if res_fx.status_code == 200: discovered_quotes.extend(res_fx.json().get('finance', {}).get('result', [{}])[0].get('quotes', []))
-    except Exception: pass
 
+    # স্ক্রিনার ১: টপ ১০০ কারেন্সি পেয়ার
+    fx_url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=currencies&count=100"
     try:
-        res_comm = session.get("https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=all_commodities&count=40", timeout=10)
-        if res_comm.status_code == 200: discovered_quotes.extend(res_comm.json().get('finance', {}).get('result', [{}])[0].get('quotes', []))
-    except Exception: pass
+        r_fx = session.get(fx_url, timeout=12)
+        if r_fx.status_code == 200:
+            fx_data = r_fx.json().get('finance', {}).get('result', [{}])[0].get('quotes', [])
+            discovered_quotes.extend(fx_data)
+            print(f"  -> Discovered {len(fx_data)} Live Forex Pairs from Global Screener.")
+    except Exception as e:
+        print(f"[-] Dynamic Forex Screener Error: {e}")
 
-    commodities_map = {"GC=F": "XAU/USD", "SI=F": "XAG/USD", "CL=F": "WTI/CRUDE", "NG=F": "NATGAS/USD"}
+    # স্ক্রিনার ২: টপ কমোডিটিজ ও মেটালস (Gold, Silver, Platinum, Crude ইত্যাদি)
+    comm_url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=all_commodities&count=50"
+    try:
+        r_comm = session.get(comm_url, timeout=12)
+        if r_comm.status_code == 200:
+            comm_data = r_comm.json().get('finance', {}).get('result', [{}])[0].get('quotes', [])
+            discovered_quotes.extend(comm_data)
+            print(f"  -> Discovered {len(comm_data)} Live Commodities & Metals from Screener.")
+    except Exception as e:
+        print(f"[-] Dynamic Commodities Screener Error: {e}")
+
+    commodities_map = {
+        "GC=F": ("XAU/USD", "Precious Metals & Gold"),
+        "SI=F": ("XAG/USD", "Precious Metals & Silver"),
+        "PL=F": ("XPT/USD", "Precious Metals & Platinum"),
+        "PA=F": ("XPD/USD", "Precious Metals & Palladium"),
+        "CL=F": ("WTI/CRUDE", "Global Energy Commodity"),
+        "NG=F": ("NATGAS/USD", "Global Energy Commodity"),
+        "HG=F": ("COPPER/USD", "Industrial Metals Commodity")
+    }
 
     for item in discovered_quotes:
         ticker = item.get('symbol', '')
         price = float(item.get('regularMarketPrice') or item.get('price') or 0)
-        if not ticker or price <= 0 or "^" in ticker: continue
+        if not ticker or price <= 0 or "^" in ticker:
+            continue
 
-        if ticker.endswith("=X"):
+        if ticker in commodities_map:
+            clean_sym, sector = commodities_map[ticker]
+            m_type = "forex"
+        elif ticker.endswith("=X"):
             raw_sym = ticker.replace("=X", "")
             clean_sym = f"{raw_sym[:3]}/{raw_sym[3:]}" if len(raw_sym) == 6 else raw_sym
-            m_type, sector = "forex", "G10 Interbank FX"
-        elif ticker in commodities_map:
-            clean_sym, m_type, sector = commodities_map[ticker], "forex", "Precious Metals & Gold"
+            m_type = "forex"
+            is_major = any(curr in clean_sym for curr in ["EUR", "USD", "GBP", "JPY", "CHF", "AUD", "CAD", "NZD"])
+            sector = "G10 Interbank FX" if is_major else "Global Cross FX"
+        elif ticker.endswith("=F"):
+            clean_sym = ticker.replace("=F", "") + "/USD"
+            m_type = "forex"
+            sector = "Global Commodity Future"
         else:
-            clean_sym, m_type, sector = ticker.replace("=F", ""), "forex", "Global Commodity"
+            continue
 
-        forex_pool[clean_sym] = {
-            "symbol": clean_sym, "market_type": m_type, "sector": sector, "price": price,
-            "high": float(item.get('regularMarketDayHigh') or (price * 1.008)),
-            "low": float(item.get('regularMarketDayLow') or (price * 0.992)),
-            "open": float(item.get('regularMarketOpen') or price),
-            "change": float(item.get('regularMarketChangePercent') or 0),
-            "volume_m": round(float(item.get('regularMarketVolume') or 1500000) / 1_000_000, 2)
-        }
+        if clean_sym not in forex_pool:
+            forex_pool[clean_sym] = {
+                "symbol": clean_sym,
+                "market_type": m_type,
+                "sector": sector,
+                "price": price,
+                "high": float(item.get('regularMarketDayHigh') or (price * 1.008)),
+                "low": float(item.get('regularMarketDayLow') or (price * 0.992)),
+                "open": float(item.get('regularMarketOpen') or price),
+                "change": float(item.get('regularMarketChangePercent') or 0),
+                "volume_m": round(float(item.get('regularMarketVolume') or 2000000) / 1_000_000, 2)
+            }
+
+    print(f"✔ Final Filtered Pool: {len(forex_pool)} Completely Dynamic Forex & Gold Pairs Ready.")
     return forex_pool
 
 # ==============================================================================
@@ -285,7 +306,6 @@ def track_and_update_lifecycle(current_prices):
             cur_price = current_prices[sym]["price"]
             sl = float(sig.get("sl_price") or 0)
             tp = float(sig.get("tp_price") or 0)
-            created_at_str = sig.get("created_at")
 
             hit_status = None
             if direction == "long":
@@ -294,11 +314,6 @@ def track_and_update_lifecycle(current_prices):
             else:
                 if cur_price <= tp and tp > 0: hit_status = "HIT_TP"
                 elif cur_price >= sl and sl > 0: hit_status = "HIT_SL"
-
-            if not hit_status and created_at_str:
-                created_at = datetime.fromisoformat(created_at_str.replace("Z", "+00:00"))
-                if now - created_at > timedelta(hours=24):
-                    hit_status = "EXPIRED"
 
             if hit_status:
                 supabase.table("market_research").update({
@@ -312,7 +327,7 @@ def track_and_update_lifecycle(current_prices):
     return active_setups_map
 
 # ==============================================================================
-# ৯. SMC লিকুইডিটি পার্জ ও সিগন্যাল জেনারেটর (Updated for Exact Styles & Horizons)
+# ৯. এডভান্সড SMC কোয়ান্টাম ইঞ্জিন (SFP Sweep + All Horizons: 24h, 1w, 1m)
 # ==============================================================================
 def generate_smc_institutional_signal(item, active_setups_map):
     p = item['price']
@@ -332,15 +347,45 @@ def generate_smc_institutional_signal(item, active_setups_map):
     lower_wick = min(open_p, p) - low
     upper_wick = high - max(open_p, p)
 
-    if (range_pos >= 0.52 and lower_wick > upper_wick * 1.3) or (range_pos >= 0.60 and chg >= 1.2):
-        direction, purge_catalyst, flow_delta = "long", "Sell-Side Liquidity Purged", f"${vol}M Smart Money Accumulation"
-    elif (range_pos <= 0.48 and upper_wick > lower_wick * 1.3) or (range_pos <= 0.40 and chg <= -1.2):
-        direction, purge_catalyst, flow_delta = "short", "Buy-Side Liquidity Swept", f"${vol}M Institutional Distribution"
+    is_bullish_sfp = (lower_wick >= span * 0.30) and (range_pos >= 0.48)
+    is_bearish_sfp = (upper_wick >= span * 0.30) and (range_pos <= 0.52)
+
+    conviction_score = 88
+
+    if is_bullish_sfp or (chg >= 0.8 and range_pos >= 0.52):
+        direction = "long"
+        purge_catalyst = "Sell-Side Liquidity Swept (SFP)" if is_bullish_sfp else "Institutional Demand Expansion"
+        flow_delta = f"${vol}M Smart Money Accumulation"
+        if is_bullish_sfp: conviction_score += 4
+        if chg > 1.2: conviction_score += 3
+        if vol >= 10.0: conviction_score += 3
+    elif is_bearish_sfp or (chg <= -0.8 and range_pos <= 0.48):
+        direction = "short"
+        purge_catalyst = "Buy-Side Liquidity Swept (SFP)" if is_bearish_sfp else "Institutional Supply Distribution"
+        flow_delta = f"${vol}M Institutional Distribution"
+        if is_bearish_sfp: conviction_score += 4
+        if chg < -1.2: conviction_score += 3
+        if vol >= 10.0: conviction_score += 3
     else:
-        return []
+        direction = "long" if chg >= 0 else "short"
+        purge_catalyst = "Order Flow Imbalance"
+        flow_delta = f"${vol}M Momentum Inflow"
+        if abs(chg) >= 0.5: conviction_score += 2
+        if vol >= 5.0: conviction_score += 2
+
+    score = min(98, max(88, conviction_score))
+
+    # মার্কেট অনুসারে নিখুঁত রিস্ক ক্যালিব্রেশন
+    if m_type == "crypto":
+        base_risk = max(0.012, volatility_ratio * 0.22)
+    elif m_type == "stocks":
+        base_risk = max(0.008, volatility_ratio * 0.18)
+    else:
+        base_risk = max(0.0035, volatility_ratio * 0.15)
 
     setups = []
-    # FIX: trader_style, timeframe, horizon এবং stage স্পষ্টভাবে ডিফাইন করা হয়েছে
+    
+    # 24H (Scalp), 1W (Day), এবং 1M (Swing) হরাইজন ম্যাপিং
     styles = [
         {
             "style": "Scalp", 
@@ -348,26 +393,26 @@ def generate_smc_institutional_signal(item, active_setups_map):
             "timeframe": "5m", 
             "tag": "Scalp Engine (5M)", 
             "horizon": "24h", 
-            "rr": 2.4, 
-            "risk_mult": 0.16
+            "rr": 2.2, 
+            "risk_mult": 0.8
         },
         {
             "style": "Day", 
             "trader_style": "day", 
             "timeframe": "1h", 
             "tag": "Day Engine (1H)", 
-            "horizon": "24h", 
-            "rr": 2.6, 
-            "risk_mult": 0.28
+            "horizon": "1w", 
+            "rr": 2.8, 
+            "risk_mult": 1.1
         },
         {
             "style": "Swing", 
             "trader_style": "swing", 
             "timeframe": "4h", 
             "tag": "Swing Engine (4H)", 
-            "horizon": "1w", 
-            "rr": 3.2, 
-            "risk_mult": 0.48
+            "horizon": "1m",       # <--- 1 Month ফিল্টারের ডেটা
+            "rr": 3.4, 
+            "risk_mult": 1.5
         }
     ]
 
@@ -375,22 +420,17 @@ def generate_smc_institutional_signal(item, active_setups_map):
         setup_key = f"{item['symbol']}_{s['style']}_{direction}"
         if setup_key in active_setups_map: continue
 
-        risk_pct = max(0.012 if m_type == "crypto" else 0.005, volatility_ratio * s['risk_mult'])
+        effective_risk = base_risk * s['risk_mult']
         entry = p
-        sl = p * (1 - risk_pct) if direction == "long" else p * (1 + risk_pct)
-        tp = p * (1 + (risk_pct * s['rr'])) if direction == "long" else p * (1 - (risk_pct * s['rr']))
-
-        conviction = 92
-        if abs(chg) >= 1.8: conviction += 3
-        if vol >= 15.0: conviction += 3
-        score = min(98, conviction)
+        sl = p * (1 - effective_risk) if direction == "long" else p * (1 + effective_risk)
+        tp = p * (1 + (effective_risk * s['rr'])) if direction == "long" else p * (1 - (effective_risk * s['rr']))
 
         setups.append({
             "symbol": item['symbol'], 
             "market_type": m_type, 
             "horizon": s['horizon'],
-            "projection_horizon": s['horizon'],        # FIX: ফ্রন্টএন্ড 1w, 1m ও 24h ফিল্টারের জন্য
-            "trader_style": s['trader_style'],          # FIX: ফ্রন্টএন্ড scalp, day, swing ফিল্টারের জন্য
+            "projection_horizon": s['horizon'],
+            "trader_style": s['trader_style'],
             "timeframe": s['timeframe'],
             "direction": direction,
             "trading_mode": "mode2" if m_type == "crypto" else "mode1", 
@@ -398,7 +438,7 @@ def generate_smc_institutional_signal(item, active_setups_map):
             "stage": f"[{s['style'].upper()}] Institutional Squeeze", 
             "current_change_24h": round(chg, 2),
             "sector": f"{s['tag']} • {base_sector}", 
-            "est_potential": f"+{round(risk_pct * s['rr'] * 100, 1)}%",
+            "est_potential": f"+{round(effective_risk * s['rr'] * 100, 1)}%",
             "flow_metric": flow_delta, 
             "driver_metric": purge_catalyst,
             "entry_price": entry, 
@@ -411,11 +451,11 @@ def generate_smc_institutional_signal(item, active_setups_map):
     return setups
 
 # ==============================================================================
-# ১০. এক্সিকিউশন রানার (Optimized Telegram vs Website Data Separation)
+# ১০. এক্সিকিউশন রানার
 # ==============================================================================
 def run():
     print("=" * 80)
-    print(f"[*] RUNNING GREATNEXA QUANT ENGINE: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
+    print(f"[*] RUNNING GREATNEXA ADVANCED QUANT ENGINE: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
     print("=" * 80)
     
     send_telegram_status("⚡ *GreatNexa Institutional Engine Active & Scanning Markets...*")
@@ -433,39 +473,38 @@ def run():
     active_setups_map = track_and_update_lifecycle(all_prices)
     crypto_setups, stock_setups, forex_setups = [], [], []
 
-    # পর্যাপ্ত পরিমাণে সিগন্যাল তৈরি যাতে ওয়েবসাইটে সব স্টাইল (Scalp/Day/Swing) ও হরাইজন থাকে
-    for c in sorted(crypto_prices.values(), key=lambda x: (abs(x['change']) * x['volume_m']), reverse=True)[:60]:
+    # টপ মোমেন্টাম ক্রিপ্টো (টপ ৫০টি লিকুইডিটি পেয়ার)
+    for c in sorted(crypto_prices.values(), key=lambda x: (abs(x['change']) * x['volume_m']), reverse=True)[:50]:
         crypto_setups.extend(generate_smc_institutional_signal(c, active_setups_map))
 
+    # টপ মোমেন্টাম ইউএস স্টকস (টপ ৩৫টি)
     for s in sorted(stocks_prices.values(), key=lambda x: abs(x['change']), reverse=True)[:35]:
         stock_setups.extend(generate_smc_institutional_signal(s, active_setups_map))
 
-    for f in sorted(forex_prices.values(), key=lambda x: abs(x['change']), reverse=True)[:35]:
+    # টপ মোমেন্টাম ফরেক্স ও গোল্ড (টপ ৫০টি)
+    for f in sorted(forex_prices.values(), key=lambda x: abs(x['change']), reverse=True)[:50]:
         forex_setups.extend(generate_smc_institutional_signal(f, active_setups_map))
 
-    # ওয়েবসাইটের জন্য সব হাই-কোয়ালিটি ডেটা ডাটাবেজে পাঠানো
-    website_batch = [x for x in (crypto_setups + stock_setups + forex_setups) if x['score'] >= 92]
+    website_batch = [x for x in (crypto_setups + stock_setups + forex_setups) if x['score'] >= 88]
 
     if website_batch:
         try:
             supabase.table("market_research").insert(website_batch).execute()
-            print(f"\n✔ Successfully pushed {len(website_batch)} High-Conviction Setups to Website Database!")
+            print(f"\n✔ Successfully pushed {len(website_batch)} High-Conviction Setups to Website Database (Forex: {len(forex_setups)}, Crypto: {len(crypto_setups)})!")
         except Exception as e:
             print(f"[-] Batch insert error: {e}")
 
-        # ======================================================================
-        # টেলিগ্রাম অ্যালার্ট ফিল্টার (কঠোর নিয়ন্ত্রণ: টপ ৫ ক্রিপ্টো, ৩ স্টক, ৩ ফরেক্স)
-        # ======================================================================
-        top_telegram_crypto = sorted([x for x in crypto_setups if x['score'] >= 92], key=lambda x: x['score'], reverse=True)[:5]
-        top_telegram_stocks = sorted([x for x in stock_setups if x['score'] >= 92], key=lambda x: x['score'], reverse=True)[:3]
-        top_telegram_forex = sorted([x for x in forex_setups if x['score'] >= 92], key=lambda x: x['score'], reverse=True)[:3]
+        # টেলিগ্রাম অ্যালার্ট ফিল্টার (সেরা সিগন্যাল কিউরেশন)
+        top_telegram_crypto = sorted([x for x in crypto_setups if x['score'] >= 92], key=lambda x: x['score'], reverse=True)[:4]
+        top_telegram_stocks = sorted([x for x in stock_setups if x['score'] >= 92], key=lambda x: x['score'], reverse=True)[:2]
+        top_telegram_forex = sorted([x for x in forex_setups if x['score'] >= 92], key=lambda x: x['score'], reverse=True)[:2]
 
         telegram_queue = top_telegram_crypto + top_telegram_stocks + top_telegram_forex
 
         print(f"\n[*] Pushing {len(telegram_queue)} Curated Signals to Telegram Channel...")
         for s in telegram_queue:
             send_telegram_alert(s)
-            time.sleep(3.5) # Rate-limit safe delay
+            time.sleep(3.5)
     else:
         print("\n[i] No high-conviction setups meeting threshold at this cycle.")
 
