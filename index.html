@@ -192,15 +192,8 @@
                 </div>
             </a>
 
-            <!-- Central 4-Pillar Controls -->
+            <!-- Central Nav Items -->
             <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-                <div class="flex items-center bg-[#0d162a] border border-white/10 rounded-xl p-1 text-xs">
-                    <button type="button" onclick="switchTab('active')" id="tab-active" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow cursor-pointer">Live Alpha</button>
-                    <button type="button" onclick="switchTab('monitoring')" id="tab-monitoring" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Active Trades</button>
-                    <button type="button" onclick="switchTab('portfolio')" id="tab-portfolio" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">📌 Saved (<span id="savedBadgeCount">0</span>)</button>
-                    <button type="button" onclick="switchTab('archive')" id="tab-archive" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">Hall of Fame</button>
-                </div>
-
                 <div class="notranslate flex items-center bg-[#0d162a] border border-white/10 rounded-xl px-2.5 py-1.5 text-xs">
                     <span class="text-gray-300 mr-1.5">🌐</span>
                     <select id="customLangSelect" onchange="applyCustomLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-[#0d162a]">
@@ -286,15 +279,15 @@
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-400">Crypto Engine:</span>
-                        <span class="text-emerald-400 font-bold">24H High-Conviction Flow</span>
+                        <span class="text-emerald-400 font-bold">Binance 24H Full Highway</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-400">Forex & Gold:</span>
-                        <span class="text-blue-400 font-bold">G10 + Metals Interbank</span>
+                        <span class="text-gray-400">Forex Feed:</span>
+                        <span class="text-blue-400 font-bold">G10 + Commodities Interbank</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-400">US Equities:</span>
-                        <span class="text-purple-400 font-bold">Dark Pool Imbalance Delta</span>
+                        <span class="text-gray-400">Equities Feed:</span>
+                        <span class="text-purple-400 font-bold">S&P 100 Dark Pool Delta</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-400">Pass Valuation:</span>
@@ -410,17 +403,27 @@
             </div>
         </div>
 
-        <!-- Screener Result Header -->
-        <div id="screenerHeader" class="flex flex-wrap justify-between items-center gap-2 pt-4">
-            <div>
-                <h3 id="screenerTitle" class="text-lg font-black text-white tracking-tight flex items-center gap-2">
-                    <span>⚡</span> Live Alpha Stream (Strict 24H TTL)
-                </h3>
-                <p id="screenerSubtitle" class="text-xs text-gray-400 font-mono">Live Institutional Setups</p>
+        <!-- 4-Pillar Tabs Section (MOVED DIRECTLY ABOVE COIN CARDS) -->
+        <div class="flex items-center justify-between flex-wrap gap-3 pt-4 border-t border-white/[0.08]">
+            <div class="flex items-center bg-[#0d162a] border border-white/10 rounded-2xl p-1.5 text-xs">
+                <button type="button" onclick="switchTab('active')" id="tab-active" class="px-4 py-2 rounded-xl bg-blue-600 text-white font-bold transition shadow cursor-pointer">⚡ Live Alpha</button>
+                <button type="button" onclick="switchTab('monitoring')" id="tab-monitoring" class="px-4 py-2 rounded-xl text-gray-400 hover:text-white transition cursor-pointer">🛰️ Active Trades</button>
+                <button type="button" onclick="switchTab('portfolio')" id="tab-portfolio" class="px-4 py-2 rounded-xl text-gray-400 hover:text-white transition cursor-pointer">📌 Saved (<span id="savedBadgeCount">0</span>)</button>
+                <button type="button" onclick="switchTab('archive')" id="tab-archive" class="px-4 py-2 rounded-xl text-gray-400 hover:text-white transition cursor-pointer">🏆 Hall of Fame</button>
             </div>
             <div class="flex items-center gap-2 text-xs font-mono text-gray-400">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 <span id="syncStatusNotice">🟢 Syncing Live Quant Stream</span>
+            </div>
+        </div>
+
+        <!-- Screener Result Header -->
+        <div id="screenerHeader" class="flex flex-wrap justify-between items-center gap-2">
+            <div>
+                <h3 id="screenerTitle" class="text-lg font-black text-white tracking-tight flex items-center gap-2">
+                    <span>⚡</span> Live Alpha Stream (Strict 24H TTL)
+                </h3>
+                <p id="screenerSubtitle" class="text-xs text-gray-400 font-mono">High-Conviction fresh setups</p>
             </div>
         </div>
 
@@ -603,20 +606,17 @@
             <p id="payPlanName" class="text-xs text-blue-400 font-semibold mb-2 notranslate font-mono"></p>
             <p id="displayPrice" class="text-xs font-bold text-emerald-400 font-mono mb-3"></p>
 
-            <!-- Coupon Input Box -->
             <div class="flex gap-2 mb-3">
                 <input type="text" id="appliedCouponCode" placeholder="Enter Coupon (e.g. NEXA20)" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-3 py-2 uppercase font-mono">
                 <button type="button" onclick="applyDiscountCoupon()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl transition cursor-pointer">Apply</button>
             </div>
             <div id="couponMsg" class="text-xs font-mono mb-3"></div>
             
-            <!-- Payment Method Switcher -->
             <div class="grid grid-cols-2 gap-2 mb-4">
                 <button type="button" onclick="setPaymentMethod('crypto')" id="pay-opt-crypto" class="py-2.5 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow">Crypto / Binance Pay</button>
                 <button type="button" onclick="setPaymentMethod('local')" id="pay-opt-local" class="py-2.5 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10">bKash / Nagad</button>
             </div>
 
-            <!-- Crypto Payment Box with Tabs -->
             <div id="cryptoPaymentBox" class="bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-3 text-xs">
                 <div class="flex justify-between items-center border-b border-white/10 pb-2">
                     <span class="text-gray-300 font-bold">Select Crypto Method:</span>
@@ -627,7 +627,6 @@
                     </div>
                 </div>
 
-                <!-- Binance Pay Content -->
                 <div id="content-binance" class="space-y-3 text-center">
                     <div class="bg-white p-2.5 rounded-xl inline-block shadow-md">
                         <img src="BinancePay.png" alt="Binance Pay QR Code" class="w-36 h-36 mx-auto object-contain">
@@ -642,7 +641,6 @@
                     </div>
                 </div>
 
-                <!-- BEP20 Content -->
                 <div id="content-bep20" class="space-y-3 text-center hidden">
                     <div class="bg-white p-2.5 rounded-xl inline-block shadow-md">
                         <img src="BEP20.png" alt="BEP20 QR Code" class="w-36 h-36 mx-auto object-contain">
@@ -657,7 +655,6 @@
                     </div>
                 </div>
 
-                <!-- TRC20 Content -->
                 <div id="content-trc20" class="space-y-3 text-center hidden">
                     <div class="bg-white p-2.5 rounded-xl inline-block shadow-md">
                         <img src="TRC20.png" alt="TRC20 QR Code" class="w-36 h-36 mx-auto object-contain">
@@ -675,14 +672,12 @@
                 <p class="text-[11px] text-amber-300/90 pt-1 border-t border-white/10">⚠️ Send exact amount only. Verify network before transferring.</p>
             </div>
 
-            <!-- Local Payment Box -->
             <div id="localPaymentBox" class="hidden bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-2 text-xs">
                 <p class="text-gray-300">১. নিচের নাম্বারে <b class="text-pink-400">bKash</b> বা <b class="text-orange-400">Nagad</b> এ সেন্ড মানি করুন।</p>
                 <p class="text-gray-300">২. পার্সোনাল নাম্বার: <b class="text-emerald-400 font-mono text-sm notranslate">01870978004</b></p>
                 <p class="text-gray-300">৩. টাকা পাঠিয়ে TrxID এবং প্রেরকের ফোন নাম্বার নিচে দিন:</p>
             </div>
 
-            <!-- Form Submission Fields -->
             <div class="space-y-3">
                 <div id="localSenderPhoneWrap" class="hidden">
                     <input type="text" id="paySenderPhone" placeholder="Sender bKash/Nagad Number" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 font-mono">
@@ -740,7 +735,6 @@
                     <input type="email" id="authEmail" placeholder="your@email.com" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
                 </div>
                 
-                <!-- Password with Eye Icon -->
                 <div>
                     <label class="block text-[11px] text-gray-400 mb-1 font-mono">Password</label>
                     <div class="relative">
@@ -751,7 +745,6 @@
                     </div>
                 </div>
 
-                <!-- Confirm Password (Only for Signup) -->
                 <div id="confirmPasswordGroup" class="hidden">
                     <label class="block text-[11px] text-gray-400 mb-1 font-mono">Confirm Password</label>
                     <div class="relative">
@@ -762,7 +755,6 @@
                     </div>
                 </div>
                 
-                <!-- Forgot Password Link -->
                 <div id="forgotPassWrapper" class="text-right">
                     <button type="button" onclick="openForgotPasswordModal()" class="text-[11px] text-blue-400 hover:underline font-mono">Forgot Password?</button>
                 </div>
@@ -859,7 +851,7 @@
         let state = { 
             market: 'crypto', 
             horizon: '24h', 
-            limit: 100, // ওয়েবসাইটে সমস্ত সেটআপ দেখানোর জন্য ডিফল্ট লিমিট ১০০ করা হয়েছে
+            limit: 100, // ওয়েবসাইটে সব ডেটা দেখতে যেন কোনো মিস না হয়
             role: 'free', 
             tradingMode: 'mode2', 
             direction: 'long', 
@@ -1094,7 +1086,7 @@
             }
         }
 
-        // FIX: Scalper, Day, Swing Trader বাটন ক্লিক হ্যান্ডলার
+        // FIX: Scalper, Day, Swing Trader বাটন ফিল্টারিং ফিক্স
         function changeTraderStyle(style) {
             state.traderStyle = style;
             const styles = ['all', 'scalp', 'day', 'swing'];
@@ -1126,9 +1118,9 @@
                 const btn = document.getElementById('tab-' + t);
                 if (btn) {
                     if (t === tab) {
-                        btn.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow cursor-pointer";
+                        btn.className = "px-4 py-2 rounded-xl bg-blue-600 text-white font-bold transition shadow cursor-pointer";
                     } else {
-                        btn.className = "px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
+                        btn.className = "px-4 py-2 rounded-xl text-gray-400 hover:text-white transition cursor-pointer";
                     }
                 }
             });
@@ -1166,7 +1158,7 @@
             }
         }
 
-        // FIX: Asset Universe & Horizon Filter
+        // FIX: Asset Universe & Horizon Filter ফিক্স
         function changeFilter(type, val) {
             if (type === 'market') {
                 state.market = val;
@@ -1183,7 +1175,6 @@
                     else if (val === 'stocks') { btn1.innerText = "Cash Market"; btn2.innerText = "F&O / Derivatives"; }
                 }
             } else if (type === 'horizon') {
-                // FIX: 1w ও 1m প্রিমিয়াম ফিচার চেকিং ও সক্রিয়করণ
                 if (state.role === 'free' && (val === '1w' || val === '1m')) {
                     alert("1 Week এবং 1 Month প্রেডিকশন প্রো/ভিআইপি মেম্বারদের জন্য সংরক্ষিত। দয়া করে আপনার প্ল্যান আপগ্রেড করুন।");
                     openPaymentModal('Pro Monthly ($5/mo)', 5, 600);
@@ -1403,7 +1394,7 @@
             }
         }
 
-        // ================= RENDERING ENGINE & ACTIVE PLAN COUNTDOWN =================
+        // ================= RENDERING ENGINE =================
         function renderCards() {
             const container = document.getElementById('gridContainer');
             if (!container) return;
@@ -1489,9 +1480,24 @@
                 return;
             }
 
-            // FIX: ওয়েবসাইটে সমস্ত সেটআপ ডিসপ্লে নিশ্চিতকরণ
+            // Client-side filtering verification to prevent wrong styles from showing
+            let filteredData = (liveMarketData || []).filter(item => {
+                if (state.traderStyle === 'all') return true;
+                
+                const styleStr = ((item.trader_style || '') + ' ' + (item.stage || '') + ' ' + (item.timeframe || '')).toLowerCase();
+                
+                if (state.traderStyle === 'scalp') {
+                    return styleStr.includes('scalp') || styleStr.includes('5m');
+                } else if (state.traderStyle === 'day') {
+                    return styleStr.includes('day') || styleStr.includes('1h');
+                } else if (state.traderStyle === 'swing') {
+                    return styleStr.includes('swing') || styleStr.includes('4h') || styleStr.includes('1d');
+                }
+                return true;
+            });
+
             const maxAllowed = (state.role === 'free') ? 3 : state.limit;
-            const displayData = (liveMarketData || []).slice(0, maxAllowed);
+            const displayData = filteredData.slice(0, maxAllowed);
 
             if (displayData.length === 0) {
                 container.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">No active setups found matching criteria. Live stream listening...</div>`;
@@ -1594,19 +1600,27 @@
             try {
                 let query = _supabase.from('market_research').select('*');
 
-                // 1. Market Universe Filter (Forex + Commodities Gold Support)
+                // 1. Market Universe Filter
                 if (state.market === 'forex') {
-                    query = query.or('market_type.eq.forex,market_type.eq.commodities,sector.ilike.%Gold%,sector.ilike.%Metals%');
+                    query = query.or('market_type.ilike.%forex%,market_type.ilike.%commodities%,sector.ilike.%gold%,sector.ilike.%metal%');
                 } else if (state.market === 'stocks') {
-                    query = query.or('market_type.eq.stocks,market_type.eq.equities');
+                    query = query.or('market_type.ilike.%stock%,market_type.ilike.%equit%');
                 } else {
                     query = query.eq('market_type', 'crypto');
                 }
 
-                // 2. Tab Filter (Live Alpha 24H TTL vs Active Ongoing Trades)
+                // 2. Tab Filter (Live Alpha 24H TTL vs Active Monitoring)
                 if (state.viewTab === 'active') {
-                    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-                    query = query.gte('created_at', twentyFourHoursAgo);
+                    if (state.horizon === '24h') {
+                        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+                        query = query.gte('created_at', twentyFourHoursAgo);
+                    } else if (state.horizon === '1w') {
+                        const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+                        query = query.gte('created_at', oneWeekAgo);
+                    } else if (state.horizon === '1m') {
+                        const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+                        query = query.gte('created_at', oneMonthAgo);
+                    }
                 } else if (state.viewTab === 'monitoring') {
                     query = query.eq('status', 'ACTIVE');
                 }
@@ -1616,20 +1630,20 @@
                     query = query.eq('direction', state.direction);
                 }
 
-                // 4. FIX: Trader Style Filtering (Scalp 5M, Day 1H, Swing 4H)
+                // 4. FIX: Trader Style Server Filtering
                 if (state.traderStyle && state.traderStyle !== 'all') {
                     if (state.traderStyle === 'scalp') {
-                        query = query.or('trader_style.ilike.%scalp%,timeframe.eq.5m,stage.ilike.%scalp%');
+                        query = query.or('trader_style.ilike.%scalp%,timeframe.ilike.%5m%,stage.ilike.%scalp%');
                     } else if (state.traderStyle === 'day') {
-                        query = query.or('trader_style.ilike.%day%,timeframe.eq.1h,stage.ilike.%day%');
+                        query = query.or('trader_style.ilike.%day%,timeframe.ilike.%1h%,stage.ilike.%day%');
                     } else if (state.traderStyle === 'swing') {
-                        query = query.or('trader_style.ilike.%swing%,timeframe.eq.4h,stage.ilike.%swing%');
+                        query = query.or('trader_style.ilike.%swing%,timeframe.ilike.%4h%,stage.ilike.%swing%');
                     }
                 }
 
-                // 5. FIX: Projection Horizon Filter (Intraday vs 1w vs 1m)
+                // 5. FIX: Projection Horizon Filter
                 if (state.horizon && state.horizon !== '24h') {
-                    query = query.eq('projection_horizon', state.horizon);
+                    query = query.or(`projection_horizon.ilike.%${state.horizon}%,projection_horizon.ilike.%week%,projection_horizon.ilike.%month%`);
                 }
 
                 // Sorting
