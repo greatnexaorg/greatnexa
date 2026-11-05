@@ -201,7 +201,7 @@
                         <option value="en">English</option>
                         <option value="bn">বাংলা (Bengali)</option>
                         <option value="hi">हिन्दी (Hindi)</option>
-                        <option value="ur">اردو (Urdu)</option>
+                        <option value="ur">اردো (Urdu)</option>
                         <option value="ru">Русский (Russian)</option>
                         <option value="es">Español (Spanish)</option>
                         <option value="zh-CN">中文 (Chinese)</option>
@@ -580,6 +580,40 @@
         </svg>
     </a>
 
+    <!-- User Profile Dashboard Modal -->
+    <div id="userDashboardModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-[75] p-4">
+        <div class="glass-panel w-full max-w-md rounded-3xl p-6 border border-blue-500/40 shadow-2xl relative space-y-4 font-mono">
+            <button type="button" onclick="closeUserDashboard()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
+            <div class="flex items-center gap-3 border-b border-white/10 pb-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-600/30 border border-blue-500/50 flex items-center justify-center text-xl">👤</div>
+                <div>
+                    <h3 class="text-sm font-bold text-white" id="dashUserEmail">user@example.com</h3>
+                    <p class="text-[11px] text-gray-400">Institutional Member Profile</p>
+                </div>
+            </div>
+
+            <div class="space-y-2 text-xs">
+                <div class="flex justify-between p-3 rounded-xl bg-black/40 border border-white/5">
+                    <span class="text-gray-400">Access Tier:</span>
+                    <span id="dashUserTier" class="font-bold text-amber-400 uppercase">VIP INSTITUTIONAL</span>
+                </div>
+                <div class="flex justify-between p-3 rounded-xl bg-black/40 border border-white/5">
+                    <span class="text-gray-400">Days Remaining:</span>
+                    <span id="dashUserDays" class="font-bold text-emerald-400">730 Days</span>
+                </div>
+                <div class="flex justify-between p-3 rounded-xl bg-black/40 border border-white/5">
+                    <span class="text-gray-400">Shortlist Limit:</span>
+                    <span class="font-bold text-blue-400">Full Unrestricted</span>
+                </div>
+            </div>
+
+            <div class="pt-2 flex gap-2">
+                <a href="https://t.me/+VA3Yu45-zosyOTRl" target="_blank" rel="noopener noreferrer" class="w-1/2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs text-center transition">✈️ VIP Telegram</a>
+                <button type="button" onclick="closeUserDashboard(); openSupportModal();" class="w-1/2 py-2.5 rounded-xl bg-purple-600/30 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/40 font-bold text-xs transition">Support Ticket</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Position Sizing & Risk Calculator Modal -->
     <div id="riskCalcModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
@@ -869,9 +903,8 @@
             traderStyle: 'all'
         };
         let liveMarketData = [];
+        let currentUserEmail = '';
         let selectedPlan = '';
-        let selectedPriceUSD = 0;
-        let selectedPriceBDT = 0;
         let basePriceUSD = 0;
         let basePriceBDT = 0;
         let currentDiscountPct = 0;
@@ -936,6 +969,21 @@
         function closeSupportModal() {
             document.getElementById('supportModal').classList.add('hidden');
             document.getElementById('supportModal').classList.remove('flex');
+        }
+
+        function openUserDashboard() {
+            document.getElementById('dashUserEmail').innerText = currentUserEmail || 'Guest User';
+            document.getElementById('dashUserTier').innerText = state.role.toUpperCase() + " TIER";
+            document.getElementById('dashUserDays').innerText = (window.userSubscriptionDays || 365) + " Days Active";
+            const modal = document.getElementById('userDashboardModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeUserDashboard() {
+            const modal = document.getElementById('userDashboardModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
         function openForgotPasswordModal() {
@@ -1140,8 +1188,8 @@
                 controlPanel.style.display = 'grid';
                 styleNavPanel.style.display = 'flex';
                 screenerHeader.style.display = 'flex';
-                screenerTitle.innerHTML = `<span>⚡</span> Live Alpha Stream (Strict 24H TTL)`;
-                screenerSubtitle.innerText = "High-Conviction fresh setups generated in the last 24 hours";
+                screenerTitle.innerHTML = `<span>⚡</span> Live Alpha Stream`;
+                screenerSubtitle.innerText = "High-Conviction fresh setups dynamically updated";
                 fetchLiveMarketData();
             } else if (tab === 'monitoring') {
                 controlPanel.style.display = 'grid';
@@ -1580,7 +1628,7 @@
             container.innerHTML = cardsHtml;
         }
 
-        // ================= FIX: DATA FETCHING & 1 MONTH / 1 WEEK RESOLVER =================
+        // ================= FIX: 1 MONTH & FOREX & GOLD QUERY =================
         async function fetchLiveMarketData() {
             const container = document.getElementById('gridContainer');
             if(!_supabase) {
@@ -1593,28 +1641,20 @@
             try {
                 let query = _supabase.from('market_research').select('*');
 
-                // 1. Market Universe Filter
+                // 1. Asset Universe Filter (Forex & Gold নিখুঁত ম্যাপিং)
                 if (state.market === 'forex') {
-                    query = query.or('market_type.ilike.%forex%,market_type.ilike.%commodities%,sector.ilike.%gold%,sector.ilike.%metal%');
+                    query = query.or('market_type.eq.forex,symbol.ilike.%USD%,symbol.ilike.%XAU%,symbol.ilike.%XAG%,sector.ilike.%Gold%,sector.ilike.%Metals%,sector.ilike.%FX%');
                 } else if (state.market === 'stocks') {
-                    query = query.or('market_type.ilike.%stock%,market_type.ilike.%equit%');
+                    query = query.eq('market_type', 'stocks');
                 } else {
                     query = query.eq('market_type', 'crypto');
                 }
 
-                // 2. Horizon Filter & TTL FIX:
-                // ১ মাস বা ১ সপ্তাহের সিগন্যাল যাতে হার্ডকোডেড টাইমের কারণে ড্রপ না খায়
-                if (state.viewTab === 'active') {
-                    if (state.horizon === '24h') {
-                        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-                        query = query.gte('created_at', twentyFourHoursAgo);
-                    } else if (state.horizon === '1w') {
-                        query = query.or('projection_horizon.ilike.%1w%,projection_horizon.ilike.%week%,timeframe.ilike.%4h%,timeframe.ilike.%1d%');
-                    } else if (state.horizon === '1m') {
-                        query = query.or('projection_horizon.ilike.%1m%,projection_horizon.ilike.%month%,timeframe.ilike.%1d%,timeframe.ilike.%1w%');
-                    }
-                } else if (state.viewTab === 'monitoring') {
+                // 2. Tab Filter (Live Alpha vs Active Monitoring)
+                if (state.viewTab === 'monitoring') {
                     query = query.eq('status', 'ACTIVE');
+                } else if (state.viewTab === 'active') {
+                    query = query.neq('status', 'EXPIRED');
                 }
 
                 // 3. Direction Filter
@@ -1622,15 +1662,13 @@
                     query = query.eq('direction', state.direction);
                 }
 
-                // 4. Trader Style Server Filtering
-                if (state.traderStyle && state.traderStyle !== 'all') {
-                    if (state.traderStyle === 'scalp') {
-                        query = query.or('trader_style.ilike.%scalp%,timeframe.ilike.%5m%,stage.ilike.%scalp%');
-                    } else if (state.traderStyle === 'day') {
-                        query = query.or('trader_style.ilike.%day%,timeframe.ilike.%1h%,stage.ilike.%day%');
-                    } else if (state.traderStyle === 'swing') {
-                        query = query.or('trader_style.ilike.%swing%,timeframe.ilike.%4h%,stage.ilike.%swing%');
-                    }
+                // 4. Horizon Projection Filter (1 Month ও 1 Week ফিক্স)
+                if (state.horizon === '24h') {
+                    query = query.or('projection_horizon.ilike.%24h%,horizon.ilike.%24h%');
+                } else if (state.horizon === '1w') {
+                    query = query.or('projection_horizon.ilike.%1w%,horizon.ilike.%1w%,timeframe.ilike.%1h%');
+                } else if (state.horizon === '1m') {
+                    query = query.or('projection_horizon.ilike.%1m%,horizon.ilike.%1m%,timeframe.ilike.%4h%');
                 }
 
                 // Sorting
@@ -1809,6 +1847,7 @@
             try {
                 const { data: { session } } = await _supabase.auth.getSession();
                 if(session && session.user) {
+                    currentUserEmail = session.user.email;
                     try {
                         await _supabase.rpc('check_subscription_status', { p_user_id: session.user.id });
                     } catch(e) {}
@@ -1837,21 +1876,21 @@
                     const guardText = document.getElementById('limitGuardText');
 
                     if(state.role === 'vip') {
-                        tierBadge = `<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2.5 py-0.5 rounded-full font-bold notranslate font-mono">VIP</span>`;
+                        tierBadge = `<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2.5 py-0.5 rounded-full font-bold notranslate font-mono cursor-pointer" onclick="openUserDashboard()">VIP</span>`;
                         state.limit = 100;
                         if(guardBox && guardText) {
                             guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-amber-950/30 text-[11px] font-mono text-amber-300 space-y-1";
                             guardText.innerText = "VIP Institutional Membership Unlocked: Full Alpha Access.";
                         }
                     } else if(state.role === 'pro') {
-                        tierBadge = `<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2.5 py-0.5 rounded-full font-bold notranslate font-mono">PRO</span>`;
+                        tierBadge = `<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2.5 py-0.5 rounded-full font-bold notranslate font-mono cursor-pointer" onclick="openUserDashboard()">PRO</span>`;
                         state.limit = 100;
                         if(guardBox && guardText) {
                             guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-blue-950/30 text-[11px] font-mono text-blue-300 space-y-1";
                             guardText.innerText = "Pro Trader Pass Active: Unlocked Alpha Setups.";
                         }
                     } else {
-                        tierBadge = '<span class="text-[10px] bg-gray-700 text-gray-300 px-2.5 py-0.5 rounded-full font-bold notranslate font-mono">FREE TIER</span>';
+                        tierBadge = '<span class="text-[10px] bg-gray-700 text-gray-300 px-2.5 py-0.5 rounded-full font-bold notranslate font-mono cursor-pointer" onclick="openUserDashboard()">FREE TIER</span>';
                         state.limit = 3;
                         if(guardBox && guardText) {
                             guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-black/30 text-[11px] font-mono text-gray-400 space-y-1";
@@ -1870,13 +1909,16 @@
 
                     headerSec.innerHTML = `
                         <div class="flex items-center gap-2 flex-wrap">
-                            <span class="text-xs text-white font-medium notranslate font-mono bg-black/40 px-2.5 py-1 rounded-lg border border-white/5">${session.user.email}</span>
+                            <button type="button" onclick="openUserDashboard()" class="text-xs text-white font-medium notranslate font-mono bg-black/40 px-2.5 py-1 rounded-lg border border-white/5 hover:border-blue-500 transition cursor-pointer flex items-center gap-1">
+                                📊 Dashboard: ${session.user.email}
+                            </button>
                             ${tierBadge}
                             ${vipTelegramBtn}
                             <button type="button" onclick="handleLogout()" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition cursor-pointer font-mono">Logout</button>
                         </div>
                     `;
                 } else {
+                    currentUserEmail = '';
                     headerSec.innerHTML = `<button type="button" onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>`;
                     state.role = 'free';
                     state.limit = 3;
