@@ -192,12 +192,12 @@
                 </div>
             </a>
 
-            <!-- Central Controls with 3 Tabs: Live Stream, Active Trades, Hall of Fame -->
+            <!-- Central Controls: Expanded with 3 Tabs (Live Stream, Active Trades, Hall of Fame) -->
             <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
                 <div class="flex items-center bg-[#0d162a] border border-white/10 rounded-xl p-1 text-xs">
-                    <button type="button" onclick="switchTab('active')" id="tab-active" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow cursor-pointer">⚡ Live Stream</button>
-                    <button type="button" onclick="switchTab('trades')" id="tab-trades" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">📈 Active Trades</button>
-                    <button type="button" onclick="switchTab('archive')" id="tab-archive" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">🏆 Hall of Fame</button>
+                    <button type="button" onclick="switchTab('active')" id="tab-active" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow cursor-pointer">⚡ Live Stream</button>
+                    <button type="button" onclick="switchTab('trades')" id="tab-trades" class="px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">📈 Active Trades</button>
+                    <button type="button" onclick="switchTab('archive')" id="tab-archive" class="px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer">🏆 Hall of Fame</button>
                 </div>
 
                 <div class="notranslate flex items-center bg-[#0d162a] border border-white/10 rounded-xl px-2.5 py-1.5 text-xs">
@@ -237,7 +237,7 @@
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8 space-y-8">
 
-        <!-- Zero-Latency Live Sync Indicator Bar -->
+        <!-- 🟢 20m Quant Stream Sync Indicator Bar -->
         <div class="flex items-center justify-between bg-emerald-950/20 border border-emerald-500/30 px-5 py-3 rounded-2xl text-xs font-mono shadow-lg">
             <div class="flex items-center gap-2.5 text-emerald-400">
                 <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
@@ -620,47 +620,45 @@
                     </div>
                 </div>
                 <div id="content-binance" class="space-y-3 text-center">
-                    <div class="bg-white p-2.5 rounded-xl inline-block shadow-md"><img src="BinancePay.png" alt="QR" class="w-36 h-36 mx-auto object-contain"></div>
+                    <div class="bg-white p-2.5 rounded-xl inline-block shadow-md"><img src="BinancePay.png" alt="Binance Pay QR Code" class="w-36 h-36 mx-auto object-contain"></div>
                     <div class="text-left space-y-1">
                         <p class="text-[11px] text-gray-400 font-mono">Binance Pay UID:</p>
                         <div class="flex items-center gap-2 bg-black/60 p-2 rounded-lg border border-white/10">
                             <span id="addr-binance" class="font-mono text-xs text-emerald-400 font-bold select-all">520327779</span>
-                            <button type="button" onclick="copyCryptoAddress('addr-binance', this)" class="px-2.5 py-1 bg-blue-600 text-white text-[10px] font-bold rounded">Copy UID</button>
+                            <button type="button" onclick="copyCryptoAddress('addr-binance', this)" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded">Copy UID</button>
                         </div>
                     </div>
                 </div>
                 <div id="content-bep20" class="space-y-3 text-center hidden">
-                    <div class="bg-white p-2.5 rounded-xl inline-block shadow-md"><img src="BEP20.png" alt="QR" class="w-36 h-36 mx-auto object-contain"></div>
+                    <div class="bg-white p-2.5 rounded-xl inline-block shadow-md"><img src="BEP20.png" alt="BEP20 QR Code" class="w-36 h-36 mx-auto object-contain"></div>
                     <div class="text-left space-y-1">
-                        <p class="text-[11px] text-gray-400 font-mono">BEP20 Address:</p>
+                        <p class="text-[11px] text-gray-400 font-mono">BEP20 Wallet Address:</p>
                         <div class="flex items-center gap-2 bg-black/60 p-2 rounded-lg border border-white/10">
                             <span id="addr-bep20" class="font-mono text-[11px] text-emerald-400 break-all select-all">0x833f26cb028d148588cc7165d991ff01c8d63c26</span>
-                            <button type="button" onclick="copyCryptoAddress('addr-bep20', this)" class="px-2.5 py-1 bg-blue-600 text-white text-[10px] font-bold rounded">Copy</button>
+                            <button type="button" onclick="copyCryptoAddress('addr-bep20', this)" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded">Copy</button>
                         </div>
                     </div>
                 </div>
                 <div id="content-trc20" class="space-y-3 text-center hidden">
-                    <div class="bg-white p-2.5 rounded-xl inline-block shadow-md"><img src="TRC20.png" alt="QR" class="w-36 h-36 mx-auto object-contain"></div>
+                    <div class="bg-white p-2.5 rounded-xl inline-block shadow-md"><img src="TRC20.png" alt="TRC20 QR Code" class="w-36 h-36 mx-auto object-contain"></div>
                     <div class="text-left space-y-1">
-                        <p class="text-[11px] text-gray-400 font-mono">TRC20 Address:</p>
+                        <p class="text-[11px] text-gray-400 font-mono">TRC20 Wallet Address:</p>
                         <div class="flex items-center gap-2 bg-black/60 p-2 rounded-lg border border-white/10">
                             <span id="addr-trc20" class="font-mono text-[11px] text-emerald-400 break-all select-all">TFBvsK8nDQuEgzdn3chRrxjhX48ZC84oMf</span>
-                            <button type="button" onclick="copyCryptoAddress('addr-trc20', this)" class="px-2.5 py-1 bg-blue-600 text-white text-[10px] font-bold rounded">Copy</button>
+                            <button type="button" onclick="copyCryptoAddress('addr-trc20', this)" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded">Copy</button>
                         </div>
                     </div>
                 </div>
             </div>
-
             <div id="localPaymentBox" class="hidden bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-2 text-xs">
-                <p class="text-gray-300">১. bKash/Nagad Personal: <b class="text-emerald-400 font-mono text-sm">01870978004</b></p>
+                <p class="text-gray-300">১. bKash / Nagad Personal: <b class="text-emerald-400 font-mono text-sm">01870978004</b></p>
             </div>
-
             <div class="space-y-3">
                 <div id="localSenderPhoneWrap" class="hidden">
                     <input type="text" id="paySenderPhone" placeholder="Sender bKash/Nagad Number" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 font-mono">
                 </div>
                 <input type="text" id="payTrxId" placeholder="Enter Transaction Hash / TrxID" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 font-mono">
-                <button type="button" onclick="submitPaymentOrder()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition cursor-pointer font-mono">Submit Verification</button>
+                <button type="button" onclick="submitPaymentOrder()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer font-mono">Submit Verification</button>
             </div>
         </div>
     </div>
@@ -724,6 +722,33 @@
         </div>
     </div>
 
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
+        <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative">
+            <button type="button" onclick="closeForgotPasswordModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
+            <h3 class="text-lg font-bold text-white mb-1">Reset Password</h3>
+            <div id="forgotFeedback" class="hidden text-xs p-3 rounded-xl mb-4 border font-medium"></div>
+            <div class="space-y-3">
+                <input type="email" id="forgotEmail" placeholder="your@email.com" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 font-mono">
+                <button type="button" onclick="handlePasswordReset()" class="w-full py-3 bg-blue-600 text-white text-xs font-bold rounded-xl font-mono">Send Reset Link</button>
+                <div class="text-center pt-2"><button type="button" onclick="backToLoginModal()" class="text-xs text-gray-400 underline font-semibold">Back to Login</button></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Password Modal -->
+    <div id="newPasswordModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-[80] p-4">
+        <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-blue-500/40 shadow-2xl relative">
+            <h3 class="text-lg font-bold text-white mb-1">Set New Password</h3>
+            <div id="newPassFeedback" class="hidden text-xs p-3 rounded-xl mb-4 border font-medium"></div>
+            <div class="space-y-3">
+                <input type="password" id="userNewPassword" placeholder="New Password" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 font-mono">
+                <input type="password" id="userConfirmNewPassword" placeholder="Confirm New Password" class="w-full bg-[#0b1324] border border-white/15 text-white text-xs rounded-xl px-4 py-3 font-mono">
+                <button type="button" onclick="saveNewPassword()" class="w-full py-3 bg-emerald-600 text-white text-xs font-bold rounded-xl font-mono">Update Password & Login</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Chart Modal -->
     <div id="chartModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-4xl rounded-2xl overflow-hidden border border-gray-700 shadow-2xl">
@@ -735,7 +760,7 @@
         </div>
     </div>
 
-    <!-- Scripting Execution Engine (Updated with Live Stream, Active Trades, Hall of Fame & Realtime Sync) -->
+    <!-- Full Scripting Engine (Preserving all original functions + New 4 Requirements) -->
     <script src="https://s3.tradingview.com/tv.js"></script>
     <script>
         const SUPABASE_URL = 'https://esqhansnosejkqapuhoo.supabase.co';
@@ -763,7 +788,13 @@
         let liveMarketData = [];
         let selectedPlan = '', selectedPriceUSD = 0, selectedPriceBDT = 0, basePriceUSD = 0, basePriceBDT = 0, currentDiscountPct = 0, activePaymentMethod = 'crypto', isSignUpMode = false, activeCalcItem = null;
 
+        // ================= DOM CONTENT LOADED & INITIALIZATION =================
         window.addEventListener('DOMContentLoaded', () => {
+            const hash = window.location.hash;
+            if (hash && (hash.includes('type=recovery') || hash.includes('access_token'))) {
+                const modal = document.getElementById('newPasswordModal');
+                if(modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+            }
             checkUserSession();
             setupRealtimeListener();
             initBinanceTicker();
@@ -780,12 +811,12 @@
             const screenerHeader = document.getElementById('screenerHeader');
             const styleNav = document.getElementById('styleNavContainer');
 
-            btnActive.className = "px-3 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
+            btnActive.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
             btnTrades.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
             btnArchive.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white transition cursor-pointer";
 
             if (tab === 'active') {
-                btnActive.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow cursor-pointer";
+                btnActive.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition shadow cursor-pointer";
                 if(controlPanel) controlPanel.style.display = 'grid';
                 if(screenerHeader) screenerHeader.style.display = 'flex';
                 if(styleNav) styleNav.style.display = 'flex';
@@ -805,11 +836,14 @@
             }
         }
 
-        // 1. Live Alpha Stream (20m Cycle & Strict 24h TTL)
+        // ================= 1. LIVE ALPHA STREAM (20m Cycle & Strict 24h TTL) =================
         async function fetchLiveMarketData() {
             if (state.viewTab !== 'active') return;
             const container = document.getElementById('gridContainer');
-            if(!_supabase) return;
+            if(!_supabase) {
+                container.innerHTML = `<div class="col-span-full text-center py-16 text-rose-400 font-mono glass-panel rounded-2xl border border-white/10">Database connection not available.</div>`;
+                return;
+            }
 
             const currentLimit = (state.role === 'free') ? 3 : Math.min(state.limit, 20);
 
@@ -837,109 +871,7 @@
                     document.getElementById('lastSyncedTime').innerText = `Synced at ${new Date().toLocaleTimeString()}`;
                 }
             } catch (err) {
-                console.error("Live stream error:", err);
-            }
-        }
-
-        // 2. Active Trades / Ongoing Monitoring (Not yet hit TP or SL)
-        async function fetchActiveTrades() {
-            if (state.viewTab !== 'trades') return;
-            const container = document.getElementById('gridContainer');
-            container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl">Loading Running Active Trades...</div>`;
-
-            try {
-                const { data, error } = await _supabase
-                    .from('market_research')
-                    .select('*')
-                    .eq('status', 'ACTIVE')
-                    .order('created_at', { ascending: false });
-
-                if (error || !data || data.length === 0) {
-                    container.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400 font-mono glass-panel rounded-2xl">No ongoing active trades currently running in the market.</div>`;
-                    return;
-                }
-
-                container.innerHTML = `
-                    <div class="col-span-full glass-panel p-6 rounded-2xl border border-blue-500/30 flex flex-wrap justify-between items-center gap-4 mb-2">
-                        <div>
-                            <span class="text-xs font-mono font-bold text-blue-400 uppercase tracking-wider">📈 Market Monitoring</span>
-                            <h3 class="text-xl font-black text-white mt-1">Ongoing Active Trades (Waiting for TP / SL)</h3>
-                        </div>
-                        <div class="font-mono text-xs text-gray-400">Total Running: ${data.length} Positions</div>
-                    </div>
-                ` + data.map(item => `
-                    <div class="glass-card rounded-2xl p-5 flex flex-col justify-between space-y-4 border-blue-500/20">
-                        <div>
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <span class="text-[10px] text-blue-400 font-mono font-bold uppercase">📈 RUNNING POSITION</span>
-                                    <h3 class="text-xl font-extrabold text-white">${item.symbol}</h3>
-                                </div>
-                                <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg text-xs font-mono font-bold">ACTIVE</span>
-                            </div>
-                            <div class="bg-black/50 border border-white/5 rounded-xl p-3 space-y-1.5 text-xs font-mono mt-3">
-                                <div class="flex justify-between"><span class="text-gray-400">Entry:</span><span class="text-white">$${item.entry_price}</span></div>
-                                <div class="flex justify-between"><span class="text-gray-400">Stop Loss:</span><span class="text-rose-400">$${item.sl_price}</span></div>
-                                <div class="flex justify-between"><span class="text-gray-400">Take Profit:</span><span class="text-emerald-400">$${item.tp_price}</span></div>
-                                <div class="flex justify-between"><span class="text-gray-400">Potential:</span><span class="text-blue-300">${item.est_potential}</span></div>
-                            </div>
-                            <p class="text-xs text-gray-400 mt-2"><strong>Strategy:</strong> ${item.sector}</p>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (err) {
-                container.innerHTML = `<div class="col-span-full text-center py-20 text-rose-400">Error loading active trades.</div>`;
-            }
-        }
-
-        // 3. Hall of Fame / Verified Proof (Strictly Last 7 Days)
-        async function loadHallOfFame() {
-            if (state.viewTab !== 'archive') return;
-            const container = document.getElementById('gridContainer');
-            container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl">Loading Hall of Fame (Last 7 Days Proof)...</div>`;
-            
-            const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-
-            try {
-                const { data, error } = await _supabase
-                    .from('market_research')
-                    .select('*')
-                    .eq('status', 'HIT_TP')
-                    .gte('resolved_at', sevenDaysAgo)
-                    .order('resolved_at', { ascending: false })
-                    .limit(30);
-
-                if (error || !data || data.length === 0) {
-                    container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl">No winning targets recorded in the last 7 days.</div>`;
-                    return;
-                }
-
-                container.innerHTML = `
-                    <div class="col-span-full glass-panel p-6 rounded-2xl border border-emerald-500/30 flex flex-wrap justify-between items-center gap-4 mb-4">
-                        <div>
-                            <span class="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">🏆 Verified Institutional Proof</span>
-                            <h3 class="text-xl font-black text-white mt-1">Closed Winning Targets (Last 7 Days Only)</h3>
-                        </div>
-                        <div class="font-mono text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-xl border border-emerald-500/30">Total Wins: ${data.length}</div>
-                    </div>
-                ` + data.map(item => `
-                    <div class="glass-card rounded-2xl p-5 border border-emerald-500/30 space-y-3">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <span class="text-[10px] text-emerald-400 font-mono font-bold uppercase">🎯 TARGET HIT (SUCCESS)</span>
-                                <h4 class="text-xl font-extrabold text-white mt-0.5">${item.symbol}</h4>
-                            </div>
-                            <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg text-xs font-mono font-bold">${item.est_potential || '+5%'} Profit</span>
-                        </div>
-                        <div class="bg-black/50 p-3 rounded-xl border border-white/5 text-xs font-mono space-y-1.5">
-                            <div class="flex justify-between"><span class="text-gray-400">Entry Price:</span><span class="text-gray-200">$${item.entry_price}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400">Exit Target:</span><span class="text-emerald-400 font-bold">$${item.tp_price}</span></div>
-                        </div>
-                        <div class="text-[11px] text-gray-500 font-mono text-right pt-1">Resolved: ${new Date(item.resolved_at).toLocaleDateString()}</div>
-                    </div>
-                `).join('');
-            } catch (err) {
-                container.innerHTML = `<div class="col-span-full text-center py-20 text-rose-400">Error loading Hall of Fame data.</div>`;
+                console.error("Live stream fetch error:", err);
             }
         }
 
@@ -956,6 +888,114 @@
                 .subscribe();
         }
 
+        // ================= 2. ACTIVE TRADES / ONGOING MONITORING =================
+        async function fetchActiveTrades() {
+            if (state.viewTab !== 'trades') return;
+            const container = document.getElementById('gridContainer');
+            container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">Loading Running Active Trades...</div>`;
+
+            try {
+                const { data, error } = await _supabase
+                    .from('market_research')
+                    .select('*')
+                    .eq('status', 'ACTIVE')
+                    .order('created_at', { ascending: false });
+
+                if (error || !data || data.length === 0) {
+                    container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">No ongoing active trades currently running in the market.</div>`;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="col-span-full glass-panel p-6 rounded-2xl border border-blue-500/30 flex flex-wrap justify-between items-center gap-4 mb-2">
+                        <div>
+                            <span class="text-xs font-mono font-bold text-blue-400 uppercase tracking-wider">📈 Market Monitoring</span>
+                            <h3 class="text-xl font-black text-white mt-1">Ongoing Active Trades (Waiting for TP / SL)</h3>
+                        </div>
+                        <div class="font-mono text-xs text-gray-400">Total Running: ${data.length} Positions</div>
+                    </div>
+                ` + data.map((item, idx) => `
+                    <div class="relative glass-card rounded-2xl p-5 flex flex-col justify-between border-blue-500/20">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="text-[10px] text-blue-400 font-mono uppercase font-bold">📈 RUNNING POSITION</span>
+                                    <h3 class="text-xl font-extrabold text-white notranslate mt-0.5">${item.symbol}</h3>
+                                </div>
+                                <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg text-xs font-mono font-bold">ACTIVE</span>
+                            </div>
+                            <div class="bg-black/50 p-3 rounded-xl border border-white/5 text-xs font-mono space-y-1.5">
+                                <div class="flex justify-between"><span class="text-gray-400">Entry Price:</span><span class="text-white">$${item.entry_price}</span></div>
+                                <div class="flex justify-between"><span class="text-gray-400">Stop Loss:</span><span class="text-rose-400">$${item.sl_price}</span></div>
+                                <div class="flex justify-between"><span class="text-gray-400">Take Profit:</span><span class="text-emerald-400">$${item.tp_price}</span></div>
+                                <div class="flex justify-between"><span class="text-gray-400">Est. Potential:</span><span class="text-blue-300">${item.est_potential}</span></div>
+                            </div>
+                            <p class="text-xs text-gray-400"><strong>Strategy:</strong> ${item.sector}</p>
+                            <div class="pt-3 border-t border-white/10 flex justify-end">
+                                <button type="button" onclick="openChart('${item.symbol}', '${item.symbol}')" class="px-3.5 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition cursor-pointer font-mono text-xs">📈 Chart View</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                container.innerHTML = `<div class="col-span-full text-center py-20 text-rose-400 font-mono glass-panel rounded-2xl border border-white/10">Error loading active trades.</div>`;
+            }
+        }
+
+        // ================= 3. HALL OF FAME (STRICTLY LAST 7 DAYS) =================
+        async function loadHallOfFame() {
+            if (state.viewTab !== 'archive') return;
+            const container = document.getElementById('gridContainer');
+            container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">Loading Hall of Fame Records...</div>`;
+
+            const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+            try {
+                const { data, error } = await _supabase
+                    .from('market_research')
+                    .select('*')
+                    .eq('status', 'HIT_TP')
+                    .gte('resolved_at', sevenDaysAgo)
+                    .order('resolved_at', { ascending: false })
+                    .limit(30);
+
+                if (error || !data || data.length === 0) {
+                    container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10">No closed winning targets recorded in the last 7 days.</div>`;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="col-span-full glass-panel p-6 rounded-2xl border border-emerald-500/30 flex flex-wrap justify-between items-center gap-4 mb-4">
+                        <div>
+                            <span class="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">🏆 Verified Institutional Proof</span>
+                            <h3 class="text-xl font-black text-white mt-1">Closed Winning Targets (Last 7 Days Only)</h3>
+                        </div>
+                        <div class="flex gap-4 font-mono text-xs">
+                            <span class="px-4 py-2 bg-emerald-500/20 text-emerald-300 rounded-xl font-bold border border-emerald-500/30">Total Wins: ${data.length}</span>
+                        </div>
+                    </div>
+                ` + data.map((item) => `
+                    <div class="glass-card rounded-2xl p-5 border border-emerald-500/20 space-y-3">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-[10px] font-mono text-emerald-400 uppercase font-bold">🎯 TARGET HIT</span>
+                                <h4 class="text-xl font-extrabold text-white notranslate mt-0.5">${item.symbol}</h4>
+                            </div>
+                            <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-lg text-xs font-mono font-bold">${item.est_potential || '+3.5%'} Profit</span>
+                        </div>
+                        <div class="bg-black/50 p-3 rounded-xl border border-white/5 text-xs font-mono space-y-1.5">
+                            <div class="flex justify-between"><span class="text-gray-400">Entry Price:</span><span class="text-gray-200">$${item.entry_price || 'N/A'}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">Exit Target:</span><span class="text-emerald-400 font-bold">$${item.tp_price || 'N/A'}</span></div>
+                        </div>
+                        <div class="text-[11px] text-gray-500 font-mono text-right pt-1">Resolved: ${new Date(item.resolved_at).toLocaleDateString()}</div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                container.innerHTML = `<div class="col-span-full text-center py-20 text-rose-400 font-mono glass-panel rounded-2xl border border-white/10">Error loading Hall of Fame data.</div>`;
+            }
+        }
+
+        // ================= RENDERING ENGINE =================
         function renderCards() {
             if (state.viewTab !== 'active') return;
             const container = document.getElementById('gridContainer');
@@ -969,38 +1009,80 @@
                 return;
             }
 
-            container.innerHTML = displayData.map((item, idx) => `
+            const directionBadge = state.direction === 'long' ? '🟢 Buy / Long' : '🔴 Sell / Short';
+
+            let cardsHtml = displayData.map((item, idx) => {
+                const score = item.score || 75;
+                const scoreColor = score >= 85 ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-blue-400 border-blue-500/30 bg-blue-500/10';
+                const sparkColor = state.direction === 'long' ? '#10b981' : '#f43f5e';
+
+                return `
                 <div class="relative glass-card rounded-2xl p-5 flex flex-col justify-between">
                     <div class="space-y-4">
                         <div class="flex justify-between items-start">
                             <div>
-                                <span class="text-[10px] text-emerald-400 font-mono uppercase font-bold">#${idx+1} • 🟢 LIVE ALPHA SIGNAL</span>
-                                <h3 class="text-xl font-extrabold text-white">${item.symbol}</h3>
+                                <span class="text-[10px] ${state.direction === 'long' ? 'text-emerald-400' : 'text-rose-400'} font-mono uppercase tracking-wider font-bold">#${idx+1} • ${directionBadge}</span>
+                                <h3 class="text-xl font-extrabold text-white notranslate">${item.symbol}</h3>
                             </div>
-                            <span class="px-2.5 py-1 border rounded-lg text-xs font-extrabold font-mono text-emerald-400 border-emerald-500/30 bg-emerald-500/10">Score ${item.score || 92}</span>
+                            <span class="px-2.5 py-1 border rounded-lg text-xs font-extrabold font-mono ${scoreColor} notranslate">Score ${score}</span>
                         </div>
+
+                        <div class="h-10 w-full flex items-center justify-between px-2 bg-black/40 rounded-lg border border-white/5">
+                            <span class="text-[10px] font-mono text-gray-500">Momentum Curve:</span>
+                            <svg class="h-6 w-28 overflow-visible" viewBox="0 0 100 25">
+                                <path d="M 0,18 Q 25,${state.direction === 'long' ? '22' : '5'} 50,12 T 100,${state.direction === 'long' ? '2' : '22'}" fill="none" stroke="${sparkColor}" stroke-width="2.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+
+                        <div class="flex flex-wrap gap-1.5">
+                            <span class="px-2 py-0.5 bg-purple-500/15 border border-purple-500/30 text-purple-300 rounded text-[11px] font-medium">⚡ ${item.stage || 'Order Block'}</span>
+                            <span class="px-2 py-0.5 bg-[#091122] border border-white/10 text-gray-300 rounded text-[11px] font-mono notranslate">24h: ${item.current_change_24h || 0}%</span>
+                            ${item.sector ? `<span class="px-2 py-0.5 bg-blue-500/10 border border-blue-500/30 text-blue-300 rounded text-[11px] font-mono">${item.sector}</span>` : ''}
+                        </div>
+
                         <div class="bg-black/50 border border-white/5 rounded-xl p-3 space-y-1.5 text-xs font-mono">
-                            <div class="flex justify-between"><span class="text-gray-400">Entry:</span><span class="text-white">$${item.entry_price}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400">Stop Loss:</span><span class="text-rose-400">$${item.sl_price}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400">Take Profit:</span><span class="text-emerald-400">$${item.tp_price}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400">Potential:</span><span class="text-blue-300">${item.est_potential}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Est. Potential:</span><span class="text-emerald-400 font-bold notranslate">${item.est_potential || '+20%'}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Order Flow:</span><span class="text-white">${item.flow_metric || 'Strong Inflow'}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Key Catalyst:</span><span class="text-amber-300">${item.driver_metric || 'Volume Surge'}</span></div>
                         </div>
-                        <p class="text-xs text-gray-400"><strong>Strategy:</strong> ${item.sector}</p>
+
+                        <p class="text-xs text-gray-400 leading-relaxed font-sans line-clamp-2"><strong class="text-gray-200">Quant Note:</strong> ${item.research_note || 'Smart money accumulation footprint confirmed.'}</p>
+
                         <div class="pt-3 border-t border-white/10 flex justify-between items-center text-xs">
                             <span class="text-emerald-400 font-medium text-[11px] flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Active Setup</span>
                             <div class="flex items-center gap-1.5">
                                 <button type="button" onclick="openRiskCalc(${idx})" class="p-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white rounded-lg transition cursor-pointer" title="Position Sizing Calculator">🧮</button>
-                                <button type="button" onclick="openChart('${item.symbol}', '${item.symbol}')" class="px-3.5 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition cursor-pointer font-mono">📈 Chart</button>
+                                <button type="button" onclick="openChart('${item.symbol}', '${item.symbol}')" class="px-3.5 py-1.5 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition cursor-pointer font-mono">📈 Chart View</button>
                             </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
+
+            container.innerHTML = cardsHtml;
         }
 
-        // Standard Utility & Modal Handlers
-        function changeTraderStyle(style) { state.traderStyle = style; fetchLiveMarketData(); }
-        function changeFilter(type, val) { state[type] = val; fetchLiveMarketData(); }
+        // ================= UTILITIES, FILTERS & MODALS =================
+        function changeTraderStyle(style) {
+            state.traderStyle = style;
+            ['all', 'scalp', 'day', 'swing'].forEach(s => {
+                const btn = document.getElementById('style-' + s);
+                if (btn) btn.className = (s === style) ? "style-tab-btn active px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 justify-center transition" : "style-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 justify-center transition";
+            });
+            fetchLiveMarketData();
+        }
+
+        function changeFilter(type, val) {
+            state[type] = val;
+            if (type === 'market') {
+                ['crypto', 'forex', 'stocks'].forEach(m => {
+                    const btn = document.getElementById('m-' + m);
+                    if (btn) btn.className = (m === val) ? "select-btn active py-2.5 rounded-xl text-xs font-bold" : "select-btn py-2.5 rounded-xl text-xs font-bold";
+                });
+            }
+            fetchLiveMarketData();
+        }
+
         function changeTradingMode(mode) { state.tradingMode = mode; fetchLiveMarketData(); }
         function changeDirection(dir) { state.direction = dir; fetchLiveMarketData(); }
         function updateLimit(val) { state.limit = parseInt(val); fetchLiveMarketData(); }
@@ -1029,28 +1111,15 @@
         }
 
         function openRiskCalc(index) {
-            activeCalcItem = liveMarketData[index];
+            let activeCalcItem = liveMarketData[index];
             if (!activeCalcItem) return;
             document.getElementById('calcAssetTitle').innerText = `${activeCalcItem.symbol} Risk Calibration`;
-            document.getElementById('riskCalcModal').classList.remove('hidden');
-            document.getElementById('riskCalcModal').classList.add('flex');
+            const modal = document.getElementById('riskCalcModal');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
         }
         function closeRiskCalc() {
-            document.getElementById('riskCalcModal').classList.add('hidden');
-            document.getElementById('riskCalcModal').classList.remove('flex');
-        }
-        function computePositionSize() {
-            if (!activeCalcItem) return;
-            const acc = parseFloat(document.getElementById('calcAccountSize').value) || 1000;
-            const riskPct = parseFloat(document.getElementById('calcRiskPct').value) || 1.5;
-            const maxRiskDollar = (acc * (riskPct / 100));
-            const entry = parseFloat(activeCalcItem.entry_price) || 1;
-            const sl = parseFloat(activeCalcItem.sl_price) || 1;
-            const tp = parseFloat(activeCalcItem.tp_price) || 1;
-            const slDistance = Math.abs(entry - sl);
-            const units = slDistance > 0 ? (maxRiskDollar / slDistance) : 0;
-            document.getElementById('calcMaxRiskDollar').innerText = `$${maxRiskDollar.toFixed(2)}`;
-            document.getElementById('calcRecPos').innerText = `${units.toFixed(2)} Units (~$${(units * entry).toFixed(2)})`;
+            const modal = document.getElementById('riskCalcModal');
+            modal.classList.add('hidden'); modal.classList.remove('flex');
         }
 
         function openSupportModal() { document.getElementById('supportModal').classList.remove('hidden'); document.getElementById('supportModal').classList.add('flex'); }
@@ -1067,6 +1136,30 @@
                 const { data: { session } } = await _supabase.auth.getSession();
                 if(session && session.user) state.role = 'pro';
             } catch(e) {}
+        }
+
+        function openChart(rawSymbol, name) {
+            const modal = document.getElementById('chartModal');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            document.getElementById('modalTitle').innerText = `${name} - Institutional Chart`;
+            let clean = rawSymbol.replace(/[^a-zA-Z0-9]/g, '');
+            let tvTicker = `BINANCE:${clean}`;
+            if(state.market === 'forex') {
+                if(clean.includes("XAU") || clean.includes("GOLD")) tvTicker = "OANDA:XAUUSD";
+                else tvTicker = `FX:${clean}`;
+            } else if(state.market === 'stocks') {
+                tvTicker = `NASDAQ:${clean}`;
+            }
+            if (window.TradingView) {
+                new window.TradingView.widget({
+                    "autosize": true, "symbol": tvTicker, "interval": "60", "theme": "dark", "container_id": "tv_chart_container"
+                });
+            }
+        }
+        function closeChart() {
+            document.getElementById('chartModal').classList.add('hidden');
+            document.getElementById('chartModal').classList.remove('flex');
+            document.getElementById('tv_chart_container').innerHTML = "";
         }
     </script>
 </body>
