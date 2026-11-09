@@ -336,6 +336,7 @@
 
         <!-- Terminal Control Panels -->
         <div id="controlPanel" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <!-- 1. Asset Universe -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
                 <div>
                     <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">1. Asset Universe</label>
@@ -364,6 +365,7 @@
                 </div>
             </div>
 
+            <!-- 2. Projection Horizon -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
                 <div>
                     <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">2. Horizon Projection</label>
@@ -391,6 +393,7 @@
                 </div>
             </div>
 
+            <!-- 3. Shortlist Output Limit -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
                 <div>
                     <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">3. Output Shortlist Limit</label>
@@ -580,7 +583,7 @@
 
     <!-- Super Account Dashboard Modal (With Billing, Referral, Security & Alerts) -->
     <div id="userDashboardModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-[75] p-4">
-        <div class="glass-panel w-full max-w-2xl rounded-3xl p-6 sm:p-8 border border-blue-500/40 shadow-2xl relative space-y-6 font-mono max-h-[90vh] overflow-y-auto">
+        <div class="glass-panel w-full max-w-xl rounded-3xl p-6 sm:p-8 border border-blue-500/40 shadow-2xl relative space-y-6 font-mono max-h-[90vh] overflow-y-auto">
             <button type="button" onclick="closeUserDashboard()" class="absolute top-5 right-5 text-gray-400 hover:text-white text-xl font-bold cursor-pointer">&times;</button>
             
             <div class="flex items-center gap-3 border-b border-white/10 pb-4">
@@ -612,11 +615,11 @@
 
             <!-- নতুন ফিচার ট্যাব ও সেকশন (Billing, Referral, Security, Alerts) -->
             <div class="space-y-4 pt-2 border-t border-white/10 text-xs">
-                <div class="flex gap-2 border-b border-white/10 pb-2">
-                    <button onclick="switchDashTab('billing')" id="dtab-billing" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition">💳 Billing History</button>
-                    <button onclick="switchDashTab('referral')" id="dtab-referral" class="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 font-bold transition">🎁 Referral Center</button>
-                    <button onclick="switchDashTab('security')" id="dtab-security" class="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 font-bold transition">🔒 Security & Sessions</button>
-                    <button onclick="switchDashTab('alerts')" id="dtab-alerts" class="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 font-bold transition">🔔 Alert Preferences</button>
+                <div class="flex gap-2 border-b border-white/10 pb-2 flex-wrap">
+                    <button onclick="switchDashTab('billing')" id="dtab-billing" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer">💳 Billing</button>
+                    <button onclick="switchDashTab('referral')" id="dtab-referral" class="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 font-bold transition cursor-pointer">🎁 Referral</button>
+                    <button onclick="switchDashTab('security')" id="dtab-security" class="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 font-bold transition cursor-pointer">🔒 Security</button>
+                    <button onclick="switchDashTab('alerts')" id="dtab-alerts" class="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 font-bold transition cursor-pointer">🔔 Alerts</button>
                 </div>
 
                 <!-- 1. Billing & Payment History -->
@@ -629,7 +632,7 @@
                     <p class="text-gray-300">Share your referral link and earn free Pro subscription days!</p>
                     <div class="flex gap-2">
                         <input type="text" id="refLinkInput" readonly class="w-full bg-black border border-white/20 text-emerald-400 px-3 py-2 rounded-lg text-xs" value="https://greatnexa.com/?ref=loading">
-                        <button onclick="copyRefLink()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg shrink-0">Copy Link</button>
+                        <button onclick="copyRefLink()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg shrink-0 cursor-pointer">Copy</button>
                     </div>
                     <p class="text-[11px] text-gray-400">Total Successful Referrals: <b id="refCountVal" class="text-white">0</b></p>
                 </div>
@@ -638,7 +641,7 @@
                 <div id="dpanel-security" class="space-y-3 hidden bg-black/40 p-4 rounded-xl border border-white/5 font-mono text-xs">
                     <div class="flex justify-between items-center"><span class="text-gray-300">Current Session Device:</span><span class="text-emerald-400 font-bold">Web Browser / Secure Client</span></div>
                     <div class="flex justify-between items-center"><span class="text-gray-300">Two-Factor Auth (2FA):</span><span class="text-amber-400">Disabled (Optional)</span></div>
-                    <button onclick="logoutAllSessions()" class="w-full py-2 bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 rounded-xl font-bold transition">Log Out All Other Devices</button>
+                    <button onclick="logoutAllSessions()" class="w-full py-2 bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 rounded-xl font-bold transition cursor-pointer">Log Out All Other Devices</button>
                 </div>
 
                 <!-- 4. Custom Alert Preferences -->
@@ -646,7 +649,7 @@
                     <label class="flex items-center justify-between cursor-pointer"><span class="text-gray-300">Crypto Squeeze & Pump Alerts</span><input type="checkbox" id="prefCrypto" checked class="w-4 h-4 text-blue-600 rounded"></label>
                     <label class="flex items-center justify-between cursor-pointer"><span class="text-gray-300">Forex G10 Interbank Volatility Alerts</span><input type="checkbox" id="prefForex" class="w-4 h-4 text-blue-600 rounded"></label>
                     <label class="flex items-center justify-between cursor-pointer"><span class="text-gray-300">Instant Email Dispatch Notifications</span><input type="checkbox" id="prefEmail" checked class="w-4 h-4 text-blue-600 rounded"></label>
-                    <button onclick="saveAlertPreferences()" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition">Save Preferences</button>
+                    <button onclick="saveAlertPreferences()" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition cursor-pointer">Save Preferences</button>
                 </div>
             </div>
 
@@ -665,10 +668,10 @@
                     <a id="dashVipTelegramBtn" href="https://t.me/+VA3Yu45-zosyOTRl" target="_blank" rel="noopener noreferrer" class="hidden py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-center transition items-center justify-center gap-1.5 shadow-md shadow-blue-600/30">
                         <span>✈️</span> VIP Telegram
                     </a>
-                    <button type="button" onclick="closeUserDashboard(); openForgotPasswordModal();" class="py-2.5 px-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 border border-white/10 font-bold transition flex items-center justify-center gap-1.5">
+                    <button type="button" onclick="closeUserDashboard(); openForgotPasswordModal();" class="py-2.5 px-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 border border-white/10 font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
                         <span>🔑</span> Reset Password
                     </button>
-                    <button type="button" onclick="closeUserDashboard(); openSupportModal();" class="py-2.5 px-3 rounded-xl bg-purple-600/30 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/40 font-bold transition flex items-center justify-center gap-1.5">
+                    <button type="button" onclick="closeUserDashboard(); openSupportModal();" class="py-2.5 px-3 rounded-xl bg-purple-600/30 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/40 font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
                         <span>🎫</span> New Ticket
                     </button>
                 </div>
@@ -1063,17 +1066,16 @@
             document.getElementById('supportModal').classList.remove('flex');
         }
 
-        // সুপার ড্যাশবোর্ড ট্যাব সুইচিং ফাংশন
         function switchDashTab(tabName) {
             ['billing', 'referral', 'security', 'alerts'].forEach(t => {
                 const btn = document.getElementById('dtab-' + t);
                 const panel = document.getElementById('dpanel-' + t);
                 if (btn && panel) {
                     if (t === tabName) {
-                        btn.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition";
+                        btn.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer";
                         panel.classList.remove('hidden');
                     } else {
-                        btn.className = "px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 font-bold transition";
+                        btn.className = "px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 font-bold transition cursor-pointer";
                         panel.classList.add('hidden');
                     }
                 }
@@ -2117,106 +2119,6 @@
                     }, 800);
                 }
             }
-        }
-
-        async function checkUserSession() {
-            const headerSec = document.getElementById('authHeaderSection');
-            if(!_supabase) return;
-
-            try {
-                const { data: { session } } = await _supabase.auth.getSession();
-                if(session && session.user) {
-                    currentUserEmail = session.user.email;
-                    try {
-                        await _supabase.rpc('check_subscription_status', { p_user_id: session.user.id });
-                    } catch(e) {}
-
-                    let userTier = 'free';
-                    let daysLeft = null;
-                    const { data } = await _supabase
-                        .from('user_profiles')
-                        .select('tier, expires_at, status')
-                        .eq('id', session.user.id)
-                        .single();
-
-                    if(data && data.status === 'banned') {
-                        await _supabase.auth.signOut();
-                        alert("Your account is banned.");
-                        location.reload();
-                        return;
-                    }
-
-                    if(data && data.tier) {
-                        userTier = data.tier.toLowerCase();
-                        if(data.expires_at) {
-                            const diff = new Date(data.expires_at) - new Date();
-                            daysLeft = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-                        }
-                    }
-
-                    state.role = (userTier === 'vip') ? 'vip' : ((userTier === 'pro') ? 'pro' : 'free');
-                    window.userSubscriptionDays = daysLeft !== null ? daysLeft : (state.role === 'vip' ? 730 : (state.role === 'pro' ? 30 : 365));
-
-                    let tierBadge = '';
-                    const guardBox = document.getElementById('limitGuardBox');
-                    const guardText = document.getElementById('limitGuardText');
-
-                    if(state.role === 'vip') {
-                        tierBadge = `<span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/40 px-2.5 py-0.5 rounded-full font-bold notranslate font-mono cursor-pointer" onclick="openUserDashboard()">VIP</span>`;
-                        state.limit = 100;
-                        if(guardBox && guardText) {
-                            guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-amber-950/30 text-[11px] font-mono text-amber-300 space-y-1";
-                            guardText.innerText = "VIP Institutional Membership Unlocked: Full Alpha Access.";
-                        }
-                    } else if(state.role === 'pro') {
-                        tierBadge = `<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/40 px-2.5 py-0.5 rounded-full font-bold notranslate font-mono cursor-pointer" onclick="openUserDashboard()">PRO</span>`;
-                        state.limit = 100;
-                        if(guardBox && guardText) {
-                            guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-blue-950/30 text-[11px] font-mono text-blue-300 space-y-1";
-                            guardText.innerText = "Pro Trader Pass Active: Unlocked Alpha Setups.";
-                        }
-                    } else {
-                        tierBadge = '';
-                        state.limit = 3;
-                        if(guardBox && guardText) {
-                            guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-black/30 text-[11px] font-mono text-gray-400 space-y-1";
-                            guardText.innerText = "Free tier enforces Top 3 setups automatically. Unlock all setups with Pro/VIP membership.";
-                        }
-                    }
-
-                    const select = document.getElementById('shortlistSelect');
-                    if(select) select.value = String(state.limit);
-
-                    const vipTelegramBtn = (state.role === 'pro' || state.role === 'vip') 
-                        ? `<a href="https://t.me/+VA3Yu45-zosyOTRl" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold transition font-mono flex items-center gap-1.5 shadow-lg shadow-blue-600/30 border border-blue-400/30">
-                           <span>✈️</span> Join VIP Channel
-                           </a>` 
-                        : '';
-
-                    headerSec.innerHTML = `
-                        <div class="flex items-center gap-2.5 flex-wrap">
-                            <button type="button" onclick="openUserDashboard()" class="px-3.5 py-2 rounded-xl bg-[#131d33] hover:bg-blue-600/20 text-white text-xs font-bold transition font-mono border border-white/10 flex items-center gap-1.5 shadow-inner cursor-pointer">
-                                📊 Account Dashboard
-                            </button>
-                            ${tierBadge}
-                            ${vipTelegramBtn}
-                            <button type="button" onclick="handleLogout()" class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition cursor-pointer font-mono shadow-lg shadow-rose-600/20">Logout</button>
-                        </div>
-                    `;
-                } else {
-                    currentUserEmail = '';
-                    headerSec.innerHTML = `<button type="button" onclick="openAuthModal('login')" class="text-blue-400 font-bold hover:underline cursor-pointer">Login / Signup</button>`;
-                    state.role = 'free';
-                    state.limit = 3;
-                    window.userSubscriptionDays = 365;
-                }
-            } catch (err) {}
-            fetchLiveMarketData();
-        }
-
-        async function handleLogout() {
-            if(_supabase) await _supabase.auth.signOut();
-            checkUserSession();
         }
     </script>
 
