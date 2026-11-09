@@ -212,6 +212,104 @@
             </div>
         </div>
 
+        <!-- নতুন ফিচার: লাইভ মার্কেট সিগন্যাল পাবলিশার ও ম্যানেজমেন্ট -->
+        <div class="glass-panel p-5 sm:p-6 rounded-2xl border border-purple-500/30 space-y-4">
+            <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                <div>
+                    <h3 class="text-base font-bold text-white font-mono flex items-center gap-2">
+                        <span>⚡</span> Market Research & Quant Signal Publisher
+                    </h3>
+                    <p class="text-xs text-gray-400 font-mono">ইউজার টার্মিনালে লাইভ হাই-কনভিকশন সেটআপ পাবলিশ ও ডিলিট করুন।</p>
+                </div>
+                <button type="button" onclick="toggleSignalForm()" id="btnToggleSignalForm" class="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold font-mono transition cursor-pointer">
+                    + Post New Signal
+                </button>
+            </div>
+
+            <!-- সিগন্যাল ক্রিয়েশন ফর্ম -->
+            <form id="newSignalForm" onsubmit="handlePublishSignal(event)" class="hidden p-4 rounded-xl bg-black/40 border border-white/10 space-y-3 font-mono text-xs">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <div>
+                        <label class="block text-gray-400 text-[10px] mb-1">Asset Symbol</label>
+                        <input type="text" id="sigSymbol" required placeholder="e.g. BTCUSDT, XAUUSD" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 uppercase">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-[10px] mb-1">Market Universe</label>
+                        <select id="sigMarketType" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 [&>option]:bg-[#0b1324]">
+                            <option value="crypto">Crypto</option>
+                            <option value="forex">Forex & Gold</option>
+                            <option value="stocks">US Equities</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-[10px] mb-1">Direction</label>
+                        <select id="sigDirection" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 [&>option]:bg-[#0b1324]">
+                            <option value="long">🟢 Long / Buy</option>
+                            <option value="short">🔴 Short / Sell</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-[10px] mb-1">Trader Style / Horizon</label>
+                        <select id="sigHorizon" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 [&>option]:bg-[#0b1324]">
+                            <option value="24h">Intraday (24H / Scalp)</option>
+                            <option value="1w">1 Week (Day Trade)</option>
+                            <option value="1m">1 Month (Swing Trade)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <div>
+                        <label class="block text-gray-400 text-[10px] mb-1">Entry Price</label>
+                        <input type="number" step="any" id="sigEntry" required placeholder="98500" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-[10px] mb-1">Take Profit (TP)</label>
+                        <input type="number" step="any" id="sigTP" required placeholder="104200" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-[10px] mb-1">Stop Loss (SL)</label>
+                        <input type="number" step="any" id="sigSL" required placeholder="96200" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-[10px] mb-1">Model Score (0-100)</label>
+                        <input type="number" id="sigScore" value="88" min="50" max="99" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <input type="text" id="sigStage" placeholder="Stage (e.g. Liquidity Sweep, Order Block)" value="Liquidity Sweep" class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2">
+                    <input type="text" id="sigNote" placeholder="Quant Note (e.g. Dark pool accumulation confirmed.)" value="Dark pool accumulation footprint confirmed." class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2">
+                </div>
+
+                <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold rounded-xl transition cursor-pointer shadow-lg">
+                    🚀 Broadcast Signal to Terminal
+                </button>
+            </form>
+
+            <!-- সিগন্যাল লিস্ট টেবিল -->
+            <div class="overflow-x-auto rounded-xl border border-white/10 max-h-60 overflow-y-auto">
+                <table class="w-full text-left text-xs text-gray-300 font-mono">
+                    <thead class="bg-[#0b1324] text-gray-400 uppercase text-[10px] border-b border-white/10 sticky top-0">
+                        <tr>
+                            <th class="p-2.5">Symbol</th>
+                            <th class="p-2.5">Universe</th>
+                            <th class="p-2.5">Dir</th>
+                            <th class="p-2.5">Entry / TP / SL</th>
+                            <th class="p-2.5">Score</th>
+                            <th class="p-2.5">Status</th>
+                            <th class="p-2.5 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="signalsTableBody" class="divide-y divide-white/5">
+                        <tr>
+                            <td colspan="7" class="text-center p-4 text-gray-500">Loading active signals...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- Analytics & Coupons Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-2 glass-panel p-5 rounded-2xl border border-white/10">
@@ -252,15 +350,18 @@
             </div>
         </div>
 
-        <!-- ট্রানজেকশন ও অডিট লগ (Audit Logs) -->
+        <!-- ট্রানজেকশন ও অডিট লগ -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 p-5 space-y-4">
-            <h3 class="text-sm font-bold text-white font-mono">📜 Admin Audit Trail & Transaction Logs</h3>
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-bold text-white font-mono">📜 Admin Audit Trail & Transaction Logs</h3>
+                <button type="button" onclick="clearAuditLogs()" class="text-[10px] text-rose-400 hover:underline font-mono">Clear Logs</button>
+            </div>
             <div id="auditLogsContainer" class="space-y-2 font-mono text-xs max-h-48 overflow-y-auto">
                 <p class="text-gray-400">Loading audit logs...</p>
             </div>
         </div>
 
-        <!-- সাপোর্ট সিস্টেম (Support Desk) -->
+        <!-- সাপোর্ট সিস্টেম -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 p-5 space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-sm font-bold text-white font-mono">🎫 Customer Support Helpdesk Tickets</h3>
@@ -385,6 +486,7 @@
             setupOrdersRealtimeListener();
             setupTicketsRealtimeListener();
             setupUsersRealtimeListener();
+            setupSignalsRealtimeListener();
         }
 
         function showAuthModal(errMsg = '') {
@@ -406,6 +508,7 @@
             await Promise.all([
                 loadOrders(),
                 loadUsersDirectory(),
+                loadLiveSignals(),
                 loadCoupons(),
                 loadSupportTickets(),
                 loadAuditLogs()
@@ -612,6 +715,108 @@
         }
 
         // ==========================================
+        // মার্কেট সিগন্যাল পাবলিশ ও ম্যানেজমেন্ট লজিক
+        // ==========================================
+        function toggleSignalForm() {
+            const form = document.getElementById('newSignalForm');
+            const btn = document.getElementById('btnToggleSignalForm');
+            if (form.classList.contains('hidden')) {
+                form.classList.remove('hidden');
+                btn.innerText = "✕ Close Form";
+            } else {
+                form.classList.add('hidden');
+                btn.innerText = "+ Post New Signal";
+            }
+        }
+
+        async function loadLiveSignals() {
+            const tbody = document.getElementById('signalsTableBody');
+            const { data, error } = await _supabase
+                .from('market_research')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(50);
+
+            if (error || !data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center p-4 text-gray-500">No active signals found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(s => `
+                <tr class="hover:bg-white/[0.02] transition">
+                    <td class="p-2.5 font-bold text-white">${s.symbol}</td>
+                    <td class="p-2.5 uppercase text-gray-400 text-[10px]">${s.market_type}</td>
+                    <td class="p-2.5 font-bold ${s.direction === 'long' ? 'text-emerald-400' : 'text-rose-400'} uppercase">${s.direction}</td>
+                    <td class="p-2.5 text-gray-300">${s.entry_price || '-'} / <span class="text-emerald-400">${s.tp_price || '-'}</span> / <span class="text-rose-400">${s.sl_price || '-'}</span></td>
+                    <td class="p-2.5 font-bold text-blue-400">${s.score || '-'}</td>
+                    <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${s.status === 'HIT_TP' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-blue-500/20 text-blue-300'}">${s.status || 'ACTIVE'}</span></td>
+                    <td class="p-2.5 text-right space-x-1">
+                        <button onclick="deleteSignal('${s.id}', '${s.symbol}')" class="text-rose-400 hover:text-white text-[10px] font-bold px-2 py-1 rounded bg-rose-600/20 hover:bg-rose-600 transition">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function handlePublishSignal(e) {
+            e.preventDefault();
+            const symbol = document.getElementById('sigSymbol').value.trim().toUpperCase();
+            const market_type = document.getElementById('sigMarketType').value;
+            const direction = document.getElementById('sigDirection').value;
+            const horizon = document.getElementById('sigHorizon').value;
+            const entry_price = parseFloat(document.getElementById('sigEntry').value);
+            const tp_price = parseFloat(document.getElementById('sigTP').value);
+            const sl_price = parseFloat(document.getElementById('sigSL').value);
+            const score = parseInt(document.getElementById('sigScore').value) || 85;
+            const stage = document.getElementById('sigStage').value.trim();
+            const research_note = document.getElementById('sigNote').value.trim();
+
+            const est_potential = '+' + Math.abs(Math.round(((tp_price - entry_price) / entry_price) * 100)) + '%';
+
+            const { error } = await _supabase.from('market_research').insert([{
+                symbol,
+                market_type,
+                direction,
+                projection_horizon: horizon,
+                entry_price,
+                tp_price,
+                sl_price,
+                score,
+                stage,
+                research_note,
+                est_potential,
+                status: 'ACTIVE'
+            }]);
+
+            if (error) {
+                alert("Failed to publish signal: " + error.message);
+            } else {
+                await logAdminAction('POST_SIGNAL', `Published signal: ${symbol} (${direction.toUpperCase()})`);
+                alert("✔ New Market Setup Broadcasted Live to Terminal!");
+                document.getElementById('sigSymbol').value = '';
+                toggleSignalForm();
+                loadLiveSignals();
+                loadAuditLogs();
+            }
+        }
+
+        async function deleteSignal(id, symbol) {
+            if(!confirm(`Delete signal ${symbol}?`)) return;
+            const { error } = await _supabase.from('market_research').delete().eq('id', id);
+            if (!error) {
+                await logAdminAction('DELETE_SIGNAL', `Deleted signal: ${symbol}`);
+                loadLiveSignals();
+                loadAuditLogs();
+            }
+        }
+
+        function setupSignalsRealtimeListener() {
+            _supabase
+                .channel('admin_signals_channel')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'market_research' }, () => { loadLiveSignals(); })
+                .subscribe();
+        }
+
+        // ==========================================
         // Orders & Support Desk Logic
         // ==========================================
         async function loadOrders() {
@@ -655,35 +860,43 @@
 
             tbody.innerHTML = ordersList.map(o => {
                 const isApproved = o.status === 'approved';
-                const isNew = !isApproved;
-                if(isApproved) {
+                const isRejected = o.status === 'rejected';
+                const isPending = !isApproved && !isRejected;
+
+                if (isApproved) {
                     approvedCount++;
                     const dStr = new Date(o.created_at).toLocaleDateString();
                     chartDates[dStr] = (chartDates[dStr] || 0) + 1;
-                } else {
+                } else if (isPending) {
                     pendingCount++;
                 }
 
                 const encodedOrder = encodeURIComponent(JSON.stringify(o));
                 const contactPhone = o.sender_phone || o.phone || o.whatsapp || 'N/A';
 
+                let statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 new-order-badge">PENDING</span>`;
+                if (isApproved) statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">APPROVED</span>`;
+                if (isRejected) statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/40">REJECTED</span>`;
+
                 return `
-                <tr class="hover:bg-white/[0.02] transition ${isNew ? 'bg-amber-500/[0.04]' : ''}">
+                <tr class="hover:bg-white/[0.02] transition ${isPending ? 'bg-amber-500/[0.04]' : ''}">
                     <td class="p-4 text-gray-400">${new Date(o.created_at).toLocaleDateString()}</td>
                     <td class="p-4 text-white font-bold select-all">${o.email || o.customer_name}<br><span class="text-[10px] text-gray-400 font-normal">Phone: ${contactPhone}</span></td>
                     <td class="p-4 text-blue-400 font-bold">${o.product_name} (${o.price})</td>
                     <td class="p-4 text-emerald-400 select-all font-bold">${o.trx_id}</td>
-                    <td class="p-4">
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${isApproved ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40 new-order-badge'}">
-                            ${(o.status || 'pending').toUpperCase()}
-                        </span>
-                    </td>
-                    <td class="p-4 text-right space-x-2">
-                        ${!isApproved ? `
-                        <button type="button" onclick="openDeliveryModal('${encodedOrder}')" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition cursor-pointer shadow-md">
-                            Approve & Send
-                        </button>` : `
-                        <span class="text-emerald-400 text-xs font-bold">✔ Delivered</span>`}
+                    <td class="p-4">${statusBadge}</td>
+                    <td class="p-4 text-right space-x-1.5 whitespace-nowrap">
+                        ${isPending ? `
+                        <button type="button" onclick="openDeliveryModal('${encodedOrder}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition cursor-pointer shadow-md">
+                            Approve
+                        </button>
+                        <button type="button" onclick="handleRejectOrder('${o.id}', '${o.trx_id}')" class="px-3 py-1.5 bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 font-bold rounded-lg text-xs transition cursor-pointer">
+                            Reject
+                        </button>
+                        ` : `
+                        <span class="text-gray-400 text-xs font-semibold mr-2">${(o.status || '').toUpperCase()}</span>
+                        `}
+                        <button type="button" onclick="handleDeleteOrder('${o.id}', '${o.trx_id}')" class="text-gray-500 hover:text-rose-400 p-1 font-bold text-xs" title="Delete record">🗑️</button>
                     </td>
                 </tr>
                 `;
@@ -693,6 +906,26 @@
             document.getElementById('statPending').innerText = String(pendingCount);
 
             renderRevenueChart(chartDates);
+        }
+
+        async function handleRejectOrder(orderId, trxId) {
+            if(!confirm(`Are you sure you want to reject order ${trxId}?`)) return;
+            const { error } = await _supabase.from('orders').update({ status: 'rejected' }).eq('id', orderId);
+            if(!error) {
+                await logAdminAction('REJECT_ORDER', `Rejected order TrxID: ${trxId}`);
+                loadOrders();
+                loadAuditLogs();
+            }
+        }
+
+        async function handleDeleteOrder(orderId, trxId) {
+            if(!confirm(`Permanently delete order record ${trxId}?`)) return;
+            const { error } = await _supabase.from('orders').delete().eq('id', orderId);
+            if(!error) {
+                await logAdminAction('DELETE_ORDER', `Deleted order TrxID: ${trxId}`);
+                loadOrders();
+                loadAuditLogs();
+            }
         }
 
         function filterOrdersTable() {
@@ -821,6 +1054,12 @@
                     <span class="text-[10px] text-gray-500 font-mono">${new Date(l.created_at).toLocaleString()}</span>
                 </div>
             `).join('');
+        }
+
+        async function clearAuditLogs() {
+            if (!confirm("Clear all audit log entries?")) return;
+            await _supabase.from('audit_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+            loadAuditLogs();
         }
 
         async function handleCreateCoupon(e) {
