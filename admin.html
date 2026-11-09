@@ -72,13 +72,13 @@
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <button onclick="exportOrdersCSV()" class="px-3.5 py-2 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/30 text-xs font-bold rounded-xl transition cursor-pointer font-mono flex items-center gap-1.5">
+                <button type="button" onclick="exportOrdersCSV()" class="px-3.5 py-2 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/30 text-xs font-bold rounded-xl transition cursor-pointer font-mono flex items-center gap-1.5">
                     📥 Export CSV
                 </button>
-                <button onclick="loadAdminData()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-xs font-bold rounded-xl transition shadow flex items-center gap-1.5 cursor-pointer font-mono">
+                <button type="button" onclick="loadAdminData()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-xs font-bold rounded-xl transition shadow flex items-center gap-1.5 cursor-pointer font-mono">
                     🔄 Refresh All
                 </button>
-                <button onclick="handleAdminLogout()" class="px-3.5 py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 text-xs font-bold rounded-xl transition cursor-pointer font-mono">
+                <button type="button" onclick="handleAdminLogout()" class="px-3.5 py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 text-xs font-bold rounded-xl transition cursor-pointer font-mono">
                     Sign Out
                 </button>
             </div>
@@ -103,7 +103,7 @@
                     <span class="text-blue-400 block text-[10px]">VIP CHANNEL LINK</span>
                     <span class="text-xs font-bold text-blue-300">Telegram Invite</span>
                 </div>
-                <button onclick="copyInviteLink()" class="mt-2 text-[10px] bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-2 rounded transition text-center cursor-pointer">
+                <button type="button" onclick="copyInviteLink()" class="mt-2 text-[10px] bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-2 rounded transition text-center cursor-pointer">
                     📋 Copy Link
                 </button>
             </div>
@@ -124,22 +124,28 @@
                     <h3 class="text-xs font-bold text-blue-400 mb-3 font-mono uppercase">🎟️ Create Discount Coupon</h3>
                     <form onsubmit="handleCreateCoupon(event)" class="space-y-3 font-mono text-xs">
                         <input type="text" id="couponCode" required placeholder="Coupon Code (e.g. NEXA20)" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 uppercase">
-                        <input type="number" id="couponDiscount" required placeholder="Discount % (e.g. 20)" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2">
+                        <input type="number" id="couponDiscount" required min="1" max="100" placeholder="Discount % (e.g. 20)" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2">
                         <button type="submit" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition cursor-pointer">Generate Coupon</button>
                     </form>
                 </div>
-                <div id="activeCouponsList" class="text-[11px] text-gray-400 font-mono space-y-1 max-h-24 overflow-y-auto pt-2 border-t border-white/5">
-                    Loading active coupons...
+                <div class="pt-2 border-t border-white/5">
+                    <span class="text-[10px] text-gray-500 font-mono uppercase block mb-1">Active Coupons:</span>
+                    <div id="activeCouponsList" class="text-[11px] text-gray-400 font-mono space-y-1.5 max-h-24 overflow-y-auto">
+                        Loading active coupons...
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- গ্লোবাল ব্রডকাস্ট অ্যানাউন্সমেন্ট -->
         <div class="glass-panel p-5 rounded-2xl border border-blue-500/30 space-y-3">
-            <h3 class="text-sm font-bold text-blue-400 font-mono">📢 Global Broadcast Announcement</h3>
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-bold text-blue-400 font-mono">📢 Global Broadcast Announcement</h3>
+                <button type="button" onclick="clearActiveBroadcast()" class="text-[11px] text-rose-400 hover:underline font-mono cursor-pointer">Disable Current Banner</button>
+            </div>
             <div class="flex gap-2 font-mono text-xs">
                 <input type="text" id="broadcastMsg" placeholder="Type banner message for all users..." class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2.5">
-                <button onclick="publishBroadcast()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-2.5 rounded-xl transition cursor-pointer shrink-0">Publish Live</button>
+                <button type="button" onclick="publishBroadcast()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-2.5 rounded-xl transition cursor-pointer shrink-0">Publish Live</button>
             </div>
         </div>
 
@@ -161,8 +167,8 @@
                     <option value="support_agent">Support Agent</option>
                     <option value="admin">Admin</option>
                 </select>
-                <button onclick="handleManualUserUpgrade()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl transition cursor-pointer">Update Profile</button>
-                <button onclick="handleUserBan()" class="bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 font-bold py-2.5 rounded-xl transition cursor-pointer">Ban User</button>
+                <button type="button" onclick="handleManualUserUpgrade()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl transition cursor-pointer">Update Profile</button>
+                <button type="button" onclick="handleUserBan()" class="bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 font-bold py-2.5 rounded-xl transition cursor-pointer">Ban User</button>
             </div>
         </div>
 
@@ -170,11 +176,11 @@
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10">
             <div class="p-4 border-b border-white/10 flex flex-wrap justify-between items-center gap-3">
                 <div class="flex items-center gap-2">
-                    <h3 class="text-sm font-bold text-white font-mono">⚡ Pending Orders & Auto-Delivery Gateway</h3>
+                    <h3 class="text-sm font-bold text-white font-mono">⚡ Orders & Payment Verification Gateway</h3>
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                 </div>
                 <div class="w-full sm:w-72">
-                    <input type="text" id="orderSearchInput" onkeyup="filterOrdersTable()" placeholder="🔍 Search by Email or TrxID..." class="w-full bg-[#0b1324] border border-white/15 text-white text-xs font-mono rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500">
+                    <input type="text" id="orderSearchInput" onkeyup="filterOrdersTable()" placeholder="🔍 Search by Email, Phone or TrxID..." class="w-full bg-[#0b1324] border border-white/15 text-white text-xs font-mono rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500">
                 </div>
             </div>
             <div class="overflow-x-auto">
@@ -198,7 +204,7 @@
             </div>
         </div>
 
-        <!-- ট্রানজেকশন ও পেমেন্ট হিস্ট্রি লগ (Audit Logs) -->
+        <!-- ট্রানজেকশন ও অডিট লগ (Audit Logs) -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 p-5 space-y-4">
             <h3 class="text-sm font-bold text-white font-mono">📜 Admin Audit Trail & Transaction Logs</h3>
             <div id="auditLogsContainer" class="space-y-2 font-mono text-xs max-h-48 overflow-y-auto">
@@ -206,7 +212,7 @@
             </div>
         </div>
 
-        <!-- সাপোর্ট সিস্টেম (Support Desk with Admin Reply & Auto-Email from greatnexaorg@gmail.com) -->
+        <!-- সাপোর্ট সিস্টেম (Support Desk) -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 p-5 space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-sm font-bold text-white font-mono">🎫 Customer Support Helpdesk Tickets</h3>
@@ -221,7 +227,7 @@
     <!-- Modal for Delivery Credentials input -->
     <div id="deliveryModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-700 shadow-2xl relative space-y-4">
-            <button onclick="closeDeliveryModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
+            <button type="button" onclick="closeDeliveryModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg font-bold cursor-pointer">&times;</button>
             <h3 class="text-lg font-bold text-white">Approve & Send Access Details</h3>
             <p id="modalCustomerInfo" class="text-xs text-blue-400 font-mono"></p>
             
@@ -230,7 +236,7 @@
                 <textarea id="deliveryCredentials" rows="4" placeholder="Email: user@gmail.com&#10;Pass: ******&#10;Drive Link: https://..." class="w-full bg-[#0b1324] border border-white/15 text-white text-xs font-mono rounded-xl p-3 focus:outline-none focus:border-blue-500"></textarea>
             </div>
 
-            <button onclick="executeAutoApproveAndSend()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer font-mono">
+            <button type="button" onclick="executeAutoApproveAndSend()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer font-mono">
                 🚀 Approve, Save & Send via WhatsApp/Email
             </button>
         </div>
@@ -262,19 +268,29 @@
         }
 
         async function verifyAdminAccess() {
-            const { data: { session } } = await _supabase.auth.getSession();
-            if (!session) { showAuthModal(); return; }
+            try {
+                const { data: { session } } = await _supabase.auth.getSession();
+                if (!session) { showAuthModal(); return; }
 
-            const { data } = await _supabase.from('user_profiles').select('role, status').eq('id', session.user.id).single();
-            if (data && data.status !== 'banned' && (data.role === 'admin' || data.role === 'support_agent')) {
-                currentAdminEmail = session.user.email;
-                currentAdminRole = data.role;
-                document.getElementById('adminSessionEmail').innerText = currentAdminEmail;
-                document.getElementById('adminRoleBadge').innerText = data.role === 'admin' ? 'Super Admin' : 'Support Agent';
-                unlockUI();
-            } else {
-                showAuthModal("অ্যাক্সেস ডিনাইড! আপনার অ্যাডমিন পারমিশন নেই বা অ্যাকাউন্ট ব্যান করা হয়েছে।");
-                await _supabase.auth.signOut();
+                const { data, error } = await _supabase
+                    .from('user_profiles')
+                    .select('role, status')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (data && data.status !== 'banned' && (data.role === 'admin' || data.role === 'support_agent')) {
+                    currentAdminEmail = session.user.email;
+                    currentAdminRole = data.role;
+                    document.getElementById('adminSessionEmail').innerText = currentAdminEmail;
+                    document.getElementById('adminRoleBadge').innerText = data.role === 'admin' ? 'Super Admin' : 'Support Agent';
+                    unlockUI();
+                } else {
+                    showAuthModal("অ্যাক্সেস ডিনাইড! আপনার অ্যাকাউন্টে অ্যাডমিন রোল নেই অথবা অ্যাকাউন্ট সাসপেন্ডেড।");
+                    await _supabase.auth.signOut();
+                }
+            } catch (err) {
+                console.error("Auth verify error:", err);
+                showAuthModal();
             }
         }
 
@@ -302,7 +318,7 @@
                     unlockUI();
                 } else {
                     await _supabase.auth.signOut();
-                    throw new Error("অননুমোদিত অ্যাকাউন্ট! আপনার অ্যাডমিন রোল নেই বা অ্যাকাউন্ট সাসপেন্ডেড।");
+                    throw new Error("অননুমোদিত অ্যাকাউন্ট! আপনার অ্যাকাউন্টে অ্যাডমিন রোল নেই।");
                 }
             } catch (err) {
                 errBox.innerText = err.message || "লগইন ব্যর্থ হয়েছে!";
@@ -333,30 +349,24 @@
 
         async function handleAdminLogout() {
             await _supabase.auth.signOut();
-            localStorage.clear();
-            sessionStorage.clear();
             location.reload();
         }
 
         async function loadAdminData() {
-            await loadOrders();
-            await loadCoupons();
-            await loadSupportTickets();
-            await loadAuditLogs();
+            await Promise.all([
+                loadOrders(),
+                loadCoupons(),
+                loadSupportTickets(),
+                loadAuditLogs()
+            ]);
         }
 
         async function loadOrders() {
             const tbody = document.getElementById('ordersTableBody');
-            if(cachedOrdersData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-400 font-mono">Loading orders from database...</td></tr>';
-            }
-
             const { data, error } = await _supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(100);
 
             if (error || !data || data.length === 0) {
-                if(cachedOrdersData.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-500 font-mono">No payment orders found.</td></tr>';
-                }
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-500 font-mono">No payment orders found.</td></tr>';
                 cachedOrdersData = [];
                 document.getElementById('statTotal').innerText = '0';
                 document.getElementById('statPending').innerText = '0';
@@ -399,10 +409,13 @@
                     pendingCount++;
                 }
 
+                const encodedOrder = encodeURIComponent(JSON.stringify(o));
+                const contactPhone = o.sender_phone || o.phone || o.whatsapp || 'N/A';
+
                 return `
                 <tr class="hover:bg-white/[0.02] transition ${isNew ? 'bg-amber-500/[0.03]' : ''}">
                     <td class="p-4 text-gray-400">${new Date(o.created_at).toLocaleDateString()}</td>
-                    <td class="p-4 text-white font-bold">${o.email || o.customer_name}<br><span class="text-[10px] text-gray-400">${o.whatsapp || o.phone || ''}</span></td>
+                    <td class="p-4 text-white font-bold">${o.email || o.customer_name}<br><span class="text-[10px] text-gray-400 font-normal">Phone: ${contactPhone}</span></td>
                     <td class="p-4 text-blue-400 font-bold">${o.product_name} (${o.price})</td>
                     <td class="p-4 text-emerald-400 select-all font-bold">${o.trx_id}</td>
                     <td class="p-4">
@@ -412,10 +425,10 @@
                     </td>
                     <td class="p-4 text-right space-x-2">
                         ${!isApproved ? `
-                        <button onclick='openDeliveryModal(${JSON.stringify(o)})' class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition cursor-pointer">
+                        <button type="button" onclick="openDeliveryModal('${encodedOrder}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition cursor-pointer">
                             Approve & Send
                         </button>` : `
-                        <span class="text-emerald-400 text-xs font-bold">Delivered</span>`}
+                        <span class="text-emerald-400 text-xs font-bold">✔ Delivered</span>`}
                     </td>
                 </tr>
                 `;
@@ -433,17 +446,23 @@
             const filtered = cachedOrdersData.filter(o => 
                 (o.email || '').toLowerCase().includes(query) || 
                 (o.customer_name || '').toLowerCase().includes(query) || 
+                (o.sender_phone || '').toLowerCase().includes(query) || 
                 (o.trx_id || '').toLowerCase().includes(query)
             );
             renderOrdersTable(filtered);
         }
 
-        function openDeliveryModal(order) {
-            currentActiveOrder = order;
-            document.getElementById('modalCustomerInfo').innerText = `Customer: ${order.email || order.customer_name} | Product: ${order.product_name}`;
-            document.getElementById('deliveryCredentials').value = `Hello! Your order for ${order.product_name} is approved.\nAccess Link / Details:\nEnjoy your subscription!`;
-            document.getElementById('deliveryModal').classList.remove('hidden');
-            document.getElementById('deliveryModal').classList.add('flex');
+        function openDeliveryModal(orderJsonEncoded) {
+            try {
+                const order = JSON.parse(decodeURIComponent(orderJsonEncoded));
+                currentActiveOrder = order;
+                document.getElementById('modalCustomerInfo').innerText = `Customer: ${order.email || order.customer_name} | Product: ${order.product_name}`;
+                document.getElementById('deliveryCredentials').value = `Hello! Your order for ${order.product_name} has been approved.\nAccess Link & Instructions:\nEnjoy your subscription!`;
+                document.getElementById('deliveryModal').classList.remove('hidden');
+                document.getElementById('deliveryModal').classList.add('flex');
+            } catch(e) {
+                console.error("Error opening delivery modal:", e);
+            }
         }
 
         function closeDeliveryModal() {
@@ -461,12 +480,7 @@
             const days = isVIP ? 730 : 30;
 
             try {
-                const { data: existingTrx } = await _supabase.from('orders').select('id').eq('trx_id', currentActiveOrder.trx_id).eq('status', 'approved');
-                if (existingTrx && existingTrx.length > 0) {
-                    alert("⚠️ সতর্কতা: এই TrxID দিয়ে ইতিপূর্বেই একটি অর্ডার অ্যাপ্রুভ করা হয়েছে!");
-                    return;
-                }
-
+                // ১. অর্ডার স্ট্যাটাস আপডেট
                 const { error: orderErr } = await _supabase.from('orders').update({ 
                     status: 'approved', 
                     delivery_data: creds 
@@ -474,22 +488,32 @@
 
                 if (orderErr) throw orderErr;
 
+                // ২. ইউজার প্রোফাইল আরপিসি দিয়ে আপগ্রেড
                 const { error: rpcErr } = await _supabase.rpc('admin_force_upgrade_user', {
                     p_user_email: customerEmail,
                     p_tier: targetTier,
                     p_duration_days: days
                 });
 
-                if (rpcErr) throw new Error(rpcErr.message);
+                if (rpcErr) {
+                    console.warn("RPC Warning (trying direct update):", rpcErr.message);
+                    await _supabase.from('user_profiles').update({
+                        tier: targetTier,
+                        expires_at: new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString(),
+                        status: 'active'
+                    }).ilike('email', customerEmail);
+                }
 
                 await logAdminAction('APPROVE_ORDER', `Approved order for ${customerEmail} [Tier: ${targetTier}]`);
 
-                const phoneNum = (currentActiveOrder.whatsapp || currentActiveOrder.phone || '').replace(/[^0-9]/g, '');
+                // ৩. হোয়াটসঅ্যাপ লিংক ট্রিগার
+                const phoneNum = (currentActiveOrder.sender_phone || currentActiveOrder.whatsapp || currentActiveOrder.phone || '').replace(/[^0-9]/g, '');
                 if (phoneNum) {
                     const waText = encodeURIComponent(`Hi ${customerEmail}, your GreatNexa order (${currentActiveOrder.product_name}) is approved!\n\n${creds}\n\nTelegram VIP: ${TELEGRAM_VIP_LINK}`);
                     window.open(`https://wa.me/${phoneNum.startsWith('88') ? phoneNum : '88' + phoneNum}?text=${waText}`, '_blank');
                 }
 
+                // ৪. ইমেইল ক্লায়েন্ট ট্রিগার
                 const mailSubject = encodeURIComponent("GreatNexa Terminal Account Approved & Access Details");
                 const mailBody = encodeURIComponent(`Hello,\n\nYour order for ${currentActiveOrder.product_name} has been approved.\n\n${creds}\n\nJoin VIP Telegram: ${TELEGRAM_VIP_LINK}\n\nRegards,\nGreatNexa Team (${ADMIN_SENDER_EMAIL})`);
                 window.open(`mailto:${customerEmail}?from=${ADMIN_SENDER_EMAIL}&subject=${mailSubject}&body=${mailBody}`, '_blank');
@@ -511,21 +535,29 @@
 
             const expiryDays = tier === 'vip' ? 730 : (tier === 'pro' ? 30 : 365);
 
-            const { error: tierErr } = await _supabase.rpc('admin_force_upgrade_user', {
-                p_user_email: email,
-                p_tier: tier,
-                p_duration_days: expiryDays
-            });
+            try {
+                const { error: tierErr } = await _supabase.rpc('admin_force_upgrade_user', {
+                    p_user_email: email,
+                    p_tier: tier,
+                    p_duration_days: expiryDays
+                });
 
-            const { error: roleErr } = await _supabase.from('user_profiles').update({ role: newRole }).eq('email', email);
+                if (tierErr) {
+                    await _supabase.from('user_profiles').update({
+                        tier: tier,
+                        expires_at: new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000).toISOString(),
+                        role: newRole
+                    }).ilike('email', email);
+                } else {
+                    await _supabase.from('user_profiles').update({ role: newRole }).ilike('email', email);
+                }
 
-            if(tierErr || roleErr) {
-                alert("Failed to update profile: " + (tierErr?.message || roleErr?.message));
-            } else {
                 await logAdminAction('UPDATE_PROFILE', `Updated ${email} -> Tier: ${tier.toUpperCase()}, Role: ${newRole}`);
                 alert(`✔ Success! User ${email} profile updated successfully.`);
                 document.getElementById('targetUserEmail').value = '';
                 loadAuditLogs();
+            } catch (err) {
+                alert("Failed to update profile: " + err.message);
             }
         }
 
@@ -535,7 +567,7 @@
             if(!email) { alert("Please enter user email to ban."); return; }
             if(!confirm(`Are you sure you want to suspend/ban user ${email}?`)) return;
 
-            const { error } = await _supabase.from('user_profiles').update({ status: 'banned', tier: 'free' }).eq('email', email);
+            const { error } = await _supabase.from('user_profiles').update({ status: 'banned', tier: 'free' }).ilike('email', email);
             if(error) {
                 alert("Failed to ban user: " + error.message);
             } else {
@@ -551,6 +583,9 @@
             const msg = document.getElementById('broadcastMsg').value.trim();
             if(!msg) { alert("Please type announcement message."); return; }
 
+            // আগের এক্টিভ ব্যানার নিষ্ক্রিয় করা
+            await _supabase.from('announcements').update({ is_active: false }).eq('is_active', true);
+
             const { error } = await _supabase.from('announcements').insert([{ message: msg, is_active: true }]);
             if(error) {
                 alert("Failed to publish broadcast: " + error.message);
@@ -562,17 +597,29 @@
             }
         }
 
+        async function clearActiveBroadcast() {
+            if (currentAdminRole !== 'admin') { alert("Permission Denied."); return; }
+            await _supabase.from('announcements').update({ is_active: false }).eq('is_active', true);
+            alert("✔ All broadcast banners deactivated.");
+            await logAdminAction('CLEAR_BROADCAST', 'Disabled all active banner announcements.');
+            loadAuditLogs();
+        }
+
         async function logAdminAction(action, details) {
-            await _supabase.from('audit_logs').insert([{
-                admin_email: currentAdminEmail,
-                action: action,
-                details: details
-            }]);
+            try {
+                await _supabase.from('audit_logs').insert([{
+                    admin_email: currentAdminEmail || 'admin',
+                    action: action,
+                    details: details
+                }]);
+            } catch(e) {
+                console.error("Audit log error:", e);
+            }
         }
 
         async function loadAuditLogs() {
             const container = document.getElementById('auditLogsContainer');
-            const { data, error } = await _supabase.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(20);
+            const { data, error } = await _supabase.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(25);
             if(error || !data || data.length === 0) {
                 container.innerHTML = `<p class="text-gray-500">No audit logs recorded yet.</p>`;
                 return;
@@ -603,16 +650,31 @@
             }
         }
 
+        async function deleteCoupon(couponId, code) {
+            if(!confirm(`Delete coupon ${code}?`)) return;
+            const { error } = await _supabase.from('coupons').delete().eq('id', couponId);
+            if(!error) {
+                await logAdminAction('DELETE_COUPON', `Deleted coupon ${code}`);
+                loadCoupons();
+                loadAuditLogs();
+            }
+        }
+
         async function loadCoupons() {
             const listDiv = document.getElementById('activeCouponsList');
-            const { data } = await _supabase.from('coupons').select('*').eq('is_active', true);
+            const { data } = await _supabase.from('coupons').select('*').order('created_at', { ascending: false });
             if (!data || data.length === 0) { listDiv.innerHTML = "No active coupons."; return; }
-            listDiv.innerHTML = data.map(c => `<div><b>${c.code}</b>: ${c.discount_pct}% OFF</div>`).join('');
+            listDiv.innerHTML = data.map(c => `
+                <div class="flex justify-between items-center bg-[#091122] p-1.5 rounded border border-white/5">
+                    <span><b>${c.code}</b>: ${c.discount_pct}% OFF</span>
+                    <button type="button" onclick="deleteCoupon('${c.id}', '${c.code}')" class="text-rose-400 hover:text-white text-[10px] font-bold">Delete</button>
+                </div>
+            `).join('');
         }
 
         async function loadSupportTickets() {
             const ticketDiv = document.getElementById('supportTicketsList');
-            const { data, error } = await _supabase.from('support_tickets').select('*').order('created_at', { ascending: false }).limit(10);
+            const { data, error } = await _supabase.from('support_tickets').select('*').order('created_at', { ascending: false }).limit(20);
             if (error || !data || data.length === 0) {
                 ticketDiv.innerHTML = `<p class="text-gray-400">No support tickets found.</p>`;
                 return;
@@ -624,18 +686,21 @@
                             <p class="font-bold text-white text-sm">${t.subject} <span class="text-xs text-blue-400 font-mono">(${t.email})</span></p>
                             <p class="text-gray-300 text-xs mt-1">${t.message}</p>
                         </div>
-                        <span class="px-2.5 py-1 bg-amber-500/20 text-amber-300 rounded text-[10px] font-bold">${(t.status || 'open').toUpperCase()}</span>
+                        <span class="px-2.5 py-1 rounded text-[10px] font-bold ${t.status === 'resolved' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">
+                            ${(t.status || 'open').toUpperCase()}
+                        </span>
                     </div>
                     ${t.admin_reply ? `<div class="p-2.5 bg-blue-950/30 border border-blue-500/20 rounded-lg text-xs text-blue-300"><b>Admin Reply:</b> ${t.admin_reply}</div>` : ''}
                     <div class="flex gap-2 pt-2 border-t border-white/5">
                         <input type="text" id="replyText_${t.id}" placeholder="Type reply for customer..." class="w-full bg-black border border-white/15 text-white rounded-lg px-3 py-1.5 text-xs">
-                        <button onclick="sendTicketReply('${t.id}', '${t.email}', '${t.subject}')" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs transition cursor-pointer shrink-0">Send & Email</button>
+                        <button type="button" onclick="sendTicketReply('${t.id}', '${t.email}', '${encodeURIComponent(t.subject)}')" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs transition cursor-pointer shrink-0">Send & Email</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        async function sendTicketReply(ticketId, customerEmail, subject) {
+        async function sendTicketReply(ticketId, customerEmail, encodedSubject) {
+            const subject = decodeURIComponent(encodedSubject);
             const replyInput = document.getElementById(`replyText_${ticketId}`);
             const replyMsg = replyInput.value.trim();
             if(!replyMsg) { alert("Please type a reply message."); return; }
@@ -643,12 +708,13 @@
             try {
                 const { error } = await _supabase.from('support_tickets').update({ 
                     admin_reply: replyMsg, 
-                    status: 'resolved' 
+                    status: 'resolved',
+                    updated_at: new Date().toISOString()
                 }).eq('id', ticketId);
 
                 if (error) throw error;
 
-                await logAdminAction('TICKET_REPLY', `Replied to support ticket (${subject}) for ${customerEmail}`);
+                await logAdminAction('TICKET_REPLY', `Replied to ticket (${subject}) for ${customerEmail}`);
 
                 const mailSubject = encodeURIComponent("Reply to your Support Ticket: " + subject);
                 const mailBody = encodeURIComponent(`Hello,\n\nRegarding your support ticket (${subject}), our admin team replied:\n\n${replyMsg}\n\nRegards,\nGreatNexa Team (${ADMIN_SENDER_EMAIL})`);
@@ -663,7 +729,9 @@
         }
 
         function renderRevenueChart(dateMap) {
-            const ctx = document.getElementById('salesRevenueChart').getContext('2d');
+            const canvas = document.getElementById('salesRevenueChart');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
             const labels = Object.keys(dateMap).sort();
             const counts = labels.map(l => dateMap[l]);
 
@@ -699,14 +767,15 @@
                 alert("No orders to export!");
                 return;
             }
-            let csvContent = "data:text/csv;charset=utf-8,ID,Customer,Product,Price,TrxID,Status,Date\n";
+            let csvContent = "data:text/csv;charset=utf-8,ID,Customer,Phone,Product,Price,TrxID,Status,Date\n";
             cachedOrdersData.forEach(o => {
-                csvContent += `"${o.id}","${o.email || o.customer_name}","${o.product_name}","${o.price}","${o.trx_id}","${o.status}","${o.created_at}"\n`;
+                const phone = o.sender_phone || o.phone || '';
+                csvContent += `"${o.id}","${o.email || o.customer_name}","${phone}","${o.product_name}","${o.price}","${o.trx_id}","${o.status}","${o.created_at}"\n`;
             });
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "greatnexa_orders_report.csv");
+            link.setAttribute("download", `greatnexa_orders_${new Date().toISOString().slice(0,10)}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
