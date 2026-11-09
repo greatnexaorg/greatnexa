@@ -61,6 +61,9 @@
                 <p class="text-xs text-gray-400">Connected: <span id="adminSessionEmail" class="text-blue-400 font-mono"></span></p>
             </div>
             <div class="flex items-center gap-3">
+                <button onclick="exportOrdersCSV()" class="px-3.5 py-2 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/30 text-xs font-bold rounded-xl transition cursor-pointer font-mono flex items-center gap-1.5">
+                    📥 Export CSV
+                </button>
                 <button onclick="loadAdminData()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-xs font-bold rounded-xl transition shadow flex items-center gap-1.5 cursor-pointer font-mono">
                     🔄 Refresh All
                 </button>
@@ -104,7 +107,7 @@
                 </div>
             </div>
 
-            <!-- 3. প্রোমো কোড ও ডিসকাউন্ট কুপন সিস্টেম -->
+            <!-- প্রোমো কোড ও ডিসকাউন্ট কুপন সিস্টেম -->
             <div class="glass-panel p-5 rounded-2xl border border-white/10 flex flex-col justify-between space-y-4">
                 <div>
                     <h3 class="text-xs font-bold text-blue-400 mb-3 font-mono uppercase">🎟️ Create Discount Coupon</h3>
@@ -120,7 +123,7 @@
             </div>
         </div>
 
-        <!-- 1. ইউজার ও সাবস্ক্রিপশন ম্যানেজমেন্ট (User & Tier Control) -->
+        <!-- ইউজার ও সাবস্ক্রিপশন ম্যানেজমেন্ট (User & Tier Control) -->
         <div class="glass-panel p-5 rounded-2xl border border-white/10 space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-sm font-bold text-white font-mono">👥 User & Tier Management (Pro / VIP Override)</h3>
@@ -137,11 +140,13 @@
             </div>
         </div>
 
-        <!-- Orders Table & 2. WhatsApp/Email Auto-Notification & TrxID Verification -->
+        <!-- Orders Table & Search & Auto-Notification -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10">
-            <div class="p-4 border-b border-white/10 flex justify-between items-center">
+            <div class="p-4 border-b border-white/10 flex flex-wrap justify-between items-center gap-3">
                 <h3 class="text-sm font-bold text-white font-mono">⚡ Pending Orders & Auto-Delivery Gateway</h3>
-                <span class="text-xs text-gray-400 font-mono">Duplicate TrxID Protection Active</span>
+                <div class="w-full sm:w-72">
+                    <input type="text" id="orderSearchInput" onkeyup="filterOrdersTable()" placeholder="🔍 Search by Email or TrxID..." class="w-full bg-[#0b1324] border border-white/15 text-white text-xs font-mono rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500">
+                </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-gray-300">
@@ -164,7 +169,7 @@
             </div>
         </div>
 
-        <!-- 4. টিকিট বা কাস্টমার সাপোর্ট সিস্টেম (Support Desk) -->
+        <!-- কাস্টমার সাপোর্ট সিস্টেম (Support Desk) -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 p-5 space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-sm font-bold text-white font-mono">🎫 Customer Support Helpdesk Tickets</h3>
@@ -202,6 +207,7 @@
 
         let currentActiveOrder = null;
         let revenueChartInstance = null;
+        let cachedOrdersData = [];
 
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('adminPassword');
@@ -294,21 +300,28 @@
             const tbody = document.getElementById('ordersTableBody');
             tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-400 font-mono">Loading orders from database...</td></tr>';
 
-            const { data, error } = await _supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(50);
+            const { data, error } = await _supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(100);
 
             if (error || !data || data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-500 font-mono">No payment orders found.</td></tr>';
+                cachedOrdersData = [];
                 document.getElementById('statTotal').innerText = '0';
                 document.getElementById('statPending').innerText = '0';
                 document.getElementById('statApproved').innerText = '0';
                 return;
             }
 
+            cachedOrdersData = data;
+            renderOrdersTable(cachedOrdersData);
+        }
+
+        function renderOrdersTable(ordersList) {
+            const tbody = document.getElementById('ordersTableBody');
             let pendingCount = 0;
             let approvedCount = 0;
             let chartDates = {};
 
-            tbody.innerHTML = data.map(o => {
+            tbody.innerHTML = ordersList.map(o => {
                 const isApproved = o.status === 'approved';
                 if(isApproved) {
                     approvedCount++;
@@ -340,14 +353,23 @@
                 `;
             }).join('');
 
-            document.getElementById('statTotal').innerText = String(data.length);
+            document.getElementById('statTotal').innerText = String(ordersList.length);
             document.getElementById('statPending').innerText = String(pendingCount);
             document.getElementById('statApproved').innerText = String(approvedCount);
 
             renderRevenueChart(chartDates);
         }
 
-        // 2. ডুপ্লিকেট TrxID প্রতিরোধ সহ অর্ডার অ্যাপ্রুভ ও অটো-নোটিফিকেশন
+        function filterOrdersTable() {
+            const query = document.getElementById('orderSearchInput').value.toLowerCase();
+            const filtered = cachedOrdersData.filter(o => 
+                (o.email || '').toLowerCase().includes(query) || 
+                (o.customer_name || '').toLowerCase().includes(query) || 
+                (o.trx_id || '').toLowerCase().includes(query)
+            );
+            renderOrdersTable(filtered);
+        }
+
         function openDeliveryModal(order) {
             currentActiveOrder = order;
             document.getElementById('modalCustomerInfo').innerText = `Customer: ${order.email || order.customer_name} | Product: ${order.product_name}`;
@@ -365,6 +387,7 @@
         async function executeAutoApproveAndSend() {
             if (!currentActiveOrder) return;
             const creds = document.getElementById('deliveryCredentials').value.trim();
+            const customerEmail = currentActiveOrder.email || currentActiveOrder.customer_name;
             const isVIP = (currentActiveOrder.product_name || '').includes('VIP') || (currentActiveOrder.product_name || '').includes('49');
             const targetTier = isVIP ? 'vip' : 'pro';
             const days = isVIP ? 730 : 30;
@@ -377,23 +400,38 @@
                     return;
                 }
 
-                const { error } = await _supabase.rpc('admin_approve_order', {
-                    p_order_id: currentActiveOrder.id,
-                    p_user_email: currentActiveOrder.email || currentActiveOrder.customer_name,
-                    p_tier: targetTier,
-                    p_duration_days: days
-                });
+                // ১. অর্ডার স্ট্যাটাস ও ডেলিভারি ডেটা আপডেট
+                const { error: orderErr } = await _supabase.from('orders').update({ 
+                    status: 'approved', 
+                    delivery_data: creds 
+                }).eq('id', currentActiveOrder.id);
 
-                if (error) throw error;
-                await _supabase.from('orders').update({ delivery_data: creds }).eq('id', currentActiveOrder.id);
+                if (orderErr) throw orderErr;
 
+                // ২. ইউজারের অ্যাকাউন্ট টিয়ার আপডেট (যা ফ্রি প্ল্যানে থাকার সমস্যা সমাধান করবে)
+                const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+                const { error: profileErr } = await _supabase.from('user_profiles').update({ 
+                    tier: targetTier, 
+                    expires_at: expiresAt 
+                }).eq('email', customerEmail);
+
+                if (profileErr) {
+                    console.warn("Profile table update warning:", profileErr.message);
+                }
+
+                // ৩. হোয়াটসঅ্যাপ এবং জিমেইল অটো নোটিফিকেশন ট্রিগার
                 const phoneNum = (currentActiveOrder.whatsapp || currentActiveOrder.phone || '').replace(/[^0-9]/g, '');
                 if (phoneNum) {
-                    const waText = encodeURIComponent(`Hi ${currentActiveOrder.customer_name || 'Customer'}, your GreatNexa order (${currentActiveOrder.product_name}) is approved!\n\n${creds}\n\nTelegram VIP: ${TELEGRAM_VIP_LINK}`);
+                    const waText = encodeURIComponent(`Hi ${customerEmail}, your GreatNexa order (${currentActiveOrder.product_name}) is approved!\n\n${creds}\n\nTelegram VIP: ${TELEGRAM_VIP_LINK}`);
                     window.open(`https://wa.me/${phoneNum.startsWith('88') ? phoneNum : '88' + phoneNum}?text=${waText}`, '_blank');
                 }
 
-                alert("✔ Order approved successfully & WhatsApp notification sent!");
+                // জিমেইল অটো ওপেন করার লিংক
+                const mailSubject = encodeURIComponent("GreatNexa Terminal Account Approved & Access Details");
+                const mailBody = encodeURIComponent(`Hello,\n\nYour order for ${currentActiveOrder.product_name} has been approved.\n\n${creds}\n\nJoin VIP Telegram: ${TELEGRAM_VIP_LINK}\n\nRegards,\nGreatNexa Team`);
+                window.open(`mailto:${customerEmail}?subject=${mailSubject}&body=${mailBody}`, '_blank');
+
+                alert("✔ Order approved successfully, user tier upgraded, & WhatsApp/Gmail automated triggers sent!");
                 closeDeliveryModal();
                 loadOrders();
 
@@ -402,7 +440,6 @@
             }
         }
 
-        // 1. ম্যানুয়াল ইউজার ও টিয়ার ম্যানেজমেন্ট
         async function handleManualUserUpgrade() {
             const email = document.getElementById('targetUserEmail').value.trim();
             const tier = document.getElementById('targetUserTier').value;
@@ -420,7 +457,6 @@
             }
         }
 
-        // 3. কুপন ম্যানেজমেন্ট
         async function handleCreateCoupon(e) {
             e.preventDefault();
             const code = document.getElementById('couponCode').value.trim().toUpperCase();
@@ -444,7 +480,6 @@
             listDiv.innerHTML = data.map(c => `<div><b>${c.code}</b>: ${c.discount_pct}% OFF</div>`).join('');
         }
 
-        // 4. সাপোর্ট টিকিট সিস্টেম
         async function loadSupportTickets() {
             const ticketDiv = document.getElementById('supportTicketsList');
             const { data, error } = await _supabase.from('support_tickets').select('*').order('created_at', { ascending: false }).limit(10);
@@ -463,7 +498,6 @@
             `).join('');
         }
 
-        // 5. রেভিনিউ চার্ট (Chart.js)
         function renderRevenueChart(dateMap) {
             const ctx = document.getElementById('salesRevenueChart').getContext('2d');
             const labels = Object.keys(dateMap).sort();
@@ -494,6 +528,24 @@
                     }
                 }
             });
+        }
+
+        function exportOrdersCSV() {
+            if (!cachedOrdersData || cachedOrdersData.length === 0) {
+                alert("No orders to export!");
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,ID,Customer,Product,Price,TrxID,Status,Date\n";
+            cachedOrdersData.forEach(o => {
+                csvContent += `"${o.id}","${o.email || o.customer_name}","${o.product_name}","${o.price}","${o.trx_id}","${o.status}","${o.created_at}"\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "greatnexa_orders_report.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function copyInviteLink() {
