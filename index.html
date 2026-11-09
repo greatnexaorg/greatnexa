@@ -163,8 +163,14 @@
 </head>
 <body class="antialiased overflow-x-hidden">
 
+    <!-- গ্লোবাল ব্রডকাস্ট অ্যানাউন্সমেন্ট ব্যানার -->
+    <div id="globalAnnounceBanner" class="hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white text-xs font-mono py-2 px-4 text-center relative z-50 flex items-center justify-center gap-2 shadow-lg">
+        <span>📢 **Announcement:**</span> <span id="announceText">Welcome to GreatNexa Institutional Terminal.</span>
+        <button onclick="document.getElementById('globalAnnounceBanner').classList.add('hidden')" class="ml-4 font-bold text-white hover:text-gray-200">&times;</button>
+    </div>
+
     <!-- Top Live Ticker Tape -->
-    <div class="w-full bg-[#030611] border-b border-white/[0.08] py-2 px-4 overflow-hidden relative z-50">
+    <div class="w-full bg-[#030611] border-b border-white/[0.08] py-2 px-4 overflow-hidden relative z-40">
         <div id="tickerTrack" class="ticker-wrap flex items-center gap-10 font-mono text-xs">
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">BTC/USDT</span><span id="price-btcusdt" class="text-emerald-400 font-bold">$98,420.50</span></div>
             <div class="flex items-center gap-2"><span class="text-gray-400 font-semibold">ETH/USDT</span><span id="price-ethusdt" class="text-emerald-400 font-bold">$3,420.10</span></div>
@@ -180,7 +186,6 @@
     <!-- Main Navigation Header -->
     <header class="sticky top-0 z-40 bg-[#02040a]/85 backdrop-blur-xl border-b border-white/[0.08] px-4 sm:px-8 py-3.5 transition-all">
         <div class="max-w-7xl mx-auto space-y-3">
-            <!-- Top Line: Logo (Left) & Language Selector (Right) -->
             <div class="flex justify-between items-center w-full">
                 <a href="/" class="flex items-center gap-3.5 group">
                     <div class="relative">
@@ -214,7 +219,7 @@
                 </div>
             </div>
 
-            <!-- Bottom Line: Digital Store first, About Us, Support Ticket & User Status / Actions -->
+            <!-- Bottom Line -->
             <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/[0.05]">
                 <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap">
                     <a href="/store/" class="px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold transition shadow-lg shadow-blue-600/30 border border-blue-400/30 flex items-center gap-1.5">
@@ -331,7 +336,6 @@
 
         <!-- Terminal Control Panels -->
         <div id="controlPanel" class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <!-- 1. Asset Universe -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
                 <div>
                     <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">1. Asset Universe</label>
@@ -360,7 +364,6 @@
                 </div>
             </div>
 
-            <!-- 2. Projection Horizon -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
                 <div>
                     <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">2. Horizon Projection</label>
@@ -388,7 +391,6 @@
                 </div>
             </div>
 
-            <!-- 3. Shortlist Output Limit -->
             <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4">
                 <div>
                     <label class="block text-xs font-extrabold uppercase tracking-wider text-blue-400 mb-2.5 font-mono">3. Output Shortlist Limit</label>
@@ -576,24 +578,21 @@
         </svg>
     </a>
 
-    <!-- User Profile Dashboard Modal -->
+    <!-- User Profile Dashboard Modal (Enhanced with In-App Ticket History) -->
     <div id="userDashboardModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-[75] p-4">
-        <div class="glass-panel w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-blue-500/40 shadow-2xl relative space-y-6 font-mono">
+        <div class="glass-panel w-full max-w-xl rounded-3xl p-6 sm:p-8 border border-blue-500/40 shadow-2xl relative space-y-6 font-mono max-h-[90vh] overflow-y-auto">
             <button type="button" onclick="closeUserDashboard()" class="absolute top-5 right-5 text-gray-400 hover:text-white text-xl font-bold cursor-pointer">&times;</button>
             
-            <!-- Header Title -->
             <div class="flex items-center gap-3 border-b border-white/10 pb-4">
                 <div id="dashIcon" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600/40 to-purple-600/40 border border-blue-500/50 flex items-center justify-center text-2xl shadow-lg">👤</div>
                 <div>
-                    <h3 class="text-base font-extrabold text-white">Member Dashboard</h3>
+                    <h3 class="text-base font-extrabold text-white">Member Dashboard & Support History</h3>
                     <p class="text-xs text-blue-400 font-mono" id="dashUserEmail">user@example.com</p>
                 </div>
             </div>
 
-            <!-- Dashboard Grid Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <!-- Tier Status Card -->
-                <div class="p-4 rounded-2xl bg-black/50 border border-white/10 relative overflow-hidden space-y-1">
+                <div class="p-4 rounded-2xl bg-black/50 border border-white/10 space-y-1">
                     <span class="text-[10px] text-gray-400 uppercase tracking-wider">Tier Status</span>
                     <div class="flex items-center gap-2 pt-1">
                         <span id="dashUserTier" class="font-black text-white text-base uppercase tracking-wide">FREE TIER</span>
@@ -601,9 +600,7 @@
                     </div>
                 </div>
 
-                <!-- Large Days Left Counter -->
                 <div class="p-4 rounded-2xl bg-black/50 border border-emerald-500/30 relative overflow-hidden space-y-1">
-                    <div class="absolute -right-6 -bottom-6 w-20 h-20 bg-emerald-500/10 rounded-full blur-xl pointer-events-none"></div>
                     <span class="text-[10px] text-gray-400 uppercase tracking-wider">Subscription Validity</span>
                     <div class="flex items-baseline gap-1.5 pt-1">
                         <span id="dashUserDays" class="font-black text-emerald-400 text-2xl">365</span>
@@ -612,22 +609,14 @@
                 </div>
             </div>
 
-            <!-- Live Terminal Quota Card -->
-            <div class="p-4 rounded-2xl bg-black/50 border border-blue-500/30 space-y-2 text-xs">
-                <div class="flex justify-between items-center text-gray-400">
-                    <span>Terminal Quota & Access:</span>
-                    <span id="dashQuotaText" class="text-blue-400 font-bold">Top 3 Setups</span>
-                </div>
-                <div class="w-full bg-blue-950/40 rounded-full h-2 overflow-hidden border border-blue-500/20">
-                    <div id="dashQuotaBar" class="bg-gradient-to-r from-blue-500 to-emerald-400 h-full w-[25%] rounded-full"></div>
-                </div>
-                <div class="flex justify-between text-[10px] text-gray-500">
-                    <span id="dashAccessScope">Intraday (24H) Active</span>
-                    <span id="dashUncappedTag">Limited Quota</span>
+            <!-- In-App Support Tickets History Box -->
+            <div class="space-y-2 pt-2 border-t border-white/10 text-xs">
+                <span class="text-[11px] text-gray-400 uppercase tracking-wider block font-bold">🎫 My Support Tickets & Admin Replies</span>
+                <div id="userTicketsHistory" class="space-y-2 max-h-40 overflow-y-auto bg-black/40 p-3 rounded-xl border border-white/5">
+                    <p class="text-gray-500 text-center">Loading your support history...</p>
                 </div>
             </div>
 
-            <!-- Quick Action Center -->
             <div class="space-y-2 pt-2 border-t border-white/10 text-xs">
                 <span class="text-[11px] text-gray-400 uppercase tracking-wider block font-bold mb-2">⚡ Quick Action Center</span>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -638,7 +627,7 @@
                         <span>🔑</span> Reset Password
                     </button>
                     <button type="button" onclick="closeUserDashboard(); openSupportModal();" class="py-2.5 px-3 rounded-xl bg-purple-600/30 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/40 font-bold transition flex items-center justify-center gap-1.5">
-                        <span>🎫</span> Support Ticket
+                        <span>🎫</span> New Ticket
                     </button>
                 </div>
             </div>
@@ -1032,7 +1021,7 @@
             document.getElementById('supportModal').classList.remove('flex');
         }
 
-        function openUserDashboard() {
+        async function openUserDashboard() {
             document.getElementById('dashUserEmail').innerText = currentUserEmail || 'Guest User';
             const isVip = state.role === 'vip';
             const isPro = state.role === 'pro';
@@ -1080,11 +1069,14 @@
                 daysLabel.innerText = "Public Access";
                 quotaText.innerText = "Top 3 Setups Only";
                 quotaBar.className = "bg-gray-600 h-full w-[25%] rounded-full";
-                accessScope.innerText = "Intraday (24H) Access Only";
+                accessScope.innerText = "Intraday (24H) Active Only";
                 uncappedTag.innerText = "Limited Cap (3 Setups)";
                 vipTelegramBtn.classList.add('hidden');
                 vipTelegramBtn.classList.remove('flex');
             }
+
+            // ইউজারের নিজস্ব সাপোর্ট টিকিট ও অ্যাডমিন রিপ্লাই লোড করা
+            await loadUserTicketsHistory();
 
             const modal = document.getElementById('userDashboardModal');
             modal.classList.remove('hidden');
@@ -1095,6 +1087,28 @@
             const modal = document.getElementById('userDashboardModal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+        }
+
+        async function loadUserTicketsHistory() {
+            const historyBox = document.getElementById('userTicketsHistory');
+            if(!currentUserEmail || !_supabase) return;
+
+            const { data } = await _supabase.from('support_tickets').select('*').eq('email', currentUserEmail).order('created_at', { ascending: false });
+            if(!data || data.length === 0) {
+                historyBox.innerHTML = `<p class="text-gray-500 text-center">No support tickets found.</p>`;
+                return;
+            }
+
+            historyBox.innerHTML = data.map(t => `
+                <div class="p-2.5 bg-[#0b1324] border border-white/5 rounded-lg space-y-1">
+                    <div class="flex justify-between items-center text-[10px] text-gray-400">
+                        <span><b>Sub:</b> ${t.subject}</span>
+                        <span class="text-amber-400 uppercase font-bold">${t.status}</span>
+                    </div>
+                    <p class="text-gray-300 text-[11px]"><b>Q:</b> ${t.message}</p>
+                    ${t.admin_reply ? `<p class="text-blue-300 text-[11px] bg-blue-950/40 p-1.5 rounded border border-blue-500/20"><b>Admin Reply:</b> ${t.admin_reply}</p>` : '<p class="text-gray-500 text-[10px] italic">Awaiting admin reply...</p>'}
+                </div>
+            `).join('');
         }
 
         function openForgotPasswordModal() {
@@ -1142,7 +1156,6 @@
         window.addEventListener('DOMContentLoaded', () => {
             if (_supabase) {
                 const hash = window.location.hash;
-                // FIX: Strictly open newPasswordModal ONLY when type=recovery is in hash.
                 if (hash && hash.includes('type=recovery')) {
                     const modal = document.getElementById('newPasswordModal');
                     if(modal) {
@@ -1155,7 +1168,18 @@
             checkUserSession();
             setupRealtimeListener();
             initBinanceTicker();
+            checkGlobalAnnouncements();
         });
+
+        async function checkGlobalAnnouncements() {
+            if(!_supabase) return;
+            const { data } = await _supabase.from('announcements').select('*').eq('is_active', true).order('created_at', { ascending: false }).limit(1);
+            if(data && data.length > 0) {
+                document.getElementById('announceText').innerText = data[0].message;
+                document.getElementById('globalAnnounceBanner').classList.remove('hidden');
+                document.getElementById('globalAnnounceBanner').classList.add('flex');
+            }
+        }
 
         async function saveNewPassword() {
             const newPassword = document.getElementById('userNewPassword').value.trim();
@@ -1244,12 +1268,6 @@
                 document.cookie = `googtrans=/en/${langCode}; path=/;`;
                 document.cookie = `googtrans=/en/${langCode}; domain=.${location.hostname}; path=/;`;
                 location.reload();
-            }
-
-            if (langCode === 'ur' || langCode === 'ar') {
-                document.documentElement.dir = 'rtl';
-            } else {
-                document.documentElement.dir = 'ltr';
             }
         }
 
@@ -1943,6 +1961,20 @@
                 if(error) {
                     showAuthFeedback(error.message);
                 } else {
+                    // সাইন আপের সময় যদি প্র বা ভিআইপি সিলেক্ট করে তবে সরাসরি orders টেবিলে পেন্ডিং অর্ডার এন্ট্রি করা
+                    if(chosenPlan !== 'free') {
+                        const productName = chosenPlan === 'pro' ? 'Pro Monthly ($5/mo)' : 'VIP 2-Year Special Deal ($49)';
+                        const priceStr = chosenPlan === 'pro' ? '$5' : '$49';
+                        await _supabase.from('orders').insert([{
+                            customer_name: email,
+                            product_name: productName,
+                            price: priceStr,
+                            trx_id: 'SIGNUP_PENDING_' + Date.now(),
+                            status: 'pending',
+                            email: email
+                        }]);
+                    }
+
                     showAuthFeedback("✔ Registration Successful! A verification link has been sent to your email. Please check your inbox (and spam folder) to activate your account.", true);
                     
                     if (chosenPlan === 'pro') {
@@ -1958,10 +1990,18 @@
                     }
                 }
             } else {
-                const { error } = await _supabase.auth.signInWithPassword({ email, password });
+                const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
                 if(error) {
                     showAuthFeedback(error.message);
                 } else {
+                    // ব্যান চেক
+                    const { data: prof } = await _supabase.from('user_profiles').select('status').eq('id', data.user.id).single();
+                    if(prof && prof.status === 'banned') {
+                        await _supabase.auth.signOut();
+                        showAuthFeedback("Your account has been suspended/banned by admin.");
+                        return;
+                    }
+
                     showAuthFeedback("Login successful! Loading membership profile...", true);
                     setTimeout(() => {
                         closeAuthModal();
@@ -1987,9 +2027,16 @@
                     let daysLeft = null;
                     const { data } = await _supabase
                         .from('user_profiles')
-                        .select('tier, expires_at')
+                        .select('tier, expires_at, status')
                         .eq('id', session.user.id)
                         .single();
+
+                    if(data && data.status === 'banned') {
+                        await _supabase.auth.signOut();
+                        alert("Your account is banned.");
+                        location.reload();
+                        return;
+                    }
 
                     if(data && data.tier) {
                         userTier = data.tier.toLowerCase();
@@ -2021,7 +2068,7 @@
                             guardText.innerText = "Pro Trader Pass Active: Unlocked Alpha Setups.";
                         }
                     } else {
-                        tierBadge = ''; // FIX: Free tier has NO VIP/Pro badge on header
+                        tierBadge = '';
                         state.limit = 3;
                         if(guardBox && guardText) {
                             guardBox.className = "pt-3 border-t border-white/[0.08] p-3 rounded-xl bg-black/30 text-[11px] font-mono text-gray-400 space-y-1";
