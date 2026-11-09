@@ -388,19 +388,19 @@
             if (!currentActiveOrder) return;
             const creds = document.getElementById('deliveryCredentials').value.trim();
             const customerEmail = currentActiveOrder.email || currentActiveOrder.customer_name;
-            const isVIP = (currentActiveOrder.product_name || '').includes('VIP') || (currentActiveOrder.product_name || '').includes('49');
+            const isVIP = (currentActiveOrder.product_name || '').includes('VIP') || (currentActiveOrder.product_name || '').includes('49') || (currentActiveOrder.product_name || '').includes('2-Year');
             const targetTier = isVIP ? 'vip' : 'pro';
             const days = isVIP ? 730 : 30;
 
             try {
-                // ডুপ্লিকেট TrxID চেক
+                // ১. ডুপ্লিকেট TrxID চেক
                 const { data: existingTrx } = await _supabase.from('orders').select('id').eq('trx_id', currentActiveOrder.trx_id).eq('status', 'approved');
                 if (existingTrx && existingTrx.length > 0) {
                     alert("⚠️ সতর্কতা: এই TrxID দিয়ে ইতিপূর্বেই একটি অর্ডার অ্যাপ্রুভ করা হয়েছে!");
                     return;
                 }
 
-                // ১. অর্ডার স্ট্যাটাস ও ডেলিভারি ডেটা আপডেট
+                // ২. অর্ডার স্ট্যাটাস 'approved' করা
                 const { error: orderErr } = await _supabase.from('orders').update({ 
                     status: 'approved', 
                     delivery_data: creds 
@@ -408,30 +408,29 @@
 
                 if (orderErr) throw orderErr;
 
-                // ২. ইউজারের অ্যাকাউন্ট টিয়ার আপডেট (যা ফ্রি প্ল্যানে থাকার সমস্যা সমাধান করবে)
-                const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
-                const { error: profileErr } = await _supabase.from('user_profiles').update({ 
-                    tier: targetTier, 
-                    expires_at: expiresAt 
-                }).eq('email', customerEmail);
+                // ৩. Supabase RPC ফাংশনের মাধ্যমে নিশ্চিতভাবে ইউজারের টিয়ার আপডেট করা
+                const { error: rpcErr } = await _supabase.rpc('admin_force_upgrade_user', {
+                    p_user_email: customerEmail,
+                    p_tier: targetTier,
+                    p_duration_days: days
+                });
 
-                if (profileErr) {
-                    console.warn("Profile table update warning:", profileErr.message);
+                if (rpcErr) {
+                    throw new Error("অর্ডার এপ্রুভ হয়েছে কিন্তু ইউজার টিয়ার আপডেট ব্যর্থ: " + rpcErr.message);
                 }
 
-                // ৩. হোয়াটসঅ্যাপ এবং জিমেইল অটো নোটিফিকেশন ট্রিগার
+                // ৪. WhatsApp এবং Gmail অটো নোটিফিকেশন ট্রিগার
                 const phoneNum = (currentActiveOrder.whatsapp || currentActiveOrder.phone || '').replace(/[^0-9]/g, '');
                 if (phoneNum) {
                     const waText = encodeURIComponent(`Hi ${customerEmail}, your GreatNexa order (${currentActiveOrder.product_name}) is approved!\n\n${creds}\n\nTelegram VIP: ${TELEGRAM_VIP_LINK}`);
                     window.open(`https://wa.me/${phoneNum.startsWith('88') ? phoneNum : '88' + phoneNum}?text=${waText}`, '_blank');
                 }
 
-                // জিমেইল অটো ওপেন করার লিংক
                 const mailSubject = encodeURIComponent("GreatNexa Terminal Account Approved & Access Details");
                 const mailBody = encodeURIComponent(`Hello,\n\nYour order for ${currentActiveOrder.product_name} has been approved.\n\n${creds}\n\nJoin VIP Telegram: ${TELEGRAM_VIP_LINK}\n\nRegards,\nGreatNexa Team`);
                 window.open(`mailto:${customerEmail}?subject=${mailSubject}&body=${mailBody}`, '_blank');
 
-                alert("✔ Order approved successfully, user tier upgraded, & WhatsApp/Gmail automated triggers sent!");
+                alert("✔ Order approved successfully, User successfully upgraded to " + targetTier.toUpperCase() + ", & Notifications triggered!");
                 closeDeliveryModal();
                 loadOrders();
 
@@ -445,14 +444,18 @@
             const tier = document.getElementById('targetUserTier').value;
             if(!email) { alert("Please enter user email."); return; }
 
-            const expiryDays = tier === 'vip' ? 730 : (tier === 'pro' ? 30 : null);
-            let expiresAt = expiryDays ? new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000).toISOString() : null;
+            const expiryDays = tier === 'vip' ? 730 : (tier === 'pro' ? 30 : 365);
 
-            const { error } = await _supabase.from('user_profiles').update({ tier: tier, expires_at: expiresAt }).eq('email', email);
+            const { error } = await _supabase.rpc('admin_force_upgrade_user', {
+                p_user_email: email,
+                p_tier: tier,
+                p_duration_days: expiryDays
+            });
+
             if(error) {
                 alert("Failed to update user tier: " + error.message);
             } else {
-                alert(`✔ Success! User ${email} updated to ${tier.toUpperCase()} tier.`);
+                alert(`✔ Success! User ${email} successfully upgraded to ${tier.toUpperCase()} tier.`);
                 document.getElementById('targetUserEmail').value = '';
             }
         }
