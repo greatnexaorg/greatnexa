@@ -169,13 +169,13 @@
             </div>
         </div>
 
-        <!-- কাস্টমার সাপোর্ট সিস্টেম (Support Desk) -->
+        <!-- কাস্টমার সাপোর্ট সিস্টেম (Support Desk with Admin Reply) -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 p-5 space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-sm font-bold text-white font-mono">🎫 Customer Support Helpdesk Tickets</h3>
                 <span class="text-xs text-gray-400 font-mono">Inquiries & Issue Reports</span>
             </div>
-            <div id="supportTicketsList" class="space-y-3 font-mono text-xs">
+            <div id="supportTicketsList" class="space-y-4 font-mono text-xs">
                 <p class="text-gray-400">Loading support tickets...</p>
             </div>
         </div>
@@ -483,6 +483,7 @@
             listDiv.innerHTML = data.map(c => `<div><b>${c.code}</b>: ${c.discount_pct}% OFF</div>`).join('');
         }
 
+        // সাপোর্ট টিকিট সিস্টেম ও অ্যাডমিন রিপ্লাই ফিচার
         async function loadSupportTickets() {
             const ticketDiv = document.getElementById('supportTicketsList');
             const { data, error } = await _supabase.from('support_tickets').select('*').order('created_at', { ascending: false }).limit(10);
@@ -491,14 +492,46 @@
                 return;
             }
             ticketDiv.innerHTML = data.map(t => `
-                <div class="p-3 bg-[#0b1324] border border-white/10 rounded-xl flex justify-between items-center">
-                    <div>
-                        <p class="font-bold text-white">${t.subject} <span class="text-xs text-blue-400">(${t.email})</span></p>
-                        <p class="text-gray-300 text-xs mt-0.5">${t.message}</p>
+                <div class="p-4 bg-[#0b1324] border border-white/10 rounded-xl space-y-3">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-white text-sm">${t.subject} <span class="text-xs text-blue-400 font-mono">(${t.email})</span></p>
+                            <p class="text-gray-300 text-xs mt-1">${t.message}</p>
+                        </div>
+                        <span class="px-2.5 py-1 bg-amber-500/20 text-amber-300 rounded text-[10px] font-bold">${(t.status || 'open').toUpperCase()}</span>
                     </div>
-                    <span class="px-2.5 py-1 bg-amber-500/20 text-amber-300 rounded text-[10px] font-bold">${(t.status || 'open').toUpperCase()}</span>
+                    ${t.admin_reply ? `<div class="p-2.5 bg-blue-950/30 border border-blue-500/20 rounded-lg text-xs text-blue-300"><b>Admin Reply:</b> ${t.admin_reply}</div>` : ''}
+                    <div class="flex gap-2 pt-2 border-t border-white/5">
+                        <input type="text" id="replyText_${t.id}" placeholder="Type reply for customer..." class="w-full bg-black border border-white/15 text-white rounded-lg px-3 py-1.5 text-xs">
+                        <button onclick="sendTicketReply('${t.id}', '${t.email}', '${t.subject}')" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs transition cursor-pointer shrink-0">Send & Email</button>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        async function sendTicketReply(ticketId, customerEmail, subject) {
+            const replyInput = document.getElementById(`replyText_${ticketId}`);
+            const replyMsg = replyInput.value.trim();
+            if(!replyMsg) { alert("Please type a reply message."); return; }
+
+            try {
+                const { error } = await _supabase.from('support_tickets').update({ 
+                    admin_reply: replyMsg, 
+                    status: 'resolved' 
+                }).eq('id', ticketId);
+
+                if (error) throw error;
+
+                // জিমেইলে অটো রিপ্লাই ট্রিগার
+                const mailSubject = encodeURIComponent("Reply to your Support Ticket: " + subject);
+                const mailBody = encodeURIComponent(`Hello,\n\nRegarding your support ticket (${subject}), our admin team replied:\n\n${replyMsg}\n\nRegards,\nGreatNexa Team`);
+                window.open(`mailto:${customerEmail}?subject=${mailSubject}&body=${mailBody}`, '_blank');
+
+                alert("✔ Reply saved and email client triggered successfully!");
+                loadSupportTickets();
+            } catch (err) {
+                alert("Failed to send reply: " + err.message);
+            }
         }
 
         function renderRevenueChart(dateMap) {
