@@ -65,7 +65,7 @@
                     <span>🛡️</span> GreatNexa Enterprise Admin & Automation Suite
                 </h1>
                 <div class="flex items-center gap-3 mt-1">
-                    <p class="text-xs text-gray-400">Connected: <span id="adminSessionEmail" class="text-blue-400 font-mono"></span></p>
+                    <p class="text-xs text-gray-400">Connected: <span id="adminSessionEmail" class="text-blue-400 font-mono"></span> (<span id="adminRoleBadge" class="text-amber-400 font-bold">Admin</span>)</p>
                     <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded text-[10px] font-mono font-bold flex items-center gap-1">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> LIVE REALTIME ACTIVE
                     </span>
@@ -118,7 +118,7 @@
                 </div>
             </div>
 
-            <!-- প্রোমো কোড ও ডিসকাউন্ট কুপন সিস্টেম -->
+            <!-- কুপন সিস্টেম -->
             <div class="glass-panel p-5 rounded-2xl border border-white/10 flex flex-col justify-between space-y-4">
                 <div>
                     <h3 class="text-xs font-bold text-blue-400 mb-3 font-mono uppercase">🎟️ Create Discount Coupon</h3>
@@ -134,7 +134,7 @@
             </div>
         </div>
 
-        <!-- নতুন ফিচার ১: গ্লোবাল ব্রডকাস্ট অ্যানাউন্সমেন্ট (Live Announce Banner) -->
+        <!-- ফিচার ৩: গ্লোবাল ব্রডকাস্ট অ্যানাউন্সমেন্ট -->
         <div class="glass-panel p-5 rounded-2xl border border-blue-500/30 space-y-3">
             <h3 class="text-sm font-bold text-blue-400 font-mono">📢 Global Broadcast Announcement</h3>
             <div class="flex gap-2 font-mono text-xs">
@@ -143,25 +143,30 @@
             </div>
         </div>
 
-        <!-- ইউজার ও সাবস্ক্রিপশন ম্যানেজমেন্ট + ইউজার ব্যান/সাসপেন্ড -->
+        <!-- ফিচার ২ & ৪: ইউজার ম্যানেজমেন্ট, ব্যান ও মাল্টি-অ্যাডমিন রোল অ্যাসাইন -->
         <div class="glass-panel p-5 rounded-2xl border border-white/10 space-y-4">
             <div class="flex justify-between items-center">
-                <h3 class="text-sm font-bold text-white font-mono">👥 User & Tier Management & Security (Pro / VIP / Ban)</h3>
-                <span class="text-xs text-gray-400 font-mono">Manual Override & Suspension</span>
+                <h3 class="text-sm font-bold text-white font-mono">👥 User & Role Management (Tier / Ban / Support Agent)</h3>
+                <span class="text-xs text-gray-400 font-mono">Super Admin Controls</span>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 font-mono text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 font-mono text-xs">
                 <input type="email" id="targetUserEmail" placeholder="User Email..." class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2.5">
                 <select id="targetUserTier" class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2.5 [&>option]:bg-[#0b1324]">
                     <option value="free">Free Tier</option>
                     <option value="pro">Pro Tier (30 Days)</option>
                     <option value="vip">VIP Tier (2 Years)</option>
                 </select>
-                <button onclick="handleManualUserUpgrade()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl transition cursor-pointer">Update Tier</button>
-                <button onclick="handleUserBan()" class="bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 font-bold py-2.5 rounded-xl transition cursor-pointer">Ban / Suspend</button>
+                <select id="targetUserRole" class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2.5 [&>option]:bg-[#0b1324]">
+                    <option value="user">Regular User</option>
+                    <option value="support_agent">Support Agent</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <button onclick="handleManualUserUpgrade()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl transition cursor-pointer">Update Profile</button>
+                <button onclick="handleUserBan()" class="bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 font-bold py-2.5 rounded-xl transition cursor-pointer">Ban User</button>
             </div>
         </div>
 
-        <!-- Orders Table & Search & Real-time Stream -->
+        <!-- Orders Table & Real-time Stream -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10">
             <div class="p-4 border-b border-white/10 flex flex-wrap justify-between items-center gap-3">
                 <div class="flex items-center gap-2">
@@ -193,7 +198,7 @@
             </div>
         </div>
 
-        <!-- নতুন ফিচার ২: ট্রানজেকশন ও পেমেন্ট হিস্ট্রি লগ (Audit Logs) -->
+        <!-- ফিচার ১: ট্রানজেকশন ও পেমেন্ট হিস্ট্রি লগ (Audit Logs) -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 p-5 space-y-4">
             <h3 class="text-sm font-bold text-white font-mono">📜 Admin Audit Trail & Transaction Logs</h3>
             <div id="auditLogsContainer" class="space-y-2 font-mono text-xs max-h-48 overflow-y-auto">
@@ -201,7 +206,7 @@
             </div>
         </div>
 
-        <!-- কাস্টমার সাপোর্ট সিস্টেম (Support Desk with Admin Reply) -->
+        <!-- সাপোর্ট সিস্টেম (Support Desk with Admin Reply) -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 p-5 space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-sm font-bold text-white font-mono">🎫 Customer Support Helpdesk Tickets</h3>
@@ -241,6 +246,7 @@
         let revenueChartInstance = null;
         let cachedOrdersData = [];
         let currentAdminEmail = '';
+        let currentAdminRole = '';
 
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('adminPassword');
@@ -259,12 +265,14 @@
             if (!session) { showAuthModal(); return; }
 
             const { data } = await _supabase.from('user_profiles').select('role').eq('id', session.user.id).single();
-            if (data && data.role === 'admin') {
+            if (data && (data.role === 'admin' || data.role === 'support_agent')) {
                 currentAdminEmail = session.user.email;
+                currentAdminRole = data.role;
                 document.getElementById('adminSessionEmail').innerText = currentAdminEmail;
+                document.getElementById('adminRoleBadge').innerText = data.role === 'admin' ? 'Super Admin' : 'Support Agent';
                 unlockUI();
             } else {
-                showAuthModal("অ্যাক্সেস ডিনাইড! এই অ্যাকাউন্টের অ্যাডমিন পারমিশন নেই।");
+                showAuthModal("অ্যাক্সেস ডিনাইড! এই অ্যাকাউন্টের অ্যাডমিন বা সাপোর্ট পারমিশন নেই।");
                 await _supabase.auth.signOut();
             }
         }
@@ -285,13 +293,15 @@
                 if (error) throw error;
 
                 const { data: prof } = await _supabase.from('user_profiles').select('role').eq('id', data.user.id).single();
-                if (prof && prof.role === 'admin') {
+                if (prof && (prof.role === 'admin' || prof.role === 'support_agent')) {
                     currentAdminEmail = data.user.email;
+                    currentAdminRole = prof.role;
                     document.getElementById('adminSessionEmail').innerText = currentAdminEmail;
+                    document.getElementById('adminRoleBadge').innerText = prof.role === 'admin' ? 'Super Admin' : 'Support Agent';
                     unlockUI();
                 } else {
                     await _supabase.auth.signOut();
-                    throw new Error("অননুমোদিত অ্যাকাউন্ট! আপনি অ্যাডমিন নন।");
+                    throw new Error("অননুমোদিত অ্যাকাউন্ট! আপনার অ্যাডমিন রোল নেই।");
                 }
             } catch (err) {
                 errBox.innerText = err.message || "লগইন ব্যর্থ হয়েছে!";
@@ -356,7 +366,6 @@
             renderOrdersTable(cachedOrdersData);
         }
 
-        // Supabase Real-time Channel (নতুন অর্ডার আসামাত্র রিফ্রেশ ছাড়াই শো করবে)
         function setupOrdersRealtimeListener() {
             _supabase
                 .channel('admin_orders_channel')
@@ -364,7 +373,6 @@
                     'postgres_changes',
                     { event: '*', schema: 'public', table: 'orders' },
                     (payload) => {
-                        console.log('Realtime order change detected:', payload);
                         loadOrders();
                     }
                 )
@@ -471,7 +479,6 @@
 
                 if (rpcErr) throw new Error(rpcErr.message);
 
-                // অডিট লগ সংরক্ষণ
                 await logAdminAction('APPROVE_ORDER', `Approved order for ${customerEmail} [Tier: ${targetTier}]`);
 
                 const phoneNum = (currentActiveOrder.whatsapp || currentActiveOrder.phone || '').replace(/[^0-9]/g, '');
@@ -496,28 +503,33 @@
         async function handleManualUserUpgrade() {
             const email = document.getElementById('targetUserEmail').value.trim();
             const tier = document.getElementById('targetUserTier').value;
+            const newRole = document.getElementById('targetUserRole').value;
             if(!email) { alert("Please enter user email."); return; }
 
             const expiryDays = tier === 'vip' ? 730 : (tier === 'pro' ? 30 : 365);
 
-            const { error } = await _supabase.rpc('admin_force_upgrade_user', {
+            // টিয়ার আপডেট
+            const { error: tierErr } = await _supabase.rpc('admin_force_upgrade_user', {
                 p_user_email: email,
                 p_tier: tier,
                 p_duration_days: expiryDays
             });
 
-            if(error) {
-                alert("Failed to update user tier: " + error.message);
+            // রোল আপডেট (Super Admin বা Support Agent)
+            const { error: roleErr } = await _supabase.from('user_profiles').update({ role: newRole }).eq('email', email);
+
+            if(tierErr || roleErr) {
+                alert("Failed to update profile: " + (tierErr?.message || roleErr?.message));
             } else {
-                await logAdminAction('MANUAL_UPGRADE', `Manually upgraded ${email} to ${tier.toUpperCase()}`);
-                alert(`✔ Success! User ${email} successfully upgraded to ${tier.toUpperCase()} tier.`);
+                await logAdminAction('UPDATE_PROFILE', `Updated ${email} -> Tier: ${tier.toUpperCase()}, Role: ${newRole}`);
+                alert(`✔ Success! User ${email} profile updated successfully.`);
                 document.getElementById('targetUserEmail').value = '';
                 loadAuditLogs();
             }
         }
 
-        // ফিচার: ইউজার ব্যান / সাসপেন্ড
         async function handleUserBan() {
+            if (currentAdminRole !== 'admin') { alert("Permission Denied: Only Super Admin can ban users."); return; }
             const email = document.getElementById('targetUserEmail').value.trim();
             if(!email) { alert("Please enter user email to ban."); return; }
             if(!confirm(`Are you sure you want to suspend/ban user ${email}?`)) return;
@@ -533,8 +545,8 @@
             }
         }
 
-        // ফিচার: গ্লোবাল ব্রডকাস্ট অ্যানাউন্সমেন্ট প্রকাশ
         async function publishBroadcast() {
+            if (currentAdminRole !== 'admin') { alert("Permission Denied: Only Super Admin can publish announcements."); return; }
             const msg = document.getElementById('broadcastMsg').value.trim();
             if(!msg) { alert("Please type announcement message."); return; }
 
@@ -549,7 +561,6 @@
             }
         }
 
-        // অডিট লগ সেভ করার ফাংশন
         async function logAdminAction(action, details) {
             await _supabase.from('audit_logs').insert([{
                 admin_email: currentAdminEmail,
