@@ -150,7 +150,7 @@
                 </div>
             </div>
 
-            <!-- 3. Manual Upgrade / Control Box (Full Width in Top Container) -->
+            <!-- 3. Manual Upgrade / Control Box (Full Width) -->
             <div class="lg:col-span-12 glass-panel p-4 sm:p-5 rounded-2xl border border-blue-500/30 space-y-3">
                 <div class="flex justify-between items-center">
                     <span class="text-xs font-bold text-blue-400 font-mono uppercase tracking-wide">⚙️ Manual Upgrade & User Tier Manager</span>
@@ -216,104 +216,6 @@
             </div>
         </div>
 
-        <!-- Market Research & Quant Signal Publisher -->
-        <div class="glass-panel p-5 sm:p-6 rounded-2xl border border-purple-500/30 space-y-4">
-            <div class="flex justify-between items-center border-b border-white/10 pb-3">
-                <div>
-                    <h3 class="text-base font-bold text-white font-mono flex items-center gap-2">
-                        <span>⚡</span> Market Research & Quant Signal Publisher
-                    </h3>
-                    <p class="text-xs text-gray-400 font-mono">ইউজার টার্মিনালে লাইভ হাই-কনভিকশন সেটআপ পাবলিশ ও ডিলিট করুন।</p>
-                </div>
-                <button type="button" onclick="toggleSignalForm()" id="btnToggleSignalForm" class="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold font-mono transition cursor-pointer">
-                    + Post New Signal
-                </button>
-            </div>
-
-            <!-- Signal Creation Form -->
-            <form id="newSignalForm" onsubmit="handlePublishSignal(event)" class="hidden p-4 rounded-xl bg-black/40 border border-white/10 space-y-3 font-mono text-xs">
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    <div>
-                        <label class="block text-gray-400 text-[10px] mb-1">Asset Symbol</label>
-                        <input type="text" id="sigSymbol" required placeholder="e.g. BTCUSDT, XAUUSD" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 uppercase">
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 text-[10px] mb-1">Market Universe</label>
-                        <select id="sigMarketType" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 [&>option]:bg-[#0b1324]">
-                            <option value="crypto">Crypto</option>
-                            <option value="forex">Forex & Gold</option>
-                            <option value="stocks">US Equities</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 text-[10px] mb-1">Direction</label>
-                        <select id="sigDirection" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 [&>option]:bg-[#0b1324]">
-                            <option value="long">🟢 Long / Buy</option>
-                            <option value="short">🔴 Short / Sell</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 text-[10px] mb-1">Trader Style / Horizon</label>
-                        <select id="sigHorizon" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 [&>option]:bg-[#0b1324]">
-                            <option value="24h">Intraday (24H / Scalp)</option>
-                            <option value="1w">1 Week (Day Trade)</option>
-                            <option value="1m">1 Month (Swing Trade)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    <div>
-                        <label class="block text-gray-400 text-[10px] mb-1">Entry Price</label>
-                        <input type="number" step="any" id="sigEntry" required placeholder="98500" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2">
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 text-[10px] mb-1">Take Profit (TP)</label>
-                        <input type="number" step="any" id="sigTP" required placeholder="104200" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2">
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 text-[10px] mb-1">Stop Loss (SL)</label>
-                        <input type="number" step="any" id="sigSL" required placeholder="96200" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2">
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 text-[10px] mb-1">Model Score (0-100)</label>
-                        <input type="number" id="sigScore" value="88" min="50" max="99" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <input type="text" id="sigStage" placeholder="Stage (e.g. Liquidity Sweep, Order Block)" value="Liquidity Sweep" class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2">
-                    <input type="text" id="sigNote" placeholder="Quant Note (e.g. Dark pool accumulation confirmed.)" value="Dark pool accumulation footprint confirmed." class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2">
-                </div>
-
-                <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold rounded-xl transition cursor-pointer shadow-lg">
-                    🚀 Broadcast Signal to Terminal
-                </button>
-            </form>
-
-            <!-- সিগন্যাল টেবিল -->
-            <div class="overflow-x-auto rounded-xl border border-white/10 max-h-60 overflow-y-auto">
-                <table class="w-full text-left text-xs text-gray-300 font-mono">
-                    <thead class="bg-[#0b1324] text-gray-400 uppercase text-[10px] border-b border-white/10 sticky top-0">
-                        <tr>
-                            <th class="p-2.5">Symbol</th>
-                            <th class="p-2.5">Universe</th>
-                            <th class="p-2.5">Dir</th>
-                            <th class="p-2.5">Entry / TP / SL</th>
-                            <th class="p-2.5">Score</th>
-                            <th class="p-2.5">Status</th>
-                            <th class="p-2.5 text-right">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="signalsTableBody" class="divide-y divide-white/5">
-                        <tr>
-                            <td colspan="7" class="text-center p-4 text-gray-500">Loading active signals...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
         <!-- Global Announcement Banner -->
         <div class="glass-panel p-5 rounded-2xl border border-blue-500/30 space-y-3">
             <div class="flex justify-between items-center">
@@ -326,28 +228,16 @@
             </div>
         </div>
 
-        <!-- Audit Logs & Support Tickets Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            <!-- Audit Logs -->
-            <div class="glass-panel rounded-2xl border border-white/10 p-5 space-y-3">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-sm font-bold text-white font-mono">📜 Admin Audit Trail</h3>
-                    <button type="button" onclick="clearAuditLogs()" class="text-[10px] text-rose-400 hover:underline font-mono">Clear Logs</button>
-                </div>
-                <div id="auditLogsContainer" class="space-y-2 font-mono text-xs max-h-48 overflow-y-auto pr-1">
-                    <p class="text-gray-400">Loading audit logs...</p>
-                </div>
+        <!-- Support Tickets Desk -->
+        <div class="glass-panel rounded-2xl border border-white/10 p-5 space-y-3">
+            <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                <h3 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                    <span>🎫</span> Customer Support Helpdesk Tickets
+                </h3>
+                <span class="text-xs text-gray-400 font-mono">Inquiries & Issue Reports</span>
             </div>
-
-            <!-- Support Tickets Desk -->
-            <div class="glass-panel rounded-2xl border border-white/10 p-5 space-y-3">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-sm font-bold text-white font-mono">🎫 Helpdesk Tickets</h3>
-                    <span class="text-xs text-gray-400 font-mono">Customer Queries</span>
-                </div>
-                <div id="supportTicketsList" class="space-y-3 font-mono text-xs max-h-48 overflow-y-auto pr-1">
-                    <p class="text-gray-400">Loading support tickets...</p>
-                </div>
+            <div id="supportTicketsList" class="space-y-3 font-mono text-xs max-h-60 overflow-y-auto pr-1">
+                <p class="text-gray-400">Loading support tickets...</p>
             </div>
         </div>
 
@@ -382,9 +272,10 @@
         let revenueChartInstance = null;
         let cachedOrdersData = [];
         let cachedUsersData = [];
+        let cachedCouponsData = [];
         let currentAdminEmail = '';
         let currentAdminRole = '';
-        let activeMasterTab = 'orders'; // 'orders' or 'users'
+        let activeMasterTab = 'orders';
 
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('adminPassword');
@@ -486,10 +377,8 @@
             await Promise.all([
                 loadOrders(),
                 loadUsersDirectory(),
-                loadLiveSignals(),
                 loadCoupons(),
-                loadSupportTickets(),
-                loadAuditLogs()
+                loadSupportTickets()
             ]);
         }
 
@@ -657,7 +546,7 @@
                 }
                 cachedOrdersData = filtered;
                 renderMasterTable();
-                loadOrders(false); // Restore original
+                loadOrders(false);
             } else {
                 const filtered = cachedUsersData.filter(u => (u.email || '').toLowerCase().includes(query));
                 const tbody = document.getElementById('masterTableBody');
@@ -667,7 +556,7 @@
                 }
                 cachedUsersData = filtered;
                 renderMasterTable();
-                loadUsersDirectory(false); // Restore original
+                loadUsersDirectory(false);
             }
         }
 
@@ -708,15 +597,13 @@
         // REALTIME SUBSCRIPTION (ZERO-REFRESH)
         // ==========================================
         function setupRealtimeSubscriptions() {
-            // New orders listen
             _supabase
                 .channel('admin_live_orders')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
                     loadOrders();
                 })
                 .subscribe();
 
-            // Users listen
             _supabase
                 .channel('admin_live_users')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'user_profiles' }, () => {
@@ -724,17 +611,16 @@
                 })
                 .subscribe();
 
-            // Signals listen
             _supabase
-                .channel('admin_live_signals')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'market_research' }, () => {
-                    loadLiveSignals();
+                .channel('admin_live_tickets')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'support_tickets' }, () => {
+                    loadSupportTickets();
                 })
                 .subscribe();
         }
 
         // ==========================================
-        // COUPONS MANAGEMENT
+        // COUPONS MANAGEMENT (FIXED DELETE)
         // ==========================================
         async function handleCreateCoupon(e) {
             e.preventDefault();
@@ -745,36 +631,46 @@
             if (error) {
                 alert("Error creating coupon: " + error.message);
             } else {
-                await logAdminAction('CREATE_COUPON', `Created coupon ${code} (${discount}%)`);
                 document.getElementById('couponCode').value = '';
                 document.getElementById('couponDiscount').value = '';
                 loadCoupons();
-                loadAuditLogs();
             }
         }
 
         async function deleteCoupon(couponId, code) {
-            if (!confirm(`Delete coupon ${code}?`)) return;
+            if (!confirm(`Are you sure you want to delete coupon ${code}?`)) return;
+            
+            // তাৎক্ষণিক ইউজার ইন্টারফেস থেকে হাইড করা
+            cachedCouponsData = cachedCouponsData.filter(c => c.id !== couponId && c.code !== code);
+            renderCouponsList();
+
+            // ডাটাবেস থেকে ডিলিট (ফেল করলে সফট ডিঅ্যাক্টিভেট)
             const { error } = await _supabase.from('coupons').delete().eq('id', couponId);
             if (error) {
-                alert("Failed to delete coupon: " + error.message);
-            } else {
-                await logAdminAction('DELETE_COUPON', `Deleted coupon ${code}`);
-                loadCoupons();
-                loadAuditLogs();
+                console.warn("Direct delete failed, marking is_active = false:", error.message);
+                await _supabase.from('coupons').update({ is_active: false }).eq('id', couponId);
             }
+            loadCoupons();
         }
 
-        async function loadCoupons() {
+        function renderCouponsList() {
             const listDiv = document.getElementById('activeCouponsList');
-            const { data } = await _supabase.from('coupons').select('*').order('created_at', { ascending: false });
-            if (!data || data.length === 0) { listDiv.innerHTML = "No active coupons."; return; }
-            listDiv.innerHTML = data.map(c => `
+            if (!cachedCouponsData || cachedCouponsData.length === 0) {
+                listDiv.innerHTML = '<span class="text-gray-500">No active coupons.</span>';
+                return;
+            }
+            listDiv.innerHTML = cachedCouponsData.map(c => `
                 <div class="flex justify-between items-center bg-[#091122] p-1.5 rounded border border-white/5">
                     <span><b>${c.code}</b>: ${c.discount_pct}% OFF</span>
                     <button type="button" onclick="deleteCoupon('${c.id}', '${c.code}')" class="text-rose-400 hover:text-white text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-600/20 hover:bg-rose-600 transition">Delete</button>
                 </div>
             `).join('');
+        }
+
+        async function loadCoupons() {
+            const { data } = await _supabase.from('coupons').select('*').eq('is_active', true).order('created_at', { ascending: false });
+            cachedCouponsData = data || [];
+            renderCouponsList();
         }
 
         // ==========================================
@@ -830,10 +726,8 @@
                     }).ilike('email', email);
                 }
 
-                await logAdminAction('UPDATE_USER', `Updated ${email} [${tier.toUpperCase()}, ${days} Days, ${role}]`);
                 alert(`✔ ইউজার ${email} সফলভাবে আপডেট হয়েছে!`);
                 loadUsersDirectory();
-                loadAuditLogs();
             } catch (err) {
                 alert("Failed to update user: " + err.message);
             }
@@ -856,9 +750,8 @@
                     }).ilike('email', email);
                 }
 
-                await logAdminAction(banState ? 'BAN_USER' : 'UNBAN_USER', `${banState ? 'Banned' : 'Unbanned'} user: ${email}`);
+                alert(`✔ User ${email} has been ${banState ? 'banned' : 'unbanned'} successfully.`);
                 loadUsersDirectory();
-                loadAuditLogs();
             } catch (err) {
                 alert("Error toggling ban status: " + err.message);
             }
@@ -904,8 +797,6 @@
                     p_duration_days: days
                 });
 
-                await logAdminAction('APPROVE_ORDER', `Approved order for ${customerEmail} [Tier: ${targetTier}]`);
-
                 const phoneNum = (currentActiveOrder.sender_phone || currentActiveOrder.whatsapp || currentActiveOrder.phone || '').replace(/[^0-9]/g, '');
                 if (phoneNum && phoneNum.length > 5) {
                     const waText = encodeURIComponent(`Hi ${customerEmail}, your GreatNexa order (${currentActiveOrder.product_name}) is approved!\n\n${creds}\n\nTelegram VIP: ${TELEGRAM_VIP_LINK}`);
@@ -928,133 +819,30 @@
         async function handleRejectOrder(orderId, trxId) {
             if (!confirm(`Are you sure you want to reject order ${trxId}?`)) return;
             await _supabase.from('orders').update({ status: 'rejected' }).eq('id', orderId);
-            await logAdminAction('REJECT_ORDER', `Rejected order TrxID: ${trxId}`);
             loadOrders();
-            loadAuditLogs();
         }
 
         async function handleDeleteOrder(orderId, trxId) {
             if (!confirm(`Permanently delete order record ${trxId}?`)) return;
             await _supabase.from('orders').delete().eq('id', orderId);
-            await logAdminAction('DELETE_ORDER', `Deleted order TrxID: ${trxId}`);
             loadOrders();
-            loadAuditLogs();
         }
 
         // ==========================================
-        // SIGNALS & OTHER HELPERS
+        // ANNOUNCEMENT & TICKETS
         // ==========================================
-        function toggleSignalForm() {
-            const form = document.getElementById('newSignalForm');
-            const btn = document.getElementById('btnToggleSignalForm');
-            if (form.classList.contains('hidden')) {
-                form.classList.remove('hidden');
-                btn.innerText = "✕ Close Form";
-            } else {
-                form.classList.add('hidden');
-                btn.innerText = "+ Post New Signal";
-            }
-        }
-
-        async function loadLiveSignals() {
-            const tbody = document.getElementById('signalsTableBody');
-            const { data } = await _supabase.from('market_research').select('*').order('created_at', { ascending: false }).limit(50);
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center p-4 text-gray-500">No active signals found.</td></tr>';
-                return;
-            }
-            tbody.innerHTML = data.map(s => `
-                <tr class="hover:bg-white/[0.02] transition">
-                    <td class="p-2.5 font-bold text-white">${s.symbol}</td>
-                    <td class="p-2.5 uppercase text-gray-400 text-[10px]">${s.market_type}</td>
-                    <td class="p-2.5 font-bold ${s.direction === 'long' ? 'text-emerald-400' : 'text-rose-400'} uppercase">${s.direction}</td>
-                    <td class="p-2.5 text-gray-300">${s.entry_price || '-'} / <span class="text-emerald-400">${s.tp_price || '-'}</span> / <span class="text-rose-400">${s.sl_price || '-'}</span></td>
-                    <td class="p-2.5 font-bold text-blue-400">${s.score || '-'}</td>
-                    <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${s.status === 'HIT_TP' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-blue-500/20 text-blue-300'}">${s.status || 'ACTIVE'}</span></td>
-                    <td class="p-2.5 text-right">
-                        <button onclick="deleteSignal('${s.id}', '${s.symbol}')" class="text-rose-400 hover:text-white text-[10px] font-bold px-2 py-1 rounded bg-rose-600/20 hover:bg-rose-600 transition">Delete</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        async function handlePublishSignal(e) {
-            e.preventDefault();
-            const symbol = document.getElementById('sigSymbol').value.trim().toUpperCase();
-            const market_type = document.getElementById('sigMarketType').value;
-            const direction = document.getElementById('sigDirection').value;
-            const horizon = document.getElementById('sigHorizon').value;
-            const entry_price = parseFloat(document.getElementById('sigEntry').value);
-            const tp_price = parseFloat(document.getElementById('sigTP').value);
-            const sl_price = parseFloat(document.getElementById('sigSL').value);
-            const score = parseInt(document.getElementById('sigScore').value) || 85;
-            const stage = document.getElementById('sigStage').value.trim();
-            const research_note = document.getElementById('sigNote').value.trim();
-            const est_potential = '+' + Math.abs(Math.round(((tp_price - entry_price) / entry_price) * 100)) + '%';
-
-            await _supabase.from('market_research').insert([{
-                symbol, market_type, direction, projection_horizon: horizon, entry_price, tp_price, sl_price, score, stage, research_note, est_potential, status: 'ACTIVE'
-            }]);
-
-            await logAdminAction('POST_SIGNAL', `Published: ${symbol} (${direction.toUpperCase()})`);
-            document.getElementById('sigSymbol').value = '';
-            toggleSignalForm();
-            loadLiveSignals();
-            loadAuditLogs();
-        }
-
-        async function deleteSignal(id, symbol) {
-            if (!confirm(`Delete signal ${symbol}?`)) return;
-            await _supabase.from('market_research').delete().eq('id', id);
-            await logAdminAction('DELETE_SIGNAL', `Deleted: ${symbol}`);
-            loadLiveSignals();
-            loadAuditLogs();
-        }
-
         async function publishBroadcast() {
             const msg = document.getElementById('broadcastMsg').value.trim();
             if (!msg) return;
             await _supabase.from('announcements').update({ is_active: false }).eq('is_active', true);
             await _supabase.from('announcements').insert([{ message: msg, is_active: true }]);
-            await logAdminAction('BROADCAST', `Banner: ${msg}`);
             document.getElementById('broadcastMsg').value = '';
             alert("✔ Broadcast banner updated!");
-            loadAuditLogs();
         }
 
         async function clearActiveBroadcast() {
             await _supabase.from('announcements').update({ is_active: false }).eq('is_active', true);
             alert("✔ All broadcast banners deactivated.");
-            loadAuditLogs();
-        }
-
-        async function logAdminAction(action, details) {
-            try {
-                await _supabase.from('audit_logs').insert([{
-                    admin_email: currentAdminEmail || 'admin', action, details
-                }]);
-            } catch(e) {}
-        }
-
-        async function loadAuditLogs() {
-            const container = document.getElementById('auditLogsContainer');
-            const { data } = await _supabase.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(25);
-            if (!data || data.length === 0) {
-                container.innerHTML = `<p class="text-gray-500">No audit logs recorded yet.</p>`;
-                return;
-            }
-            container.innerHTML = data.map(l => `
-                <div class="p-2 bg-[#0b1324] border border-white/5 rounded-lg flex justify-between items-center text-[11px]">
-                    <div><b class="text-blue-400">[${l.action}]</b> <span class="text-gray-300">${l.details}</span></div>
-                    <span class="text-[10px] text-gray-500">${new Date(l.created_at).toLocaleTimeString()}</span>
-                </div>
-            `).join('');
-        }
-
-        async function clearAuditLogs() {
-            if (!confirm("Clear all audit log entries?")) return;
-            await _supabase.from('audit_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-            loadAuditLogs();
         }
 
         async function loadSupportTickets() {
@@ -1076,7 +864,7 @@
                     ${t.admin_reply ? `<div class="p-2 bg-blue-950/30 border border-blue-500/20 rounded-lg text-[11px] text-blue-300"><b>Reply:</b> ${t.admin_reply}</div>` : ''}
                     <div class="flex gap-2 pt-1">
                         <input type="text" id="replyText_${t.id}" placeholder="Reply message..." class="w-full bg-black border border-white/15 text-white rounded-lg px-2.5 py-1 text-xs">
-                        <button type="button" onclick="sendTicketReply('${t.id}', '${t.email}', '${encodeURIComponent(t.subject)}')" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs shrink-0">Send</button>
+                        <button type="button" onclick="sendTicketReply('${t.id}', '${t.email}', '${encodeURIComponent(t.subject)}')" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs shrink-0 cursor-pointer">Send</button>
                     </div>
                 </div>
             `).join('');
@@ -1089,14 +877,12 @@
             if (!replyMsg) return;
 
             await _supabase.from('support_tickets').update({ admin_reply: replyMsg, status: 'resolved', updated_at: new Date().toISOString() }).eq('id', ticketId);
-            await logAdminAction('TICKET_REPLY', `Replied to ticket (${subject}) for ${customerEmail}`);
 
             const mailSubject = encodeURIComponent("Reply to Support Ticket: " + subject);
             const mailBody = encodeURIComponent(`Hello,\n\nOur admin team replied to your ticket:\n\n${replyMsg}\n\nRegards,\nGreatNexa Team (${ADMIN_SENDER_EMAIL})`);
             window.open(`mailto:${customerEmail}?from=${ADMIN_SENDER_EMAIL}&subject=${mailSubject}&body=${mailBody}`, '_blank');
 
             loadSupportTickets();
-            loadAuditLogs();
         }
 
         function renderRevenueChart(dateMap) {
