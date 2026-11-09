@@ -1855,7 +1855,7 @@
                 let query = _supabase.from('market_research').select('*');
 
                 if (state.market === 'forex') {
-                    query = query.or('market_type.eq.forex,symbol.ilike.%USD%,symbol.ilike.%XAU%,symbol.ilike.%XAG%');
+                    query = query.or('market_type.eq.forex,symbol.ilike.%USD%,symbol.ilike.%XAU%,symbol.ilike.%XAG%,sector.ilike.%Gold%,sector.ilike.%Metals%,sector.ilike.%FX%');
                 } else if (state.market === 'stocks') {
                     query = query.eq('market_type', 'stocks');
                 } else {
@@ -1875,13 +1875,14 @@
                 if (state.horizon === '24h') {
                     query = query.or('projection_horizon.ilike.%24h%,horizon.ilike.%24h%');
                 } else if (state.horizon === '1w') {
-                    query = query.or('projection_horizon.ilike.%1w%,horizon.ilike.%1w%');
+                    query = query.or('projection_horizon.ilike.%1w%,horizon.ilike.%1w%,timeframe.ilike.%1h%');
                 } else if (state.horizon === '1m') {
-                    query = query.or('projection_horizon.ilike.%1m%,horizon.ilike.%1m%');
+                    query = query.or('projection_horizon.ilike.%1m%,horizon.ilike.%1m%,timeframe.ilike.%4h%');
                 }
 
                 const { data, error } = await query
                     .order('created_at', { ascending: false })
+                    .order('score', { ascending: false })
                     .limit(currentLimit);
 
                 if (error) {
@@ -1889,7 +1890,6 @@
                     const { data: fallbackData } = await _supabase.from('market_research').select('*').limit(currentLimit);
                     liveMarketData = fallbackData || [];
                 } else {
-                    // যদি ফিল্টারকৃত কুয়েরিতে ডেটা না পাওয়া যায়, তবে পুরো টেবিল থেকে ফলব্যাক ডেটা দেখাবে যেন লোডিংয়ে আটকে না থাকে
                     if (!data || data.length === 0) {
                         const { data: fallbackData } = await _supabase.from('market_research').select('*').limit(currentLimit);
                         liveMarketData = fallbackData || [];
@@ -2083,7 +2083,6 @@
                 if(error) {
                     showAuthFeedback(error.message);
                 } else {
-                    // প্রোফাইল চেক নিরাপদ করা হলো
                     let isBanned = false;
                     try {
                         const { data: prof } = await _supabase.from('user_profiles').select('status').eq('id', data.user.id).single();
@@ -2206,190 +2205,6 @@
         async function handleLogout() {
             if(_supabase) await _supabase.auth.signOut();
             checkUserSession();
-        }
-
-        function setPaymentMethod(method) {
-            activePaymentMethod = method;
-            const btnCrypto = document.getElementById('pay-opt-crypto');
-            const btnLocal = document.getElementById('pay-opt-local');
-            const boxCrypto = document.getElementById('cryptoPaymentBox');
-            const boxLocal = document.getElementById('localPaymentBox');
-            const phoneWrap = document.getElementById('localSenderPhoneWrap');
-
-            if (method === 'crypto') {
-                btnCrypto.className = "py-2.5 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow";
-                btnLocal.className = "py-2.5 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10";
-                boxCrypto.classList.remove('hidden');
-                boxLocal.classList.add('hidden');
-                phoneWrap.classList.add('hidden');
-                document.getElementById('payTrxId').placeholder = "Enter Transaction Hash / ID / Binance Pay Order No";
-            } else {
-                btnLocal.className = "py-2.5 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow";
-                btnCrypto.className = "py-2.5 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10";
-                boxLocal.classList.remove('hidden');
-                boxCrypto.classList.add('hidden');
-                phoneWrap.classList.remove('hidden');
-                document.getElementById('payTrxId').placeholder = "Enter bKash/Nagad TrxID";
-            }
-        }
-
-        function switchCryptoTab(tab) {
-            const btnBinance = document.getElementById('tab-binance');
-            const btnBep20 = document.getElementById('tab-bep20');
-            const btnTrc20 = document.getElementById('tab-trc20');
-            const contentBinance = document.getElementById('content-binance');
-            const contentBep20 = document.getElementById('content-bep20');
-            const contentTrc20 = document.getElementById('content-trc20');
-
-            btnBinance.className = "px-2.5 py-1 rounded-lg bg-gray-800 text-gray-300 font-bold text-[10px] transition";
-            btnBep20.className = "px-2.5 py-1 rounded-lg bg-gray-800 text-gray-300 font-bold text-[10px] transition";
-            btnTrc20.className = "px-2.5 py-1 rounded-lg bg-gray-800 text-gray-300 font-bold text-[10px] transition";
-            contentBinance.classList.add('hidden');
-            contentBep20.classList.add('hidden');
-            contentTrc20.classList.add('hidden');
-
-            if (tab === 'binance') {
-                btnBinance.className = "px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold text-[10px] transition";
-                contentBinance.classList.remove('hidden');
-            } else if (tab === 'bep20') {
-                btnBep20.className = "px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold text-[10px] transition";
-                contentBep20.classList.remove('hidden');
-            } else if (tab === 'trc20') {
-                btnTrc20.className = "px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold text-[10px] transition";
-                contentTrc20.classList.remove('hidden');
-            }
-        }
-
-        function copyCryptoAddress(elementId, btnElem) {
-            const addrText = document.getElementById(elementId).innerText;
-            navigator.clipboard.writeText(addrText).then(() => {
-                const originalText = btnElem.innerText;
-                btnElem.innerText = 'Copied!';
-                btnElem.className = "px-2.5 py-1 bg-emerald-600 text-white text-[10px] font-bold rounded shrink-0 transition";
-                setTimeout(() => {
-                    btnElem.innerText = originalText;
-                    btnElem.className = "px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded shrink-0 transition";
-                }, 2000);
-            });
-        }
-
-        function openPaymentModal(planName, usdPrice, bdtPrice) {
-            selectedPlan = planName;
-            basePriceUSD = usdPrice;
-            basePriceBDT = bdtPrice;
-            currentDiscountPct = 0;
-            document.getElementById('payPlanName').innerText = `Selected Plan: ${planName}`;
-            document.getElementById('appliedCouponCode').value = '';
-            document.getElementById('couponMsg').innerText = '';
-            updateModalPricingDisplay();
-            setPaymentMethod('crypto');
-            switchCryptoTab('binance');
-
-            const modal = document.getElementById('paymentModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closePaymentModal() {
-            const modal = document.getElementById('paymentModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function openSuccessModal() {
-            const modal = document.getElementById('successModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeSuccessModal() {
-            const modal = document.getElementById('successModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        async function submitPaymentOrder() {
-            const trxId = document.getElementById('payTrxId').value.trim();
-            const senderPhone = document.getElementById('paySenderPhone').value.trim();
-
-            if(!trxId) { alert("Please enter Transaction Hash or TrxID / Binance Pay Order No."); return; }
-            if(activePaymentMethod === 'local' && !senderPhone) { alert("Please enter your bKash/Nagad sender number."); return; }
-            if(!_supabase) return;
-
-            const { data: { session } } = await _supabase.auth.getSession();
-            if(!session) {
-                alert("Please log in first to submit your payment verification.");
-                closePaymentModal();
-                openAuthModal('login');
-                return;
-            }
-
-            const userEmail = session.user.email;
-            const channel = activePaymentMethod === 'local' ? `bKash/Nagad (${senderPhone})` : 'Binance Pay / Crypto Direct';
-
-            const finalUSD = (basePriceUSD * (1 - currentDiscountPct / 100)).toFixed(2);
-            const finalBDT = Math.round(basePriceBDT * (1 - currentDiscountPct / 100));
-            const priceRecorded = activePaymentMethod === 'local' ? `${finalBDT} BDT` : `$${finalUSD}`;
-
-            const { error } = await _supabase.from('orders').insert([
-                { 
-                    customer_name: userEmail, 
-                    product_name: selectedPlan + (currentDiscountPct > 0 ? ` [Coupon: ${currentDiscountPct}% OFF]` : ''), 
-                    price: priceRecorded, 
-                    trx_id: trxId, 
-                    status: 'pending', 
-                    phone: channel, 
-                    email: userEmail 
-                }
-            ]);
-
-            if(error) {
-                alert("Error: " + error.message);
-            } else {
-                closePaymentModal();
-                openSuccessModal();
-                document.getElementById('payTrxId').value = '';
-                document.getElementById('paySenderPhone').value = '';
-            }
-        }
-
-        function openChart(rawSymbol, name) {
-            const modal = document.getElementById('chartModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.getElementById('modalTitle').innerText = `${name} - Institutional Chart`;
-
-            let clean = rawSymbol.replace(/[^a-zA-Z0-9]/g, '');
-            let tvTicker = `BINANCE:${clean}`;
-
-            if(state.market === 'forex') {
-                if(clean.includes("XAU") || clean.includes("GOLD")) tvTicker = "OANDA:XAUUSD";
-                else if(clean.includes("XAG")) tvTicker = "OANDA:XAGUSD";
-                else if(clean.includes("WTI") || clean.includes("CRUDE")) tvTicker = "TVC:USOIL";
-                else if(clean.includes("NATGAS")) tvTicker = "TVC:NATGAS";
-                else tvTicker = `FX:${clean}`;
-            } 
-            else if(state.market === 'stocks') {
-                const nyseTickers = ["JPM", "V", "DIS", "BA", "IBM", "CAT", "GS", "UNH", "XOM", "WMT", "KO", "MCD"];
-                tvTicker = nyseTickers.includes(clean) ? `NYSE:${clean}` : `NASDAQ:${clean}`;
-            }
-
-            if (window.TradingView) {
-                new window.TradingView.widget({
-                    "autosize": true,
-                    "symbol": tvTicker,
-                    "interval": "60",
-                    "theme": "dark",
-                    "container_id": "tv_chart_container"
-                });
-            }
-        }
-
-        function closeChart() {
-            const modal = document.getElementById('chartModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.getElementById('tv_chart_container').innerHTML = "";
         }
     </script>
 
