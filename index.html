@@ -2141,7 +2141,9 @@
                             price: priceStr,
                             trx_id: 'SIGNUP_PENDING_' + Date.now(),
                             status: 'pending',
-                            email: email
+                            email: email,
+                            phone: 'N/A',
+                            sender_phone: 'N/A'
                         }]);
                     }
 
@@ -2412,14 +2414,18 @@
                 return;
             }
 
+            // শুধুমাত্র bKash / Nagad সিলেক্ট থাকলে ফোন নম্বর বাধ্যতামূলক
             if (activePaymentMethod === 'local' && !senderPhone) {
-                alert("Please enter the sender phone number for bKash/Nagad verification.");
+                alert("বিকাশ বা নগদ ভেরিফিকেশনের জন্য প্রেরকের ফোন নম্বর দিন।");
                 return;
             }
 
             const finalUSD = (basePriceUSD * (1 - currentDiscountPct / 100)).toFixed(2);
             const finalBDT = Math.round(basePriceBDT * (1 - currentDiscountPct / 100));
             const priceString = `$${finalUSD} / ${finalBDT} BDT`;
+
+            // ক্রিপ্টো পেমেন্ট হলে ফোন ফাঁকা থাকলে 'N/A' যাবে যাতে ডাটাবেস এরর না দেয়
+            const phoneValue = activePaymentMethod === 'local' ? senderPhone : (senderPhone || 'N/A');
 
             if (_supabase) {
                 const { error } = await _supabase.from('orders').insert([{
@@ -2429,7 +2435,8 @@
                     trx_id: trxId,
                     status: 'pending',
                     email: currentUserEmail || 'Unregistered',
-                    sender_phone: senderPhone || null
+                    phone: phoneValue,
+                    sender_phone: phoneValue
                 }]);
 
                 if (error) {
