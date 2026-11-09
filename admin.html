@@ -16,6 +16,10 @@
             100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
         .new-order-badge { animation: pulseGlow 2s infinite; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #02040a; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
     </style>
 </head>
 <body class="min-h-screen p-4 sm:p-6 max-w-7xl mx-auto flex flex-col justify-between">
@@ -95,8 +99,8 @@
                 <span id="statPending" class="text-lg font-bold text-amber-300">0</span>
             </div>
             <div class="p-4 glass-panel rounded-xl border border-emerald-500/20">
-                <span class="text-emerald-400 block text-[10px]">APPROVED TIERS</span>
-                <span id="statApproved" class="text-lg font-bold text-emerald-400">0</span>
+                <span class="text-emerald-400 block text-[10px]">TOTAL REGISTERED USERS</span>
+                <span id="statUsers" class="text-lg font-bold text-emerald-400">0</span>
             </div>
             <div class="p-4 glass-panel rounded-xl border border-blue-500/20 flex flex-col justify-between">
                 <div>
@@ -106,6 +110,104 @@
                 <button type="button" onclick="copyInviteLink()" class="mt-2 text-[10px] bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-2 rounded transition text-center cursor-pointer">
                     📋 Copy Link
                 </button>
+            </div>
+        </div>
+
+        <!-- ইউজার ম্যানেজমেন্ট & লাইভ ডিরেক্টরি (UPDATED SECTION) -->
+        <div class="glass-panel p-5 sm:p-6 rounded-2xl border border-blue-500/30 space-y-5">
+            <div class="flex flex-wrap justify-between items-center gap-3 border-b border-white/10 pb-3">
+                <div>
+                    <h3 class="text-base font-bold text-white font-mono flex items-center gap-2">
+                        <span>👥</span> User Management & Tier Validity Center
+                    </h3>
+                    <p class="text-xs text-gray-400 font-mono">ইউজারের বর্তমান প্ল্যান, কত দিন মেয়াদ বাকি আছে তা দেখুন ও সরাসরি আপডেট/ব্যান করুন।</p>
+                </div>
+                <div class="w-full sm:w-64">
+                    <input type="text" id="userDirectorySearch" onkeyup="filterUsersTable()" placeholder="🔍 Search users by email..." class="w-full bg-[#0b1324] border border-white/15 text-white text-xs font-mono rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500">
+                </div>
+            </div>
+
+            <!-- ইউজার আপডেট কন্ট্রোল ফরম -->
+            <div class="p-4 rounded-xl bg-black/40 border border-white/10 space-y-2">
+                <span class="text-[11px] font-bold text-blue-400 font-mono uppercase tracking-wide block">Manual Upgrade / Control Box:</span>
+                <div class="grid grid-cols-1 sm:grid-cols-6 gap-2.5 font-mono text-xs">
+                    <input type="email" id="targetUserEmail" placeholder="User Email address..." class="sm:col-span-2 bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2.5 focus:border-blue-500 focus:outline-none">
+                    
+                    <select id="targetUserTier" onchange="onTierSelectChange(this.value)" class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2.5 [&>option]:bg-[#0b1324] focus:outline-none">
+                        <option value="free">Free Tier (0 Days)</option>
+                        <option value="pro">Pro Tier</option>
+                        <option value="vip">VIP Tier</option>
+                    </select>
+
+                    <input type="number" id="targetUserDays" placeholder="Days (e.g. 30)" value="30" class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2.5 focus:border-blue-500 focus:outline-none" title="Subscription validity duration in days">
+
+                    <select id="targetUserRole" class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2.5 [&>option]:bg-[#0b1324] focus:outline-none">
+                        <option value="user">Regular User</option>
+                        <option value="support_agent">Support Agent</option>
+                        <option value="admin">Admin</option>
+                    </select>
+
+                    <button type="button" onclick="handleManualUserUpgrade()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl transition cursor-pointer shadow">
+                        Save / Upgrade
+                    </button>
+                </div>
+                <div class="flex items-center justify-between text-[11px] text-gray-500 font-mono pt-1">
+                    <span>💡 টিপস: নিচের লিস্ট থেকে যে কোনো ইউজারের <b>Edit</b> বাটনে চাপলে তথ্য সরাসরি এখানে চলে আসবে।</span>
+                    <button type="button" onclick="handleUserBan(true)" class="text-rose-400 hover:text-rose-300 underline font-bold cursor-pointer">Selected User Ban করুন</button>
+                </div>
+            </div>
+
+            <!-- অল রেজিস্টার্ড ইউজার টেবিল -->
+            <div class="overflow-x-auto rounded-xl border border-white/10">
+                <table class="w-full text-left text-xs text-gray-300 font-mono">
+                    <thead class="bg-[#0b1324] text-gray-400 uppercase text-[11px] border-b border-white/10">
+                        <tr>
+                            <th class="p-3">User Email</th>
+                            <th class="p-3">Current Plan</th>
+                            <th class="p-3">Days Left / Expiry</th>
+                            <th class="p-3">Role</th>
+                            <th class="p-3">Status</th>
+                            <th class="p-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody" class="divide-y divide-white/5">
+                        <tr>
+                            <td colspan="6" class="text-center p-6 text-gray-500">Loading user profiles...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Orders Table & Real-time Stream -->
+        <div class="glass-panel rounded-2xl overflow-hidden border border-white/10">
+            <div class="p-4 border-b border-white/10 flex flex-wrap justify-between items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <h3 class="text-sm font-bold text-white font-mono">⚡ Orders & Payment Verification Gateway</h3>
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                </div>
+                <div class="w-full sm:w-72">
+                    <input type="text" id="orderSearchInput" onkeyup="filterOrdersTable()" placeholder="🔍 Search by Email, Phone or TrxID..." class="w-full bg-[#0b1324] border border-white/15 text-white text-xs font-mono rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500">
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-gray-300">
+                    <thead class="bg-[#0b1324] text-gray-400 font-mono uppercase text-[11px] border-b border-white/10">
+                        <tr>
+                            <th class="p-4">Time</th>
+                            <th class="p-4">Customer & Phone</th>
+                            <th class="p-4">Plan & Amount</th>
+                            <th class="p-4">TrxID / Hash</th>
+                            <th class="p-4">Status</th>
+                            <th class="p-4 text-right">Actions (Auto-Notify)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody" class="divide-y divide-white/5 font-mono">
+                        <tr>
+                            <td colspan="6" class="text-center p-8 text-gray-400">Loading order queue...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -146,61 +248,6 @@
             <div class="flex gap-2 font-mono text-xs">
                 <input type="text" id="broadcastMsg" placeholder="Type banner message for all users..." class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2.5">
                 <button type="button" onclick="publishBroadcast()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-2.5 rounded-xl transition cursor-pointer shrink-0">Publish Live</button>
-            </div>
-        </div>
-
-        <!-- ইউজার ম্যানেজমেন্ট, ব্যান ও রোল কন্ট্রোল -->
-        <div class="glass-panel p-5 rounded-2xl border border-white/10 space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-sm font-bold text-white font-mono">👥 User & Role Management (Tier / Ban / Support Agent)</h3>
-                <span class="text-xs text-gray-400 font-mono">Super Admin Controls</span>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 font-mono text-xs">
-                <input type="email" id="targetUserEmail" placeholder="User Email..." class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2.5">
-                <select id="targetUserTier" class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2.5 [&>option]:bg-[#0b1324]">
-                    <option value="free">Free Tier</option>
-                    <option value="pro">Pro Tier (30 Days)</option>
-                    <option value="vip">VIP Tier (2 Years)</option>
-                </select>
-                <select id="targetUserRole" class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2.5 [&>option]:bg-[#0b1324]">
-                    <option value="user">Regular User</option>
-                    <option value="support_agent">Support Agent</option>
-                    <option value="admin">Admin</option>
-                </select>
-                <button type="button" onclick="handleManualUserUpgrade()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl transition cursor-pointer">Update Profile</button>
-                <button type="button" onclick="handleUserBan()" class="bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 font-bold py-2.5 rounded-xl transition cursor-pointer">Ban User</button>
-            </div>
-        </div>
-
-        <!-- Orders Table & Real-time Stream -->
-        <div class="glass-panel rounded-2xl overflow-hidden border border-white/10">
-            <div class="p-4 border-b border-white/10 flex flex-wrap justify-between items-center gap-3">
-                <div class="flex items-center gap-2">
-                    <h3 class="text-sm font-bold text-white font-mono">⚡ Orders & Payment Verification Gateway</h3>
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                </div>
-                <div class="w-full sm:w-72">
-                    <input type="text" id="orderSearchInput" onkeyup="filterOrdersTable()" placeholder="🔍 Search by Email, Phone or TrxID..." class="w-full bg-[#0b1324] border border-white/15 text-white text-xs font-mono rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500">
-                </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-gray-300">
-                    <thead class="bg-[#0b1324] text-gray-400 font-mono uppercase text-[11px] border-b border-white/10">
-                        <tr>
-                            <th class="p-4">Time</th>
-                            <th class="p-4">Customer & Phone</th>
-                            <th class="p-4">Plan & Amount</th>
-                            <th class="p-4">TrxID / Hash</th>
-                            <th class="p-4">Status</th>
-                            <th class="p-4 text-right">Actions (Auto-Notify)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ordersTableBody" class="divide-y divide-white/5 font-mono">
-                        <tr>
-                            <td colspan="6" class="text-center p-8 text-gray-400">Loading order queue...</td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
 
@@ -252,6 +299,7 @@
         let currentActiveOrder = null;
         let revenueChartInstance = null;
         let cachedOrdersData = [];
+        let cachedUsersData = [];
         let currentAdminEmail = '';
         let currentAdminRole = '';
 
@@ -335,6 +383,7 @@
             loadAdminData();
             setupOrdersRealtimeListener();
             setupTicketsRealtimeListener();
+            setupUsersRealtimeListener();
         }
 
         function showAuthModal(errMsg = '') {
@@ -355,12 +404,219 @@
         async function loadAdminData() {
             await Promise.all([
                 loadOrders(),
+                loadUsersDirectory(),
                 loadCoupons(),
                 loadSupportTickets(),
                 loadAuditLogs()
             ]);
         }
 
+        // ==========================================
+        // ইউজার ম্যানেজমেন্ট ও ডিরেক্টরি লজিক
+        // ==========================================
+        function onTierSelectChange(tierVal) {
+            const daysInput = document.getElementById('targetUserDays');
+            if (tierVal === 'vip') daysInput.value = 730;
+            else if (tierVal === 'pro') daysInput.value = 30;
+            else daysInput.value = 0;
+        }
+
+        async function loadUsersDirectory() {
+            const tbody = document.getElementById('usersTableBody');
+            const { data, error } = await _supabase
+                .from('user_profiles')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error || !data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center p-6 text-gray-500">No registered users found.</td></tr>';
+                document.getElementById('statUsers').innerText = '0';
+                cachedUsersData = [];
+                return;
+            }
+
+            cachedUsersData = data;
+            document.getElementById('statUsers').innerText = String(data.length);
+            renderUsersTable(cachedUsersData);
+        }
+
+        function renderUsersTable(usersList) {
+            const tbody = document.getElementById('usersTableBody');
+            if (usersList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center p-6 text-gray-500">No users matching search.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = usersList.map(u => {
+                const isBanned = u.status === 'banned';
+                const tier = (u.tier || 'free').toLowerCase();
+                
+                // দিন গণনা
+                let daysLeftText = '<span class="text-gray-500">Lifetime Free</span>';
+                let daysCount = 0;
+                if (tier !== 'free' && u.expires_at) {
+                    const diff = new Date(u.expires_at) - new Date();
+                    daysCount = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+                    if (daysCount > 0) {
+                        daysLeftText = `<b class="text-emerald-400">${daysCount} days</b> <span class="text-[10px] text-gray-500">(${new Date(u.expires_at).toLocaleDateString()})</span>`;
+                    } else {
+                        daysLeftText = '<span class="text-rose-400 font-bold">Expired</span>';
+                    }
+                }
+
+                // টায়ার ব্যাজ
+                let tierBadge = `<span class="px-2 py-0.5 rounded bg-gray-800 text-gray-300 font-bold text-[10px]">FREE</span>`;
+                if (tier === 'vip') {
+                    tierBadge = `<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold text-[10px]">👑 VIP 2Y</span>`;
+                } else if (tier === 'pro') {
+                    tierBadge = `<span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/40 font-bold text-[10px]">⚡ PRO</span>`;
+                }
+
+                const encodedUser = encodeURIComponent(JSON.stringify(u));
+
+                return `
+                <tr class="hover:bg-white/[0.02] transition ${isBanned ? 'bg-rose-950/20' : ''}">
+                    <td class="p-3 font-bold text-white">${u.email || 'N/A'}</td>
+                    <td class="p-3">${tierBadge}</td>
+                    <td class="p-3">${daysLeftText}</td>
+                    <td class="p-3 uppercase text-[10px] text-blue-300 font-bold">${u.role || 'user'}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isBanned ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'}">
+                            ${(u.status || 'active').toUpperCase()}
+                        </span>
+                    </td>
+                    <td class="p-3 text-right space-x-1.5">
+                        <button type="button" onclick="selectUserForEdit('${encodedUser}')" class="px-2.5 py-1 bg-blue-600/30 hover:bg-blue-600 text-blue-200 hover:text-white rounded text-[11px] font-bold transition cursor-pointer">
+                            ✏️ Edit
+                        </button>
+                        ${isBanned ? `
+                        <button type="button" onclick="quickToggleBan('${u.email}', false)" class="px-2.5 py-1 bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white rounded text-[11px] font-bold transition cursor-pointer">
+                            Unban
+                        </button>
+                        ` : `
+                        <button type="button" onclick="quickToggleBan('${u.email}', true)" class="px-2.5 py-1 bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white rounded text-[11px] font-bold transition cursor-pointer">
+                            Ban
+                        </button>
+                        `}
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function filterUsersTable() {
+            const query = document.getElementById('userDirectorySearch').value.toLowerCase().trim();
+            const filtered = cachedUsersData.filter(u => (u.email || '').toLowerCase().includes(query));
+            renderUsersTable(filtered);
+        }
+
+        function selectUserForEdit(encodedUser) {
+            try {
+                const u = JSON.parse(decodeURIComponent(encodedUser));
+                document.getElementById('targetUserEmail').value = u.email;
+                document.getElementById('targetUserTier').value = (u.tier || 'free').toLowerCase();
+                document.getElementById('targetUserRole').value = u.role || 'user';
+                
+                if (u.expires_at) {
+                    const diff = new Date(u.expires_at) - new Date();
+                    const days = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+                    document.getElementById('targetUserDays').value = days > 0 ? days : 30;
+                } else {
+                    onTierSelectChange(u.tier || 'free');
+                }
+                window.scrollTo({ top: 250, behavior: 'smooth' });
+            } catch(e) {
+                console.error("Select user error:", e);
+            }
+        }
+
+        async function handleManualUserUpgrade() {
+            const email = document.getElementById('targetUserEmail').value.trim();
+            const tier = document.getElementById('targetUserTier').value;
+            const role = document.getElementById('targetUserRole').value;
+            const days = parseInt(document.getElementById('targetUserDays').value) || (tier === 'vip' ? 730 : 30);
+
+            if(!email) { alert("Please enter or select a user email."); return; }
+
+            try {
+                // ১. আরপিসি কল
+                const { data, error } = await _supabase.rpc('admin_manage_user', {
+                    p_email: email,
+                    p_tier: tier,
+                    p_role: role,
+                    p_duration_days: days
+                });
+
+                if (error) {
+                    // আরপিসি না থাকলে ডাইরেক্ট আপডেট ট্রাই
+                    console.warn("RPC failed, trying direct table update...", error.message);
+                    let expiryDate = null;
+                    if(tier === 'vip' || tier === 'pro') {
+                        expiryDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+                    }
+                    const { error: directErr } = await _supabase.from('user_profiles').update({
+                        tier: tier,
+                        role: role,
+                        expires_at: expiryDate,
+                        status: 'active',
+                        updated_at: new Date().toISOString()
+                    }).ilike('email', email);
+
+                    if (directErr) throw directErr;
+                }
+
+                await logAdminAction('UPDATE_USER', `Updated ${email} [Tier: ${tier.toUpperCase()}, Role: ${role}, Days: ${days}]`);
+                alert(`✔ ইউজার ${email} সফলভাবে আপডেট হয়েছে! (Tier: ${tier.toUpperCase()}, Days: ${days})`);
+                loadUsersDirectory();
+                loadAuditLogs();
+            } catch (err) {
+                alert("Failed to update user: " + err.message);
+            }
+        }
+
+        async function quickToggleBan(email, banState) {
+            const actionText = banState ? 'suspend/ban' : 'unban/activate';
+            if(!confirm(`Are you sure you want to ${actionText} user ${email}?`)) return;
+
+            try {
+                const { data, error } = await _supabase.rpc('admin_toggle_ban_user', {
+                    p_email: email,
+                    p_ban: banState
+                });
+
+                if (error) {
+                    const { error: directErr } = await _supabase.from('user_profiles').update({
+                        status: banState ? 'banned' : 'active',
+                        tier: banState ? 'free' : 'pro'
+                    }).ilike('email', email);
+                    if (directErr) throw directErr;
+                }
+
+                await logAdminAction(banState ? 'BAN_USER' : 'UNBAN_USER', `${banState ? 'Banned' : 'Unbanned'} user: ${email}`);
+                alert(`✔ User ${email} has been ${banState ? 'banned' : 'unbanned'} successfully.`);
+                loadUsersDirectory();
+                loadAuditLogs();
+            } catch (err) {
+                alert("Error toggling ban status: " + err.message);
+            }
+        }
+
+        function handleUserBan(isBan) {
+            const email = document.getElementById('targetUserEmail').value.trim();
+            if(!email) { alert("Please enter user email."); return; }
+            quickToggleBan(email, isBan);
+        }
+
+        function setupUsersRealtimeListener() {
+            _supabase
+                .channel('admin_users_channel')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'user_profiles' }, () => { loadUsersDirectory(); })
+                .subscribe();
+        }
+
+        // ==========================================
+        // Orders & Support Desk Logic
+        // ==========================================
         async function loadOrders() {
             const tbody = document.getElementById('ordersTableBody');
             const { data, error } = await _supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(100);
@@ -370,7 +626,6 @@
                 cachedOrdersData = [];
                 document.getElementById('statTotal').innerText = '0';
                 document.getElementById('statPending').innerText = '0';
-                document.getElementById('statApproved').innerText = '0';
                 return;
             }
 
@@ -436,7 +691,6 @@
 
             document.getElementById('statTotal').innerText = String(ordersList.length);
             document.getElementById('statPending').innerText = String(pendingCount);
-            document.getElementById('statApproved').innerText = String(approvedCount);
 
             renderRevenueChart(chartDates);
         }
@@ -489,20 +743,12 @@
                 if (orderErr) throw orderErr;
 
                 // ২. ইউজার প্রোফাইল আরপিসি দিয়ে আপগ্রেড
-                const { error: rpcErr } = await _supabase.rpc('admin_force_upgrade_user', {
-                    p_user_email: customerEmail,
+                await _supabase.rpc('admin_manage_user', {
+                    p_email: customerEmail,
                     p_tier: targetTier,
+                    p_role: 'user',
                     p_duration_days: days
                 });
-
-                if (rpcErr) {
-                    console.warn("RPC Warning (trying direct update):", rpcErr.message);
-                    await _supabase.from('user_profiles').update({
-                        tier: targetTier,
-                        expires_at: new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString(),
-                        status: 'active'
-                    }).ilike('email', customerEmail);
-                }
 
                 await logAdminAction('APPROVE_ORDER', `Approved order for ${customerEmail} [Tier: ${targetTier}]`);
 
@@ -527,63 +773,11 @@
             }
         }
 
-        async function handleManualUserUpgrade() {
-            const email = document.getElementById('targetUserEmail').value.trim();
-            const tier = document.getElementById('targetUserTier').value;
-            const newRole = document.getElementById('targetUserRole').value;
-            if(!email) { alert("Please enter user email."); return; }
-
-            const expiryDays = tier === 'vip' ? 730 : (tier === 'pro' ? 30 : 365);
-
-            try {
-                const { error: tierErr } = await _supabase.rpc('admin_force_upgrade_user', {
-                    p_user_email: email,
-                    p_tier: tier,
-                    p_duration_days: expiryDays
-                });
-
-                if (tierErr) {
-                    await _supabase.from('user_profiles').update({
-                        tier: tier,
-                        expires_at: new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000).toISOString(),
-                        role: newRole
-                    }).ilike('email', email);
-                } else {
-                    await _supabase.from('user_profiles').update({ role: newRole }).ilike('email', email);
-                }
-
-                await logAdminAction('UPDATE_PROFILE', `Updated ${email} -> Tier: ${tier.toUpperCase()}, Role: ${newRole}`);
-                alert(`✔ Success! User ${email} profile updated successfully.`);
-                document.getElementById('targetUserEmail').value = '';
-                loadAuditLogs();
-            } catch (err) {
-                alert("Failed to update profile: " + err.message);
-            }
-        }
-
-        async function handleUserBan() {
-            if (currentAdminRole !== 'admin') { alert("Permission Denied: Only Super Admin can ban users."); return; }
-            const email = document.getElementById('targetUserEmail').value.trim();
-            if(!email) { alert("Please enter user email to ban."); return; }
-            if(!confirm(`Are you sure you want to suspend/ban user ${email}?`)) return;
-
-            const { error } = await _supabase.from('user_profiles').update({ status: 'banned', tier: 'free' }).ilike('email', email);
-            if(error) {
-                alert("Failed to ban user: " + error.message);
-            } else {
-                await logAdminAction('BAN_USER', `Suspended/Banned user account: ${email}`);
-                alert(`✔ User ${email} has been suspended/banned successfully.`);
-                document.getElementById('targetUserEmail').value = '';
-                loadAuditLogs();
-            }
-        }
-
         async function publishBroadcast() {
             if (currentAdminRole !== 'admin') { alert("Permission Denied: Only Super Admin can publish announcements."); return; }
             const msg = document.getElementById('broadcastMsg').value.trim();
             if(!msg) { alert("Please type announcement message."); return; }
 
-            // আগের এক্টিভ ব্যানার নিষ্ক্রিয় করা
             await _supabase.from('announcements').update({ is_active: false }).eq('is_active', true);
 
             const { error } = await _supabase.from('announcements').insert([{ message: msg, is_active: true }]);
