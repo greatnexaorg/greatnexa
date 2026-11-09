@@ -134,16 +134,16 @@
             </div>
         </div>
 
-        <!-- ফিচার ৩: গ্লোবাল ব্রডকাস্ট অ্যানাউন্সমেন্ট -->
+        <!-- গ্লোবাল ব্রডকাস্ট অ্যানাউন্সমেন্ট -->
         <div class="glass-panel p-5 rounded-2xl border border-blue-500/30 space-y-3">
             <h3 class="text-sm font-bold text-blue-400 font-mono">📢 Global Broadcast Announcement</h3>
             <div class="flex gap-2 font-mono text-xs">
-                <input type="text" id="broadcastMsg" placeholder="Type banner message for all users (e.g. Server maintenance tomorrow)..." class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2.5">
+                <input type="text" id="broadcastMsg" placeholder="Type banner message for all users..." class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2.5">
                 <button onclick="publishBroadcast()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-2.5 rounded-xl transition cursor-pointer shrink-0">Publish Live</button>
             </div>
         </div>
 
-        <!-- ফিচার ২ & ৪: ইউজার ম্যানেজমেন্ট, ব্যান ও মাল্টি-অ্যাডমিন রোল অ্যাসাইন -->
+        <!-- ইউজার ম্যানেজমেন্ট, ব্যান ও রোল কন্ট্রোল -->
         <div class="glass-panel p-5 rounded-2xl border border-white/10 space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-sm font-bold text-white font-mono">👥 User & Role Management (Tier / Ban / Support Agent)</h3>
@@ -198,7 +198,7 @@
             </div>
         </div>
 
-        <!-- ফিচার ১: ট্রানজেকশন ও পেমেন্ট হিস্ট্রি লগ (Audit Logs) -->
+        <!-- ট্রানজেকশন ও পেমেন্ট হিস্ট্রি লগ (Audit Logs) -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 p-5 space-y-4">
             <h3 class="text-sm font-bold text-white font-mono">📜 Admin Audit Trail & Transaction Logs</h3>
             <div id="auditLogsContainer" class="space-y-2 font-mono text-xs max-h-48 overflow-y-auto">
@@ -206,7 +206,7 @@
             </div>
         </div>
 
-        <!-- সাপোর্ট সিস্টেম (Support Desk with Admin Reply) -->
+        <!-- সাপোর্ট সিস্টেম (Support Desk with Admin Reply & Auto-Email from greatnexaorg@gmail.com) -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 p-5 space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-sm font-bold text-white font-mono">🎫 Customer Support Helpdesk Tickets</h3>
@@ -241,6 +241,7 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDk0MDMsImV4cCI6MjEwMjI4NTQwM30.ePcRYy5_B193R4S1MXw3slF5amFseCv1sSCAUyH59ok';
         const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const TELEGRAM_VIP_LINK = "https://t.me/+VA3Yu45-zosyOTRl";
+        const ADMIN_SENDER_EMAIL = "greatnexaorg@gmail.com";
 
         let currentActiveOrder = null;
         let revenueChartInstance = null;
@@ -264,15 +265,15 @@
             const { data: { session } } = await _supabase.auth.getSession();
             if (!session) { showAuthModal(); return; }
 
-            const { data } = await _supabase.from('user_profiles').select('role').eq('id', session.user.id).single();
-            if (data && (data.role === 'admin' || data.role === 'support_agent')) {
+            const { data } = await _supabase.from('user_profiles').select('role, status').eq('id', session.user.id).single();
+            if (data && data.status !== 'banned' && (data.role === 'admin' || data.role === 'support_agent')) {
                 currentAdminEmail = session.user.email;
                 currentAdminRole = data.role;
                 document.getElementById('adminSessionEmail').innerText = currentAdminEmail;
                 document.getElementById('adminRoleBadge').innerText = data.role === 'admin' ? 'Super Admin' : 'Support Agent';
                 unlockUI();
             } else {
-                showAuthModal("অ্যাক্সেস ডিনাইড! এই অ্যাকাউন্টের অ্যাডমিন বা সাপোর্ট পারমিশন নেই।");
+                showAuthModal("অ্যাক্সেস ডিনাইড! আপনার অ্যাডমিন পারমিশন নেই বা অ্যাকাউন্ট ব্যান করা হয়েছে।");
                 await _supabase.auth.signOut();
             }
         }
@@ -292,8 +293,8 @@
                 const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
 
-                const { data: prof } = await _supabase.from('user_profiles').select('role').eq('id', data.user.id).single();
-                if (prof && (prof.role === 'admin' || prof.role === 'support_agent')) {
+                const { data: prof } = await _supabase.from('user_profiles').select('role, status').eq('id', data.user.id).single();
+                if (prof && prof.status !== 'banned' && (prof.role === 'admin' || prof.role === 'support_agent')) {
                     currentAdminEmail = data.user.email;
                     currentAdminRole = prof.role;
                     document.getElementById('adminSessionEmail').innerText = currentAdminEmail;
@@ -301,7 +302,7 @@
                     unlockUI();
                 } else {
                     await _supabase.auth.signOut();
-                    throw new Error("অননুমোদিত অ্যাকাউন্ট! আপনার অ্যাডমিন রোল নেই।");
+                    throw new Error("অননুমোদিত অ্যাকাউন্ট! আপনার অ্যাডমিন রোল নেই বা অ্যাকাউন্ট সাসপেন্ডেড।");
                 }
             } catch (err) {
                 errBox.innerText = err.message || "লগইন ব্যর্থ হয়েছে!";
@@ -317,6 +318,7 @@
             document.getElementById('adminMainContent').classList.remove('hidden');
             loadAdminData();
             setupOrdersRealtimeListener();
+            setupTicketsRealtimeListener();
         }
 
         function showAuthModal(errMsg = '') {
@@ -369,13 +371,14 @@
         function setupOrdersRealtimeListener() {
             _supabase
                 .channel('admin_orders_channel')
-                .on(
-                    'postgres_changes',
-                    { event: '*', schema: 'public', table: 'orders' },
-                    (payload) => {
-                        loadOrders();
-                    }
-                )
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => { loadOrders(); })
+                .subscribe();
+        }
+
+        function setupTicketsRealtimeListener() {
+            _supabase
+                .channel('admin_tickets_channel')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'support_tickets' }, () => { loadSupportTickets(); })
                 .subscribe();
         }
 
@@ -488,8 +491,8 @@
                 }
 
                 const mailSubject = encodeURIComponent("GreatNexa Terminal Account Approved & Access Details");
-                const mailBody = encodeURIComponent(`Hello,\n\nYour order for ${currentActiveOrder.product_name} has been approved.\n\n${creds}\n\nJoin VIP Telegram: ${TELEGRAM_VIP_LINK}\n\nRegards,\nGreatNexa Team`);
-                window.open(`mailto:${customerEmail}?subject=${mailSubject}&body=${mailBody}`, '_blank');
+                const mailBody = encodeURIComponent(`Hello,\n\nYour order for ${currentActiveOrder.product_name} has been approved.\n\n${creds}\n\nJoin VIP Telegram: ${TELEGRAM_VIP_LINK}\n\nRegards,\nGreatNexa Team (${ADMIN_SENDER_EMAIL})`);
+                window.open(`mailto:${customerEmail}?from=${ADMIN_SENDER_EMAIL}&subject=${mailSubject}&body=${mailBody}`, '_blank');
 
                 alert("✔ Order approved successfully & User upgraded to " + targetTier.toUpperCase() + "!");
                 closeDeliveryModal();
@@ -508,14 +511,12 @@
 
             const expiryDays = tier === 'vip' ? 730 : (tier === 'pro' ? 30 : 365);
 
-            // টিয়ার আপডেট
             const { error: tierErr } = await _supabase.rpc('admin_force_upgrade_user', {
                 p_user_email: email,
                 p_tier: tier,
                 p_duration_days: expiryDays
             });
 
-            // রোল আপডেট (Super Admin বা Support Agent)
             const { error: roleErr } = await _supabase.from('user_profiles').update({ role: newRole }).eq('email', email);
 
             if(tierErr || roleErr) {
@@ -650,8 +651,8 @@
                 await logAdminAction('TICKET_REPLY', `Replied to support ticket (${subject}) for ${customerEmail}`);
 
                 const mailSubject = encodeURIComponent("Reply to your Support Ticket: " + subject);
-                const mailBody = encodeURIComponent(`Hello,\n\nRegarding your support ticket (${subject}), our admin team replied:\n\n${replyMsg}\n\nRegards,\nGreatNexa Team`);
-                window.open(`mailto:${customerEmail}?subject=${mailSubject}&body=${mailBody}`, '_blank');
+                const mailBody = encodeURIComponent(`Hello,\n\nRegarding your support ticket (${subject}), our admin team replied:\n\n${replyMsg}\n\nRegards,\nGreatNexa Team (${ADMIN_SENDER_EMAIL})`);
+                window.open(`mailto:${customerEmail}?from=${ADMIN_SENDER_EMAIL}&subject=${mailSubject}&body=${mailBody}`, '_blank');
 
                 alert("✔ Reply saved and email client triggered successfully!");
                 loadSupportTickets();
