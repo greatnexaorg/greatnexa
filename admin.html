@@ -113,7 +113,40 @@
             </div>
         </div>
 
-        <!-- ইউজার ম্যানেজমেন্ট & লাইভ ডিরেক্টরি (UPDATED SECTION) -->
+        <!-- Orders Table & Real-time Stream -->
+        <div class="glass-panel rounded-2xl overflow-hidden border border-amber-500/30 shadow-xl">
+            <div class="p-4 border-b border-white/10 flex flex-wrap justify-between items-center gap-3 bg-blue-950/20">
+                <div class="flex items-center gap-2">
+                    <span class="text-base">⚡</span>
+                    <h3 class="text-sm font-bold text-white font-mono">Orders & Payment Verification Gateway</h3>
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                </div>
+                <div class="w-full sm:w-72">
+                    <input type="text" id="orderSearchInput" onkeyup="filterOrdersTable()" placeholder="🔍 Search Email, TrxID or Plan..." class="w-full bg-[#0b1324] border border-white/15 text-white text-xs font-mono rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500">
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-gray-300 font-mono">
+                    <thead class="bg-[#0b1324] text-gray-400 uppercase text-[11px] border-b border-white/10">
+                        <tr>
+                            <th class="p-4">Time</th>
+                            <th class="p-4">Customer & Phone</th>
+                            <th class="p-4">Plan & Price</th>
+                            <th class="p-4">TrxID / Hash</th>
+                            <th class="p-4">Status</th>
+                            <th class="p-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody" class="divide-y divide-white/5">
+                        <tr>
+                            <td colspan="6" class="text-center p-8 text-gray-400">Loading order queue...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ইউজার ম্যানেজমেন্ট & লাইভ ডিরেক্টরি -->
         <div class="glass-panel p-5 sm:p-6 rounded-2xl border border-blue-500/30 space-y-5">
             <div class="flex flex-wrap justify-between items-center gap-3 border-b border-white/10 pb-3">
                 <div>
@@ -173,38 +206,6 @@
                     <tbody id="usersTableBody" class="divide-y divide-white/5">
                         <tr>
                             <td colspan="6" class="text-center p-6 text-gray-500">Loading user profiles...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Orders Table & Real-time Stream -->
-        <div class="glass-panel rounded-2xl overflow-hidden border border-white/10">
-            <div class="p-4 border-b border-white/10 flex flex-wrap justify-between items-center gap-3">
-                <div class="flex items-center gap-2">
-                    <h3 class="text-sm font-bold text-white font-mono">⚡ Orders & Payment Verification Gateway</h3>
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                </div>
-                <div class="w-full sm:w-72">
-                    <input type="text" id="orderSearchInput" onkeyup="filterOrdersTable()" placeholder="🔍 Search by Email, Phone or TrxID..." class="w-full bg-[#0b1324] border border-white/15 text-white text-xs font-mono rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500">
-                </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-gray-300">
-                    <thead class="bg-[#0b1324] text-gray-400 font-mono uppercase text-[11px] border-b border-white/10">
-                        <tr>
-                            <th class="p-4">Time</th>
-                            <th class="p-4">Customer & Phone</th>
-                            <th class="p-4">Plan & Amount</th>
-                            <th class="p-4">TrxID / Hash</th>
-                            <th class="p-4">Status</th>
-                            <th class="p-4 text-right">Actions (Auto-Notify)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ordersTableBody" class="divide-y divide-white/5 font-mono">
-                        <tr>
-                            <td colspan="6" class="text-center p-8 text-gray-400">Loading order queue...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -450,8 +451,8 @@
             tbody.innerHTML = usersList.map(u => {
                 const isBanned = u.status === 'banned';
                 const tier = (u.tier || 'free').toLowerCase();
+                const displayEmail = u.email || 'user_' + (u.id ? u.id.slice(0, 8) : 'guest');
                 
-                // দিন গণনা
                 let daysLeftText = '<span class="text-gray-500">Lifetime Free</span>';
                 let daysCount = 0;
                 if (tier !== 'free' && u.expires_at) {
@@ -464,7 +465,6 @@
                     }
                 }
 
-                // টায়ার ব্যাজ
                 let tierBadge = `<span class="px-2 py-0.5 rounded bg-gray-800 text-gray-300 font-bold text-[10px]">FREE</span>`;
                 if (tier === 'vip') {
                     tierBadge = `<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold text-[10px]">👑 VIP 2Y</span>`;
@@ -476,7 +476,7 @@
 
                 return `
                 <tr class="hover:bg-white/[0.02] transition ${isBanned ? 'bg-rose-950/20' : ''}">
-                    <td class="p-3 font-bold text-white">${u.email || 'N/A'}</td>
+                    <td class="p-3 font-bold text-white select-all">${displayEmail}</td>
                     <td class="p-3">${tierBadge}</td>
                     <td class="p-3">${daysLeftText}</td>
                     <td class="p-3 uppercase text-[10px] text-blue-300 font-bold">${u.role || 'user'}</td>
@@ -490,11 +490,11 @@
                             ✏️ Edit
                         </button>
                         ${isBanned ? `
-                        <button type="button" onclick="quickToggleBan('${u.email}', false)" class="px-2.5 py-1 bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white rounded text-[11px] font-bold transition cursor-pointer">
+                        <button type="button" onclick="quickToggleBan('${displayEmail}', false)" class="px-2.5 py-1 bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white rounded text-[11px] font-bold transition cursor-pointer">
                             Unban
                         </button>
                         ` : `
-                        <button type="button" onclick="quickToggleBan('${u.email}', true)" class="px-2.5 py-1 bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white rounded text-[11px] font-bold transition cursor-pointer">
+                        <button type="button" onclick="quickToggleBan('${displayEmail}', true)" class="px-2.5 py-1 bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white rounded text-[11px] font-bold transition cursor-pointer">
                             Ban
                         </button>
                         `}
@@ -513,7 +513,7 @@
         function selectUserForEdit(encodedUser) {
             try {
                 const u = JSON.parse(decodeURIComponent(encodedUser));
-                document.getElementById('targetUserEmail').value = u.email;
+                document.getElementById('targetUserEmail').value = u.email || '';
                 document.getElementById('targetUserTier').value = (u.tier || 'free').toLowerCase();
                 document.getElementById('targetUserRole').value = u.role || 'user';
                 
@@ -539,7 +539,6 @@
             if(!email) { alert("Please enter or select a user email."); return; }
 
             try {
-                // ১. আরপিসি কল
                 const { data, error } = await _supabase.rpc('admin_manage_user', {
                     p_email: email,
                     p_tier: tier,
@@ -548,8 +547,6 @@
                 });
 
                 if (error) {
-                    // আরপিসি না থাকলে ডাইরেক্ট আপডেট ট্রাই
-                    console.warn("RPC failed, trying direct table update...", error.message);
                     let expiryDate = null;
                     if(tier === 'vip' || tier === 'pro') {
                         expiryDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
@@ -566,7 +563,7 @@
                 }
 
                 await logAdminAction('UPDATE_USER', `Updated ${email} [Tier: ${tier.toUpperCase()}, Role: ${role}, Days: ${days}]`);
-                alert(`✔ ইউজার ${email} সফলভাবে আপডেট হয়েছে! (Tier: ${tier.toUpperCase()}, Days: ${days})`);
+                alert(`✔ ইউজার ${email} সফলভাবে আপডেট হয়েছে! (Tier: ${tier.toUpperCase()}, Days: ${days})`);
                 loadUsersDirectory();
                 loadAuditLogs();
             } catch (err) {
@@ -619,7 +616,10 @@
         // ==========================================
         async function loadOrders() {
             const tbody = document.getElementById('ordersTableBody');
-            const { data, error } = await _supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(100);
+            const { data, error } = await _supabase
+                .from('orders')
+                .select('*')
+                .order('created_at', { ascending: false });
 
             if (error || !data || data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-500 font-mono">No payment orders found.</td></tr>';
@@ -668,9 +668,9 @@
                 const contactPhone = o.sender_phone || o.phone || o.whatsapp || 'N/A';
 
                 return `
-                <tr class="hover:bg-white/[0.02] transition ${isNew ? 'bg-amber-500/[0.03]' : ''}">
+                <tr class="hover:bg-white/[0.02] transition ${isNew ? 'bg-amber-500/[0.04]' : ''}">
                     <td class="p-4 text-gray-400">${new Date(o.created_at).toLocaleDateString()}</td>
-                    <td class="p-4 text-white font-bold">${o.email || o.customer_name}<br><span class="text-[10px] text-gray-400 font-normal">Phone: ${contactPhone}</span></td>
+                    <td class="p-4 text-white font-bold select-all">${o.email || o.customer_name}<br><span class="text-[10px] text-gray-400 font-normal">Phone: ${contactPhone}</span></td>
                     <td class="p-4 text-blue-400 font-bold">${o.product_name} (${o.price})</td>
                     <td class="p-4 text-emerald-400 select-all font-bold">${o.trx_id}</td>
                     <td class="p-4">
@@ -680,7 +680,7 @@
                     </td>
                     <td class="p-4 text-right space-x-2">
                         ${!isApproved ? `
-                        <button type="button" onclick="openDeliveryModal('${encodedOrder}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition cursor-pointer">
+                        <button type="button" onclick="openDeliveryModal('${encodedOrder}')" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition cursor-pointer shadow-md">
                             Approve & Send
                         </button>` : `
                         <span class="text-emerald-400 text-xs font-bold">✔ Delivered</span>`}
@@ -696,11 +696,12 @@
         }
 
         function filterOrdersTable() {
-            const query = document.getElementById('orderSearchInput').value.toLowerCase();
+            const query = document.getElementById('orderSearchInput').value.toLowerCase().trim();
             const filtered = cachedOrdersData.filter(o => 
                 (o.email || '').toLowerCase().includes(query) || 
                 (o.customer_name || '').toLowerCase().includes(query) || 
                 (o.sender_phone || '').toLowerCase().includes(query) || 
+                (o.product_name || '').toLowerCase().includes(query) || 
                 (o.trx_id || '').toLowerCase().includes(query)
             );
             renderOrdersTable(filtered);
@@ -734,7 +735,6 @@
             const days = isVIP ? 730 : 30;
 
             try {
-                // ১. অর্ডার স্ট্যাটাস আপডেট
                 const { error: orderErr } = await _supabase.from('orders').update({ 
                     status: 'approved', 
                     delivery_data: creds 
@@ -742,7 +742,6 @@
 
                 if (orderErr) throw orderErr;
 
-                // ২. ইউজার প্রোফাইল আরপিসি দিয়ে আপগ্রেড
                 await _supabase.rpc('admin_manage_user', {
                     p_email: customerEmail,
                     p_tier: targetTier,
@@ -752,14 +751,12 @@
 
                 await logAdminAction('APPROVE_ORDER', `Approved order for ${customerEmail} [Tier: ${targetTier}]`);
 
-                // ৩. হোয়াটসঅ্যাপ লিংক ট্রিগার
                 const phoneNum = (currentActiveOrder.sender_phone || currentActiveOrder.whatsapp || currentActiveOrder.phone || '').replace(/[^0-9]/g, '');
-                if (phoneNum) {
+                if (phoneNum && phoneNum.length > 5) {
                     const waText = encodeURIComponent(`Hi ${customerEmail}, your GreatNexa order (${currentActiveOrder.product_name}) is approved!\n\n${creds}\n\nTelegram VIP: ${TELEGRAM_VIP_LINK}`);
                     window.open(`https://wa.me/${phoneNum.startsWith('88') ? phoneNum : '88' + phoneNum}?text=${waText}`, '_blank');
                 }
 
-                // ৪. ইমেইল ক্লায়েন্ট ট্রিগার
                 const mailSubject = encodeURIComponent("GreatNexa Terminal Account Approved & Access Details");
                 const mailBody = encodeURIComponent(`Hello,\n\nYour order for ${currentActiveOrder.product_name} has been approved.\n\n${creds}\n\nJoin VIP Telegram: ${TELEGRAM_VIP_LINK}\n\nRegards,\nGreatNexa Team (${ADMIN_SENDER_EMAIL})`);
                 window.open(`mailto:${customerEmail}?from=${ADMIN_SENDER_EMAIL}&subject=${mailSubject}&body=${mailBody}`, '_blank');
