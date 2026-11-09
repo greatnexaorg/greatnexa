@@ -163,7 +163,7 @@
 </head>
 <body class="antialiased overflow-x-hidden">
 
-    <!-- গ্লোবাল ব্রডকাস্ট অ্যানাউন্সমেন্ট ব্যানার -->
+    <!-- Announcement Banner -->
     <div id="globalAnnounceBanner" class="hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white text-xs font-mono py-2 px-4 text-center relative z-50 flex items-center justify-center gap-2 shadow-lg">
         <span>📢 **Announcement:**</span> <span id="announceText">Welcome to GreatNexa Institutional Terminal.</span>
         <button onclick="document.getElementById('globalAnnounceBanner').classList.add('hidden')" class="ml-4 font-bold text-white hover:text-gray-200">&times;</button>
@@ -201,7 +201,7 @@
                     </div>
                 </a>
 
-                <!-- Language Selector Up Right -->
+                <!-- Language Selector -->
                 <div class="notranslate flex items-center bg-[#0d162a] border border-white/10 rounded-xl px-3 py-1.5 text-xs shadow-inner">
                     <span class="text-gray-300 mr-2">🌐</span>
                     <select id="customLangSelect" onchange="applyCustomLanguage(this.value)" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer [&>option]:bg-[#0d162a]">
@@ -583,7 +583,7 @@
 
     <!-- Super Account Dashboard Modal -->
     <div id="userDashboardModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-[75] p-4">
-        <div class="glass-panel w-full max-w-xl rounded-3xl p-6 sm:p-8 border border-blue-500/40 shadow-2xl relative space-y-6 font-mono max-h-[90vh] overflow-y-auto">
+        <div class="glass-panel w-full max-w-2xl rounded-3xl p-6 sm:p-8 border border-blue-500/40 shadow-2xl relative space-y-6 font-mono max-h-[92vh] overflow-y-auto">
             <button type="button" onclick="closeUserDashboard()" class="absolute top-5 right-5 text-gray-400 hover:text-white text-xl font-bold cursor-pointer">&times;</button>
             
             <div class="flex items-center gap-3 border-b border-white/10 pb-4">
@@ -594,6 +594,7 @@
                 </div>
             </div>
 
+            <!-- Tier Stats Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 <div class="p-4 rounded-2xl bg-black/50 border border-white/10 space-y-1">
                     <span class="text-[10px] text-gray-400 uppercase tracking-wider">Tier Status</span>
@@ -612,6 +613,7 @@
                 </div>
             </div>
 
+            <!-- Quota & Access -->
             <div class="p-4 rounded-2xl bg-black/50 border border-blue-500/30 space-y-2 text-xs">
                 <div class="flex justify-between items-center text-gray-400">
                     <span>Terminal Quota & Access:</span>
@@ -626,6 +628,84 @@
                 </div>
             </div>
 
+            <!-- Dashboard Dynamic Tabs (Billing, Referral, Security, Alerts) -->
+            <div class="pt-2 border-t border-white/10 space-y-4">
+                <div class="flex flex-wrap items-center gap-1.5 bg-[#091122] p-1.5 rounded-xl border border-white/5 text-[11px]">
+                    <button type="button" onclick="switchDashTab('billing')" id="dtab-billing" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition cursor-pointer">💳 Billing & History</button>
+                    <button type="button" onclick="switchDashTab('referral')" id="dtab-referral" class="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 font-bold transition cursor-pointer">🤝 Referral & Rewards</button>
+                    <button type="button" onclick="switchDashTab('security')" id="dtab-security" class="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 font-bold transition cursor-pointer">🛡️ Security & Sessions</button>
+                    <button type="button" onclick="switchDashTab('alerts')" id="dtab-alerts" class="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 font-bold transition cursor-pointer">🔔 Custom Alerts</button>
+                </div>
+
+                <!-- 1. Billing Panel -->
+                <div id="dpanel-billing" class="space-y-2 max-h-48 overflow-y-auto bg-black/40 p-3 rounded-xl border border-white/5 text-xs">
+                    <p class="text-gray-500 text-center">Loading billing & payment records...</p>
+                </div>
+
+                <!-- 2. Referral & Affiliate Center -->
+                <div id="dpanel-referral" class="hidden space-y-3 bg-black/40 p-4 rounded-xl border border-white/5 text-xs">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400 font-bold">Your Unique Referral Link:</span>
+                        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-mono">10% Commission Active</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="refLinkInput" readonly value="https://greatnexa.com/?ref=NEXA" class="w-full bg-[#0b1324] border border-white/15 text-blue-400 text-xs rounded-xl px-3 py-2 font-mono select-all">
+                        <button type="button" onclick="copyRefLink()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition cursor-pointer shrink-0">Copy</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-center pt-2 border-t border-white/5">
+                        <div class="p-2 bg-[#091122] rounded-lg border border-white/5">
+                            <span class="text-[10px] text-gray-500 block">Total Referrals</span>
+                            <span id="refCountVal" class="text-base font-extrabold text-white">0</span>
+                        </div>
+                        <div class="p-2 bg-[#091122] rounded-lg border border-white/5">
+                            <span class="text-[10px] text-gray-500 block">Rewards Unlocked</span>
+                            <span class="text-base font-extrabold text-amber-300">Free Tier Days</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Security & Active Sessions -->
+                <div id="dpanel-security" class="hidden space-y-3 bg-black/40 p-4 rounded-xl border border-white/5 text-xs">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-300 font-bold">Active Devices & Browsers</span>
+                        <span class="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> This Browser (Active)
+                        </span>
+                    </div>
+                    <div class="p-2.5 bg-[#091122] rounded-lg border border-white/5 flex justify-between items-center text-[11px]">
+                        <div>
+                            <span class="text-white font-bold">Desktop Browser (Current Session)</span><br>
+                            <span class="text-gray-500">Security Encryption: AES-256 SSL</span>
+                        </div>
+                        <span class="text-emerald-400 font-mono">Verified</span>
+                    </div>
+                    <button type="button" onclick="logoutAllSessions()" class="w-full py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 rounded-xl font-bold transition text-xs font-mono cursor-pointer">
+                        🔒 Sign Out From All Other Devices
+                    </button>
+                </div>
+
+                <!-- 4. Custom Alert Preferences -->
+                <div id="dpanel-alerts" class="hidden space-y-3 bg-black/40 p-4 rounded-xl border border-white/5 text-xs">
+                    <div class="space-y-2">
+                        <label class="flex items-center justify-between p-2 rounded-lg bg-[#091122] border border-white/5 cursor-pointer">
+                            <span class="text-gray-300">Crypto High-Conviction Squeeze Signals</span>
+                            <input type="checkbox" id="prefCrypto" checked class="w-4 h-4 rounded text-blue-600 bg-gray-900 border-white/20 focus:ring-0">
+                        </label>
+                        <label class="flex items-center justify-between p-2 rounded-lg bg-[#091122] border border-white/5 cursor-pointer">
+                            <span class="text-gray-300">Forex & Gold Interbank Dark Pool Setup</span>
+                            <input type="checkbox" id="prefForex" checked class="w-4 h-4 rounded text-blue-600 bg-gray-900 border-white/20 focus:ring-0">
+                        </label>
+                        <label class="flex items-center justify-between p-2 rounded-lg bg-[#091122] border border-white/5 cursor-pointer">
+                            <span class="text-gray-300">Instant Email Notification on High R:R Sets</span>
+                            <input type="checkbox" id="prefEmail" class="w-4 h-4 rounded text-blue-600 bg-gray-900 border-white/20 focus:ring-0">
+                        </label>
+                    </div>
+                    <button type="button" onclick="saveAlertPreferences()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition text-xs font-mono cursor-pointer shadow">
+                        Save Alert Settings
+                    </button>
+                </div>
+            </div>
+
             <!-- In-App Support Tickets & Admin Replies History -->
             <div class="space-y-2 pt-2 border-t border-white/10 text-xs">
                 <span class="text-[11px] text-gray-400 uppercase tracking-wider block font-bold">🎫 My Support Tickets & Admin Replies</span>
@@ -634,6 +714,7 @@
                 </div>
             </div>
 
+            <!-- Quick Action Center -->
             <div class="space-y-2 pt-2 border-t border-white/10 text-xs">
                 <span class="text-[11px] text-gray-400 uppercase tracking-wider block font-bold mb-2">⚡ Quick Action Center</span>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -901,7 +982,7 @@
         </div>
     </div>
 
-    <!-- Set New Password Form Modal (Only on Recovery Flow) -->
+    <!-- Set New Password Form Modal (Recovery Flow) -->
     <div id="newPasswordModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-[80] p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl p-6 border border-blue-500/40 shadow-2xl relative">
             <h3 class="text-lg font-bold text-white mb-1">Set New Password</h3>
@@ -962,7 +1043,7 @@
         let state = { 
             market: 'crypto', 
             horizon: '24h', 
-            limit: 100,
+            limit: 100, 
             role: 'free', 
             tradingMode: 'mode2', 
             direction: 'long', 
@@ -2205,6 +2286,165 @@
         async function handleLogout() {
             if(_supabase) await _supabase.auth.signOut();
             checkUserSession();
+        }
+
+        function openChart(title, symbol) {
+            document.getElementById('modalTitle').innerText = title + " - Institutional Multi-Timeframe Chart";
+            const modal = document.getElementById('chartModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            let cleanSymbol = symbol.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            let tvSymbol = 'BINANCE:' + cleanSymbol;
+
+            if (state.market === 'forex') {
+                if (cleanSymbol.includes('XAU')) tvSymbol = 'OANDA:XAUUSD';
+                else if (cleanSymbol.includes('EUR')) tvSymbol = 'FX:EURUSD';
+                else tvSymbol = 'FX:' + cleanSymbol;
+            } else if (state.market === 'stocks') {
+                tvSymbol = 'NASDAQ:' + cleanSymbol;
+            }
+
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": tvSymbol,
+                "interval": "60",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#02040a",
+                "enable_publishing": false,
+                "allow_symbol_change": true,
+                "container_id": "tv_chart_container"
+            });
+        }
+
+        function closeChart() {
+            const modal = document.getElementById('chartModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.getElementById('tv_chart_container').innerHTML = '';
+        }
+
+        function openPaymentModal(plan, usd, bdt) {
+            selectedPlan = plan;
+            basePriceUSD = usd;
+            basePriceBDT = bdt;
+            currentDiscountPct = 0;
+            document.getElementById('appliedCouponCode').value = "";
+            document.getElementById('couponMsg').innerText = "";
+            document.getElementById('payPlanName').innerText = plan;
+            updateModalPricingDisplay();
+            setPaymentMethod('crypto');
+            switchCryptoTab('binance');
+
+            const modal = document.getElementById('paymentModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closePaymentModal() {
+            const modal = document.getElementById('paymentModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function closeSuccessModal() {
+            const modal = document.getElementById('successModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function setPaymentMethod(method) {
+            activePaymentMethod = method;
+            const btnCrypto = document.getElementById('pay-opt-crypto');
+            const btnLocal = document.getElementById('pay-opt-local');
+            const boxCrypto = document.getElementById('cryptoPaymentBox');
+            const boxLocal = document.getElementById('localPaymentBox');
+            const phoneWrap = document.getElementById('localSenderPhoneWrap');
+
+            if (method === 'crypto') {
+                btnCrypto.className = "py-2.5 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow";
+                btnLocal.className = "py-2.5 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10";
+                boxCrypto.classList.remove('hidden');
+                boxLocal.classList.add('hidden');
+                phoneWrap.classList.add('hidden');
+            } else {
+                btnLocal.className = "py-2.5 text-xs font-bold rounded-xl bg-blue-600 text-white border border-blue-500 shadow";
+                btnCrypto.className = "py-2.5 text-xs font-bold rounded-xl bg-gray-800 text-gray-300 border border-white/10";
+                boxLocal.classList.remove('hidden');
+                boxCrypto.classList.add('hidden');
+                phoneWrap.classList.remove('hidden');
+            }
+        }
+
+        function switchCryptoTab(net) {
+            ['binance', 'bep20', 'trc20'].forEach(n => {
+                const tab = document.getElementById('tab-' + n);
+                const content = document.getElementById('content-' + n);
+                if (tab && content) {
+                    if (n === net) {
+                        tab.className = "px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold text-[10px] transition";
+                        content.classList.remove('hidden');
+                    } else {
+                        tab.className = "px-2.5 py-1 rounded-lg bg-gray-800 text-gray-300 font-bold text-[10px] transition";
+                        content.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        function copyCryptoAddress(elemId, btn) {
+            const text = document.getElementById(elemId).innerText.trim();
+            navigator.clipboard.writeText(text);
+            const orig = btn.innerText;
+            btn.innerText = "Copied!";
+            setTimeout(() => { btn.innerText = orig; }, 1200);
+        }
+
+        async function submitPaymentOrder() {
+            const trxId = document.getElementById('payTrxId').value.trim();
+            const senderPhone = document.getElementById('paySenderPhone').value.trim();
+
+            if (!trxId) {
+                alert("Please enter Transaction ID / Hash.");
+                return;
+            }
+
+            if (activePaymentMethod === 'local' && !senderPhone) {
+                alert("Please enter the sender phone number for bKash/Nagad verification.");
+                return;
+            }
+
+            const finalUSD = (basePriceUSD * (1 - currentDiscountPct / 100)).toFixed(2);
+            const finalBDT = Math.round(basePriceBDT * (1 - currentDiscountPct / 100));
+            const priceString = `$${finalUSD} / ${finalBDT} BDT`;
+
+            if (_supabase) {
+                const { error } = await _supabase.from('orders').insert([{
+                    customer_name: currentUserEmail || 'Guest Terminal User',
+                    product_name: selectedPlan,
+                    price: priceString,
+                    trx_id: trxId,
+                    status: 'pending',
+                    email: currentUserEmail || 'Unregistered',
+                    sender_phone: senderPhone || null
+                }]);
+
+                if (error) {
+                    alert("Error submitting order: " + error.message);
+                    return;
+                }
+            }
+
+            closePaymentModal();
+            document.getElementById('payTrxId').value = '';
+            document.getElementById('paySenderPhone').value = '';
+
+            const successModal = document.getElementById('successModal');
+            successModal.classList.remove('hidden');
+            successModal.classList.add('flex');
         }
     </script>
 
