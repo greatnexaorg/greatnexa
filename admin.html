@@ -10,6 +10,12 @@
     <style>
         body { background: #02040a; color: #e2e8f0; font-family: system-ui, sans-serif; }
         .glass-panel { background: rgba(10, 16, 30, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .new-order-badge { animation: pulseGlow 2s infinite; }
     </style>
 </head>
 <body class="min-h-screen p-4 sm:p-6 max-w-7xl mx-auto flex flex-col justify-between">
@@ -58,7 +64,12 @@
                 <h1 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
                     <span>🛡️</span> GreatNexa Advanced Admin & Automation Suite
                 </h1>
-                <p class="text-xs text-gray-400">Connected: <span id="adminSessionEmail" class="text-blue-400 font-mono"></span></p>
+                <div class="flex items-center gap-3 mt-1">
+                    <p class="text-xs text-gray-400">Connected: <span id="adminSessionEmail" class="text-blue-400 font-mono"></span></p>
+                    <span id="liveSyncStatus" class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded text-[10px] font-mono font-bold flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> LIVE SYNC ACTIVE
+                    </span>
+                </div>
             </div>
             <div class="flex items-center gap-3">
                 <button onclick="exportOrdersCSV()" class="px-3.5 py-2 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/30 text-xs font-bold rounded-xl transition cursor-pointer font-mono flex items-center gap-1.5">
@@ -79,7 +90,7 @@
                 <span class="text-gray-400 block text-[10px]">TOTAL ORDERS</span>
                 <span id="statTotal" class="text-lg font-bold text-white">0</span>
             </div>
-            <div class="p-4 glass-panel rounded-xl border border-amber-500/20">
+            <div class="p-4 glass-panel rounded-xl border border-amber-500/25">
                 <span class="text-amber-400 block text-[10px]">PENDING APPROVAL</span>
                 <span id="statPending" class="text-lg font-bold text-amber-300">0</span>
             </div>
@@ -140,10 +151,13 @@
             </div>
         </div>
 
-        <!-- Orders Table & Search & Auto-Notification -->
+        <!-- Orders Table & Search & Real-time Stream -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10">
             <div class="p-4 border-b border-white/10 flex flex-wrap justify-between items-center gap-3">
-                <h3 class="text-sm font-bold text-white font-mono">⚡ Pending Orders & Auto-Delivery Gateway</h3>
+                <div class="flex items-center gap-2">
+                    <h3 class="text-sm font-bold text-white font-mono">⚡ Pending Orders & Auto-Delivery Gateway</h3>
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                </div>
                 <div class="w-full sm:w-72">
                     <input type="text" id="orderSearchInput" onkeyup="filterOrdersTable()" placeholder="🔍 Search by Email or TrxID..." class="w-full bg-[#0b1324] border border-white/15 text-white text-xs font-mono rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500">
                 </div>
@@ -271,6 +285,7 @@
             document.getElementById('adminAuthModal').classList.add('hidden');
             document.getElementById('adminMainContent').classList.remove('hidden');
             loadAdminData();
+            setupOrdersRealtimeListener(); // রিয়েল-টাইম লাইভ লিসেনার চালু করা
         }
 
         function showAuthModal(errMsg = '') {
@@ -298,12 +313,16 @@
 
         async function loadOrders() {
             const tbody = document.getElementById('ordersTableBody');
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-400 font-mono">Loading orders from database...</td></tr>';
+            if(cachedOrdersData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-400 font-mono">Loading orders from database...</td></tr>';
+            }
 
             const { data, error } = await _supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(100);
 
             if (error || !data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-500 font-mono">No payment orders found.</td></tr>';
+                if(cachedOrdersData.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-500 font-mono">No payment orders found.</td></tr>';
+                }
                 cachedOrdersData = [];
                 document.getElementById('statTotal').innerText = '0';
                 document.getElementById('statPending').innerText = '0';
@@ -315,6 +334,21 @@
             renderOrdersTable(cachedOrdersData);
         }
 
+        // Supabase Real-time Channel (নতুন অর্ডার আসামাত্র রিফ্রেশ ছাড়াই শো করবে)
+        function setupOrdersRealtimeListener() {
+            _supabase
+                .channel('admin_orders_channel')
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'orders' },
+                    (payload) => {
+                        console.log('Realtime order change detected:', payload);
+                        loadOrders(); // নতুন অর্ডার আসামাত্র টেবিল ও কাউন্ট অটো রিফ্রেশ হবে
+                    }
+                )
+                .subscribe();
+        }
+
         function renderOrdersTable(ordersList) {
             const tbody = document.getElementById('ordersTableBody');
             let pendingCount = 0;
@@ -323,6 +357,7 @@
 
             tbody.innerHTML = ordersList.map(o => {
                 const isApproved = o.status === 'approved';
+                const isNew = !isApproved; // নতুন পেন্ডিং অর্ডারের জন্য স্পেশাল ব্যাজ
                 if(isApproved) {
                     approvedCount++;
                     const dStr = new Date(o.created_at).toLocaleDateString();
@@ -332,13 +367,13 @@
                 }
 
                 return `
-                <tr class="hover:bg-white/[0.02] transition">
+                <tr class="hover:bg-white/[0.02] transition ${isNew ? 'bg-amber-500/[0.03]' : ''}">
                     <td class="p-4 text-gray-400">${new Date(o.created_at).toLocaleDateString()}</td>
                     <td class="p-4 text-white font-bold">${o.email || o.customer_name}<br><span class="text-[10px] text-gray-400">${o.whatsapp || o.phone || ''}</span></td>
                     <td class="p-4 text-blue-400 font-bold">${o.product_name} (${o.price})</td>
                     <td class="p-4 text-emerald-400 select-all font-bold">${o.trx_id}</td>
                     <td class="p-4">
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${isApproved ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${isApproved ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40 new-order-badge'}">
                             ${(o.status || 'pending').toUpperCase()}
                         </span>
                     </td>
@@ -483,7 +518,6 @@
             listDiv.innerHTML = data.map(c => `<div><b>${c.code}</b>: ${c.discount_pct}% OFF</div>`).join('');
         }
 
-        // সাপোর্ট টিকিট সিস্টেম ও অ্যাডমিন রিপ্লাই ফিচার
         async function loadSupportTickets() {
             const ticketDiv = document.getElementById('supportTicketsList');
             const { data, error } = await _supabase.from('support_tickets').select('*').order('created_at', { ascending: false }).limit(10);
@@ -522,7 +556,6 @@
 
                 if (error) throw error;
 
-                // জিমেইলে অটো রিপ্লাই ট্রিগার
                 const mailSubject = encodeURIComponent("Reply to your Support Ticket: " + subject);
                 const mailBody = encodeURIComponent(`Hello,\n\nRegarding your support ticket (${subject}), our admin team replied:\n\n${replyMsg}\n\nRegards,\nGreatNexa Team`);
                 window.open(`mailto:${customerEmail}?subject=${mailSubject}&body=${mailBody}`, '_blank');
