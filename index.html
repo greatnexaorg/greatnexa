@@ -479,16 +479,16 @@
 
                 <!-- Pro Monthly -->
                 <div id="cardTierPro" class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 border-blue-500/30 relative transition-all">
-                    <span class="absolute -top-3 right-6 bg-blue-600 text-white text-[10px] font-black px-3 py-0.5 rounded-full uppercase font-mono shadow-md">97% Beta Discount</span>
+                    <span id="badgeProDiscount" class="absolute -top-3 right-6 bg-blue-600 text-white text-[10px] font-black px-3 py-0.5 rounded-full uppercase font-mono shadow-md">97% Beta Discount</span>
                     <div>
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold font-mono border border-blue-500/40">Pro Monthly</span>
-                                <span class="text-xs text-gray-400 line-through font-mono notranslate">$199</span>
+                                <span id="textProRegular" class="text-xs text-gray-400 line-through font-mono notranslate">$199</span>
                             </div>
                         </div>
                         <div class="mt-4 flex items-baseline justify-between">
-                            <h3 class="text-4xl font-extrabold text-white notranslate">$5 <span class="text-xs text-gray-400 font-normal">/ mo</span></h3>
+                            <h3 id="textProPrice" class="text-4xl font-extrabold text-white notranslate">$5 <span class="text-xs text-gray-400 font-normal">/ mo</span></h3>
                             <span id="countdownPro" class="text-[11px] font-mono text-blue-300 bg-blue-950/40 px-2.5 py-1 rounded-lg border border-blue-500/30 hidden">⭐ Active Plan • 30 days left</span>
                         </div>
                         <p class="text-xs text-gray-400 mt-1">Institutional quantitative access on a flexible monthly pass.</p>
@@ -506,7 +506,7 @@
 
                 <!-- VIP 2-Year Pass -->
                 <div id="cardTierVip" class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-6 relative border-amber-500/50 bg-gradient-to-b from-[#181d33] to-[#0c1222] shadow-2xl shadow-amber-500/10 transition-all">
-                    <span class="absolute -top-3 right-6 bg-gradient-to-r from-amber-500 to-orange-500 text-black text-[10px] font-black px-3.5 py-1 rounded-full uppercase tracking-wider font-mono shadow-md">🔥 1 Year Free Included</span>
+                    <span id="badgeVipDiscount" class="absolute -top-3 right-6 bg-gradient-to-r from-amber-500 to-orange-500 text-black text-[10px] font-black px-3.5 py-1 rounded-full uppercase tracking-wider font-mono shadow-md">🔥 1 Year Free Included</span>
                     <div>
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
@@ -516,8 +516,8 @@
                         </div>
                         <div class="mt-4 flex items-baseline justify-between">
                             <div class="flex items-baseline gap-2">
-                                <h3 class="text-4xl font-black text-white notranslate">$49</h3>
-                                <span class="text-xs text-gray-400 line-through font-mono notranslate">$499</span>
+                                <h3 id="textVipPrice" class="text-4xl font-black text-white notranslate">$49</h3>
+                                <span id="textVipRegular" class="text-xs text-gray-400 line-through font-mono notranslate">$499</span>
                             </div>
                             <span id="countdownVip" class="text-[11px] font-mono text-amber-300 bg-amber-950/40 px-2.5 py-1 rounded-lg border border-amber-500/30 hidden">⭐ Active Plan • 730 days left</span>
                         </div>
@@ -1105,7 +1105,61 @@
             is_active: true
         };
 
-        // Price Precision Formatter (Fixes micro coins like PEPE / small decimals)
+        // Load Dynamic Pricing from Supabase subscription_pricing table & Setup Realtime Listener
+        async function loadDynamicPricing() {
+            if (!_supabase) return;
+            try {
+                const { data, error } = await _supabase.from('system_settings').select('*').eq('key', 'subscription_pricing').single();
+                if (data && data.value) {
+                    const cfg = data.value;
+                    const elProPrice = document.getElementById('textProPrice');
+                    const elProReg = document.getElementById('textProRegular');
+                    const btnPro = document.getElementById('btnPricingPro');
+
+                    const elVipPrice = document.getElementById('textVipPrice');
+                    const elVipReg = document.getElementById('textVipRegular');
+                    const btnVip = document.getElementById('btnPricingVip');
+
+                    if (cfg.pro_current && elProPrice) {
+                        elProPrice.innerHTML = `$${cfg.pro_current} <span class="text-xs text-gray-400 font-normal">/ mo</span>`;
+                    }
+                    if (cfg.pro_regular && elProReg) {
+                        elProReg.innerText = `$${cfg.pro_regular}`;
+                    }
+                    if (cfg.pro_current && btnPro) {
+                        btnPro.setAttribute('onclick', `openPaymentModal('Pro Monthly ($${cfg.pro_current}/mo)', ${cfg.pro_current}, ${cfg.pro_bdt || 600})`);
+                        btnPro.innerText = `Get Beta Pass ($${cfg.pro_current}/mo)`;
+                    }
+
+                    if (cfg.vip_current && elVipPrice) {
+                        elVipPrice.innerText = `$${cfg.vip_current}`;
+                    }
+                    if (cfg.vip_regular && elVipReg) {
+                        elVipReg.innerText = `$${cfg.vip_regular}`;
+                    }
+                    if (cfg.vip_current && btnVip) {
+                        btnVip.setAttribute('onclick', `openPaymentModal('VIP 2-Year Special Deal ($${cfg.vip_current})', ${cfg.vip_current}, ${cfg.vip_bdt || 5900})`);
+                        btnVip.innerText = `Claim VIP Pass ($${cfg.vip_current})`;
+                    }
+                }
+            } catch (err) {
+                console.log("Using default pricing UI state");
+            }
+        }
+
+        function setupPricingRealtimeListener() {
+            if (!_supabase) return;
+            _supabase
+                .channel('subscription_pricing_live_update')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'system_settings' }, (payload) => {
+                    if (payload.new && payload.new.key === 'subscription_pricing') {
+                        loadDynamicPricing();
+                    }
+                })
+                .subscribe();
+        }
+
+        // Price Precision Formatter
         function formatAssetPrice(val) {
             if (val === null || val === undefined || val === '') return 'N/A';
             const num = parseFloat(val);
@@ -1118,7 +1172,6 @@
             return num.toFixed(2);
         }
 
-        // Relative Timestamp Calculator (e.g. "Just now", "5m ago")
         function formatTimeAgo(dateString) {
             if (!dateString) return 'Live Fresh';
             const past = new Date(dateString).getTime();
@@ -1225,9 +1278,6 @@
             `).join('');
         }
 
-        // ==========================================
-        // DYNAMIC REFERRAL & REWARDS (PAID VS FREE)
-        // ==========================================
         async function fetchAdminReferralRules() {
             if (!_supabase) return;
             try {
@@ -1541,6 +1591,8 @@
             initBinanceTicker();
             checkGlobalAnnouncements();
             fetchAdminReferralRules();
+            loadDynamicPricing();
+            setupPricingRealtimeListener();
         });
 
         async function checkGlobalAnnouncements() {
@@ -1976,12 +2028,12 @@
                 btnFree.disabled = false;
             }
             if(btnPro) {
-                btnPro.innerText = "Get Beta Pass ($5/mo)";
+                btnPro.innerText = "Get Beta Pass";
                 btnPro.className = "w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-blue-600/30 transition cursor-pointer font-mono";
                 btnPro.disabled = false;
             }
             if(btnVip) {
-                btnVip.innerText = "Claim VIP Pass ($49)";
+                btnVip.innerText = "Claim VIP Pass";
                 btnVip.className = "w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold text-xs rounded-xl shadow-lg shadow-amber-500/30 transition cursor-pointer font-mono uppercase tracking-wider";
                 btnVip.disabled = false;
             }
@@ -2055,7 +2107,6 @@
                 const score = item.score || 75;
                 const scoreColor = score >= 85 ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-blue-400 border-blue-500/30 bg-blue-500/10';
 
-                // Strictly ACTIVE status check
                 const status = (item.status || 'ACTIVE').toUpperCase();
                 let statusBadge = `<span class="text-emerald-400 font-medium text-[11px] flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Active Setup</span>`;
                 if (status === 'HIT_TP') {
@@ -2068,7 +2119,6 @@
                 const isSaved = savedList.some(x => x.symbol === item.symbol && x.direction === item.direction);
                 const encodedItem = encodeURIComponent(JSON.stringify(item));
                 
-                // Formatted price points
                 const entryStr = formatAssetPrice(item.entry_price);
                 const tpStr = formatAssetPrice(item.tp_price);
                 const slStr = formatAssetPrice(item.sl_price);
@@ -2141,7 +2191,7 @@
                             </div>
                         </div>
 
-                        <!-- Quant Note with Fixed Bangla Typography -->
+                        <!-- Quant Note -->
                         <div class="p-2.5 rounded-xl bg-[#091122] border border-white/5 text-[11px] leading-relaxed font-bangla text-gray-300">
                             <strong class="text-blue-400 font-sans font-bold">Quant Note:</strong> 
                             ${item.research_note || 'Scalp SMC LONG অর্ডারব্লক ও লিকুইডিটি পার্জ কনফার্মড। R:R = 1:2.2'}
@@ -2191,7 +2241,6 @@
                     query = query.eq('market_type', 'crypto');
                 }
 
-                // FIX: লাইভ আলফা স্ট্রিম এবং মনিটরিং উভয় ট্যাবেই শুধুমাত্র ACTIVE ট্রেড দেখাবে, কোনো Invalidated দেখাবে না
                 if (state.viewTab === 'active' || state.viewTab === 'monitoring') {
                     query = query.eq('status', 'ACTIVE');
                 }
