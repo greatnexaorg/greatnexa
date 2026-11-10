@@ -115,6 +115,65 @@
             </div>
         </div>
 
+        <!-- ============================================================== -->
+        <!-- PLAN PRICING & OFFER MANAGER (DYNAMIC TIER CONTROLLER) -->
+        <!-- ============================================================== -->
+        <div class="glass-panel p-5 rounded-2xl border border-amber-500/30 space-y-4">
+            <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">🏷️</span>
+                    <h3 class="text-xs font-bold text-amber-400 font-mono uppercase tracking-wide">সাবস্ক্রিপশন প্ল্যান প্রাইসিং ও অফার ম্যানেজার</h3>
+                </div>
+                <span class="text-[10px] text-gray-400 font-mono">লাইভ ওয়েবসাইটে সাথে সাথে কার্যকর হবে</span>
+            </div>
+
+            <form onsubmit="handleSavePricing(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
+                <!-- Pro Plan Price Box -->
+                <div class="p-4 bg-[#080e1c] border border-blue-500/30 rounded-xl space-y-3">
+                    <span class="text-xs font-bold text-blue-400 block uppercase">⚡ Pro Monthly Plan</span>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-1">অফার মূল্য ($)</label>
+                            <input type="number" id="priceProCurrent" step="0.5" value="5" required class="w-full bg-[#0b1324] border border-white/15 text-white rounded-lg px-2.5 py-2 focus:border-blue-500 focus:outline-none font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-1">রেগুলার মূল্য ($)</label>
+                            <input type="number" id="priceProRegular" value="199" required class="w-full bg-[#0b1324] border border-white/15 text-gray-400 rounded-lg px-2.5 py-2 focus:border-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-1">BDT রেট (টাকা)</label>
+                            <input type="number" id="priceProBDT" value="600" required class="w-full bg-[#0b1324] border border-white/15 text-emerald-400 rounded-lg px-2.5 py-2 focus:border-blue-500 focus:outline-none font-bold">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIP Plan Price Box -->
+                <div class="p-4 bg-[#080e1c] border border-amber-500/30 rounded-xl space-y-3">
+                    <span class="text-xs font-bold text-amber-400 block uppercase">👑 VIP 2-Year Special Plan</span>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-1">অফার মূল্য ($)</label>
+                            <input type="number" id="priceVipCurrent" step="1" value="49" required class="w-full bg-[#0b1324] border border-white/15 text-white rounded-lg px-2.5 py-2 focus:border-amber-500 focus:outline-none font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-1">রেগুলার মূল্য ($)</label>
+                            <input type="number" id="priceVipRegular" value="499" required class="w-full bg-[#0b1324] border border-white/15 text-gray-400 rounded-lg px-2.5 py-2 focus:border-amber-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-1">BDT রেট (টাকা)</label>
+                            <input type="number" id="priceVipBDT" value="5900" required class="w-full bg-[#0b1324] border border-white/15 text-emerald-400 rounded-lg px-2.5 py-2 focus:border-amber-500 focus:outline-none font-bold">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-blue-600 hover:from-amber-500 hover:to-blue-500 text-white font-bold rounded-xl transition cursor-pointer shadow">
+                        💾 Save & Update Pricing Live
+                    </button>
+                </div>
+            </form>
+        </div>
+
         <!-- TOP CONTROLS SECTION: Analytics, Coupon & Manual Upgrade -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
             <!-- 1. Revenue Analytics Chart (7 Columns) -->
@@ -294,7 +353,7 @@
                         </button>
                     </div>
 
-                    <!-- Referrals Sub-Filter (Visible only in referrals tab) -->
+                    <!-- Referrals Sub-Filter -->
                     <div id="refSubFilterWrap" class="hidden items-center gap-1 bg-[#0b1324] p-1 rounded-xl border border-white/10 font-mono text-[10px]">
                         <button type="button" onclick="filterReferralsView('all')" id="refFilter-all" class="px-2 py-1 rounded bg-indigo-600 text-white font-bold">All</button>
                         <button type="button" onclick="filterReferralsView('paid')" id="refFilter-paid" class="px-2 py-1 rounded text-gray-400 hover:text-white font-bold">💎 Paid Only</button>
@@ -310,9 +369,7 @@
             <!-- Unified Content Area -->
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-gray-300 font-mono">
-                    <thead id="masterTableHead" class="bg-[#0b1324] text-gray-400 uppercase text-[11px] border-b border-white/10">
-                        <!-- Populated by JavaScript according to active tab -->
-                    </thead>
+                    <thead id="masterTableHead" class="bg-[#0b1324] text-gray-400 uppercase text-[11px] border-b border-white/10"></thead>
                     <tbody id="masterTableBody" class="divide-y divide-white/5">
                         <tr>
                             <td colspan="7" class="text-center p-8 text-gray-500">Loading master records...</td>
@@ -387,7 +444,6 @@
         let currentActiveOrder = null;
         let revenueChartInstance = null;
         
-        // Master storage arrays to prevent search reset bug
         let allOrders = [];
         let allUsers = [];
         let allReferrals = [];
@@ -395,7 +451,7 @@
         let currentAdminEmail = '';
         let currentAdminRole = '';
         let activeMasterTab = 'orders';
-        let referralSubFilter = 'all'; // 'all', 'paid', 'free'
+        let referralSubFilter = 'all';
         let currentMilestoneGoal = 5;
         let currentMilestoneRewardType = 'pro_sub';
         let currentMilestoneRewardVal = '30 Days Pro Plan';
@@ -503,12 +559,55 @@
                 loadCoupons(),
                 loadSupportTickets(),
                 loadReferralsData(),
-                loadReferralProgramRules()
+                loadReferralProgramRules(),
+                loadPricingSettings()
             ]);
         }
 
         // ==========================================
-        // UNIFIED MASTER TABLE SWITCH & RENDER
+        // DYNAMIC PRICING MANAGER
+        // ==========================================
+        async function loadPricingSettings() {
+            try {
+                const { data } = await _supabase.from('system_settings').select('*').eq('key', 'subscription_pricing').single();
+                if (data && data.value) {
+                    const cfg = data.value;
+                    if (cfg.pro_current) document.getElementById('priceProCurrent').value = cfg.pro_current;
+                    if (cfg.pro_regular) document.getElementById('priceProRegular').value = cfg.pro_regular;
+                    if (cfg.pro_bdt) document.getElementById('priceProBDT').value = cfg.pro_bdt;
+
+                    if (cfg.vip_current) document.getElementById('priceVipCurrent').value = cfg.vip_current;
+                    if (cfg.vip_regular) document.getElementById('priceVipRegular').value = cfg.vip_regular;
+                    if (cfg.vip_bdt) document.getElementById('priceVipBDT').value = cfg.vip_bdt;
+                }
+            } catch (err) {
+                console.log("No custom pricing setting found, keeping defaults.");
+            }
+        }
+
+        async function handleSavePricing(e) {
+            e.preventDefault();
+            const payload = {
+                pro_current: parseFloat(document.getElementById('priceProCurrent').value) || 5,
+                pro_regular: parseFloat(document.getElementById('priceProRegular').value) || 199,
+                pro_bdt: parseInt(document.getElementById('priceProBDT').value) || 600,
+                vip_current: parseFloat(document.getElementById('priceVipCurrent').value) || 49,
+                vip_regular: parseFloat(document.getElementById('priceVipRegular').value) || 499,
+                vip_bdt: parseInt(document.getElementById('priceVipBDT').value) || 5900,
+                updated_at: new Date().toISOString()
+            };
+
+            try {
+                const { error } = await _supabase.from('system_settings').upsert({ key: 'subscription_pricing', value: payload });
+                if (error) throw error;
+                alert("✔ প্ল্যান মূল্য সফলভাবে আপডেট করা হয়েছে! লাইভ সাইটে এটি কার্যকর হয়ে গেছে।");
+            } catch (err) {
+                alert("Error saving pricing: " + err.message);
+            }
+        }
+
+        // ==========================================
+        // MASTER TABLE SWITCH & RENDER
         // ==========================================
         function switchMasterTab(tab) {
             activeMasterTab = tab;
@@ -727,7 +826,6 @@
                     const paidCount = r.paid_referral_count || 0;
                     const freeCount = Math.max(0, totalCount - paidCount);
 
-                    // Weighted score: 1 Paid = 1 point, 4 Free = 1 point
                     const effectiveScore = paidCount + (freeCount * 0.25);
                     const isTargetAchieved = effectiveScore >= currentMilestoneGoal;
 
@@ -786,7 +884,6 @@
             document.getElementById('statPending').innerText = String(pendingCount);
             document.getElementById('tabOrderCount').innerText = String(allOrders.length);
 
-            // Chart Data
             let chartDates = {};
             allOrders.filter(o => o.status === 'approved').forEach(o => {
                 const dStr = new Date(o.created_at).toLocaleDateString();
