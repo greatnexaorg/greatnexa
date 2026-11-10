@@ -181,59 +181,66 @@
         </div>
 
         <!-- ============================================================== -->
-        <!-- ADVANCED REFERRAL CONTROL & TOP 10 LEADERBOARD SECTION -->
+        <!-- ADVANCED REFERRAL CONTROL, MILESTONE & TOP 10 LEADERBOARD -->
         <!-- ============================================================== -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-            <!-- Referral Settings & Rewards Policy Manager (7 Cols) -->
+            <!-- Referral Settings, Milestone Targets & Rewards Policy (7 Cols) -->
             <div class="lg:col-span-7 glass-panel p-5 rounded-2xl border border-indigo-500/30 space-y-4">
                 <div class="flex justify-between items-center border-b border-white/10 pb-3">
                     <div class="flex items-center gap-2">
-                        <span class="text-base">🎁</span>
-                        <h3 class="text-xs font-bold text-indigo-400 font-mono uppercase tracking-wide">Referral Program Rules & Reward Settings</h3>
+                        <span class="text-base">🎯</span>
+                        <h3 class="text-xs font-bold text-indigo-400 font-mono uppercase tracking-wide">রেফারেল টার্গেট, রিওয়ার্ড ও পলিসি সেটিংস</h3>
                     </div>
                     <span id="refProgramStatusBadge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">PROGRAM ACTIVE</span>
                 </div>
 
                 <form onsubmit="handleSaveReferralRules(event)" class="space-y-3 font-mono text-xs">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">রিওয়ার্ড ধরণ (Reward Type)</label>
-                            <select id="refRewardType" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 focus:border-indigo-500 focus:outline-none">
-                                <option value="percentage">কমিশন পার্সেন্টেজ (%) Commission</option>
-                                <option value="fixed_cash">নির্দিষ্ট ক্যাশ ব্যাক (BDT/USDT)</option>
-                                <option value="free_days">ফ্রি Pro সাবস্ক্রিপশন মেয়াদ (দিন)</option>
-                                <option value="vip_days">ফ্রি VIP সাবস্ক্রিপশন মেয়াদ (দিন)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">রিওয়ার্ড ভ্যালু (% বা দিন বা টাকা)</label>
-                            <input type="number" id="refRewardValue" value="20" required min="1" step="0.5" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 focus:border-indigo-500 focus:outline-none" placeholder="e.g. 20 (percent or days)">
+                    <!-- Milestone / Target Settings -->
+                    <div class="p-3 bg-[#080e1c] rounded-xl border border-indigo-500/20 space-y-2.5">
+                        <span class="text-[11px] font-bold text-indigo-300 block">🎯 রেফারেল টার্গেট ও পূরণ হলে রিওয়ার্ড নির্ধারণ:</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">টার্গেট রেফারেল সংখ্যা</label>
+                                <input type="number" id="refTargetGoal" value="5" min="1" required class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 focus:border-indigo-500 focus:outline-none" placeholder="যেমন: ৫ বা ১০টি">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">টার্গেটের পুরুষ্কার টাইপ</label>
+                                <select id="refTargetRewardType" onchange="updateTargetRewardPlaceholder()" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 focus:border-indigo-500 focus:outline-none">
+                                    <option value="pro_sub">ফ্রি Pro সাবস্ক্রিপশন (মাসিক)</option>
+                                    <option value="vip_sub">ফ্রি VIP সাবস্ক্রিপশন (২ বছর)</option>
+                                    <option value="fixed_cash">ক্যাশ ব্যালেন্স / টাকা (BDT)</option>
+                                    <option value="custom_gift">নির্দিষ্ট গিফট / প্রোডাক্ট উপহার</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-1">রিওয়ার্ড ভ্যালু / বিবরণ</label>
+                                <input type="text" id="refTargetRewardValue" value="30 Days Pro Plan" required class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 focus:border-indigo-500 focus:outline-none" placeholder="e.g. 500 BDT or 30 Days">
+                            </div>
                         </div>
                     </div>
 
+                    <!-- General Policy Settings -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">উইথড্র/পেআউট লিমিট (Min Referrals)</label>
-                            <input type="number" id="refMinPayout" value="3" min="1" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 focus:border-indigo-500 focus:outline-none" placeholder="Min 3 users">
+                            <label class="block text-[11px] text-gray-400 mb-1">কমিশন রেট (% পার্সেন্ট)</label>
+                            <input type="number" id="refCommissionRate" value="20" min="0" max="100" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 focus:border-indigo-500 focus:outline-none" placeholder="20%">
                         </div>
                         <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">নতুন ইউজারের ওয়েলকাম দিন</label>
+                            <label class="block text-[11px] text-gray-400 mb-1">নতুন ইউজারের ফ্রি ট্রায়াল</label>
                             <input type="number" id="refWelcomeBonusDays" value="3" min="0" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 focus:border-indigo-500 focus:outline-none" placeholder="3 Days Free">
                         </div>
                         <div>
                             <label class="block text-[11px] text-gray-400 mb-1">প্রোগ্রাম স্ট্যাটাস</label>
                             <select id="refProgramActive" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 focus:border-indigo-500 focus:outline-none">
-                                <option value="true">চালু (Active)</option>
+                                <option value="true">সক্রিয় (Active)</option>
                                 <option value="false">স্থগিত (Paused)</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="pt-2 flex gap-3">
-                        <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition cursor-pointer shadow">
-                            💾 Save Referral Rules & Rates
-                        </button>
-                    </div>
+                    <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition cursor-pointer shadow">
+                        💾 Save Referral & Target Rules
+                    </button>
                 </form>
 
                 <!-- Quick Manual Adjust Referrals -->
@@ -321,15 +328,25 @@
             </div>
         </div>
 
-        <!-- Support Tickets Desk -->
+        <!-- Support Tickets Desk (With Clear All and Delete Options) -->
         <div class="glass-panel rounded-2xl border border-white/10 p-5 space-y-3">
-            <div class="flex justify-between items-center border-b border-white/10 pb-3">
-                <h3 class="text-sm font-bold text-white font-mono flex items-center gap-2">
-                    <span>🎫</span> Customer Support Helpdesk Tickets
-                </h3>
-                <span class="text-xs text-gray-400 font-mono">Inquiries & Issue Reports</span>
+            <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-3 gap-2">
+                <div>
+                    <h3 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+                        <span>🎫</span> Customer Support Helpdesk Tickets
+                    </h3>
+                    <span class="text-xs text-gray-400 font-mono">Inquiries & Issue Reports</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="clearResolvedTickets()" class="px-3 py-1.5 bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white border border-amber-500/30 rounded-lg text-xs font-mono font-bold transition cursor-pointer">
+                        🧹 Clear Resolved
+                    </button>
+                    <button type="button" onclick="clearAllSupportTickets()" class="px-3 py-1.5 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 rounded-lg text-xs font-mono font-bold transition cursor-pointer">
+                        🗑️ Delete All Tickets
+                    </button>
+                </div>
             </div>
-            <div id="supportTicketsList" class="space-y-3 font-mono text-xs max-h-60 overflow-y-auto pr-1">
+            <div id="supportTicketsList" class="space-y-3 font-mono text-xs max-h-72 overflow-y-auto pr-1">
                 <p class="text-gray-400">Loading support tickets...</p>
             </div>
         </div>
@@ -370,6 +387,9 @@
         let currentAdminEmail = '';
         let currentAdminRole = '';
         let activeMasterTab = 'orders';
+        let currentMilestoneGoal = 5;
+        let currentMilestoneRewardType = 'pro_sub';
+        let currentMilestoneRewardVal = '30 Days Pro Plan';
 
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('adminPassword');
@@ -633,7 +653,7 @@
                         <th class="p-3.5">Affiliate User</th>
                         <th class="p-3.5">Referral Code</th>
                         <th class="p-3.5">Total Referrals</th>
-                        <th class="p-3.5">Reward / Commission</th>
+                        <th class="p-3.5">Target Status</th>
                         <th class="p-3.5">Referred By</th>
                         <th class="p-3.5 text-right">Actions</th>
                     </tr>
@@ -646,25 +666,34 @@
 
                 tbody.innerHTML = cachedReferralsData.map(r => {
                     const count = r.referral_count || 0;
-                    const estimatedReward = r.reward_balance || (count * 150) + " BDT"; // Sample calculation
-                    const encodedRef = encodeURIComponent(JSON.stringify(r));
+                    const isTargetAchieved = count >= currentMilestoneGoal;
+                    let targetBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-800 text-gray-400">${count}/${currentMilestoneGoal} (Pending)</span>`;
+                    
+                    if (isTargetAchieved) {
+                        targetBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-pulse">🎯 Target Completed!</span>`;
+                    }
 
                     return `
-                    <tr class="hover:bg-white/[0.02] transition">
+                    <tr class="hover:bg-white/[0.02] transition ${isTargetAchieved ? 'bg-indigo-950/20' : ''}">
                         <td class="p-3.5 font-bold text-white select-all">${r.email || 'N/A'}</td>
                         <td class="p-3.5 text-blue-400 font-bold select-all">${r.referral_code || 'N/A'}</td>
                         <td class="p-3.5 text-emerald-400 font-bold text-sm">${count} users</td>
-                        <td class="p-3.5 text-amber-300 font-bold">${estimatedReward}</td>
+                        <td class="p-3.5">${targetBadge}</td>
                         <td class="p-3.5 text-gray-400">${r.referred_by || 'Direct / None'}</td>
                         <td class="p-3.5 text-right space-x-1.5 whitespace-nowrap">
                             <button type="button" onclick="navigator.clipboard.writeText('${window.location.origin}/?ref=${r.referral_code}'); alert('Copied referral link: ${window.location.origin}/?ref=${r.referral_code}');" class="px-2.5 py-1 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white rounded text-[10px] font-bold transition">
-                                📋 Copy Link
+                                📋 Link
                             </button>
                             <button type="button" onclick="populateRefAdjust('${r.email}', ${count})" class="px-2.5 py-1 bg-indigo-600/30 hover:bg-indigo-600 text-indigo-300 hover:text-white rounded text-[10px] font-bold transition">
                                 ⚙️ Adjust
                             </button>
-                            <button type="button" onclick="handlePayAffiliate('${r.email}', ${count})" class="px-2.5 py-1 bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white rounded text-[10px] font-bold transition">
-                                💰 Clear Reward
+                            ${isTargetAchieved ? `
+                            <button type="button" onclick="grantMilestoneReward('${r.email}', ${count})" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] font-bold transition shadow">
+                                🎁 Send Reward
+                            </button>
+                            ` : ''}
+                            <button type="button" onclick="handlePayAffiliate('${r.email}', ${count})" class="px-2.5 py-1 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded text-[10px] font-bold transition">
+                                Reset
                             </button>
                         </td>
                     </tr>
@@ -781,13 +810,15 @@
                 else if (rank === 2) rankBadge = `<span class="text-sm">🥈</span>`;
                 else if (rank === 3) rankBadge = `<span class="text-sm">🥉</span>`;
 
+                const isTargetHit = (user.referral_count || 0) >= currentMilestoneGoal;
+
                 return `
-                <div class="flex items-center justify-between p-2 rounded-xl bg-[#091122] border border-white/5 hover:border-amber-500/30 transition">
+                <div class="flex items-center justify-between p-2 rounded-xl bg-[#091122] border ${isTargetHit ? 'border-amber-500/50 bg-amber-950/10' : 'border-white/5'} transition">
                     <div class="flex items-center gap-2 overflow-hidden">
                         ${rankBadge}
                         <div class="truncate">
                             <span class="text-white font-bold text-xs truncate block">${user.email || 'Anonymous'}</span>
-                            <span class="text-[10px] text-gray-400">Code: <b class="text-blue-400">${user.referral_code || 'N/A'}</b></span>
+                            <span class="text-[10px] text-gray-400">Code: <b class="text-blue-400">${user.referral_code || 'N/A'}</b> ${isTargetHit ? '⭐ <b class="text-emerald-400">Target Hit!</b>' : ''}</span>
                         </div>
                     </div>
                     <div class="text-right shrink-0">
@@ -799,14 +830,33 @@
             }).join('');
         }
 
+        function updateTargetRewardPlaceholder() {
+            const type = document.getElementById('refTargetRewardType').value;
+            const valInput = document.getElementById('refTargetRewardValue');
+            if (type === 'pro_sub') valInput.value = '30 Days Pro Plan';
+            else if (type === 'vip_sub') valInput.value = '730 Days VIP Plan';
+            else if (type === 'fixed_cash') valInput.value = '500 BDT';
+            else if (type === 'custom_gift') valInput.value = 'Special T-Shirt or Institutional Strategy Pack';
+        }
+
         async function loadReferralProgramRules() {
             try {
                 const { data } = await _supabase.from('system_settings').select('*').eq('key', 'referral_policy').single();
                 if (data && data.value) {
                     const cfg = data.value;
-                    if (cfg.reward_type) document.getElementById('refRewardType').value = cfg.reward_type;
-                    if (cfg.reward_value) document.getElementById('refRewardValue').value = cfg.reward_value;
-                    if (cfg.min_payout) document.getElementById('refMinPayout').value = cfg.min_payout;
+                    if (cfg.target_goal) {
+                        currentMilestoneGoal = parseInt(cfg.target_goal);
+                        document.getElementById('refTargetGoal').value = currentMilestoneGoal;
+                    }
+                    if (cfg.target_reward_type) {
+                        currentMilestoneRewardType = cfg.target_reward_type;
+                        document.getElementById('refTargetRewardType').value = cfg.target_reward_type;
+                    }
+                    if (cfg.target_reward_value) {
+                        currentMilestoneRewardVal = cfg.target_reward_value;
+                        document.getElementById('refTargetRewardValue').value = cfg.target_reward_value;
+                    }
+                    if (cfg.commission_rate) document.getElementById('refCommissionRate').value = cfg.commission_rate;
                     if (cfg.welcome_days) document.getElementById('refWelcomeBonusDays').value = cfg.welcome_days;
                     if (cfg.is_active !== undefined) {
                         document.getElementById('refProgramActive').value = String(cfg.is_active);
@@ -827,16 +877,22 @@
 
         async function handleSaveReferralRules(e) {
             e.preventDefault();
-            const rewardType = document.getElementById('refRewardType').value;
-            const rewardVal = parseFloat(document.getElementById('refRewardValue').value);
-            const minPayout = parseInt(document.getElementById('refMinPayout').value);
-            const welcomeDays = parseInt(document.getElementById('refWelcomeBonusDays').value);
+            const targetGoal = parseInt(document.getElementById('refTargetGoal').value) || 5;
+            const targetRewardType = document.getElementById('refTargetRewardType').value;
+            const targetRewardValue = document.getElementById('refTargetRewardValue').value.trim();
+            const commissionRate = parseFloat(document.getElementById('refCommissionRate').value) || 0;
+            const welcomeDays = parseInt(document.getElementById('refWelcomeBonusDays').value) || 0;
             const isActive = document.getElementById('refProgramActive').value === 'true';
 
+            currentMilestoneGoal = targetGoal;
+            currentMilestoneRewardType = targetRewardType;
+            currentMilestoneRewardVal = targetRewardValue;
+
             const payload = {
-                reward_type: rewardType,
-                reward_value: rewardVal,
-                min_payout: minPayout,
+                target_goal: targetGoal,
+                target_reward_type: targetRewardType,
+                target_reward_value: targetRewardValue,
+                commission_rate: commissionRate,
                 welcome_days: welcomeDays,
                 is_active: isActive,
                 updated_at: new Date().toISOString()
@@ -845,13 +901,36 @@
             try {
                 const { error } = await _supabase.from('system_settings').upsert({ key: 'referral_policy', value: payload });
                 if (error) throw error;
-                alert("✔ রেফারেল পলিসি এবং রিওয়ার্ড রেট সফলভাবে সংরক্ষিত হয়েছে!");
+                alert(`✔ টার্গেট (${targetGoal}টি রেফারেল) এবং রিওয়ার্ড পলিসি সফলভাবে সংরক্ষিত হয়েছে!`);
                 loadReferralProgramRules();
+                renderMasterTable();
             } catch (err) {
-                // Fallback to localStorage if table is absent
                 localStorage.setItem('greatnexa_ref_policy', JSON.stringify(payload));
-                alert("✔ রেফারেল পলিসি আপডেট হয়েছে (Saved locally/system fallback)!");
+                alert(`✔ টার্গেট (${targetGoal}টি রেফারেল) সংরক্ষিত হয়েছে (Fallback Mode)!`);
                 loadReferralProgramRules();
+                renderMasterTable();
+            }
+        }
+
+        async function grantMilestoneReward(email, count) {
+            const confirmMsg = `ইউজার ${email} (${count}টি রেফারেল) টার্গেট পূরণ করেছে!\nআপনি কি তাকে নির্ধারিত পুরুষ্কার: "${currentMilestoneRewardVal}" দিতে চান?`;
+            if (!confirm(confirmMsg)) return;
+
+            try {
+                // If it's a subscription reward, upgrade directly
+                if (currentMilestoneRewardType === 'pro_sub') {
+                    let expiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+                    await _supabase.from('user_profiles').update({ tier: 'pro', expires_at: expiryDate }).ilike('email', email);
+                } else if (currentMilestoneRewardType === 'vip_sub') {
+                    let expiryDate = new Date(Date.now() + 730 * 24 * 60 * 60 * 1000).toISOString();
+                    await _supabase.from('user_profiles').update({ tier: 'vip', expires_at: expiryDate }).ilike('email', email);
+                }
+
+                alert(`✔ সফল! ইউজার ${email} কে সফলভাবে রিওয়ার্ড প্রদান করা হয়েছে।`);
+                loadUsersDirectory();
+                loadReferralsData();
+            } catch (err) {
+                alert("Error granting reward: " + err.message);
             }
         }
 
@@ -885,11 +964,11 @@
         }
 
         async function handlePayAffiliate(email, count) {
-            if (!confirm(`ইউজার ${email} এর ${count} টি রেফারেলের রিওয়ার্ড ক্লিয়ার/পে-আউট মার্ক করতে চান?`)) return;
+            if (!confirm(`ইউজার ${email} এর রেফারেল কাউন্ট (${count}) রিসেট করতে চান?`)) return;
 
             try {
                 await _supabase.from('user_profiles').update({ referral_count: 0, reward_balance: '0' }).ilike('email', email);
-                alert(`✔ ${email} এর রিওয়ার্ড পেআউট সম্পন্ন ও কাউন্ট রিসেট হয়েছে!`);
+                alert(`✔ ${email} এর রেফারেল হিস্টোরি রিসেট করা হয়েছে!`);
                 loadReferralsData();
             } catch(e) {
                 alert("Failed: " + e.message);
@@ -1148,19 +1227,22 @@
 
         async function loadSupportTickets() {
             const ticketDiv = document.getElementById('supportTicketsList');
-            const { data } = await _supabase.from('support_tickets').select('*').order('created_at', { ascending: false }).limit(20);
+            const { data } = await _supabase.from('support_tickets').select('*').order('created_at', { ascending: false }).limit(30);
             if (!data || data.length === 0) {
-                ticketDiv.innerHTML = `<p class="text-gray-400">No support tickets found.</p>`;
+                ticketDiv.innerHTML = `<p class="text-gray-400 py-3 text-center">No support tickets found.</p>`;
                 return;
             }
             ticketDiv.innerHTML = data.map(t => `
-                <div class="p-3 bg-[#0b1324] border border-white/10 rounded-xl space-y-2">
-                    <div class="flex justify-between items-center">
+                <div class="p-3 bg-[#0b1324] border border-white/10 rounded-xl space-y-2 relative">
+                    <div class="flex justify-between items-center pr-8">
                         <p class="font-bold text-white text-xs">${t.subject} <span class="text-[10px] text-blue-400">(${t.email})</span></p>
                         <span class="px-2 py-0.5 rounded text-[10px] font-bold ${t.status === 'resolved' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">
                             ${(t.status || 'open').toUpperCase()}
                         </span>
                     </div>
+                    <button type="button" onclick="deleteSingleTicket('${t.id}')" class="absolute top-2 right-2 text-gray-500 hover:text-rose-400 text-xs p-1" title="Delete Ticket">
+                        🗑️
+                    </button>
                     <p class="text-gray-300 text-[11px]">${t.message}</p>
                     ${t.admin_reply ? `<div class="p-2 bg-blue-950/30 border border-blue-500/20 rounded-lg text-[11px] text-blue-300"><b>Reply:</b> ${t.admin_reply}</div>` : ''}
                     <div class="flex gap-2 pt-1">
@@ -1169,6 +1251,38 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        async function deleteSingleTicket(ticketId) {
+            if (!confirm("Are you sure you want to permanently delete this support ticket?")) return;
+            try {
+                await _supabase.from('support_tickets').delete().eq('id', ticketId);
+                loadSupportTickets();
+            } catch (err) {
+                alert("Failed to delete ticket: " + err.message);
+            }
+        }
+
+        async function clearResolvedTickets() {
+            if (!confirm("Are you sure you want to delete all resolved tickets?")) return;
+            try {
+                await _supabase.from('support_tickets').delete().eq('status', 'resolved');
+                alert("✔ All resolved tickets have been cleared.");
+                loadSupportTickets();
+            } catch (err) {
+                alert("Failed to clear resolved tickets: " + err.message);
+            }
+        }
+
+        async function clearAllSupportTickets() {
+            if (!confirm("⚠️ সতর্কতা: আপনি কি সমস্ত সাপোর্ট টিকিট সম্পূর্ণ ডিলিট/মুছে ফেলতে চান? এটি রিভার্স করা যাবে না!")) return;
+            try {
+                await _supabase.from('support_tickets').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+                alert("✔ All support tickets deleted.");
+                loadSupportTickets();
+            } catch (err) {
+                alert("Failed to delete all tickets: " + err.message);
+            }
         }
 
         async function sendTicketReply(ticketId, customerEmail, encodedSubject) {
