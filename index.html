@@ -163,10 +163,10 @@
 </head>
 <body class="antialiased overflow-x-hidden">
 
-    <!-- Announcement Banner -->
+    <!-- Global Announcement Banner -->
     <div id="globalAnnounceBanner" class="hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white text-xs font-mono py-2 px-4 text-center relative z-50 flex items-center justify-center gap-2 shadow-lg">
-        <span>📢 **Announcement:**</span> <span id="announceText">Welcome to GreatNexa Institutional Terminal.</span>
-        <button onclick="document.getElementById('globalAnnounceBanner').classList.add('hidden')" class="ml-4 font-bold text-white hover:text-gray-200">&times;</button>
+        <span>📢 <b>Announcement:</b></span> <span id="announceText">Welcome to GreatNexa Institutional Terminal.</span>
+        <button onclick="document.getElementById('globalAnnounceBanner').classList.add('hidden')" class="ml-4 font-bold text-white hover:text-gray-200 cursor-pointer">&times;</button>
     </div>
 
     <!-- Top Live Ticker Tape -->
@@ -1319,6 +1319,13 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            // URL থেকে রেফারেল কোড চেক এবং সেভ
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('ref');
+            if (refCode) {
+                localStorage.setItem('gn_ref_code', refCode);
+            }
+
             if (_supabase) {
                 const hash = window.location.hash;
                 if (hash && hash.includes('type=recovery')) {
@@ -1341,8 +1348,9 @@
             const { data } = await _supabase.from('announcements').select('*').eq('is_active', true).order('created_at', { ascending: false }).limit(1);
             if(data && data.length > 0) {
                 document.getElementById('announceText').innerText = data[0].message;
-                document.getElementById('globalAnnounceBanner').classList.remove('hidden');
-                document.getElementById('globalAnnounceBanner').classList.add('flex');
+                const banner = document.getElementById('globalAnnounceBanner');
+                banner.classList.remove('hidden');
+                banner.classList.add('flex');
             }
         }
 
@@ -2121,11 +2129,17 @@
                     if(r.checked) chosenPlan = r.value;
                 }
 
+                // রেফারেল কোড লোকাল স্টোরেজ থেকে রিড করা
+                const savedRefCode = localStorage.getItem('gn_ref_code') || null;
+
                 const { data, error } = await _supabase.auth.signUp({ 
                     email, 
                     password,
                     options: {
-                        data: { selected_plan: chosenPlan }
+                        data: { 
+                            selected_plan: chosenPlan,
+                            referred_by: savedRefCode 
+                        }
                     }
                 });
 
@@ -2414,7 +2428,6 @@
                 return;
             }
 
-            // শুধুমাত্র bKash / Nagad সিলেক্ট থাকলে ফোন নম্বর বাধ্যতামূলক
             if (activePaymentMethod === 'local' && !senderPhone) {
                 alert("বিকাশ বা নগদ ভেরিফিকেশনের জন্য প্রেরকের ফোন নম্বর দিন।");
                 return;
@@ -2424,7 +2437,6 @@
             const finalBDT = Math.round(basePriceBDT * (1 - currentDiscountPct / 100));
             const priceString = `$${finalUSD} / ${finalBDT} BDT`;
 
-            // ক্রিপ্টো পেমেন্ট হলে ফোন ফাঁকা থাকলে 'N/A' যাবে যাতে ডাটাবেস এরর না দেয়
             const phoneValue = activePaymentMethod === 'local' ? senderPhone : (senderPhone || 'N/A');
 
             if (_supabase) {
