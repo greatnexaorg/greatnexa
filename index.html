@@ -78,7 +78,7 @@
         }
 
         .font-mono { font-family: 'JetBrains Mono', monospace; }
-        .font-bangla { font-family: 'Hind Siliguri', sans-serif; }
+        .font-bangla { font-family: 'Hind Siliguri', 'Plus Jakarta Sans', system-ui, sans-serif; }
 
         .glass-panel {
             background: rgba(10, 16, 30, 0.75);
@@ -435,7 +435,7 @@
                 <h3 id="screenerTitle" class="text-lg font-black text-white tracking-tight flex items-center gap-2">
                     <span>⚡</span> Live Alpha Stream (Strict 24H TTL)
                 </h3>
-                <p id="screenerSubtitle" class="text-xs text-gray-400 font-mono">High-Conviction fresh setups</p>
+                <p id="screenerSubtitle" class="text-xs text-gray-400 font-mono">High-Conviction fresh setups dynamically updated</p>
             </div>
         </div>
 
@@ -1105,13 +1105,13 @@
             is_active: true
         };
 
-        // Price Precision Formatter (Fixes PEPE, SHIB small decimal clipping)
+        // Price Precision Formatter (Fixes micro coins like PEPE / small decimals)
         function formatAssetPrice(val) {
             if (val === null || val === undefined || val === '') return 'N/A';
             const num = parseFloat(val);
             if (isNaN(num)) return val;
             if (num === 0) return '0.00';
-            if (num < 0.0001) return num.toFixed(8); // micro/meme coins like PEPE
+            if (num < 0.0001) return num.toFixed(8);
             if (num < 0.01) return num.toFixed(6);
             if (num < 1) return num.toFixed(4);
             if (num < 100) return num.toFixed(3);
@@ -1830,7 +1830,7 @@
                     <div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10 space-y-3">
                         <div class="text-3xl">📌</div>
                         <h4 class="text-lg font-bold text-white font-bangla">আপনার সেভ করা পোর্টফোলিও খালি</h4>
-                        <p class="text-xs text-gray-400 max-w-md mx-auto font-bangla">যেকোনো সিগন্যালের "📌 Save" বাটনে ক্লিক করলে তা এখানে স্থায়ীভাবে সংরক্ষিত থাকবে।</p>
+                        <p class="text-xs text-gray-400 max-w-md mx-auto font-bangla">যেকোনো সিগন্যালের "📌 Save" বাটনে ক্লিক করলে তা এখানে স্থায়ীভাবে সংরক্ষিত থাকবে।</p>
                         <button onclick="switchTab('active')" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs font-mono transition">Explore Live Alpha</button>
                     </div>`;
                 return;
@@ -2007,7 +2007,7 @@
                 }
                 if(btnPro) {
                     btnPro.innerText = "Active Plan";
-                    btnPro.className = "w-full py-3 bg-gray-800/80 text-blue-400 border border-blue-500/30 rounded-xl font-bold text-xs font-mono cursor-not-allowed opacity-80";
+                    btnPro.className = "w-full py-3.5 bg-gray-800/80 text-blue-400 border border-blue-500/30 rounded-xl font-bold text-xs font-mono cursor-not-allowed opacity-80";
                     btnPro.disabled = true;
                 }
             } else if (cardFree) {
@@ -2055,11 +2055,12 @@
                 const score = item.score || 75;
                 const scoreColor = score >= 85 ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-blue-400 border-blue-500/30 bg-blue-500/10';
 
-                const status = item.status || 'ACTIVE';
+                // Strictly ACTIVE status check
+                const status = (item.status || 'ACTIVE').toUpperCase();
                 let statusBadge = `<span class="text-emerald-400 font-medium text-[11px] flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Active Setup</span>`;
-                if(status === 'HIT_TP') {
+                if (status === 'HIT_TP') {
                     statusBadge = `<span class="text-emerald-400 font-bold text-[11px] bg-emerald-500/20 px-2 py-0.5 rounded font-mono">🎯 TP Reached</span>`;
-                } else if(status === 'HIT_SL') {
+                } else if (status === 'HIT_SL') {
                     statusBadge = `<span class="text-rose-400 font-bold text-[11px] bg-rose-500/20 px-2 py-0.5 rounded font-mono">⛔ Invalidated</span>`;
                 }
 
@@ -2109,20 +2110,20 @@
                             ${item.sector ? `<span class="px-2 py-0.5 bg-blue-500/10 border border-blue-500/30 text-blue-300 rounded text-[11px] font-mono">${item.sector}</span>` : ''}
                         </div>
 
-                        <!-- Structured Target Box: Entry, TP, SL (Prominent & Clear) -->
+                        <!-- Structured Target Box: Entry, TP, SL -->
                         <div class="bg-black/60 border border-white/10 rounded-xl p-3 space-y-2 text-xs font-mono shadow-inner">
-                            <div class="grid grid-cols-3 gap-2 pb-2 border-b border-white/10 text-center">
+                            <div class="grid grid-cols-3 gap-2 pb-2 border-b border-white/10 text-center font-bangla">
                                 <div class="bg-blue-950/20 border border-blue-500/20 p-1.5 rounded-lg">
-                                    <span class="text-gray-400 text-[10px] block font-sans">এন্ট্রি (Entry)</span>
-                                    <span class="text-white font-extrabold text-[11px] select-all">$${entryStr}</span>
+                                    <span class="text-gray-400 text-[10px] block">এন্ট্রি (Entry)</span>
+                                    <span class="text-white font-extrabold text-[11px] select-all font-mono">$${entryStr}</span>
                                 </div>
                                 <div class="bg-emerald-950/20 border border-emerald-500/30 p-1.5 rounded-lg">
-                                    <span class="text-emerald-400 text-[10px] block font-sans font-bold">টার্গেট (TP)</span>
-                                    <span class="text-emerald-300 font-extrabold text-[11px] select-all">$${tpStr}</span>
+                                    <span class="text-emerald-400 text-[10px] block font-bold">টার্গেট (TP)</span>
+                                    <span class="text-emerald-300 font-extrabold text-[11px] select-all font-mono">$${tpStr}</span>
                                 </div>
                                 <div class="bg-rose-950/20 border border-rose-500/30 p-1.5 rounded-lg">
-                                    <span class="text-rose-400 text-[10px] block font-sans">স্টপলস (SL)</span>
-                                    <span class="text-rose-300 font-extrabold text-[11px] select-all">$${slStr}</span>
+                                    <span class="text-rose-400 text-[10px] block">স্টপলস (SL)</span>
+                                    <span class="text-rose-300 font-extrabold text-[11px] select-all font-mono">$${slStr}</span>
                                 </div>
                             </div>
 
@@ -2140,7 +2141,7 @@
                             </div>
                         </div>
 
-                        <!-- Quant Note with Proper Bengali Typography -->
+                        <!-- Quant Note with Fixed Bangla Typography -->
                         <div class="p-2.5 rounded-xl bg-[#091122] border border-white/5 text-[11px] leading-relaxed font-bangla text-gray-300">
                             <strong class="text-blue-400 font-sans font-bold">Quant Note:</strong> 
                             ${item.research_note || 'Scalp SMC LONG অর্ডারব্লক ও লিকুইডিটি পার্জ কনফার্মড। R:R = 1:2.2'}
@@ -2190,10 +2191,9 @@
                     query = query.eq('market_type', 'crypto');
                 }
 
-                if (state.viewTab === 'monitoring') {
+                // FIX: লাইভ আলফা স্ট্রিম এবং মনিটরিং উভয় ট্যাবেই শুধুমাত্র ACTIVE ট্রেড দেখাবে, কোনো Invalidated দেখাবে না
+                if (state.viewTab === 'active' || state.viewTab === 'monitoring') {
                     query = query.eq('status', 'ACTIVE');
-                } else if (state.viewTab === 'active') {
-                    query = query.neq('status', 'EXPIRED');
                 }
 
                 if (state.direction) {
@@ -2215,15 +2215,10 @@
 
                 if (error) {
                     console.error("Query Error:", error);
-                    const { data: fallbackData } = await _supabase.from('market_research').select('*').limit(currentLimit);
+                    const { data: fallbackData } = await _supabase.from('market_research').select('*').eq('status', 'ACTIVE').limit(currentLimit);
                     liveMarketData = fallbackData || [];
                 } else {
-                    if (!data || data.length === 0) {
-                        const { data: fallbackData } = await _supabase.from('market_research').select('*').limit(currentLimit);
-                        liveMarketData = fallbackData || [];
-                    } else {
-                        liveMarketData = data;
-                    }
+                    liveMarketData = data || [];
                 }
             } catch (err) {
                 console.error("Fetch Live Data Exception:", err);
