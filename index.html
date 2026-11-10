@@ -61,7 +61,7 @@
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
         body { 
             background: #02040a; 
@@ -78,6 +78,7 @@
         }
 
         .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .font-bangla { font-family: 'Hind Siliguri', sans-serif; }
 
         .glass-panel {
             background: rgba(10, 16, 30, 0.75);
@@ -387,7 +388,7 @@
                         <span>Execution Guard:</span>
                         <span class="text-blue-400 font-bold">Dynamic ATR Ratio</span>
                     </div>
-                    <div class="p-2.5 bg-black/40 rounded-lg text-[11px] text-gray-400 text-center">
+                    <div class="p-2.5 bg-black/40 rounded-lg text-[11px] text-gray-400 text-center font-bangla">
                         মার্কেটে নতুন হাই-কনভিকশন সেটআপ আসামাত্র ড্যাশবোর্ড লাইভ রিফ্রেশ হবে।
                     </div>
                 </div>
@@ -537,8 +538,8 @@
 
         <!-- Risk Warning & Footer -->
         <footer class="pt-10 border-t border-white/[0.08] text-xs text-gray-500 space-y-6">
-            <div class="p-4 rounded-xl bg-black/40 border border-white/5 text-[11px] leading-relaxed">
-                <span class="font-bold text-gray-300">Regulatory & Risk Notice:</span> 
+            <div class="p-4 rounded-xl bg-black/40 border border-white/5 text-[11px] leading-relaxed font-bangla">
+                <span class="font-bold text-gray-300 font-sans">Regulatory & Risk Notice:</span> 
                 Trading spot, derivatives, or margin assets carries high risk. GreatNexa provides quantitative market screener data based on algorithmic volume analytics and historical pattern recognition. Content does not constitute personal financial advice.
             </div>
 
@@ -645,8 +646,8 @@
                 <div id="dpanel-referral" class="hidden space-y-3.5 bg-black/40 p-4 rounded-xl border border-indigo-500/30 text-xs">
                     <div class="flex justify-between items-center border-b border-white/10 pb-2">
                         <div>
-                            <span class="text-gray-300 font-bold block">🎯 রেফারেল ও রিওয়ার্ড প্রোগ্রাম</span>
-                            <span class="text-[10px] text-gray-400">পেইড রেফারেল সরাসরি কাউন্ট হয়, ফ্রি রেফারেল বেশি সংখ্যায় করতে হয়</span>
+                            <span class="text-gray-300 font-bold block font-bangla">🎯 রেফারেল ও রিওয়ার্ড প্রোগ্রাম</span>
+                            <span class="text-[10px] text-gray-400 font-bangla">পেইড রেফারেল সরাসরি কাউন্ট হয়, ফ্রি রেফারেল বেশি সংখ্যায় করতে হয়</span>
                         </div>
                         <span id="userRefProgramStatus" class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded font-mono font-bold border border-emerald-500/30">Active Program</span>
                     </div>
@@ -654,21 +655,21 @@
                     <!-- Milestone Progress Card -->
                     <div class="p-3 bg-[#0a1226] border border-indigo-500/25 rounded-xl space-y-2">
                         <div class="flex justify-between items-center text-[11px]">
-                            <span class="text-indigo-300 font-bold">🎯 পরবর্তী রিওয়ার্ড টার্গেট:</span>
+                            <span class="text-indigo-300 font-bold font-bangla">🎯 পরবর্তী রিওয়ার্ড টার্গেট:</span>
                             <span id="refTargetRewardName" class="text-amber-300 font-extrabold font-mono">30 Days Pro Plan</span>
                         </div>
                         <div class="w-full bg-[#02040a] rounded-full h-2.5 overflow-hidden border border-white/10">
                             <div id="refMilestoneBar" class="bg-gradient-to-r from-indigo-500 to-emerald-400 h-full w-[0%] rounded-full transition-all duration-500"></div>
                         </div>
                         <div class="flex justify-between items-center text-[10px] text-gray-400 font-mono">
-                            <span id="refProgressText">০% স্কোর অর্জিত</span>
-                            <span id="refTargetRemainingText" class="text-emerald-400 font-bold">টার্গেট পূরণ বাকি</span>
+                            <span id="refProgressText" class="font-bangla">০% স্কোর অর্জিত</span>
+                            <span id="refTargetRemainingText" class="text-emerald-400 font-bold font-bangla">টার্গেট পূরণ বাকি</span>
                         </div>
                     </div>
 
                     <!-- Link Copy Section -->
                     <div class="space-y-1.5">
-                        <span class="text-gray-400 font-bold text-[11px] block">আপনার পার্সোনাল রেফারেল লিংক:</span>
+                        <span class="text-gray-400 font-bold text-[11px] block font-bangla">আপনার পার্সোনাল রেফারেল লিংক:</span>
                         <div class="flex items-center gap-2">
                             <input type="text" id="refLinkInput" readonly value="Generating link..." class="w-full bg-[#0b1324] border border-white/15 text-blue-400 text-xs rounded-xl px-3 py-2 font-mono select-all">
                             <button type="button" onclick="copyRefLink()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition cursor-pointer shrink-0">Copy</button>
@@ -676,25 +677,25 @@
                     </div>
 
                     <!-- 1-Click Social Shares -->
-                    <div class="flex items-center gap-2 pt-1">
+                    <div class="flex items-center gap-2 pt-1 font-bangla">
                         <span class="text-[11px] text-gray-400">শেয়ার করুন:</span>
-                        <button type="button" onclick="shareRefViaWhatsApp()" class="px-3 py-1 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/30 rounded-lg text-[11px] font-bold transition flex items-center gap-1 cursor-pointer">
+                        <button type="button" onclick="shareRefViaWhatsApp()" class="px-3 py-1 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/30 rounded-lg text-[11px] font-bold transition flex items-center gap-1 cursor-pointer font-sans">
                             <span>💬</span> WhatsApp
                         </button>
-                        <button type="button" onclick="shareRefViaTelegram()" class="px-3 py-1 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg text-[11px] font-bold transition flex items-center gap-1 cursor-pointer">
+                        <button type="button" onclick="shareRefViaTelegram()" class="px-3 py-1 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg text-[11px] font-bold transition flex items-center gap-1 cursor-pointer font-sans">
                             <span>✈️</span> Telegram
                         </button>
                     </div>
 
                     <!-- Stats Overview (Paid vs Free Separated) -->
-                    <div class="grid grid-cols-3 gap-2 text-center pt-2 border-t border-white/10">
+                    <div class="grid grid-cols-3 gap-2 text-center pt-2 border-t border-white/10 font-bangla">
                         <div class="p-2.5 bg-[#091122] rounded-xl border border-emerald-500/20">
                             <span class="text-[10px] text-emerald-400 font-bold block">💎 পেইড রেফারেল</span>
-                            <span id="refPaidCountVal" class="text-base font-extrabold text-emerald-300">0</span>
+                            <span id="refPaidCountVal" class="text-base font-extrabold text-emerald-300 font-mono">0</span>
                         </div>
                         <div class="p-2.5 bg-[#091122] rounded-xl border border-white/5">
                             <span class="text-[10px] text-gray-400 font-bold block">👥 ফ্রি রেফারেল</span>
-                            <span id="refFreeCountVal" class="text-base font-extrabold text-gray-300">0</span>
+                            <span id="refFreeCountVal" class="text-base font-extrabold text-gray-300 font-mono">0</span>
                         </div>
                         <div class="p-2.5 bg-[#091122] rounded-xl border border-white/5">
                             <span class="text-[10px] text-gray-500 block">টার্গেট স্ট্যাটাস</span>
@@ -703,18 +704,18 @@
                     </div>
 
                     <!-- Notice on Free to Paid Conversion -->
-                    <div class="p-2 bg-blue-950/20 border border-blue-500/20 rounded-lg text-[10px] text-gray-400 font-mono">
-                        💡 <b>পলিসি:</b> আপনার আমন্ত্রিত কোনো ফ্রি ইউজার যেকোনো সময় Pro বা VIP সাবস্ক্রিপশন নিলে সেটি তাৎক্ষণিকভাবে <b>পেইড রেফারেলে</b> স্থানান্তরিত হবে।
+                    <div class="p-2 bg-blue-950/20 border border-blue-500/20 rounded-lg text-[10px] text-gray-400 font-bangla leading-relaxed">
+                        💡 <b>পলিসি:</b> আপনার আমন্ত্রিত কোনো ফ্রি ইউজার যেকোনো সময় Pro বা VIP সাবস্ক্রিপশন নিলে সেটি তাৎক্ষণিকভাবে <b>পেইড রেফারেলে</b> স্থানান্তরিত হবে।
                     </div>
 
                     <!-- Referred Users List Table (Segregated) -->
-                    <div class="pt-2 border-t border-white/10 space-y-2">
+                    <div class="pt-2 border-t border-white/10 space-y-2 font-bangla">
                         <div class="flex justify-between items-center">
                             <span class="text-[11px] text-gray-300 font-bold">👥 আপনার আমন্ত্রিত ইউজারদের তালিকা</span>
                             <span class="text-[10px] text-gray-500 font-mono">লাইভ স্ট্যাটাস</span>
                         </div>
                         <div id="referredUsersContainer" class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
-                            <p class="text-gray-500 text-center py-2 text-[10px]">এখনো কেউ আপনার লিংক দিয়ে জয়েন করেনি।</p>
+                            <p class="text-gray-500 text-center py-2 text-[10px]">এখনো কেউ আপনার লিংক দিয়ে জয়েন করেনি।</p>
                         </div>
                     </div>
                 </div>
@@ -868,8 +869,8 @@
                 <p class="text-[11px] text-amber-300/90 pt-1 border-t border-white/10">⚠️ Send exact amount only. Verify network before transferring.</p>
             </div>
 
-            <div id="localPaymentBox" class="hidden bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-2 text-xs">
-                <p class="text-gray-300">১. নিচের নাম্বারে <b class="text-pink-400">bKash</b> বা <b class="text-orange-400">Nagad</b> এ সেন্ড মানি করুন।</p>
+            <div id="localPaymentBox" class="hidden bg-[#0b1324] p-4 rounded-xl border border-white/10 mb-4 space-y-2 text-xs font-bangla">
+                <p class="text-gray-300">১. নিচের নাম্বারে <b class="text-pink-400 font-sans">bKash</b> বা <b class="text-orange-400 font-sans">Nagad</b> এ সেন্ড মানি করুন।</p>
                 <p class="text-gray-300">২. পার্সোনাল নাম্বার: <b class="text-emerald-400 font-mono text-sm notranslate">01870978004</b></p>
                 <p class="text-gray-300">৩. টাকা পাঠিয়ে TrxID এবং প্রেরকের ফোন নাম্বার নিচে দিন:</p>
             </div>
@@ -891,7 +892,7 @@
                 🎉
             </div>
             <h3 class="text-xl font-black text-white">Payment Submitted!</h3>
-            <p class="text-xs text-gray-300 leading-relaxed">
+            <p class="text-xs text-gray-300 leading-relaxed font-bangla">
                 আপনার পেমেন্ট ভেরিফিকেশন সফলভাবে জমা হয়েছে। অ্যাডমিন চেক করে শীঘ্রই আপনার অ্যাকাউন্ট ও পাস একটিভ করে দেবেন।
             </p>
             <button type="button" onclick="closeSuccessModal()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition cursor-pointer">
@@ -1104,6 +1105,33 @@
             is_active: true
         };
 
+        // Price Precision Formatter (Fixes PEPE, SHIB small decimal clipping)
+        function formatAssetPrice(val) {
+            if (val === null || val === undefined || val === '') return 'N/A';
+            const num = parseFloat(val);
+            if (isNaN(num)) return val;
+            if (num === 0) return '0.00';
+            if (num < 0.0001) return num.toFixed(8); // micro/meme coins like PEPE
+            if (num < 0.01) return num.toFixed(6);
+            if (num < 1) return num.toFixed(4);
+            if (num < 100) return num.toFixed(3);
+            return num.toFixed(2);
+        }
+
+        // Relative Timestamp Calculator (e.g. "Just now", "5m ago")
+        function formatTimeAgo(dateString) {
+            if (!dateString) return 'Live Fresh';
+            const past = new Date(dateString).getTime();
+            const now = Date.now();
+            const diffSec = Math.max(0, Math.floor((now - past) / 1000));
+            if (diffSec < 60) return 'Just now';
+            const diffMin = Math.floor(diffSec / 60);
+            if (diffMin < 60) return `${diffMin}m ago`;
+            const diffHr = Math.floor(diffMin / 60);
+            if (diffHr < 24) return `${diffHr}h ago`;
+            return `${Math.floor(diffHr / 24)}d ago`;
+        }
+
         function getSavedPortfolio() {
             try {
                 return JSON.parse(localStorage.getItem('gn_saved_setups') || '[]');
@@ -1217,7 +1245,6 @@
 
             await fetchAdminReferralRules();
 
-            // 1. Fetch user's profile info
             const { data: profile } = await _supabase
                 .from('user_profiles')
                 .select('referral_code, referral_count')
@@ -1226,13 +1253,11 @@
 
             let code = profile?.referral_code;
 
-            // Generate referral code if not present
             if (!code) {
                 code = 'NEXA' + Math.floor(1000 + Math.random() * 9000);
                 await _supabase.from('user_profiles').update({ referral_code: code }).eq('email', currentUserEmail);
             }
 
-            // Populate Link & Input
             const fullRefLink = `${window.location.origin}/?ref=${code}`;
             const refLinkElem = document.getElementById('refLinkInput');
             if (refLinkElem) refLinkElem.value = fullRefLink;
@@ -1240,7 +1265,6 @@
             const rewardNameElem = document.getElementById('refTargetRewardName');
             if (rewardNameElem) rewardNameElem.innerText = systemReferralConfig.target_reward_value || '30 Days Pro Plan';
 
-            // 2. Fetch and calculate segregated paid vs free invites
             loadInvitedFriendsList(code);
         }
 
@@ -1257,7 +1281,6 @@
 
                 let paidCount = 0;
                 let freeCount = 0;
-
                 const usersList = invitedUsers || [];
 
                 usersList.forEach(u => {
@@ -1269,13 +1292,11 @@
                     }
                 });
 
-                // Update Counters
                 const paidCountElem = document.getElementById('refPaidCountVal');
                 const freeCountElem = document.getElementById('refFreeCountVal');
                 if (paidCountElem) paidCountElem.innerText = paidCount;
                 if (freeCountElem) freeCountElem.innerText = freeCount;
 
-                // Weighted Milestone Progress (1 Paid = 1 Point, 4 Free = 1 Point)
                 const targetGoal = parseInt(systemReferralConfig.target_goal) || 5;
                 const effectiveScore = paidCount + (freeCount * 0.25);
                 const progressPct = Math.min(100, Math.round((effectiveScore / targetGoal) * 100));
@@ -1309,9 +1330,8 @@
                     }
                 }
 
-                // Render List
                 if (usersList.length === 0) {
-                    container.innerHTML = `<p class="text-gray-500 text-center py-2 text-[10px]">এখনো কেউ আপনার রেফারেল দিয়ে জয়েন করেনি। লিংকটি বন্ধুদের শেয়ার করুন!</p>`;
+                    container.innerHTML = `<p class="text-gray-500 text-center py-2 text-[10px]">এখনো কেউ আপনার রেফারেল দিয়ে জয়েন করেনি। লিংকটি বন্ধুদের শেয়ার করুন!</p>`;
                     return;
                 }
 
@@ -1789,7 +1809,7 @@
             const maxRiskDollar = (acc * (riskPct / 100));
             const entry = parseFloat(activeCalcItem.entry_price) || 1;
             const sl = parseFloat(activeCalcItem.sl_price) || 1;
-            const tp = parseFloat(activeCalcItem.tp_price) || 1;
+            const tp = parseFloat(activeCalcItem.tp_price) || (entry * 1.05);
 
             const slDistance = Math.abs(entry - sl);
             const tpDistance = Math.abs(tp - entry);
@@ -1809,8 +1829,8 @@
                 container.innerHTML = `
                     <div class="col-span-full text-center py-20 text-gray-400 font-mono glass-panel rounded-2xl border border-white/10 space-y-3">
                         <div class="text-3xl">📌</div>
-                        <h4 class="text-lg font-bold text-white">Your Saved Portfolio is Empty</h4>
-                        <p class="text-xs text-gray-400 max-w-md mx-auto">Click the "📌 Save" button on any active signal to store it here permanently. It will not disappear even after 24h.</p>
+                        <h4 class="text-lg font-bold text-white font-bangla">আপনার সেভ করা পোর্টফোলিও খালি</h4>
+                        <p class="text-xs text-gray-400 max-w-md mx-auto font-bangla">যেকোনো সিগন্যালের "📌 Save" বাটনে ক্লিক করলে তা এখানে স্থায়ীভাবে সংরক্ষিত থাকবে।</p>
                         <button onclick="switchTab('active')" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs font-mono transition">Explore Live Alpha</button>
                     </div>`;
                 return;
@@ -1820,7 +1840,7 @@
                 <div class="col-span-full glass-panel p-6 rounded-2xl border border-blue-500/30 flex flex-wrap justify-between items-center gap-4 mb-4">
                     <div>
                         <span class="text-xs font-mono font-bold text-blue-400 uppercase tracking-wider">📌 Personal Trade Vault</span>
-                        <h3 class="text-xl font-black text-white mt-1">Saved Setups & Anti-Panic Tracker</h3>
+                        <h3 class="text-xl font-black text-white mt-1 font-bangla">সেভ করা ট্রেড ও সেটআপ ট্র্যাকার</h3>
                     </div>
                     <div class="flex gap-4 font-mono text-xs">
                         <span class="px-4 py-2 bg-blue-500/20 text-blue-300 rounded-xl font-bold border border-blue-500/30">Total Saved: ${savedList.length}</span>
@@ -1853,9 +1873,9 @@
                         </div>
 
                         <div class="bg-black/50 border border-white/5 rounded-xl p-3 space-y-1.5 text-xs font-mono">
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Entry Price:</span><span class="text-gray-200">$${item.entry_price || 'N/A'}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Take Profit (TP):</span><span class="text-emerald-400 font-bold">$${item.tp_price || 'N/A'}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Stop Loss (SL):</span><span class="text-rose-400 font-bold">$${item.sl_price || 'N/A'}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Entry Price:</span><span class="text-gray-200 font-bold">$${formatAssetPrice(item.entry_price)}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Target (TP):</span><span class="text-emerald-400 font-bold">$${formatAssetPrice(item.tp_price)}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Stop Loss (SL):</span><span class="text-rose-400 font-bold">$${formatAssetPrice(item.sl_price)}</span></div>
                             <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Est. Potential:</span><span class="text-emerald-400 font-bold">${item.est_potential || '+20%'}</span></div>
                         </div>
 
@@ -1911,8 +1931,8 @@
                             </span>
                         </div>
                         <div class="bg-black/50 p-3 rounded-xl border border-white/5 text-xs font-mono space-y-1.5">
-                            <div class="flex justify-between"><span class="text-gray-400">Entry Price:</span><span class="text-gray-200">$${item.entry_price || 'N/A'}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400">Exit Target:</span><span class="text-emerald-400 font-bold">$${item.tp_price || 'N/A'}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">Entry Price:</span><span class="text-gray-200 font-bold">$${formatAssetPrice(item.entry_price)}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">Exit Target (TP):</span><span class="text-emerald-400 font-bold">$${formatAssetPrice(item.tp_price)}</span></div>
                             <div class="flex justify-between"><span class="text-gray-400">Sector / Asset:</span><span class="text-blue-300">${item.sector || 'Quant Setup'}</span></div>
                         </div>
                         <div class="text-[11px] text-gray-500 font-mono text-right pt-1">
@@ -2046,14 +2066,25 @@
                 const sparkColor = state.direction === 'long' ? '#10b981' : '#f43f5e';
                 const isSaved = savedList.some(x => x.symbol === item.symbol && x.direction === item.direction);
                 const encodedItem = encodeURIComponent(JSON.stringify(item));
+                
+                // Formatted price points
+                const entryStr = formatAssetPrice(item.entry_price);
+                const tpStr = formatAssetPrice(item.tp_price);
+                const slStr = formatAssetPrice(item.sl_price);
+                const timeAgo = formatTimeAgo(item.created_at);
 
                 return `
                 <div class="relative glass-card rounded-2xl p-5 flex flex-col justify-between">
-                    <div class="space-y-4">
+                    <div class="space-y-3.5">
                         <div class="flex justify-between items-start">
                             <div>
-                                <span class="text-[10px] ${state.direction === 'long' ? 'text-emerald-400' : 'text-rose-400'} font-mono uppercase tracking-wider font-bold">#${idx+1} • ${directionBadge}</span>
-                                <h3 class="text-xl font-extrabold text-white notranslate">${item.symbol}</h3>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-[10px] ${state.direction === 'long' ? 'text-emerald-400' : 'text-rose-400'} font-mono uppercase tracking-wider font-bold">#${idx+1} • ${directionBadge}</span>
+                                    <span class="text-[9px] font-mono text-gray-400 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                        <span class="w-1 h-1 rounded-full bg-blue-400"></span>${timeAgo}
+                                    </span>
+                                </div>
+                                <h3 class="text-xl font-extrabold text-white notranslate tracking-tight">${item.symbol}</h3>
                             </div>
                             <div class="flex items-center gap-1.5">
                                 <button type="button" onclick="toggleSaveSetup('${encodedItem}')" class="px-2 py-1 rounded-lg text-xs font-mono transition border ${isSaved ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-gray-800 text-gray-400 border-white/5 hover:text-white'}" title="Save Setup to Personal Portfolio">
@@ -2073,19 +2104,47 @@
                         </div>
 
                         <div class="flex flex-wrap gap-1.5">
-                            <span class="px-2 py-0.5 bg-purple-500/15 border border-purple-500/30 text-purple-300 rounded text-[11px] font-medium">⚡ ${item.stage || 'Order Block'}</span>
+                            <span class="px-2 py-0.5 bg-purple-500/15 border border-purple-500/30 text-purple-300 rounded text-[11px] font-medium font-mono">⚡ ${item.stage || 'Order Block'}</span>
                             <span class="px-2 py-0.5 bg-[#091122] border border-white/10 text-gray-300 rounded text-[11px] font-mono notranslate">24h: ${item.current_change_24h || 0}%</span>
                             ${item.sector ? `<span class="px-2 py-0.5 bg-blue-500/10 border border-blue-500/30 text-blue-300 rounded text-[11px] font-mono">${item.sector}</span>` : ''}
                         </div>
 
-                        <div class="bg-black/50 border border-white/5 rounded-xl p-3 space-y-1.5 text-xs font-mono">
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Est. Potential:</span><span class="text-emerald-400 font-bold notranslate">${item.est_potential || '+20%'}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Order Flow:</span><span class="text-white">${item.flow_metric || 'Strong Inflow'}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-400 text-[11px]">Key Catalyst:</span><span class="text-amber-300">${item.driver_metric || 'Volume Surge'}</span></div>
-                            ${item.mtf_alignment ? `<div class="flex justify-between pt-1 border-t border-white/5"><span class="text-gray-400 text-[10px]">Key Level:</span><span class="text-indigo-300 text-[10px] font-bold notranslate">${item.mtf_alignment}</span></div>` : ''}
+                        <!-- Structured Target Box: Entry, TP, SL (Prominent & Clear) -->
+                        <div class="bg-black/60 border border-white/10 rounded-xl p-3 space-y-2 text-xs font-mono shadow-inner">
+                            <div class="grid grid-cols-3 gap-2 pb-2 border-b border-white/10 text-center">
+                                <div class="bg-blue-950/20 border border-blue-500/20 p-1.5 rounded-lg">
+                                    <span class="text-gray-400 text-[10px] block font-sans">এন্ট্রি (Entry)</span>
+                                    <span class="text-white font-extrabold text-[11px] select-all">$${entryStr}</span>
+                                </div>
+                                <div class="bg-emerald-950/20 border border-emerald-500/30 p-1.5 rounded-lg">
+                                    <span class="text-emerald-400 text-[10px] block font-sans font-bold">টার্গেট (TP)</span>
+                                    <span class="text-emerald-300 font-extrabold text-[11px] select-all">$${tpStr}</span>
+                                </div>
+                                <div class="bg-rose-950/20 border border-rose-500/30 p-1.5 rounded-lg">
+                                    <span class="text-rose-400 text-[10px] block font-sans">স্টপলস (SL)</span>
+                                    <span class="text-rose-300 font-extrabold text-[11px] select-all">$${slStr}</span>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center text-[11px]">
+                                <span class="text-gray-400">Est. Potential:</span>
+                                <span class="text-emerald-400 font-bold notranslate">${item.est_potential || '+20%'}</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[11px]">
+                                <span class="text-gray-400">Order Flow:</span>
+                                <span class="text-gray-200">${item.flow_metric || 'Strong Inflow'}</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[11px]">
+                                <span class="text-gray-400">Key Catalyst:</span>
+                                <span class="text-amber-300">${item.driver_metric || 'Volume Surge'}</span>
+                            </div>
                         </div>
 
-                        <p class="text-xs text-gray-400 leading-relaxed font-sans line-clamp-2"><strong class="text-gray-200">Quant Note:</strong> ${item.research_note || 'Smart money accumulation footprint confirmed.'}</p>
+                        <!-- Quant Note with Proper Bengali Typography -->
+                        <div class="p-2.5 rounded-xl bg-[#091122] border border-white/5 text-[11px] leading-relaxed font-bangla text-gray-300">
+                            <strong class="text-blue-400 font-sans font-bold">Quant Note:</strong> 
+                            ${item.research_note || 'Scalp SMC LONG অর্ডারব্লক ও লিকুইডিটি পার্জ কনফার্মড। R:R = 1:2.2'}
+                        </div>
 
                         <div class="pt-3 border-t border-white/10 flex justify-between items-center text-xs">
                             ${statusBadge}
@@ -2102,8 +2161,8 @@
                 cardsHtml += `
                 <div class="col-span-full glass-panel p-6 rounded-2xl border border-amber-500/30 text-center space-y-3 mt-4">
                     <span class="px-3 py-1 bg-amber-500/20 text-amber-300 rounded-full text-xs font-mono font-bold">🔒 FREE TIER ENFORCED (Top 3 Setups)</span>
-                    <h4 class="text-lg font-bold text-white">Unlock Full Institutional Alpha Stream</h4>
-                    <p class="text-xs text-gray-400 max-w-md mx-auto">Free accounts are strictly limited to the top 3 high-probability setups. Upgrade to Pro Trader to unlock all setups across Crypto, Forex, and Equities.</p>
+                    <h4 class="text-lg font-bold text-white font-bangla">ফুল ইনস্টটিউশনাল আলফা সিগন্যাল আনলক করুন</h4>
+                    <p class="text-xs text-gray-400 max-w-md mx-auto font-bangla">ফ্রি অ্যাকাউন্টে সেরা ৩টি সিগন্যাল সীমিত থাকে। আনলিমিটেড ক্রিপ্টো, ফরেক্স ও স্টক সিগন্যাল পেতে প্রো মেম্বারশিপে আপগ্রেড করুন।</p>
                     <button type="button" onclick="openPaymentModal('Pro Monthly ($5/mo)', 5, 600)" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl font-mono shadow-lg transition">Upgrade to Pro ($5/mo)</button>
                 </div>`;
             }
@@ -2476,8 +2535,8 @@
 
                     headerSec.innerHTML = `
                         <div class="flex items-center gap-2.5 flex-wrap">
-                            <button type="button" onclick="openUserDashboard()" class="px-3.5 py-2 rounded-xl bg-[#131d33] hover:bg-blue-600/20 text-white text-xs font-bold transition font-mono border border-white/10 flex items-center gap-1.5 shadow-inner cursor-pointer">
-                                📊 Account Dashboard
+                            <button type="button" onclick="openUserDashboard()" class="px-3.5 py-2 rounded-xl bg-[#131d33] hover:bg-blue-600/20 text-white text-xs font-bold transition font-mono border border-white/10 flex items-center gap-1.5 shadow-inner cursor-pointer font-bangla">
+                                📊 অ্যাকাউন্ট ড্যাশবোর্ড
                             </button>
                             ${tierBadge}
                             ${vipTelegramBtn}
