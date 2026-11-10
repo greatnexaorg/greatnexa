@@ -180,24 +180,27 @@
             </div>
         </div>
 
-        <!-- UNIFIED MASTER TABLE: Orders & User Management Combined -->
+        <!-- UNIFIED MASTER TABLE: Orders, Users & Referrals Combined -->
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
             <!-- Table Header Toolbar -->
             <div class="p-4 border-b border-white/10 flex flex-wrap justify-between items-center gap-3 bg-[#080e1c]">
                 <div class="flex items-center gap-2">
-                    <div class="flex bg-[#0b1324] p-1 rounded-xl border border-white/10 font-mono text-xs">
+                    <div class="flex bg-[#0b1324] p-1 rounded-xl border border-white/10 font-mono text-xs flex-wrap gap-1">
                         <button type="button" onclick="switchMasterTab('orders')" id="mtab-orders" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition">
-                            ⚡ Orders & Subscriptions Queue (<span id="tabOrderCount">0</span>)
+                            ⚡ Orders (<span id="tabOrderCount">0</span>)
                         </button>
                         <button type="button" onclick="switchMasterTab('users')" id="mtab-users" class="px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white font-bold transition">
-                            👥 All Registered Users (<span id="tabUserCount">0</span>)
+                            👥 Users (<span id="tabUserCount">0</span>)
+                        </button>
+                        <button type="button" onclick="switchMasterTab('referrals')" id="mtab-referrals" class="px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white font-bold transition">
+                            🤝 Referrals (<span id="tabReferralCount">0</span>)
                         </button>
                     </div>
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                 </div>
 
                 <div class="w-full sm:w-80">
-                    <input type="text" id="masterSearchInput" onkeyup="handleMasterSearch()" placeholder="🔍 Search by Email, TrxID, Phone..." class="w-full bg-[#0b1324] border border-white/15 text-white text-xs font-mono rounded-xl px-3.5 py-2 focus:outline-none focus:border-blue-500">
+                    <input type="text" id="masterSearchInput" onkeyup="handleMasterSearch()" placeholder="🔍 Search by Email, TrxID, Code..." class="w-full bg-[#0b1324] border border-white/15 text-white text-xs font-mono rounded-xl px-3.5 py-2 focus:outline-none focus:border-blue-500">
                 </div>
             </div>
 
@@ -273,6 +276,7 @@
         let cachedOrdersData = [];
         let cachedUsersData = [];
         let cachedCouponsData = [];
+        let cachedReferralsData = [];
         let currentAdminEmail = '';
         let currentAdminRole = '';
         let activeMasterTab = 'orders';
@@ -378,7 +382,8 @@
                 loadOrders(),
                 loadUsersDirectory(),
                 loadCoupons(),
-                loadSupportTickets()
+                loadSupportTickets(),
+                loadReferralsData()
             ]);
         }
 
@@ -389,16 +394,20 @@
             activeMasterTab = tab;
             const btnOrders = document.getElementById('mtab-orders');
             const btnUsers = document.getElementById('mtab-users');
+            const btnReferrals = document.getElementById('mtab-referrals');
+
+            [btnOrders, btnUsers, btnReferrals].forEach(b => {
+                if(b) b.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white font-bold transition";
+            });
 
             if (tab === 'orders') {
                 btnOrders.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition";
-                btnUsers.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white font-bold transition";
-                renderMasterTable();
-            } else {
+            } else if (tab === 'users') {
                 btnUsers.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition";
-                btnOrders.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white font-bold transition";
-                renderMasterTable();
+            } else if (tab === 'referrals') {
+                btnReferrals.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition";
             }
+            renderMasterTable();
         }
 
         function renderMasterTable() {
@@ -458,7 +467,7 @@
                     `;
                 }).join('');
 
-            } else {
+            } else if (activeMasterTab === 'users') {
                 thead.innerHTML = `
                     <tr>
                         <th class="p-3.5">User Email</th>
@@ -526,6 +535,36 @@
                     </tr>
                     `;
                 }).join('');
+
+            } else if (activeMasterTab === 'referrals') {
+                thead.innerHTML = `
+                    <tr>
+                        <th class="p-3.5">User Email</th>
+                        <th class="p-3.5">Referral Code</th>
+                        <th class="p-3.5">Total Referrals</th>
+                        <th class="p-3.5">Referred By</th>
+                        <th class="p-3.5 text-right">Affiliate Link</th>
+                    </tr>
+                `;
+
+                if (cachedReferralsData.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center p-8 text-gray-500 font-mono">No referral records found.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = cachedReferralsData.map(r => `
+                    <tr class="hover:bg-white/[0.02] transition">
+                        <td class="p-3.5 font-bold text-white select-all">${r.email || 'N/A'}</td>
+                        <td class="p-3.5 text-blue-400 font-bold select-all">${r.referral_code || 'N/A'}</td>
+                        <td class="p-3.5 text-emerald-400 font-bold">${r.referral_count || 0} users</td>
+                        <td class="p-3.5 text-gray-400">${r.referred_by || 'Direct / None'}</td>
+                        <td class="p-3.5 text-right">
+                            <button type="button" onclick="navigator.clipboard.writeText('${window.location.origin}/?ref=${r.referral_code}'); alert('Copied referral link!');" class="px-2.5 py-1 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white rounded text-[10px] font-bold transition">
+                                📋 Copy Link
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
             }
         }
 
@@ -547,7 +586,7 @@
                 cachedOrdersData = filtered;
                 renderMasterTable();
                 loadOrders(false);
-            } else {
+            } else if (activeMasterTab === 'users') {
                 const filtered = cachedUsersData.filter(u => (u.email || '').toLowerCase().includes(query));
                 const tbody = document.getElementById('masterTableBody');
                 if (filtered.length === 0) {
@@ -557,6 +596,11 @@
                 cachedUsersData = filtered;
                 renderMasterTable();
                 loadUsersDirectory(false);
+            } else if (activeMasterTab === 'referrals') {
+                const filtered = cachedReferralsData.filter(r => (r.email || '').toLowerCase().includes(query) || (r.referral_code || '').toLowerCase().includes(query));
+                cachedReferralsData = filtered;
+                renderMasterTable();
+                loadReferralsData(false);
             }
         }
 
@@ -593,6 +637,13 @@
             if (triggerRender && activeMasterTab === 'users') renderMasterTable();
         }
 
+        async function loadReferralsData(triggerRender = true) {
+            const { data } = await _supabase.from('user_profiles').select('email, referral_code, referral_count, referred_by').order('referral_count', { ascending: false });
+            cachedReferralsData = data || [];
+            document.getElementById('tabReferralCount').innerText = String(cachedReferralsData.length);
+            if (triggerRender && activeMasterTab === 'referrals') renderMasterTable();
+        }
+
         // ==========================================
         // REALTIME SUBSCRIPTION (ZERO-REFRESH)
         // ==========================================
@@ -608,6 +659,7 @@
                 .channel('admin_live_users')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'user_profiles' }, () => {
                     loadUsersDirectory();
+                    loadReferralsData();
                 })
                 .subscribe();
 
@@ -620,7 +672,7 @@
         }
 
         // ==========================================
-        // COUPONS MANAGEMENT (FIXED DELETE)
+        // COUPONS MANAGEMENT
         // ==========================================
         async function handleCreateCoupon(e) {
             e.preventDefault();
@@ -640,14 +692,11 @@
         async function deleteCoupon(couponId, code) {
             if (!confirm(`Are you sure you want to delete coupon ${code}?`)) return;
             
-            // তাৎক্ষণিক ইউজার ইন্টারফেস থেকে হাইড করা
             cachedCouponsData = cachedCouponsData.filter(c => c.id !== couponId && c.code !== code);
             renderCouponsList();
 
-            // ডাটাবেস থেকে ডিলিট (ফেল করলে সফট ডিঅ্যাক্টিভেট)
             const { error } = await _supabase.from('coupons').delete().eq('id', couponId);
             if (error) {
-                console.warn("Direct delete failed, marking is_active = false:", error.message);
                 await _supabase.from('coupons').update({ is_active: false }).eq('id', couponId);
             }
             loadCoupons();
