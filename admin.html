@@ -189,7 +189,7 @@
                 <div class="flex justify-between items-center border-b border-white/10 pb-3">
                     <div class="flex items-center gap-2">
                         <span class="text-base">🎯</span>
-                        <h3 class="text-xs font-bold text-indigo-400 font-mono uppercase tracking-wide">রেফারেল টার্গেট, রিওয়ার্ড ও পলিসি সেটিংস</h3>
+                        <h3 class="text-xs font-bold text-indigo-400 font-mono uppercase tracking-wide">রেফারেল টার্গেট, রিওয়ার্ড ও পলিসি সেটিংস</h3>
                     </div>
                     <span id="refProgramStatusBadge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">PROGRAM ACTIVE</span>
                 </div>
@@ -197,7 +197,7 @@
                 <form onsubmit="handleSaveReferralRules(event)" class="space-y-3 font-mono text-xs">
                     <!-- Milestone / Target Settings -->
                     <div class="p-3 bg-[#080e1c] rounded-xl border border-indigo-500/20 space-y-2.5">
-                        <span class="text-[11px] font-bold text-indigo-300 block">🎯 রেফারেল টার্গেট ও পূরণ হলে রিওয়ার্ড নির্ধারণ:</span>
+                        <span class="text-[11px] font-bold text-indigo-300 block">🎯 রেফারেল টার্গেট ও পূরণ হলে রিওয়ার্ড নির্ধারণ:</span>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                             <div>
                                 <label class="block text-[10px] text-gray-400 mb-1">টার্গেট রেফারেল সংখ্যা</label>
@@ -213,7 +213,7 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-[10px] text-gray-400 mb-1">রিওয়ার্ড ভ্যালু / বিবরণ</label>
+                                <label class="block text-[10px] text-gray-400 mb-1">রিওয়ার্ড ভ্যালু / বিবরণ</label>
                                 <input type="text" id="refTargetRewardValue" value="30 Days Pro Plan" required class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 focus:border-indigo-500 focus:outline-none" placeholder="e.g. 500 BDT or 30 Days">
                             </div>
                         </div>
@@ -226,13 +226,13 @@
                             <input type="number" id="refCommissionRate" value="20" min="0" max="100" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 focus:border-indigo-500 focus:outline-none" placeholder="20%">
                         </div>
                         <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">নতুন ইউজারের ফ্রি ট্রায়াল</label>
+                            <label class="block text-[11px] text-gray-400 mb-1">নতুন ইউজারের ফ্রি ট্রায়াল</label>
                             <input type="number" id="refWelcomeBonusDays" value="3" min="0" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 focus:border-indigo-500 focus:outline-none" placeholder="3 Days Free">
                         </div>
                         <div>
                             <label class="block text-[11px] text-gray-400 mb-1">প্রোগ্রাম স্ট্যাটাস</label>
                             <select id="refProgramActive" class="w-full bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-2 focus:border-indigo-500 focus:outline-none">
-                                <option value="true">সক্রিয় (Active)</option>
+                                <option value="true">সক্রিয় (Active)</option>
                                 <option value="false">স্থগিত (Paused)</option>
                             </select>
                         </div>
@@ -245,7 +245,7 @@
 
                 <!-- Quick Manual Adjust Referrals -->
                 <div class="pt-3 border-t border-white/10">
-                    <span class="text-[11px] font-bold text-gray-400 block mb-2">⚡ ম্যানুয়াল রেফারেল পয়েন্ট/কাউন্ট অ্যাডজাস্ট করুন:</span>
+                    <span class="text-[11px] font-bold text-gray-400 block mb-2">⚡ ম্যানুয়াল রেফারেল পয়েন্ট/কাউন্ট অ্যাডজাস্ট করুন:</span>
                     <div class="flex flex-wrap sm:flex-nowrap gap-2">
                         <input type="email" id="adjRefEmail" placeholder="User email..." class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-1.5 text-xs font-mono w-full sm:w-2/3">
                         <input type="number" id="adjRefCount" placeholder="+/- Count" class="bg-[#0b1324] border border-white/15 text-white rounded-xl px-3 py-1.5 text-xs font-mono w-28">
@@ -271,7 +271,7 @@
                 </div>
 
                 <div class="pt-2 border-t border-white/10 flex justify-between items-center text-[11px] font-mono text-gray-400">
-                    <span>মোট রেফারেল সক্রিয় ইউজার: <b id="totalAffiliateCount" class="text-emerald-400">0</b></span>
+                    <span>মোট রেফারেল সক্রিয় ইউজার: <b id="totalAffiliateCount" class="text-emerald-400">0</b></span>
                     <button type="button" onclick="loadReferralsData()" class="text-blue-400 hover:underline">রিলোড</button>
                 </div>
             </div>
@@ -281,7 +281,7 @@
         <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
             <!-- Table Header Toolbar -->
             <div class="p-4 border-b border-white/10 flex flex-wrap justify-between items-center gap-3 bg-[#080e1c]">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 flex-wrap">
                     <div class="flex bg-[#0b1324] p-1 rounded-xl border border-white/10 font-mono text-xs flex-wrap gap-1">
                         <button type="button" onclick="switchMasterTab('orders')" id="mtab-orders" class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition">
                             ⚡ Orders (<span id="tabOrderCount">0</span>)
@@ -293,7 +293,13 @@
                             🤝 Referrals & Rewards (<span id="tabReferralCount">0</span>)
                         </button>
                     </div>
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+
+                    <!-- Referrals Sub-Filter (Visible only in referrals tab) -->
+                    <div id="refSubFilterWrap" class="hidden items-center gap-1 bg-[#0b1324] p-1 rounded-xl border border-white/10 font-mono text-[10px]">
+                        <button type="button" onclick="filterReferralsView('all')" id="refFilter-all" class="px-2 py-1 rounded bg-indigo-600 text-white font-bold">All</button>
+                        <button type="button" onclick="filterReferralsView('paid')" id="refFilter-paid" class="px-2 py-1 rounded text-gray-400 hover:text-white font-bold">💎 Paid Only</button>
+                        <button type="button" onclick="filterReferralsView('free')" id="refFilter-free" class="px-2 py-1 rounded text-gray-400 hover:text-white font-bold">👥 Free Only</button>
+                    </div>
                 </div>
 
                 <div class="w-full sm:w-80">
@@ -328,7 +334,7 @@
             </div>
         </div>
 
-        <!-- Support Tickets Desk (With Clear All and Delete Options) -->
+        <!-- Support Tickets Desk -->
         <div class="glass-panel rounded-2xl border border-white/10 p-5 space-y-3">
             <div class="flex flex-wrap justify-between items-center border-b border-white/10 pb-3 gap-2">
                 <div>
@@ -380,13 +386,16 @@
 
         let currentActiveOrder = null;
         let revenueChartInstance = null;
-        let cachedOrdersData = [];
-        let cachedUsersData = [];
-        let cachedCouponsData = [];
-        let cachedReferralsData = [];
+        
+        // Master storage arrays to prevent search reset bug
+        let allOrders = [];
+        let allUsers = [];
+        let allReferrals = [];
+
         let currentAdminEmail = '';
         let currentAdminRole = '';
         let activeMasterTab = 'orders';
+        let referralSubFilter = 'all'; // 'all', 'paid', 'free'
         let currentMilestoneGoal = 5;
         let currentMilestoneRewardType = 'pro_sub';
         let currentMilestoneRewardVal = '30 Days Pro Plan';
@@ -408,7 +417,7 @@
                 const { data: { session } } = await _supabase.auth.getSession();
                 if (!session) { showAuthModal(); return; }
 
-                const { data, error } = await _supabase
+                const { data } = await _supabase
                     .from('user_profiles')
                     .select('role, status')
                     .eq('id', session.user.id)
@@ -506,6 +515,7 @@
             const btnOrders = document.getElementById('mtab-orders');
             const btnUsers = document.getElementById('mtab-users');
             const btnReferrals = document.getElementById('mtab-referrals');
+            const refSubFilterWrap = document.getElementById('refSubFilterWrap');
 
             [btnOrders, btnUsers, btnReferrals].forEach(b => {
                 if(b) b.className = "px-3.5 py-1.5 rounded-lg text-gray-400 hover:text-white font-bold transition";
@@ -513,17 +523,39 @@
 
             if (tab === 'orders') {
                 btnOrders.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition";
+                refSubFilterWrap.classList.add('hidden');
+                refSubFilterWrap.classList.remove('flex');
             } else if (tab === 'users') {
                 btnUsers.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition";
+                refSubFilterWrap.classList.add('hidden');
+                refSubFilterWrap.classList.remove('flex');
             } else if (tab === 'referrals') {
                 btnReferrals.className = "px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold transition";
+                refSubFilterWrap.classList.remove('hidden');
+                refSubFilterWrap.classList.add('flex');
             }
+            renderMasterTable();
+        }
+
+        function filterReferralsView(type) {
+            referralSubFilter = type;
+            ['all', 'paid', 'free'].forEach(t => {
+                const btn = document.getElementById('refFilter-' + t);
+                if (btn) {
+                    if (t === type) {
+                        btn.className = "px-2 py-1 rounded bg-indigo-600 text-white font-bold";
+                    } else {
+                        btn.className = "px-2 py-1 rounded text-gray-400 hover:text-white font-bold";
+                    }
+                }
+            });
             renderMasterTable();
         }
 
         function renderMasterTable() {
             const thead = document.getElementById('masterTableHead');
             const tbody = document.getElementById('masterTableBody');
+            const query = (document.getElementById('masterSearchInput').value || '').toLowerCase().trim();
 
             if (activeMasterTab === 'orders') {
                 thead.innerHTML = `
@@ -537,12 +569,21 @@
                     </tr>
                 `;
 
-                if (cachedOrdersData.length === 0) {
+                const displayOrders = allOrders.filter(o => 
+                    !query || 
+                    (o.email || '').toLowerCase().includes(query) || 
+                    (o.customer_name || '').toLowerCase().includes(query) || 
+                    (o.sender_phone || '').toLowerCase().includes(query) || 
+                    (o.product_name || '').toLowerCase().includes(query) || 
+                    (o.trx_id || '').toLowerCase().includes(query)
+                );
+
+                if (displayOrders.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-500 font-mono">No payment orders found.</td></tr>';
                     return;
                 }
 
-                tbody.innerHTML = cachedOrdersData.map(o => {
+                tbody.innerHTML = displayOrders.map(o => {
                     const isApproved = o.status === 'approved';
                     const isRejected = o.status === 'rejected';
                     const isPending = !isApproved && !isRejected;
@@ -590,12 +631,16 @@
                     </tr>
                 `;
 
-                if (cachedUsersData.length === 0) {
+                const displayUsers = allUsers.filter(u => 
+                    !query || (u.email || '').toLowerCase().includes(query)
+                );
+
+                if (displayUsers.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-500 font-mono">No registered users found.</td></tr>';
                     return;
                 }
 
-                tbody.innerHTML = cachedUsersData.map(u => {
+                tbody.innerHTML = displayUsers.map(u => {
                     const isBanned = u.status === 'banned';
                     const tier = (u.tier || 'free').toLowerCase();
                     const displayEmail = u.email || 'user_' + (u.id ? u.id.slice(0, 8) : 'guest');
@@ -652,22 +697,41 @@
                     <tr>
                         <th class="p-3.5">Affiliate User</th>
                         <th class="p-3.5">Referral Code</th>
-                        <th class="p-3.5">Total Referrals</th>
+                        <th class="p-3.5">Paid vs Free Breakdown</th>
+                        <th class="p-3.5">Total Count</th>
                         <th class="p-3.5">Target Status</th>
                         <th class="p-3.5">Referred By</th>
                         <th class="p-3.5 text-right">Actions</th>
                     </tr>
                 `;
 
-                if (cachedReferralsData.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-500 font-mono">No referral records found.</td></tr>';
+                let displayReferrals = allReferrals.filter(r => 
+                    !query || 
+                    (r.email || '').toLowerCase().includes(query) || 
+                    (r.referral_code || '').toLowerCase().includes(query)
+                );
+
+                if (referralSubFilter === 'paid') {
+                    displayReferrals = displayReferrals.filter(r => (r.paid_referral_count || 0) > 0);
+                } else if (referralSubFilter === 'free') {
+                    displayReferrals = displayReferrals.filter(r => ((r.referral_count || 0) - (r.paid_referral_count || 0)) > 0);
+                }
+
+                if (displayReferrals.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-gray-500 font-mono">No referral records found matching filter.</td></tr>';
                     return;
                 }
 
-                tbody.innerHTML = cachedReferralsData.map(r => {
-                    const count = r.referral_count || 0;
-                    const isTargetAchieved = count >= currentMilestoneGoal;
-                    let targetBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-800 text-gray-400">${count}/${currentMilestoneGoal} (Pending)</span>`;
+                tbody.innerHTML = displayReferrals.map(r => {
+                    const totalCount = r.referral_count || 0;
+                    const paidCount = r.paid_referral_count || 0;
+                    const freeCount = Math.max(0, totalCount - paidCount);
+
+                    // Weighted score: 1 Paid = 1 point, 4 Free = 1 point
+                    const effectiveScore = paidCount + (freeCount * 0.25);
+                    const isTargetAchieved = effectiveScore >= currentMilestoneGoal;
+
+                    let targetBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-800 text-gray-400">${effectiveScore.toFixed(1)}/${currentMilestoneGoal} (Pending)</span>`;
                     
                     if (isTargetAchieved) {
                         targetBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-pulse">🎯 Target Completed!</span>`;
@@ -677,22 +741,26 @@
                     <tr class="hover:bg-white/[0.02] transition ${isTargetAchieved ? 'bg-indigo-950/20' : ''}">
                         <td class="p-3.5 font-bold text-white select-all">${r.email || 'N/A'}</td>
                         <td class="p-3.5 text-blue-400 font-bold select-all">${r.referral_code || 'N/A'}</td>
-                        <td class="p-3.5 text-emerald-400 font-bold text-sm">${count} users</td>
+                        <td class="p-3.5">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">💎 ${paidCount} Paid</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-800 text-gray-300 border border-white/5 ml-1">👥 ${freeCount} Free</span>
+                        </td>
+                        <td class="p-3.5 text-emerald-400 font-bold text-sm">${totalCount}</td>
                         <td class="p-3.5">${targetBadge}</td>
                         <td class="p-3.5 text-gray-400">${r.referred_by || 'Direct / None'}</td>
                         <td class="p-3.5 text-right space-x-1.5 whitespace-nowrap">
                             <button type="button" onclick="navigator.clipboard.writeText('${window.location.origin}/?ref=${r.referral_code}'); alert('Copied referral link: ${window.location.origin}/?ref=${r.referral_code}');" class="px-2.5 py-1 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white rounded text-[10px] font-bold transition">
                                 📋 Link
                             </button>
-                            <button type="button" onclick="populateRefAdjust('${r.email}', ${count})" class="px-2.5 py-1 bg-indigo-600/30 hover:bg-indigo-600 text-indigo-300 hover:text-white rounded text-[10px] font-bold transition">
+                            <button type="button" onclick="populateRefAdjust('${r.email}', ${totalCount})" class="px-2.5 py-1 bg-indigo-600/30 hover:bg-indigo-600 text-indigo-300 hover:text-white rounded text-[10px] font-bold transition">
                                 ⚙️ Adjust
                             </button>
                             ${isTargetAchieved ? `
-                            <button type="button" onclick="grantMilestoneReward('${r.email}', ${count})" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] font-bold transition shadow">
+                            <button type="button" onclick="grantMilestoneReward('${r.email}', ${totalCount})" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] font-bold transition shadow">
                                 🎁 Send Reward
                             </button>
                             ` : ''}
-                            <button type="button" onclick="handlePayAffiliate('${r.email}', ${count})" class="px-2.5 py-1 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded text-[10px] font-bold transition">
+                            <button type="button" onclick="handlePayAffiliate('${r.email}', ${totalCount})" class="px-2.5 py-1 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded text-[10px] font-bold transition">
                                 Reset
                             </button>
                         </td>
@@ -703,39 +771,7 @@
         }
 
         function handleMasterSearch() {
-            const query = document.getElementById('masterSearchInput').value.toLowerCase().trim();
-            if (activeMasterTab === 'orders') {
-                const filtered = cachedOrdersData.filter(o => 
-                    (o.email || '').toLowerCase().includes(query) || 
-                    (o.customer_name || '').toLowerCase().includes(query) || 
-                    (o.sender_phone || '').toLowerCase().includes(query) || 
-                    (o.product_name || '').toLowerCase().includes(query) || 
-                    (o.trx_id || '').toLowerCase().includes(query)
-                );
-                const tbody = document.getElementById('masterTableBody');
-                if (filtered.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-500">No matching orders found.</td></tr>';
-                    return;
-                }
-                cachedOrdersData = filtered;
-                renderMasterTable();
-                loadOrders(false);
-            } else if (activeMasterTab === 'users') {
-                const filtered = cachedUsersData.filter(u => (u.email || '').toLowerCase().includes(query));
-                const tbody = document.getElementById('masterTableBody');
-                if (filtered.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center p-8 text-gray-500">No matching users found.</td></tr>';
-                    return;
-                }
-                cachedUsersData = filtered;
-                renderMasterTable();
-                loadUsersDirectory(false);
-            } else if (activeMasterTab === 'referrals') {
-                const filtered = cachedReferralsData.filter(r => (r.email || '').toLowerCase().includes(query) || (r.referral_code || '').toLowerCase().includes(query));
-                cachedReferralsData = filtered;
-                renderMasterTable();
-                loadReferralsData(false);
-            }
+            renderMasterTable();
         }
 
         // ==========================================
@@ -743,16 +779,16 @@
         // ==========================================
         async function loadOrders(triggerRender = true) {
             const { data } = await _supabase.from('orders').select('*').order('created_at', { ascending: false });
-            cachedOrdersData = data || [];
+            allOrders = data || [];
             
-            document.getElementById('statTotal').innerText = String(cachedOrdersData.length);
-            const pendingCount = cachedOrdersData.filter(o => o.status !== 'approved' && o.status !== 'rejected').length;
+            document.getElementById('statTotal').innerText = String(allOrders.length);
+            const pendingCount = allOrders.filter(o => o.status !== 'approved' && o.status !== 'rejected').length;
             document.getElementById('statPending').innerText = String(pendingCount);
-            document.getElementById('tabOrderCount').innerText = String(cachedOrdersData.length);
+            document.getElementById('tabOrderCount').innerText = String(allOrders.length);
 
             // Chart Data
             let chartDates = {};
-            cachedOrdersData.filter(o => o.status === 'approved').forEach(o => {
+            allOrders.filter(o => o.status === 'approved').forEach(o => {
                 const dStr = new Date(o.created_at).toLocaleDateString();
                 chartDates[dStr] = (chartDates[dStr] || 0) + 1;
             });
@@ -763,28 +799,24 @@
 
         async function loadUsersDirectory(triggerRender = true) {
             const { data } = await _supabase.from('user_profiles').select('*').order('created_at', { ascending: false });
-            cachedUsersData = data || [];
+            allUsers = data || [];
             
-            document.getElementById('statUsers').innerText = String(cachedUsersData.length);
-            document.getElementById('tabUserCount').innerText = String(cachedUsersData.length);
+            document.getElementById('statUsers').innerText = String(allUsers.length);
+            document.getElementById('tabUserCount').innerText = String(allUsers.length);
 
             if (triggerRender && activeMasterTab === 'users') renderMasterTable();
         }
 
-        // ==========================================
-        // REFERRAL LEADERBOARD & REWARD CONFIG
-        // ==========================================
         async function loadReferralsData(triggerRender = true) {
             const { data } = await _supabase
                 .from('user_profiles')
-                .select('email, referral_code, referral_count, referred_by, reward_balance')
+                .select('email, referral_code, referral_count, paid_referral_count, referred_by, reward_balance')
                 .order('referral_count', { ascending: false });
                 
-            cachedReferralsData = data || [];
-            document.getElementById('tabReferralCount').innerText = String(cachedReferralsData.length);
+            allReferrals = data || [];
+            document.getElementById('tabReferralCount').innerText = String(allReferrals.length);
             
-            // Render Top 10 Leaderboard
-            renderTopTenLeaderboard(cachedReferralsData);
+            renderTopTenLeaderboard(allReferrals);
 
             if (triggerRender && activeMasterTab === 'referrals') renderMasterTable();
         }
@@ -810,7 +842,9 @@
                 else if (rank === 2) rankBadge = `<span class="text-sm">🥈</span>`;
                 else if (rank === 3) rankBadge = `<span class="text-sm">🥉</span>`;
 
-                const isTargetHit = (user.referral_count || 0) >= currentMilestoneGoal;
+                const paidCount = user.paid_referral_count || 0;
+                const freeCount = Math.max(0, (user.referral_count || 0) - paidCount);
+                const isTargetHit = (paidCount + (freeCount * 0.25)) >= currentMilestoneGoal;
 
                 return `
                 <div class="flex items-center justify-between p-2 rounded-xl bg-[#091122] border ${isTargetHit ? 'border-amber-500/50 bg-amber-950/10' : 'border-white/5'} transition">
@@ -823,7 +857,7 @@
                     </div>
                     <div class="text-right shrink-0">
                         <span class="text-xs font-bold text-emerald-400">${user.referral_count || 0}</span>
-                        <span class="text-[10px] text-gray-400 block">Invites</span>
+                        <span class="text-[10px] text-gray-400 block">${paidCount} Paid / ${freeCount} Free</span>
                     </div>
                 </div>
                 `;
@@ -901,12 +935,12 @@
             try {
                 const { error } = await _supabase.from('system_settings').upsert({ key: 'referral_policy', value: payload });
                 if (error) throw error;
-                alert(`✔ টার্গেট (${targetGoal}টি রেফারেল) এবং রিওয়ার্ড পলিসি সফলভাবে সংরক্ষিত হয়েছে!`);
+                alert(`✔ টার্গেট (${targetGoal}টি রেফারেল) এবং রিওয়ার্ড পলিসি সফলভাবে সংরক্ষিত হয়েছে!`);
                 loadReferralProgramRules();
                 renderMasterTable();
             } catch (err) {
                 localStorage.setItem('greatnexa_ref_policy', JSON.stringify(payload));
-                alert(`✔ টার্গেট (${targetGoal}টি রেফারেল) সংরক্ষিত হয়েছে (Fallback Mode)!`);
+                alert(`✔ টার্গেট (${targetGoal}টি রেফারেল) সংরক্ষিত হয়েছে (Fallback Mode)!`);
                 loadReferralProgramRules();
                 renderMasterTable();
             }
@@ -917,7 +951,6 @@
             if (!confirm(confirmMsg)) return;
 
             try {
-                // If it's a subscription reward, upgrade directly
                 if (currentMilestoneRewardType === 'pro_sub') {
                     let expiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
                     await _supabase.from('user_profiles').update({ tier: 'pro', expires_at: expiryDate }).ilike('email', email);
@@ -926,7 +959,7 @@
                     await _supabase.from('user_profiles').update({ tier: 'vip', expires_at: expiryDate }).ilike('email', email);
                 }
 
-                alert(`✔ সফল! ইউজার ${email} কে সফলভাবে রিওয়ার্ড প্রদান করা হয়েছে।`);
+                alert(`✔ সফল! ইউজার ${email} কে সফলভাবে রিওয়ার্ড প্রদান করা হয়েছে।`);
                 loadUsersDirectory();
                 loadReferralsData();
             } catch (err) {
@@ -956,7 +989,7 @@
                     .ilike('email', email);
 
                 if (error) throw error;
-                alert(`✔ ইউজার ${email} এর রেফারেল কাউন্ট সফলভাবে ${count} এ সেট করা হয়েছে!`);
+                alert(`✔ ইউজার ${email} এর রেফারেল কাউন্ট সফলভাবে ${count} এ সেট করা হয়েছে!`);
                 loadReferralsData();
             } catch (err) {
                 alert("Error adjusting referral: " + err.message);
@@ -967,8 +1000,8 @@
             if (!confirm(`ইউজার ${email} এর রেফারেল কাউন্ট (${count}) রিসেট করতে চান?`)) return;
 
             try {
-                await _supabase.from('user_profiles').update({ referral_count: 0, reward_balance: '0' }).ilike('email', email);
-                alert(`✔ ${email} এর রেফারেল হিস্টোরি রিসেট করা হয়েছে!`);
+                await _supabase.from('user_profiles').update({ referral_count: 0, paid_referral_count: 0, reward_balance: '0' }).ilike('email', email);
+                alert(`✔ ${email} এর রেফারেল হিস্টোরি রিসেট করা হয়েছে!`);
                 loadReferralsData();
             } catch(e) {
                 alert("Failed: " + e.message);
@@ -1022,9 +1055,6 @@
 
         async function deleteCoupon(couponId, code) {
             if (!confirm(`Are you sure you want to delete coupon ${code}?`)) return;
-            
-            cachedCouponsData = cachedCouponsData.filter(c => c.id !== couponId && c.code !== code);
-            renderCouponsList();
 
             const { error } = await _supabase.from('coupons').delete().eq('id', couponId);
             if (error) {
@@ -1033,13 +1063,13 @@
             loadCoupons();
         }
 
-        function renderCouponsList() {
+        function renderCouponsList(coupons) {
             const listDiv = document.getElementById('activeCouponsList');
-            if (!cachedCouponsData || cachedCouponsData.length === 0) {
+            if (!coupons || coupons.length === 0) {
                 listDiv.innerHTML = '<span class="text-gray-500">No active coupons.</span>';
                 return;
             }
-            listDiv.innerHTML = cachedCouponsData.map(c => `
+            listDiv.innerHTML = coupons.map(c => `
                 <div class="flex justify-between items-center bg-[#091122] p-1.5 rounded border border-white/5">
                     <span><b>${c.code}</b>: ${c.discount_pct}% OFF</span>
                     <button type="button" onclick="deleteCoupon('${c.id}', '${c.code}')" class="text-rose-400 hover:text-white text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-600/20 hover:bg-rose-600 transition">Delete</button>
@@ -1049,8 +1079,7 @@
 
         async function loadCoupons() {
             const { data } = await _supabase.from('coupons').select('*').eq('is_active', true).order('created_at', { ascending: false });
-            cachedCouponsData = data || [];
-            renderCouponsList();
+            renderCouponsList(data || []);
         }
 
         // ==========================================
@@ -1108,6 +1137,7 @@
 
                 alert(`✔ ইউজার ${email} সফলভাবে আপডেট হয়েছে!`);
                 loadUsersDirectory();
+                loadReferralsData();
             } catch (err) {
                 alert("Failed to update user: " + err.message);
             }
@@ -1191,6 +1221,7 @@
                 closeDeliveryModal();
                 loadOrders();
                 loadUsersDirectory();
+                loadReferralsData();
             } catch (err) {
                 alert("Error executing approval: " + err.message);
             }
@@ -1335,12 +1366,12 @@
         }
 
         function exportOrdersCSV() {
-            if (!cachedOrdersData || cachedOrdersData.length === 0) {
+            if (!allOrders || allOrders.length === 0) {
                 alert("No orders to export!");
                 return;
             }
             let csvContent = "data:text/csv;charset=utf-8,ID,Customer,Phone,Product,Price,TrxID,Status,Date\n";
-            cachedOrdersData.forEach(o => {
+            allOrders.forEach(o => {
                 const phone = o.sender_phone || o.phone || '';
                 csvContent += `"${o.id}","${o.email || o.customer_name}","${phone}","${o.product_name}","${o.price}","${o.trx_id}","${o.status}","${o.created_at}"\n`;
             });
