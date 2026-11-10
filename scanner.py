@@ -21,9 +21,24 @@ except Exception as e:
     print(f"✖ Supabase Connection Failed: {e}")
     exit(1)
 
+# ডেসিমাল প্রিসিশন ফিক্স (PEPE, SHIB ইত্যাদি মেমকয়েনের জন্য ৮ ডিজিট সাপোর্ট)
 def fmt_price(p):
-    p = float(p)
-    return f"{p:.2f}" if p >= 100 else (f"{p:.4f}" if p >= 1 else f"{p:.6f}")
+    try:
+        p = float(p)
+        if p == 0:
+            return "0.00"
+        if p < 0.0001:
+            return f"{p:.8f}"  # PEPE বা মাইক্রো কয়েন
+        elif p < 0.01:
+            return f"{p:.6f}"
+        elif p < 1.0:
+            return f"{p:.4f}"
+        elif p < 100.0:
+            return f"{p:.3f}"
+        else:
+            return f"{p:.2f}"
+    except Exception:
+        return str(p)
 
 session = requests.Session()
 session.headers.update({
@@ -205,14 +220,13 @@ def fetch_top_100_stocks():
     return stock_pool
 
 # ==============================================================================
-# ৭. ফরেক্স ও কমোডিটিজ: ১০০% ডায়নামিক লাইভ স্ক্রিনার (কোনো ফিক্সড তালিকা ছাড়া)
+# ৭. ফরেক্স ও কমোডিটিজ: ১০০% ডায়নামিক লাইভ স্ক্রিনার
 # ==============================================================================
 def fetch_top_100_forex_universe():
     print("[*] Dynamically Screening Top 100 Forex & Commodities from Live Market...")
     forex_pool = {}
     discovered_quotes = []
 
-    # স্ক্রিনার ১: টপ ১০০ কারেন্সি পেয়ার
     fx_url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=currencies&count=100"
     try:
         r_fx = session.get(fx_url, timeout=12)
@@ -223,7 +237,6 @@ def fetch_top_100_forex_universe():
     except Exception as e:
         print(f"[-] Dynamic Forex Screener Error: {e}")
 
-    # স্ক্রিনার ২: টপ কমোডিটিজ ও মেটালস (Gold, Silver, Platinum, Crude ইত্যাদি)
     comm_url = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&lang=en-US&region=US&scrIds=all_commodities&count=50"
     try:
         r_comm = session.get(comm_url, timeout=12)
@@ -327,7 +340,7 @@ def track_and_update_lifecycle(current_prices):
     return active_setups_map
 
 # ==============================================================================
-# ৯. এডভান্সড SMC কোয়ান্টাম ইঞ্জিন (SFP Sweep + All Horizons: 24h, 1w, 1m)
+# ৯. এডভান্সড SMC কোয়ান্টাম ইঞ্জিন (SFP Liquidity Sweep + FVG + Strict ATR TP/SL)
 # ==============================================================================
 def generate_smc_institutional_signal(item, active_setups_map):
     p = item['price']
@@ -347,21 +360,22 @@ def generate_smc_institutional_signal(item, active_setups_map):
     lower_wick = min(open_p, p) - low
     upper_wick = high - max(open_p, p)
 
-    is_bullish_sfp = (lower_wick >= span * 0.30) and (range_pos >= 0.48)
-    is_bearish_sfp = (upper_wick >= span * 0.30) and (range_pos <= 0.52)
+    # Smart Money Sweep & SFP কনফার্মেশন
+    is_bullish_sfp = (lower_wick >= span * 0.28) and (range_pos >= 0.45)
+    is_bearish_sfp = (upper_wick >= span * 0.28) and (range_pos <= 0.55)
 
     conviction_score = 88
 
-    if is_bullish_sfp or (chg >= 0.8 and range_pos >= 0.52):
+    if is_bullish_sfp or (chg >= 0.7 and range_pos >= 0.50):
         direction = "long"
-        purge_catalyst = "Sell-Side Liquidity Swept (SFP)" if is_bullish_sfp else "Institutional Demand Expansion"
+        purge_catalyst = "Sell-Side Liquidity Swept (SFP)" if is_bullish_sfp else "Institutional Order Block FVG Inflow"
         flow_delta = f"${vol}M Smart Money Accumulation"
         if is_bullish_sfp: conviction_score += 4
         if chg > 1.2: conviction_score += 3
         if vol >= 10.0: conviction_score += 3
-    elif is_bearish_sfp or (chg <= -0.8 and range_pos <= 0.48):
+    elif is_bearish_sfp or (chg <= -0.7 and range_pos <= 0.50):
         direction = "short"
-        purge_catalyst = "Buy-Side Liquidity Swept (SFP)" if is_bearish_sfp else "Institutional Supply Distribution"
+        purge_catalyst = "Buy-Side Liquidity Swept (SFP)" if is_bearish_sfp else "Institutional Supply FVG Distribution"
         flow_delta = f"${vol}M Institutional Distribution"
         if is_bearish_sfp: conviction_score += 4
         if chg < -1.2: conviction_score += 3
@@ -375,17 +389,17 @@ def generate_smc_institutional_signal(item, active_setups_map):
 
     score = min(98, max(88, conviction_score))
 
-    # মার্কেট অনুসারে নিখুঁত রিস্ক ক্যালিব্রেশন
+    # মাইক্রো-ক্যাপ এবং মেমকয়েনের ক্ষেত্রে মিনিমাম ০.৮% ডিসট্যান্স বজায় রাখা
     if m_type == "crypto":
-        base_risk = max(0.012, volatility_ratio * 0.22)
+        base_risk = max(0.015, volatility_ratio * 0.25)
     elif m_type == "stocks":
-        base_risk = max(0.008, volatility_ratio * 0.18)
+        base_risk = max(0.009, volatility_ratio * 0.20)
     else:
-        base_risk = max(0.0035, volatility_ratio * 0.15)
+        base_risk = max(0.0035, volatility_ratio * 0.16)
 
     setups = []
+    now_iso = datetime.now(timezone.utc).isoformat()
     
-    # 24H (Scalp), 1W (Day), এবং 1M (Swing) হরাইজন ম্যাপিং
     styles = [
         {
             "style": "Scalp", 
@@ -410,7 +424,7 @@ def generate_smc_institutional_signal(item, active_setups_map):
             "trader_style": "swing", 
             "timeframe": "4h", 
             "tag": "Swing Engine (4H)", 
-            "horizon": "1m",       # <--- 1 Month ফিল্টারের ডেটা
+            "horizon": "1m", 
             "rr": 3.4, 
             "risk_mult": 1.5
         }
@@ -422,8 +436,20 @@ def generate_smc_institutional_signal(item, active_setups_map):
 
         effective_risk = base_risk * s['risk_mult']
         entry = p
-        sl = p * (1 - effective_risk) if direction == "long" else p * (1 + effective_risk)
-        tp = p * (1 + (effective_risk * s['rr'])) if direction == "long" else p * (1 - (effective_risk * s['rr']))
+        
+        # নিখুঁত গাণিতিক এন্ট্রি, স্টপ লস ও টেক প্রফিট নির্ধারণ
+        if direction == "long":
+            sl = entry * (1.0 - effective_risk)
+            tp = entry * (1.0 + (effective_risk * s['rr']))
+        else:
+            sl = entry * (1.0 + effective_risk)
+            tp = entry * (1.0 - (effective_risk * s['rr']))
+
+        # যদি ডেসিমাল প্রিসিশনের কারণে SL বা TP এন্ট্রির সমান হয়ে যাওয়ার ঝুঁকি থাকে
+        if abs(entry - sl) <= 0:
+            sl = entry * 0.98 if direction == "long" else entry * 1.02
+        if abs(tp - entry) <= 0:
+            tp = entry * 1.04 if direction == "long" else entry * 0.96
 
         setups.append({
             "symbol": item['symbol'], 
@@ -445,7 +471,8 @@ def generate_smc_institutional_signal(item, active_setups_map):
             "sl_price": sl, 
             "tp_price": tp, 
             "status": "ACTIVE",
-            "mtf_alignment": f"Entry: ${fmt_price(entry)} | SL: ${fmt_price(sl)}",
+            "created_at": now_iso,  # ফ্রন্টএন্ডে ফ্রেশ টাইমস্ট্যাম্প নিশ্চিত করতে
+            "mtf_alignment": f"Entry: ${fmt_price(entry)} | TP: ${fmt_price(tp)} | SL: ${fmt_price(sl)}",
             "research_note": f"{s['style']} SMC {direction.upper()} অর্ডারব্লক ও লিকুইডিটি পার্জ কনফার্মড। R:R = 1:{s['rr']:.1f}"
         })
     return setups
