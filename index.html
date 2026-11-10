@@ -642,24 +642,72 @@
                     <p class="text-gray-500 text-center">Loading billing & payment records...</p>
                 </div>
 
-                <!-- 2. Referral & Affiliate Center -->
-                <div id="dpanel-referral" class="hidden space-y-3 bg-black/40 p-4 rounded-xl border border-white/5 text-xs">
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-400 font-bold">Your Unique Referral Link:</span>
-                        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-mono">10% Commission Active</span>
+                <!-- 2. Referral & Affiliate Center (Enhanced with Milestones & Live Invites) -->
+                <div id="dpanel-referral" class="hidden space-y-3.5 bg-black/40 p-4 rounded-xl border border-indigo-500/30 text-xs">
+                    <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                        <div>
+                            <span class="text-gray-300 font-bold block">🎯 রেফারেল ও রিওয়ার্ড প্রোগ্রাম</span>
+                            <span class="text-[10px] text-gray-400">বন্ধুদের ইনভাইট করে ফ্রি সাবস্ক্রিপশন ও রিওয়ার্ড আনলক করুন</span>
+                        </div>
+                        <span id="userRefProgramStatus" class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded font-mono font-bold border border-emerald-500/30">Active Program</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="refLinkInput" readonly value="https://greatnexa.com/?ref=NEXA" class="w-full bg-[#0b1324] border border-white/15 text-blue-400 text-xs rounded-xl px-3 py-2 font-mono select-all">
-                        <button type="button" onclick="copyRefLink()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition cursor-pointer shrink-0">Copy</button>
+
+                    <!-- Milestone Progress Card -->
+                    <div class="p-3 bg-[#0a1226] border border-indigo-500/25 rounded-xl space-y-2">
+                        <div class="flex justify-between items-center text-[11px]">
+                            <span class="text-indigo-300 font-bold">🎯 পরবর্তী টার্গেট রিওয়ার্ড:</span>
+                            <span id="refTargetRewardName" class="text-amber-300 font-extrabold font-mono">30 Days Pro Plan</span>
+                        </div>
+                        <div class="w-full bg-[#02040a] rounded-full h-2.5 overflow-hidden border border-white/10">
+                            <div id="refMilestoneBar" class="bg-gradient-to-r from-indigo-500 to-emerald-400 h-full w-[0%] rounded-full transition-all duration-500"></div>
+                        </div>
+                        <div class="flex justify-between items-center text-[10px] text-gray-400 font-mono">
+                            <span id="refProgressText">০ / ৫ টি পূরণ হয়েছে</span>
+                            <span id="refTargetRemainingText" class="text-emerald-400 font-bold">আর ৫ টি রেফারেল বাকি</span>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-2 text-center pt-2 border-t border-white/5">
-                        <div class="p-2 bg-[#091122] rounded-lg border border-white/5">
-                            <span class="text-[10px] text-gray-500 block">Total Referrals</span>
+
+                    <!-- Link Copy Section -->
+                    <div class="space-y-1.5">
+                        <span class="text-gray-400 font-bold text-[11px] block">আপনার পার্সোনাল রেফারেল লিংক:</span>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="refLinkInput" readonly value="Generating link..." class="w-full bg-[#0b1324] border border-white/15 text-blue-400 text-xs rounded-xl px-3 py-2 font-mono select-all">
+                            <button type="button" onclick="copyRefLink()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition cursor-pointer shrink-0">Copy</button>
+                        </div>
+                    </div>
+
+                    <!-- 1-Click Social Shares -->
+                    <div class="flex items-center gap-2 pt-1">
+                        <span class="text-[11px] text-gray-400">শেয়ার করুন:</span>
+                        <button type="button" onclick="shareRefViaWhatsApp()" class="px-3 py-1 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/30 rounded-lg text-[11px] font-bold transition flex items-center gap-1 cursor-pointer">
+                            <span>💬</span> WhatsApp
+                        </button>
+                        <button type="button" onclick="shareRefViaTelegram()" class="px-3 py-1 bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg text-[11px] font-bold transition flex items-center gap-1 cursor-pointer">
+                            <span>✈️</span> Telegram
+                        </button>
+                    </div>
+
+                    <!-- Stats Overview -->
+                    <div class="grid grid-cols-3 gap-2 text-center pt-2 border-t border-white/10">
+                        <div class="p-2.5 bg-[#091122] rounded-xl border border-white/5">
+                            <span class="text-[10px] text-gray-500 block">মোট রেফারেল</span>
                             <span id="refCountVal" class="text-base font-extrabold text-white">0</span>
                         </div>
-                        <div class="p-2 bg-[#091122] rounded-lg border border-white/5">
-                            <span class="text-[10px] text-gray-500 block">Rewards Unlocked</span>
-                            <span class="text-base font-extrabold text-amber-300">Free Tier Days</span>
+                        <div class="p-2.5 bg-[#091122] rounded-xl border border-white/5">
+                            <span class="text-[10px] text-gray-500 block">কমিশন রেট</span>
+                            <span id="refCommissionRateDisplay" class="text-base font-extrabold text-indigo-400">20%</span>
+                        </div>
+                        <div class="p-2.5 bg-[#091122] rounded-xl border border-white/5">
+                            <span class="text-[10px] text-gray-500 block">টার্গেট স্ট্যাটাস</span>
+                            <span id="refTargetBadgeState" class="text-xs font-extrabold text-amber-300">চলমান</span>
+                        </div>
+                    </div>
+
+                    <!-- Referred Users List Table -->
+                    <div class="pt-2 border-t border-white/10 space-y-1.5">
+                        <span class="text-[11px] text-gray-400 font-bold block">👥 আপনার আমন্ত্রিত বন্ধুদের তালিকা:</span>
+                        <div id="referredUsersContainer" class="space-y-1 max-h-32 overflow-y-auto pr-1">
+                            <p class="text-gray-500 text-center py-2 text-[10px]">এখনো কেউ আপনার লিংক দিয়ে জয়েন করেনি।</p>
                         </div>
                     </div>
                 </div>
@@ -1060,6 +1108,16 @@
         let isSignUpMode = false;
         let activeCalcItem = null;
 
+        // Dynamic Referral Configuration from Admin
+        let systemReferralConfig = {
+            target_goal: 5,
+            target_reward_type: 'pro_sub',
+            target_reward_value: '30 Days Pro Plan',
+            commission_rate: 20,
+            welcome_days: 3,
+            is_active: true
+        };
+
         function getSavedPortfolio() {
             try {
                 return JSON.parse(localStorage.getItem('gn_saved_setups') || '[]');
@@ -1153,20 +1211,141 @@
             `).join('');
         }
 
+        // ==========================================
+        // DYNAMIC REFERRAL & REWARDS MANAGEMENT
+        // ==========================================
+        async function fetchAdminReferralRules() {
+            if (!_supabase) return;
+            try {
+                const { data } = await _supabase.from('system_settings').select('*').eq('key', 'referral_policy').single();
+                if (data && data.value) {
+                    systemReferralConfig = Object.assign(systemReferralConfig, data.value);
+                }
+            } catch (e) {
+                console.log("Using default referral rules");
+            }
+        }
+
         async function loadUserReferralData() {
             if(!currentUserEmail || !_supabase) return;
-            const { data } = await _supabase.from('user_profiles').select('referral_code, referral_count').eq('email', currentUserEmail).single();
-            if(data) {
-                const code = data.referral_code || 'NEXA' + Math.floor(1000 + Math.random() * 9000);
-                document.getElementById('refLinkInput').value = `${window.location.origin}/?ref=${code}`;
-                document.getElementById('refCountVal').innerText = data.referral_count || 0;
+
+            await fetchAdminReferralRules();
+
+            // 1. Fetch user's profile info
+            const { data: profile } = await _supabase
+                .from('user_profiles')
+                .select('referral_code, referral_count')
+                .eq('email', currentUserEmail)
+                .single();
+
+            let code = profile?.referral_code;
+
+            // Generate referral code if user doesn't have one
+            if (!code) {
+                code = 'NEXA' + Math.floor(1000 + Math.random() * 9000);
+                await _supabase.from('user_profiles').update({ referral_code: code }).eq('email', currentUserEmail);
+            }
+
+            const currentCount = profile?.referral_count || 0;
+            const targetGoal = parseInt(systemReferralConfig.target_goal) || 5;
+            const remaining = Math.max(0, targetGoal - currentCount);
+            const progressPct = Math.min(100, Math.round((currentCount / targetGoal) * 100));
+
+            // Populate Link & Input
+            const fullRefLink = `${window.location.origin}/?ref=${code}`;
+            const refLinkElem = document.getElementById('refLinkInput');
+            if (refLinkElem) refLinkElem.value = fullRefLink;
+
+            // Update Counts and UI Labels
+            const refCountElem = document.getElementById('refCountVal');
+            if (refCountElem) refCountElem.innerText = currentCount;
+
+            const commDisplay = document.getElementById('refCommissionRateDisplay');
+            if (commDisplay) commDisplay.innerText = (systemReferralConfig.commission_rate || 20) + '%';
+
+            const rewardNameElem = document.getElementById('refTargetRewardName');
+            if (rewardNameElem) rewardNameElem.innerText = systemReferralConfig.target_reward_value || '30 Days Pro Plan';
+
+            const barElem = document.getElementById('refMilestoneBar');
+            if (barElem) barElem.style.width = progressPct + '%';
+
+            const progressTextElem = document.getElementById('refProgressText');
+            if (progressTextElem) progressTextElem.innerText = `${currentCount} / ${targetGoal} টি পূরণ হয়েছে (${progressPct}%)`;
+
+            const remainingTextElem = document.getElementById('refTargetRemainingText');
+            const badgeStateElem = document.getElementById('refTargetBadgeState');
+
+            if (currentCount >= targetGoal) {
+                if (remainingTextElem) remainingTextElem.innerHTML = `<span class="text-amber-400 font-bold">🎉 টার্গেট সম্পূর্ণ! রিওয়ার্ড প্রসেসিং</span>`;
+                if (badgeStateElem) {
+                    badgeStateElem.innerText = "অর্জিত (Achieved)";
+                    badgeStateElem.className = "text-xs font-extrabold text-emerald-400";
+                }
+            } else {
+                if (remainingTextElem) remainingTextElem.innerText = `আর ${remaining} টি রেফারেল বাকি`;
+                if (badgeStateElem) {
+                    badgeStateElem.innerText = "চলমান";
+                    badgeStateElem.className = "text-xs font-extrabold text-amber-300";
+                }
+            }
+
+            // 2. Fetch invited friends list
+            loadInvitedFriendsList(code);
+        }
+
+        async function loadInvitedFriendsList(myReferralCode) {
+            const container = document.getElementById('referredUsersContainer');
+            if (!container || !myReferralCode || !_supabase) return;
+
+            try {
+                const { data: invitedUsers } = await _supabase
+                    .from('user_profiles')
+                    .select('email, created_at, tier, status')
+                    .eq('referred_by', myReferralCode)
+                    .order('created_at', { ascending: false })
+                    .limit(20);
+
+                if (!invitedUsers || invitedUsers.length === 0) {
+                    container.innerHTML = `<p class="text-gray-500 text-center py-2 text-[10px]">এখনো কেউ আপনার লিংক দিয়ে জয়েন করেনি। লিংকটি শেয়ার করুন!</p>`;
+                    return;
+                }
+
+                container.innerHTML = invitedUsers.map(u => {
+                    const maskedEmail = (u.email || '').replace(/(.{2})(.*)(?=@)/, (gp1, gp2, gp3) => gp2 + "*".repeat(Math.max(1, gp3.length)));
+                    const joinDate = u.created_at ? new Date(u.created_at).toLocaleDateString() : 'Active';
+                    const tierName = (u.tier || 'free').toUpperCase();
+                    return `
+                        <div class="flex justify-between items-center p-1.5 px-2 bg-[#080d1c] rounded-lg border border-white/5 text-[10px]">
+                            <span class="text-gray-300 font-bold">${maskedEmail}</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-blue-400 font-mono">${tierName}</span>
+                                <span class="text-gray-500">${joinDate}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch(e) {
+                console.error("Error fetching invited list:", e);
             }
         }
 
         function copyRefLink() {
             const input = document.getElementById('refLinkInput');
+            if (!input || !input.value) return;
             navigator.clipboard.writeText(input.value);
-            alert("Referral link copied to clipboard!");
+            alert("✔ রেফারেল লিংক কপি করা হয়েছে!\n" + input.value);
+        }
+
+        function shareRefViaWhatsApp() {
+            const link = document.getElementById('refLinkInput').value;
+            const text = encodeURIComponent(`GreatNexa Institutional Quant Terminal এ জয়েন করে স্মার্ট মানি ট্রেডিং সিগন্যাল ও মার্কেট আলফা আনলক করুন! ফ্রি সাইনআপ লিংক: ${link}`);
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        }
+
+        function shareRefViaTelegram() {
+            const link = document.getElementById('refLinkInput').value;
+            const text = encodeURIComponent(`GreatNexa Institutional Quant Terminal এ জয়েন করে স্মার্ট মানি ট্রেডিং সিগন্যাল আনলক করুন: ${link}`);
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${text}`, '_blank');
         }
 
         function logoutAllSessions() {
@@ -1323,7 +1502,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             const refCode = urlParams.get('ref');
             if (refCode) {
-                localStorage.setItem('gn_ref_code', refCode);
+                localStorage.setItem('gn_ref_code', refCode.trim());
             }
 
             if (_supabase) {
@@ -1341,6 +1520,7 @@
             setupRealtimeListener();
             initBinanceTicker();
             checkGlobalAnnouncements();
+            fetchAdminReferralRules();
         });
 
         async function checkGlobalAnnouncements() {
@@ -2146,6 +2326,26 @@
                 if(error) {
                     showAuthFeedback(error.message);
                 } else {
+                    // রেফারেল টার্গেট ও পয়েন্ট স্বয়ংক্রিয়ভাবে ইনক্রিমেন্ট করা
+                    if (savedRefCode) {
+                        try {
+                            const { data: inviter } = await _supabase
+                                .from('user_profiles')
+                                .select('id, referral_count')
+                                .eq('referral_code', savedRefCode)
+                                .single();
+
+                            if (inviter) {
+                                await _supabase
+                                    .from('user_profiles')
+                                    .update({ referral_count: (inviter.referral_count || 0) + 1 })
+                                    .eq('id', inviter.id);
+                            }
+                        } catch (refErr) {
+                            console.error("Referral count auto-increment error:", refErr);
+                        }
+                    }
+
                     if(chosenPlan !== 'free') {
                         const productName = chosenPlan === 'pro' ? 'Pro Monthly ($5/mo)' : 'VIP 2-Year Special Deal ($49)';
                         const priceStr = chosenPlan === 'pro' ? '$5' : '$49';
@@ -2161,7 +2361,7 @@
                         }]);
                     }
 
-                    showAuthFeedback("✔ Registration Successful! A verification link has been sent to your email. Please check your inbox (and spam folder) to activate your account.", true);
+                    showAuthFeedback("✔ Registration Successful! A verification link has been sent to your email. Please check your inbox to activate your account.", true);
                     
                     if (chosenPlan === 'pro') {
                         setTimeout(() => {
