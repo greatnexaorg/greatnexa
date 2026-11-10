@@ -21,7 +21,7 @@ except Exception as e:
     print(f"✖ Supabase Connection Failed: {e}")
     exit(1)
 
-# ডেসিমাল প্রিসিশন ফিক্স (PEPE, SHIB ইত্যাদি মেমকয়েনের জন্য ৮ ডিজিট সাপোর্ট)
+# ডেসিমাল প্রিসিশন ফিক্স (PEPE, SHIB ইত্যাদির জন্য ৮ ডিজিট সাপোর্ট)
 def fmt_price(p):
     try:
         p = float(p)
@@ -301,7 +301,8 @@ def fetch_top_100_forex_universe():
 def track_and_update_lifecycle(current_prices):
     active_setups_map = set()
     try:
-        res = supabase.table("market_research").select("id, symbol, sector, direction, sl_price, tp_price, created_at").eq("status", "ACTIVE").execute()
+        # বর্তমানে ACTIVE এবং সাম্প্রতিক রেজলভড সেটআপগুলো রিড করা
+        res = supabase.table("market_research").select("id, symbol, sector, direction, sl_price, tp_price, status, created_at").eq("status", "ACTIVE").execute()
         active_signals = res.data or []
         now = datetime.now(timezone.utc)
 
@@ -389,7 +390,6 @@ def generate_smc_institutional_signal(item, active_setups_map):
 
     score = min(98, max(88, conviction_score))
 
-    # মাইক্রো-ক্যাপ এবং মেমকয়েনের ক্ষেত্রে মিনিমাম ০.৮% ডিসট্যান্স বজায় রাখা
     if m_type == "crypto":
         base_risk = max(0.015, volatility_ratio * 0.25)
     elif m_type == "stocks":
@@ -432,7 +432,9 @@ def generate_smc_institutional_signal(item, active_setups_map):
 
     for s in styles:
         setup_key = f"{item['symbol']}_{s['style']}_{direction}"
-        if setup_key in active_setups_map: continue
+        # যদি ইতিমধ্যে এই পেয়ারটি ACTIVE থাকে, তাহলে পুনরায় ইনসার্ট করে স্প্যাম করা বন্ধ রাখা
+        if setup_key in active_setups_map: 
+            continue
 
         effective_risk = base_risk * s['risk_mult']
         entry = p
@@ -467,11 +469,11 @@ def generate_smc_institutional_signal(item, active_setups_map):
             "est_potential": f"+{round(effective_risk * s['rr'] * 100, 1)}%",
             "flow_metric": flow_delta, 
             "driver_metric": purge_catalyst,
-            "entry_price": entry, 
-            "sl_price": sl, 
-            "tp_price": tp, 
+            "entry_price": float(entry), 
+            "sl_price": float(sl), 
+            "tp_price": float(tp), 
             "status": "ACTIVE",
-            "created_at": now_iso,  # ফ্রন্টএন্ডে ফ্রেশ টাইমস্ট্যাম্প নিশ্চিত করতে
+            "created_at": now_iso,
             "mtf_alignment": f"Entry: ${fmt_price(entry)} | TP: ${fmt_price(tp)} | SL: ${fmt_price(sl)}",
             "research_note": f"{s['style']} SMC {direction.upper()} অর্ডারব্লক ও লিকুইডিটি পার্জ কনফার্মড। R:R = 1:{s['rr']:.1f}"
         })
@@ -497,6 +499,7 @@ def run():
     all_prices = {**crypto_prices, **stocks_prices, **forex_prices}
     if not all_prices: return
 
+    # লাইফসাইকেল চেক (যদি SL/TP হিট হয়, সাথে সাথে HIT_SL বা HIT_TP হয়ে যাবে)
     active_setups_map = track_and_update_lifecycle(all_prices)
     crypto_setups, stock_setups, forex_setups = [], [], []
 
