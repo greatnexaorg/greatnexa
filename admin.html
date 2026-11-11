@@ -436,7 +436,6 @@
         const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const TELEGRAM_VIP_LINK = "https://t.me/+VA3Yu45-zosyOTRl";
         const ADMIN_SENDER_EMAIL = "greatnexaorg@gmail.com";
-        const SUPER_ADMIN_WHITELIST = ["hridoykhan7581@gmail.com", "greatnexaorg@gmail.com"];
 
         let currentActiveOrder = null;
         let revenueChartInstance = null;
@@ -475,6 +474,7 @@
             });
         }
 
+        // 1. সার্ভার-সাইড রোল ভেরিফিকেশন (ক্লায়েন্ট হোয়াইটলিস্ট বাইপাস প্রতিরোধ)
         async function verifyAdminAccess() {
             try {
                 const { data: { session }, error: sessionErr } = await _supabase.auth.getSession();
@@ -483,44 +483,41 @@
                     return; 
                 }
 
-                const userEmail = (session.user.email || '').toLowerCase().trim();
-                const isWhitelisted = SUPER_ADMIN_WHITELIST.includes(userEmail);
+                let isAuthorized = false;
+                let userRole = 'user';
 
-                let { data: profile } = await _supabase
-                    .from('user_profiles')
-                    .select('role, status')
-                    .eq('id', session.user.id)
-                    .maybeSingle();
+                // সার্ভার-সাইড আরপিসি (is_admin) চেষ্টা করুন
+                try {
+                    const { data: rpcIsAdmin, error: rpcErr } = await _supabase.rpc('is_admin');
+                    if (!rpcErr && rpcIsAdmin === true) {
+                        isAuthorized = true;
+                        userRole = 'admin';
+                    }
+                } catch(e) {}
 
-                if (!profile && userEmail) {
-                    const fallback = await _supabase
+                // আরপিসি না থাকলে ডেটাবেজ প্রোফাইল থেকে সিকিউর চেক
+                if (!isAuthorized) {
+                    const { data: profile } = await _supabase
                         .from('user_profiles')
                         .select('role, status')
-                        .ilike('email', userEmail)
+                        .eq('id', session.user.id)
                         .maybeSingle();
-                    profile = fallback.data;
+
+                    if (profile && profile.status !== 'banned' && (profile.role === 'admin' || profile.role === 'support_agent')) {
+                        isAuthorized = true;
+                        userRole = profile.role;
+                    }
                 }
 
-                if (isWhitelisted && (!profile || profile.role !== 'admin')) {
-                    await _supabase.from('user_profiles').upsert([{
-                        id: session.user.id,
-                        email: userEmail,
-                        role: 'admin',
-                        status: 'active',
-                        tier: 'vip'
-                    }], { onConflict: 'id' });
-                    profile = { role: 'admin', status: 'active' };
-                }
-
-                if (isWhitelisted || (profile && profile.status !== 'banned' && (profile.role === 'admin' || profile.role === 'support_agent'))) {
+                if (isAuthorized) {
                     currentAdminEmail = session.user.email;
-                    currentAdminRole = (profile && profile.role) ? profile.role : 'admin';
+                    currentAdminRole = userRole;
                     document.getElementById('adminSessionEmail').innerText = currentAdminEmail;
                     document.getElementById('adminRoleBadge').innerText = currentAdminRole === 'admin' ? 'Super Admin' : 'Support Agent';
                     unlockUI();
                 } else {
                     await _supabase.auth.signOut();
-                    showAuthModal("অ্যাক্সেস ডিনাইড! আপনার অ্যাকাউন্টে অ্যাডমিন রোল নেই অথবা অ্যাকাউন্ট সাসপেন্ডেড।");
+                    showAuthModal("অ্যাক্সেস ডিনাইড! আপনার অ্যাকাউন্টে অ্যাডমিন পারমিশন নেই অথবা অ্যাকাউন্ট সাসপেন্ডেড।");
                 }
             } catch (err) {
                 console.error("Auth verify error:", err);
@@ -543,38 +540,33 @@
                 const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
 
-                const userEmail = (data.user?.email || email).toLowerCase().trim();
-                const isWhitelisted = SUPER_ADMIN_WHITELIST.includes(userEmail);
+                let isAuthorized = false;
+                let userRole = 'user';
 
-                let { data: prof } = await _supabase
-                    .from('user_profiles')
-                    .select('role, status')
-                    .eq('id', data.user.id)
-                    .maybeSingle();
+                try {
+                    const { data: rpcIsAdmin, error: rpcErr } = await _supabase.rpc('is_admin');
+                    if (!rpcErr && rpcIsAdmin === true) {
+                        isAuthorized = true;
+                        userRole = 'admin';
+                    }
+                } catch(e) {}
 
-                if (!prof && userEmail) {
-                    const fb = await _supabase
+                if (!isAuthorized) {
+                    const { data: prof } = await _supabase
                         .from('user_profiles')
                         .select('role, status')
-                        .ilike('email', userEmail)
+                        .eq('id', data.user.id)
                         .maybeSingle();
-                    prof = fb.data;
+
+                    if (prof && prof.status !== 'banned' && (prof.role === 'admin' || prof.role === 'support_agent')) {
+                        isAuthorized = true;
+                        userRole = prof.role;
+                    }
                 }
 
-                if (isWhitelisted && (!prof || prof.role !== 'admin')) {
-                    await _supabase.from('user_profiles').upsert([{
-                        id: data.user.id,
-                        email: userEmail,
-                        role: 'admin',
-                        status: 'active',
-                        tier: 'vip'
-                    }], { onConflict: 'id' });
-                    prof = { role: 'admin', status: 'active' };
-                }
-
-                if (isWhitelisted || (prof && prof.status !== 'banned' && (prof.role === 'admin' || prof.role === 'support_agent'))) {
+                if (isAuthorized) {
                     currentAdminEmail = data.user.email;
-                    currentAdminRole = (prof && prof.role) ? prof.role : 'admin';
+                    currentAdminRole = userRole;
                     document.getElementById('adminSessionEmail').innerText = currentAdminEmail;
                     document.getElementById('adminRoleBadge').innerText = currentAdminRole === 'admin' ? 'Super Admin' : 'Support Agent';
                     unlockUI();
@@ -1335,7 +1327,7 @@
         }
 
         // ==========================================
-        // ORDER APPROVE / REJECT / DELETE
+        // 2. ORDER APPROVE, DELIVER & SAFE MESSAGING
         // ==========================================
         function openDeliveryModal(orderJsonEncoded) {
             try {
@@ -1365,26 +1357,53 @@
             const days = isVIP ? 730 : 30;
 
             try {
-                await _supabase.from('orders').update({ status: 'approved', delivery_data: creds }).eq('id', currentActiveOrder.id);
+                // ১. অর্ডার স্ট্যাটাস আপডেট
+                await _supabase.from('orders').update({ 
+                    status: 'approved', 
+                    delivery_data: creds 
+                }).eq('id', currentActiveOrder.id);
 
-                await _supabase.rpc('admin_manage_user', {
+                // ২. ইউজার টিয়ার ও পারমিশন আপডেট
+                const { error: rpcErr } = await _supabase.rpc('admin_manage_user', {
                     p_email: customerEmail,
                     p_tier: targetTier,
                     p_role: 'user',
                     p_duration_days: days
                 });
 
-                const phoneNum = (currentActiveOrder.sender_phone || currentActiveOrder.whatsapp || currentActiveOrder.phone || '').replace(/[^0-9]/g, '');
-                if (phoneNum && phoneNum.length > 5) {
-                    const waText = encodeURIComponent(`Hi ${customerEmail}, your GreatNexa order (${currentActiveOrder.product_name}) is approved!\n\n${creds}\n\nTelegram VIP: ${TELEGRAM_VIP_LINK}`);
-                    window.open(`https://wa.me/${phoneNum.startsWith('88') ? phoneNum : '88' + phoneNum}?text=${waText}`, '_blank');
+                if (rpcErr) {
+                    let expiryDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+                    await _supabase.from('user_profiles').update({
+                        tier: targetTier,
+                        expires_at: expiryDate,
+                        status: 'active',
+                        updated_at: new Date().toISOString()
+                    }).ilike('email', customerEmail);
                 }
 
-                const mailSubject = encodeURIComponent("GreatNexa Terminal Account Approved & Access Details");
-                const mailBody = encodeURIComponent(`Hello,\n\nYour order for ${currentActiveOrder.product_name} has been approved.\n\n${creds}\n\nJoin VIP Telegram: ${TELEGRAM_VIP_LINK}\n\nRegards,\nGreatNexa Team (${ADMIN_SENDER_EMAIL})`);
-                window.open(`mailto:${customerEmail}?from=${ADMIN_SENDER_EMAIL}&subject=${mailSubject}&body=${mailBody}`, '_blank');
+                // ৩. নিরাপদ ফোন নম্বর ও WhatsApp ভ্যালিডেশন
+                let notificationReport = [];
+                const rawPhone = currentActiveOrder.sender_phone || currentActiveOrder.whatsapp || currentActiveOrder.phone || '';
+                const phoneNum = String(rawPhone).replace(/[^0-9]/g, '');
 
-                alert("✔ Order approved successfully & User upgraded to " + targetTier.toUpperCase() + "!");
+                if (phoneNum && phoneNum.length >= 10 && phoneNum !== '0000000000') {
+                    const formattedPhone = phoneNum.startsWith('88') ? phoneNum : '88' + phoneNum;
+                    const waText = encodeURIComponent(`Hi ${customerEmail},\nYour GreatNexa order (${currentActiveOrder.product_name}) is approved!\n\n${creds || 'Access activated successfully.'}\n\nTelegram VIP: ${TELEGRAM_VIP_LINK}`);
+                    window.open(`https://wa.me/${formattedPhone}?text=${waText}`, '_blank');
+                    notificationReport.push("WhatsApp");
+                } else {
+                    console.log("No valid phone provided; WhatsApp notification skipped.");
+                }
+
+                // ৪. ইমেইল নোটিফিকেশন লিংক
+                if (customerEmail && customerEmail.includes('@')) {
+                    const mailSubject = encodeURIComponent("GreatNexa Terminal Account Approved & Access Details");
+                    const mailBody = encodeURIComponent(`Hello,\n\nYour order for ${currentActiveOrder.product_name} has been approved.\n\n${creds || 'Access credentials are now active on your dashboard.'}\n\nJoin VIP Telegram: ${TELEGRAM_VIP_LINK}\n\nRegards,\nGreatNexa Team (${ADMIN_SENDER_EMAIL})`);
+                    window.open(`mailto:${customerEmail}?from=${ADMIN_SENDER_EMAIL}&subject=${mailSubject}&body=${mailBody}`, '_blank');
+                    notificationReport.push("Email");
+                }
+
+                alert(`✔ অর্ডার অনুমোদন সম্পন্ন! ইউজারকে ${targetTier.toUpperCase()} টিয়ারে আপগ্রেড করা হয়েছে।\nনোটিফিকেশন চ্যানেল: ${notificationReport.join(', ') || 'None'}`);
                 closeDeliveryModal();
                 loadOrders();
                 loadUsersDirectory();
@@ -1472,11 +1491,27 @@
             }
         }
 
+        // 4. সাপোর্ট টিকিট নিরাপদ ও অপ্টিমাইজড ট্রাঙ্কেশন
         async function clearAllSupportTickets() {
-            if (!confirm("⚠️ সতর্কতা: আপনি কি সমস্ত সাপোর্ট টিকিট সম্পূর্ণ ডিলিট/মুছে ফেলতে চান? এটি রিভার্স করা যাবে না!")) return;
+            const confirmation = prompt("⚠️ সতর্কতা: আপনি কি সমস্ত সাপোর্ট টিকিট সম্পূর্ণ ডিলিট/মুছে ফেলতে চান?\nনিশ্চিত করতে বড় হাতের অক্ষরে 'DELETE' লিখুন:");
+            if (confirmation !== 'DELETE') return;
+
             try {
-                await _supabase.from('support_tickets').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-                alert("✔ All support tickets deleted.");
+                // ১. সিকিউর আরপিসি ট্রাঙ্কেট চেষ্টা করুন
+                let { error } = await _supabase.rpc('admin_clear_all_tickets');
+                
+                // ২. আরপিসি ডিফাইন না থাকলে ডেটাবেজ-সেফ কুয়েরি ফলব্যাক
+                if (error) {
+                    const fallback = await _supabase
+                        .from('support_tickets')
+                        .delete()
+                        .gte('created_at', '1970-01-01');
+                    error = fallback.error;
+                }
+
+                if (error) throw error;
+
+                alert("✔ সমস্ত সাপোর্ট টিকিট সফলভাবে মুছে ফেলা হয়েছে।");
                 loadSupportTickets();
             } catch (err) {
                 alert("Failed to delete all tickets: " + err.message);
@@ -1498,6 +1533,7 @@
             loadSupportTickets();
         }
 
+        // 3. Chart.js মেমোরি লিক প্রতিরোধ ও ইনস্ট্যান্স রিউজ
         function renderRevenueChart(dateMap) {
             const canvas = document.getElementById('salesRevenueChart');
             if (!canvas) return;
@@ -1505,15 +1541,25 @@
             const labels = Object.keys(dateMap).sort();
             const counts = labels.map(l => dateMap[l]);
 
-            if (revenueChartInstance) { revenueChartInstance.destroy(); }
+            const chartLabels = labels.length ? labels : ['Today'];
+            const chartData = counts.length ? counts : [0];
 
+            // চার্ট ইনস্ট্যান্স থাকলে নতুন করে না বানিয়ে শুধুমাত্র ডেটা আপডেট
+            if (revenueChartInstance) {
+                revenueChartInstance.data.labels = chartLabels;
+                revenueChartInstance.data.datasets[0].data = chartData;
+                revenueChartInstance.update('none');
+                return;
+            }
+
+            // প্রথমবার ইনস্ট্যান্স ইনিশিয়ালাইজেশন
             revenueChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels.length ? labels : ['Today'],
+                    labels: chartLabels,
                     datasets: [{
                         label: 'Approved Sales',
-                        data: counts.length ? counts : [0],
+                        data: chartData,
                         borderColor: '#3b82f6',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
                         fill: true,
