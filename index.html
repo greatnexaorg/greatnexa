@@ -2411,10 +2411,16 @@
 
                 const savedRefCode = localStorage.getItem('gn_ref_code') || null;
 
-                // Sign up clean call without triggering DB constraint mismatches
+                // Sign up call (Optimized to prevent infinite recursion and policy blocks)
                 const { data, error } = await _supabase.auth.signUp({ 
                     email, 
-                    password
+                    password,
+                    options: {
+                        data: {
+                            tier: chosenPlan,
+                            referred_by: savedRefCode
+                        }
+                    }
                 });
 
                 if(error) {
@@ -2428,7 +2434,7 @@
                                 email: email,
                                 tier: chosenPlan,
                                 referred_by: savedRefCode
-                            }]);
+                            }], { onConflict: 'id' });
                         } catch(profErr) {
                             console.log("Profile initialization managed by backend:", profErr);
                         }
@@ -2638,7 +2644,6 @@
         }
 
         function openPaymentModal(plan, usd, bdt) {
-            // Require login before payment check
             if (!currentUserEmail) {
                 alert("Please login or create an account first to upgrade your membership.");
                 openAuthModal('login');
