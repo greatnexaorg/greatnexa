@@ -2411,7 +2411,6 @@
 
                 const savedRefCode = localStorage.getItem('gn_ref_code') || null;
 
-                // Sign up call (Optimized to prevent infinite recursion and policy blocks)
                 const { data, error } = await _supabase.auth.signUp({ 
                     email, 
                     password,
@@ -2442,20 +2441,9 @@
 
                     if (savedRefCode) {
                         try {
-                            const { data: inviter } = await _supabase
-                                .from('user_profiles')
-                                .select('id, referral_count')
-                                .eq('referral_code', savedRefCode)
-                                .single();
-
-                            if (inviter) {
-                                await _supabase
-                                    .from('user_profiles')
-                                    .update({ referral_count: (inviter.referral_count || 0) + 1 })
-                                    .eq('id', inviter.id);
-                            }
+                            await _supabase.rpc('increment_referral', { ref_code: savedRefCode });
                         } catch (refErr) {
-                            console.error("Referral count auto-increment error:", refErr);
+                            console.error("Referral count increment error:", refErr);
                         }
                     }
 
