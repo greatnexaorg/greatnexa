@@ -20,6 +20,9 @@
         ::-webkit-scrollbar-track { background: #02040a; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        /* Click to copy style highlight */
+        .click-copy { cursor: pointer; transition: opacity 0.2s; }
+        .click-copy:hover { opacity: 0.8; text-decoration: underline dotted; }
     </style>
 </head>
 <body class="min-h-screen p-4 sm:p-6 max-w-7xl mx-auto flex flex-col justify-between space-y-6">
@@ -462,6 +465,16 @@
             }
         }
 
+        // Global Click to Copy helper function
+        function copyToClipboard(text, label = 'Text') {
+            if (!text || text === 'N/A') return;
+            navigator.clipboard.writeText(text).then(() => {
+                alert(`✔ Copied to clipboard:\n${text}`);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
         async function verifyAdminAccess() {
             try {
                 const { data: { session }, error: sessionErr } = await _supabase.auth.getSession();
@@ -473,14 +486,12 @@
                 const userEmail = (session.user.email || '').toLowerCase().trim();
                 const isWhitelisted = SUPER_ADMIN_WHITELIST.includes(userEmail);
 
-                // ID দিয়ে খোঁজা
                 let { data: profile } = await _supabase
                     .from('user_profiles')
                     .select('role, status')
                     .eq('id', session.user.id)
                     .maybeSingle();
 
-                // ID তে না পেলে Email দিয়ে খোঁজা
                 if (!profile && userEmail) {
                     const fallback = await _supabase
                         .from('user_profiles')
@@ -490,7 +501,6 @@
                     profile = fallback.data;
                 }
 
-                // যদি ইউজার সুপার এডমিন হন কিন্তু রোল ডাটাবেসে সিঙ্ক না থাকে, তবে অটো আপডেট
                 if (isWhitelisted && (!profile || profile.role !== 'admin')) {
                     await _supabase.from('user_profiles').upsert([{
                         id: session.user.id,
@@ -536,14 +546,12 @@
                 const userEmail = (data.user?.email || email).toLowerCase().trim();
                 const isWhitelisted = SUPER_ADMIN_WHITELIST.includes(userEmail);
 
-                // ID দিয়ে প্রোফাইল চেক
                 let { data: prof } = await _supabase
                     .from('user_profiles')
                     .select('role, status')
                     .eq('id', data.user.id)
                     .maybeSingle();
 
-                // Fallback: Email দিয়ে চেক
                 if (!prof && userEmail) {
                     const fb = await _supabase
                         .from('user_profiles')
@@ -553,7 +561,6 @@
                     prof = fb.data;
                 }
 
-                // সুপার অ্যাডমিন হলে ডাটাবেসে প্রোফাইল এনসিওর করা
                 if (isWhitelisted && (!prof || prof.role !== 'admin')) {
                     await _supabase.from('user_profiles').upsert([{
                         id: data.user.id,
@@ -743,6 +750,8 @@
 
                     const encodedOrder = encodeURIComponent(JSON.stringify(o));
                     const contactPhone = o.sender_phone || o.phone || o.whatsapp || 'N/A';
+                    const custEmail = o.email || o.customer_name || '';
+                    const trxIdVal = o.trx_id || '';
 
                     let statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 new-order-badge">PENDING</span>`;
                     if (isApproved) statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">APPROVED</span>`;
@@ -751,9 +760,12 @@
                     return `
                     <tr class="hover:bg-white/[0.02] transition ${isPending ? 'bg-amber-500/[0.04]' : ''}">
                         <td class="p-3.5 text-gray-400">${new Date(o.created_at).toLocaleDateString()}</td>
-                        <td class="p-3.5 text-white font-bold select-all">${o.email || o.customer_name}<br><span class="text-[10px] text-gray-400 font-normal">Phone: ${contactPhone}</span></td>
+                        <td class="p-3.5 text-white font-bold">
+                            <span class="click-copy text-blue-300 hover:underline" onclick="copyToClipboard('${custEmail}')" title="Click to copy email">${custEmail}</span><br>
+                            <span class="text-[10px] text-gray-400 font-normal click-copy hover:text-white" onclick="copyToClipboard('${contactPhone}')" title="Click to copy phone">Phone: ${contactPhone}</span>
+                        </td>
                         <td class="p-3.5 text-blue-400 font-bold">${o.product_name} (${o.price})</td>
-                        <td class="p-3.5 text-emerald-400 select-all font-bold">${o.trx_id}</td>
+                        <td class="p-3.5 text-emerald-400 font-bold click-copy hover:underline" onclick="copyToClipboard('${trxIdVal}')" title="Click to copy TrxID">${trxIdVal}</td>
                         <td class="p-3.5">${statusBadge}</td>
                         <td class="p-3.5 text-right space-x-1.5 whitespace-nowrap">
                             ${isPending ? `
@@ -818,7 +830,7 @@
 
                     return `
                     <tr class="hover:bg-white/[0.02] transition ${isBanned ? 'bg-rose-950/20' : ''}">
-                        <td class="p-3.5 font-bold text-white select-all">${displayEmail}</td>
+                        <td class="p-3.5 font-bold text-white click-copy hover:text-blue-400" onclick="copyToClipboard('${displayEmail}')" title="Click to copy email">${displayEmail}</td>
                         <td class="p-3.5">${tierBadge}</td>
                         <td class="p-3.5">${daysLeftText}</td>
                         <td class="p-3.5 uppercase text-[10px] text-blue-300 font-bold">${u.role || 'user'}</td>
@@ -882,6 +894,8 @@
 
                     const effectiveScore = paidCount + (freeCount * 0.25);
                     const isTargetAchieved = effectiveScore >= currentMilestoneGoal;
+                    const userEmail = r.email || 'N/A';
+                    const refCode = r.referral_code || 'N/A';
 
                     let targetBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-800 text-gray-400">${effectiveScore.toFixed(1)}/${currentMilestoneGoal} (Pending)</span>`;
                     
@@ -891,8 +905,8 @@
 
                     return `
                     <tr class="hover:bg-white/[0.02] transition ${isTargetAchieved ? 'bg-indigo-950/20' : ''}">
-                        <td class="p-3.5 font-bold text-white select-all">${r.email || 'N/A'}</td>
-                        <td class="p-3.5 text-blue-400 font-bold select-all">${r.referral_code || 'N/A'}</td>
+                        <td class="p-3.5 font-bold text-white click-copy hover:text-blue-400" onclick="copyToClipboard('${userEmail}')" title="Click to copy email">${userEmail}</td>
+                        <td class="p-3.5 text-blue-400 font-bold click-copy hover:underline" onclick="copyToClipboard('${refCode}')" title="Click to copy code">${refCode}</td>
                         <td class="p-3.5">
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">💎 ${paidCount} Paid</span>
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-800 text-gray-300 border border-white/5 ml-1">👥 ${freeCount} Free</span>
@@ -996,14 +1010,16 @@
                 const paidCount = user.paid_referral_count || 0;
                 const freeCount = Math.max(0, (user.referral_count || 0) - paidCount);
                 const isTargetHit = (paidCount + (freeCount * 0.25)) >= currentMilestoneGoal;
+                const uEmail = user.email || 'Anonymous';
+                const uCode = user.referral_code || 'N/A';
 
                 return `
                 <div class="flex items-center justify-between p-2 rounded-xl bg-[#091122] border ${isTargetHit ? 'border-amber-500/50 bg-amber-950/10' : 'border-white/5'} transition">
                     <div class="flex items-center gap-2 overflow-hidden">
                         ${rankBadge}
                         <div class="truncate">
-                            <span class="text-white font-bold text-xs truncate block">${user.email || 'Anonymous'}</span>
-                            <span class="text-[10px] text-gray-400">Code: <b class="text-blue-400">${user.referral_code || 'N/A'}</b> ${isTargetHit ? '⭐ <b class="text-emerald-400">Target Hit!</b>' : ''}</span>
+                            <span class="text-white font-bold text-xs truncate block click-copy hover:text-blue-400" onclick="copyToClipboard('${uEmail}')" title="Click to copy email">${uEmail}</span>
+                            <span class="text-[10px] text-gray-400">Code: <b class="text-blue-400 click-copy hover:underline" onclick="copyToClipboard('${uCode}')" title="Click to copy code">${uCode}</b> ${isTargetHit ? '⭐ <b class="text-emerald-400">Target Hit!</b>' : ''}</span>
                         </div>
                     </div>
                     <div class="text-right shrink-0">
@@ -1417,7 +1433,7 @@
             ticketDiv.innerHTML = data.map(t => `
                 <div class="p-3 bg-[#0b1324] border border-white/10 rounded-xl space-y-2 relative">
                     <div class="flex justify-between items-center pr-8">
-                        <p class="font-bold text-white text-xs">${t.subject} <span class="text-[10px] text-blue-400">(${t.email})</span></p>
+                        <p class="font-bold text-white text-xs">${t.subject} <span class="text-[10px] text-blue-400 click-copy hover:underline" onclick="copyToClipboard('${t.email}')" title="Click to copy email">(${t.email})</span></p>
                         <span class="px-2 py-0.5 rounded text-[10px] font-bold ${t.status === 'resolved' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">
                             ${(t.status || 'open').toUpperCase()}
                         </span>
