@@ -10,11 +10,11 @@ from supabase import create_client, Client
 # ==============================================================================
 RAW_URL = os.getenv("SUPABASE_URL")
 SUPABASE_URL = RAW_URL.strip() if RAW_URL else "https://esqhansnosejkqapuhoo.supabase.co"
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY") or os.getenv("SUPABASE_SECRET_KEY")
 
 try:
     if not SUPABASE_KEY:
-        raise ValueError("GitHub Secrets-এ SUPABASE_KEY পাওয়া যায়নি! দয়া করে সেটিংস চেক করুন।")
+        raise ValueError("SUPABASE_KEY বা SUPABASE_SECRET_KEY পাওয়া যায়নি! দয়া করে রেলওয়ে সেটিংস চেক করুন।")
 
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
     print("✔ GreatNexa Multi-Asset Institutional SMC Engine v8 Connected!")
@@ -83,15 +83,6 @@ def send_telegram_alert(signal):
             session.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": msg, "parse_mode": "Markdown"}, timeout=8)
     except Exception as e:
         print(f"[-] Telegram Alert Notification Error: {e}")
-
-def send_telegram_status(text):
-    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        return
-    try:
-        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-        session.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": text, "parse_mode": "Markdown"}, timeout=8)
-    except Exception:
-        pass
 
 # ==============================================================================
 # ৩. অটোমেটিক সাবস্ক্রিপশন ও পেমেন্ট প্রসেসর
@@ -330,8 +321,6 @@ def track_and_update_lifecycle(current_prices):
             if entry <= 0 or tp <= 0 or sl <= 0:
                 continue
 
-            # v8 Auto Profit-Lock ইঞ্জিন: প্রাইস 0.95R ছুঁলেই স্টপ-লস +0.25R প্রফিটে লক হবে!
-            # যেহেতু tp_price = entry +/- (risk * 1.85), তাই মূল 1R দূরত্ব = abs(tp - entry) / 1.85
             one_r_dist = abs(tp - entry) / 1.85
 
             hit_status = None
@@ -342,10 +331,8 @@ def track_and_update_lifecycle(current_prices):
                 if cur_price >= tp:
                     hit_status = "HIT_TP"
                 elif cur_price <= sl:
-                    # যদি স্টপ-লস ইতিমধ্যে এন্ট্রির উপরে (+0.25R প্রফিটে) লক করা থাকে, তবে এটি একটি উইনিং ট্রেড!
                     hit_status = "HIT_TP" if sl > entry else "HIT_SL"
                 elif cur_price >= be_trigger_price and sl < entry:
-                    # 0.95R ট্রিগার হয়েছে: ডাটাবেজে SL আপডেট করে +0.25R প্রফিটে লক করে দেওয়া
                     supabase.table("market_research").update({
                         "sl_price": float(locked_sl_price),
                         "mtf_alignment": f"Entry: ${fmt_price(entry)} | TP: ${fmt_price(tp)} | SL: ${fmt_price(locked_sl_price)} (🔒 +0.25R Locked)"
@@ -459,7 +446,6 @@ def _calc_dmi_adx(highs, lows, closes, period=14):
     return di_plus, di_minus, adx
 
 def _calc_supertrend_dir(highs, lows, closes, factor=2.8, period=10):
-    """Returns Pine Script ta.supertrend direction (-1 = Bullish, +1 = Bearish)"""
     atr = _calc_atr_series(highs, lows, closes, period)
     n = len(closes)
     final_up = [0.0] * n
@@ -487,7 +473,6 @@ def _calc_supertrend_dir(highs, lows, closes, factor=2.8, period=10):
     return st_dir
 
 def _calc_vwap_series(highs, lows, closes, volumes, timestamps_ms):
-    """Intraday UTC session-reset VWAP matching TradingView ta.vwap(hlc3)"""
     vwap = []
     cum_pv = 0.0
     cum_vol = 0.0
@@ -505,7 +490,6 @@ def _calc_vwap_series(highs, lows, closes, volumes, timestamps_ms):
     return vwap
 
 def fetch_ohlcv_candles(item, interval, limit=220):
-    """Binance এবং Yahoo Finance থেকে প্রো-গ্রেড OHLCV ক্যান্ডেল ফেচিং"""
     m_type = item['market_type']
     raw_tk = item.get('raw_ticker') or item['symbol'].replace("/", "")
     try:
@@ -549,7 +533,6 @@ def fetch_ohlcv_candles(item, interval, limit=220):
                     c_c.append(float(c))
                     c_v.append(float(v) if v and v > 0 else 1000.0)
 
-            # যদি ফরেক্স বা স্টকে 4h ক্যান্ডেল লাগে, তবে 1h ক্যান্ডেলগুলোকে ৪ ঘণ্টায় রিস্যাম্পল করে নেওয়া
             if interval == "4h" and len(c_c) >= 160:
                 r_ts, r_o, r_h, r_l, r_c, r_v = [], [], [], [], [], []
                 for idx in range(0, len(c_c) - 3, 4):
@@ -571,10 +554,6 @@ def fetch_ohlcv_candles(item, interval, limit=220):
         return None
 
 def evaluate_v8_exact_core(ltf_data, mtf_data, htf_data):
-    """
-    100% Exact Mathematical Translation of:
-    'GreatNexa Master Institutional Quant v8 (Pure Original)' Pine Script v6
-    """
     if not ltf_data or not mtf_data or not htf_data:
         return None
 
@@ -582,7 +561,6 @@ def evaluate_v8_exact_core(ltf_data, mtf_data, htf_data):
     if len(c) < 60 or len(mtf_data["close"]) < 30 or len(htf_data["close"]) < 40:
         return None
 
-    # ১. HTF (4H / D) Macro Bias & 36-Bar Dealing Range (non-repainting confirmed bar [-2])
     htf_c = htf_data["close"]
     htf_h = htf_data["high"]
     htf_l = htf_data["low"]
@@ -594,11 +572,9 @@ def evaluate_v8_exact_core(ltf_data, mtf_data, htf_data):
     htf_65_upper = htf_lo + (htf_hi - htf_lo) * 0.68
     htf_35_lower = htf_lo + (htf_hi - htf_lo) * 0.32
 
-    # ২. MTF (1H / 4H) SuperTrend(2.8, 10) Direction (confirmed bar [-2])
     mtf_st_dir_series = _calc_supertrend_dir(mtf_data["high"], mtf_data["low"], mtf_data["close"], factor=2.8, period=10)
     mtf_dir = mtf_st_dir_series[-2]
 
-    # ৩. LTF (15m / 4H) Core Quant Indicators
     ema_21 = _ema_series(c, 21)
     ema_50 = _ema_series(c, 50)
     ema_200 = _ema_series(c, 200)
@@ -610,11 +586,9 @@ def evaluate_v8_exact_core(ltf_data, mtf_data, htf_data):
     body_s = [abs(c[k] - o[k]) for k in range(len(c))]
     avg_body_s = _sma_series(body_s, 14)
 
-    # ৪. স্টেট-বেসড 24-Bar Order Block / FVG এবং 8-Bar Cooldown ট্র্যাকিং
     bull_zone_top, bull_zone_bot, bull_zone_bar = None, None, -100
     bear_zone_top, bear_zone_bot, bear_zone_bar = None, None, -100
 
-    # সর্বশেষ ক্লোজ হওয়া ক্যান্ডেল (idx = len(c) - 2) পর্যন্ত লুপ চালিয়ে হুবহু জোন ট্র্যাকিং
     target_idx = len(c) - 2
     start_idx = max(12, target_idx - 35)
 
@@ -640,13 +614,11 @@ def evaluate_v8_exact_core(ltf_data, mtf_data, htf_data):
                 bear_zone_top = l[i-2] if bear_fvg else (h[i-1] if c[i-1] > o[i-1] else h[i])
                 bear_zone_bar = i
 
-    # সর্বশেষ ক্লোজড ক্যান্ডেল (i = target_idx) এ সিগন্যাল মূল্যায়ন
     i = target_idx
     atr_val = atr_s[i]
     adx_val = adx_s[i]
     rvol_ok = v[i] >= vol_sma_s[i] * 0.85
 
-    # Choppy Market Blocker (ADX >= 19 & RVOL >= 0.85)
     if adx_val < 19.0 or not rvol_ok or atr_val <= 0:
         return None
 
@@ -662,7 +634,6 @@ def evaluate_v8_exact_core(ltf_data, mtf_data, htf_data):
     valid_bull_z = (bull_zone_top is not None) and (i > bull_zone_bar) and (i - bull_zone_bar <= 24) and (c[i] >= bull_zone_bot)
     valid_bear_z = (bear_zone_bot is not None) and (i > bear_zone_bar) and (i - bear_zone_bar <= 24) and (c[i] <= bear_zone_top)
 
-    # Recent 4-bar Liquidity Sweep of 10-bar Swing Low/High
     swept_lo_recent = any(l[k] < min(l[k-10:k]) for k in range(i-4, i+1))
     swept_hi_recent = any(h[k] > max(h[k-10:k]) for k in range(i-4, i+1))
     swing_lo_10 = min(l[i-10:i])
@@ -711,7 +682,6 @@ def evaluate_v8_exact_core(ltf_data, mtf_data, htf_data):
         lock_p = entry_p - (risk * 0.25)
         catalyst = "SMC Supply OB/FVG & Sweep" if smc_bear_tap else "Institutional VWAP/EMA21 Breakdown"
 
-    # Conviction Score (88 to 98)
     score = 90
     if adx_val >= 25: score += 3
     if v[i] >= vol_sma_s[i] * 1.25: score += 3
@@ -732,10 +702,6 @@ def evaluate_v8_exact_core(ltf_data, mtf_data, htf_data):
     }
 
 def generate_smc_institutional_signal(item, active_setups_map):
-    """
-    আপনার v8 স্ট্র্যাটেজির সবচেয়ে কার্যকর দুটি টাইমফ্রেমে (15m ও 4H) ক্যান্ডেল ফেচ করে
-    ১০০% আসল সিগন্যাল জেনারেট করে।
-    """
     sym = item['symbol']
     m_type = item['market_type']
     base_sector = item.get('sector', 'Core Market')
@@ -743,7 +709,6 @@ def generate_smc_institutional_signal(item, active_setups_map):
     vol = item['volume_m']
     now_iso = datetime.now(timezone.utc).isoformat()
 
-    # ক্যান্ডেল ডেটা ফেচিং (15m, 1h, 4h, 1d)
     c_15m = fetch_ohlcv_candles(item, "15m", limit=215)
     c_1h  = fetch_ohlcv_candles(item, "1h", limit=215)
     c_4h  = fetch_ohlcv_candles(item, "4h", limit=215)
@@ -751,7 +716,6 @@ def generate_smc_institutional_signal(item, active_setups_map):
 
     setups = []
 
-    # ১. 15m Master v8 Engine (Uses 15m LTF + 1H MTF + 4H HTF) -> Day / Intraday Engine
     res_15m = evaluate_v8_exact_core(c_15m, c_1h, c_4h)
     if res_15m:
         direction = res_15m["direction"]
@@ -783,7 +747,6 @@ def generate_smc_institutional_signal(item, active_setups_map):
                 "research_note": f"Master v8 (15m+1H+4H) {direction.upper()} কনফার্মড। 0.95R (${fmt_price(res_15m['be_trig'])}) ছুঁলেই SL +0.25R প্রফিটে লক হবে। R:R = 1:1.85"
             })
 
-    # ২. 4H Master v8 Engine (Uses 4H LTF + 1D MTF + 1D HTF) -> Swing Engine
     res_4h = evaluate_v8_exact_core(c_4h, c_1d, c_1d)
     if res_4h:
         direction = res_4h["direction"]
@@ -825,7 +788,7 @@ def run():
     print(f"[*] RUNNING GREATNEXA MASTER QUANT ENGINE v8: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
     print("=" * 80)
     
-    send_telegram_status("⚡ *GreatNexa Institutional Engine v8 Active & Scanning MTF Markets...*")
+    # স্ট্যাটাস মেসেজ পাঠানো সম্পূর্ণ বন্ধ করে দেওয়া হয়েছে
 
     process_automatic_subscriptions()
     cleanup_old_database_records()
@@ -838,21 +801,17 @@ def run():
     if not all_prices:
         return
 
-    # লাইফসাইকেল চেক (0.95R Profit-Lock এবং SL/TP হিট হলে সাথে সাথে আপডেট)
     active_setups_map = track_and_update_lifecycle(all_prices)
     crypto_setups, stock_setups, forex_setups = [], [], []
 
-    # টপ মোমেন্টাম ক্রিপ্টো স্ক্যানিং (টপ ৪০টি হাই-লিকুইডিটি পেয়ার)
     print("[*] Evaluating Master v8 Multi-Timeframe Strategy on Top Crypto Assets...")
     for c in sorted(crypto_prices.values(), key=lambda x: (abs(x['change']) * x['volume_m']), reverse=True)[:40]:
         crypto_setups.extend(generate_smc_institutional_signal(c, active_setups_map))
 
-    # টপ মোমেন্টাম ইউএস স্টকস স্ক্যানিং (টপ ২৫টি)
     print("[*] Evaluating Master v8 Multi-Timeframe Strategy on Top US Stocks...")
     for s in sorted(stocks_prices.values(), key=lambda x: abs(x['change']), reverse=True)[:25]:
         stock_setups.extend(generate_smc_institutional_signal(s, active_setups_map))
 
-    # টপ মোমেন্টাম ফরেক্স ও গোল্ড স্ক্যানিং (টপ ২৫টি)
     print("[*] Evaluating Master v8 Multi-Timeframe Strategy on Top Forex & Commodities...")
     for f in sorted(forex_prices.values(), key=lambda x: abs(x['change']), reverse=True)[:25]:
         forex_setups.extend(generate_smc_institutional_signal(f, active_setups_map))
@@ -866,7 +825,6 @@ def run():
         except Exception as e:
             print(f"[-] Batch insert error: {e}")
 
-        # টেলিগ্রাম অ্যালার্ট ফিল্টার (সেরা সিগন্যাল কিউরেশন)
         top_telegram_crypto = sorted([x for x in crypto_setups if x['score'] >= 90], key=lambda x: x['score'], reverse=True)[:4]
         top_telegram_stocks = sorted([x for x in stock_setups if x['score'] >= 90], key=lambda x: x['score'], reverse=True)[:2]
         top_telegram_forex = sorted([x for x in forex_setups if x['score'] >= 90], key=lambda x: x['score'], reverse=True)[:2]
