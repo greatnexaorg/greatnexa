@@ -456,8 +456,11 @@
           <button type="button" id="modal-collect-due-btn" onclick="collectDueFromPreview()" class="hidden px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs sm:text-sm font-bold shadow flex items-center gap-1.5 transition">
             <i class="fa-solid fa-hand-holding-dollar"></i> বাকি জমা নিন
           </button>
-          <button type="button" onclick="shareActiveInvoiceWhatsApp()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold shadow flex items-center gap-1.5 transition">
-            <i class="fa-brands fa-whatsapp text-base"></i> WhatsApp মেমো
+          <button type="button" id="modal-wa-memo-btn" onclick="shareActiveInvoiceWhatsApp()" class="hidden px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold shadow items-center gap-1.5 transition">
+            <i class="fa-brands fa-whatsapp text-base"></i> WhatsApp বাকি রিমাইন্ডার
+          </button>
+          <button type="button" id="modal-email-memo-btn" onclick="shareActiveInvoiceEmail()" class="hidden px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-bold shadow items-center gap-1.5 transition">
+            <i class="fa-solid fa-envelope text-sm"></i> Email বাকি রিমাইন্ডার
           </button>
           <button onclick="triggerPrintWithFormat()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs sm:text-sm font-bold shadow-lg flex items-center gap-2 transition">
             <i class="fa-solid fa-print"></i> প্রিন্ট / PDF সেভ করুন
@@ -539,6 +542,7 @@
                   </span>
                   <h2 id="pad-client-name" class="text-sm font-extrabold text-slate-900 leading-tight">Client Name</h2>
                   <p id="pad-client-phone" class="text-[10.5px] font-semibold text-slate-700 mt-0.5"></p>
+                  <p id="pad-client-email" class="text-[10px] font-semibold text-indigo-700 hidden"></p>
                   <p id="pad-client-address" class="text-[10px] text-slate-600"></p>
                 </div>
               </div>
@@ -963,8 +967,7 @@
                   </select>
                 </div>
               </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-4 gap-3.5">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
                 <div>
                   <label class="block text-xs font-bold text-slate-700 mb-1">ক্লায়েন্টের নাম *</label>
                   <input type="text" id="bill-client-name" required oninput="checkCustomerPreviousDue()" placeholder="ক্লায়েন্টের নাম" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-medium" />
@@ -972,6 +975,14 @@
                 <div>
                   <label class="block text-xs font-bold text-slate-700 mb-1">মোবাইল নম্বর *</label>
                   <input type="text" id="bill-client-phone" required oninput="checkCustomerPreviousDue()" placeholder="017XX-XXXXXX" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-medium" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-emerald-700 mb-1"><i class="fa-brands fa-whatsapp mr-1"></i>WhatsApp নম্বর (ঐচ্ছিক)</label>
+                  <input type="text" id="bill-client-whatsapp" placeholder="খালি রাখলে মোবাইল নম্বর ধরবে" class="w-full px-3 py-2 rounded-xl border border-emerald-200 bg-emerald-50/30 text-sm font-medium" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-indigo-700 mb-1"><i class="fa-solid fa-envelope mr-1"></i>Gmail / Email (ঐচ্ছিক)</label>
+                  <input type="email" id="bill-client-email" placeholder="client@gmail.com" class="w-full px-3 py-2 rounded-xl border border-indigo-200 bg-indigo-50/30 text-sm font-medium" />
                 </div>
                 <div>
                   <label class="block text-xs font-bold text-slate-700 mb-1">ঠিকানা / কোম্পানি</label>
@@ -2230,7 +2241,7 @@
 
       const clientMap = new Map();
       appState.invoices.forEach(inv => {
-        if (inv.clientName) clientMap.set(inv.clientPhone || inv.clientName, { name: inv.clientName, phone: inv.clientPhone || '', address: inv.clientAddress || '' });
+        if (inv.clientName) clientMap.set(inv.clientPhone || inv.clientName, { name: inv.clientName, phone: inv.clientPhone || '', whatsapp: inv.clientWhatsapp || '', email: inv.clientEmail || '', address: inv.clientAddress || '' });
       });
       document.getElementById('saved-client-selector').innerHTML = `<option value="">-- সিলেক্ট করুন (${clientMap.size}) --</option>` +
         Array.from(clientMap.entries()).map(([k, c]) => `<option value="${escapeHTML(k)}">${escapeHTML(c.name)} (${escapeHTML(c.phone)})</option>`).join('');
@@ -2257,6 +2268,8 @@
       if (found) {
         document.getElementById('bill-client-name').value = found.clientName;
         document.getElementById('bill-client-phone').value = found.clientPhone;
+        document.getElementById('bill-client-whatsapp').value = found.clientWhatsapp || '';
+        document.getElementById('bill-client-email').value = found.clientEmail || '';
         document.getElementById('bill-client-address').value = found.clientAddress;
         checkCustomerPreviousDue();
       }
@@ -2474,6 +2487,7 @@
       draftBillItems = []; userEditedPaidManually = false;
       document.getElementById('editing-invoice-id').value = '';
       document.getElementById('bill-client-name').value = ''; document.getElementById('bill-client-phone').value = '';
+      document.getElementById('bill-client-whatsapp').value = ''; document.getElementById('bill-client-email').value = '';
       document.getElementById('bill-client-address').value = ''; document.getElementById('bill-due-date').value = '';
       document.getElementById('bill-emi-plan').value = ''; document.getElementById('bill-discount-input').value = 0;
       document.getElementById('bill-vat-input').value = 0; document.getElementById('bill-advance-input').value = 0;
@@ -2494,6 +2508,8 @@
       const deliveryStatus = document.getElementById('bill-delivery-status').value;
       const clientName = document.getElementById('bill-client-name').value.trim();
       const clientPhone = document.getElementById('bill-client-phone').value.trim();
+      const clientWhatsapp = document.getElementById('bill-client-whatsapp').value.trim();
+      const clientEmail = document.getElementById('bill-client-email').value.trim();
       const clientAddress = document.getElementById('bill-client-address').value.trim();
       const rawPayMethod = document.getElementById('bill-pay-method').value;
       const customPayMethod = document.getElementById('bill-pay-method-custom').value.trim();
@@ -2524,7 +2540,7 @@
 
       const invoiceObj = {
         id: editId || ('inv-' + Date.now()),
-        invoiceNo, date, dueDate, emiPlan, clientName, clientPhone, clientAddress,
+        invoiceNo, date, dueDate, emiPlan, clientName, clientPhone, clientWhatsapp, clientEmail, clientAddress,
         items: JSON.parse(JSON.stringify(draftBillItems)),
         subtotal, discount, vatPercent, vatAmount, grandTotal,
         advanceUsed, paidAmount: effectivePaid, changeAmount, dueAmount,
@@ -2573,6 +2589,8 @@
       document.getElementById('editing-invoice-id').value = '';
       document.getElementById('bill-client-name').value = inv.clientName || '';
       document.getElementById('bill-client-phone').value = inv.clientPhone || '';
+      document.getElementById('bill-client-whatsapp').value = inv.clientWhatsapp || '';
+      document.getElementById('bill-client-email').value = inv.clientEmail || '';
       document.getElementById('bill-client-address').value = inv.clientAddress || '';
       checkCustomerPreviousDue();
       draftBillItems = JSON.parse(JSON.stringify(inv.items || []));
@@ -2591,6 +2609,7 @@
       document.getElementById('bill-due-date').value = inv.dueDate || ''; document.getElementById('bill-emi-plan').value = inv.emiPlan || '';
       document.getElementById('bill-delivery-status').value = inv.deliveryStatus || 'Delivered';
       document.getElementById('bill-client-name').value = inv.clientName; document.getElementById('bill-client-phone').value = inv.clientPhone;
+      document.getElementById('bill-client-whatsapp').value = inv.clientWhatsapp || ''; document.getElementById('bill-client-email').value = inv.clientEmail || '';
       document.getElementById('bill-client-address').value = inv.clientAddress; document.getElementById('bill-discount-input').value = inv.discount || 0;
       document.getElementById('bill-vat-input').value = inv.vatPercent || 0; document.getElementById('bill-advance-input').value = inv.advanceUsed || 0;
       document.getElementById('bill-paid-input').value = inv.paidAmount || 0;
@@ -2815,10 +2834,27 @@
       badgeEl.className = `inline-block px-2.5 py-0.5 rounded-full text-[9px] font-extrabold whitespace-nowrap ${status.badgeClass}`;
 
       const dueBtn = document.getElementById('modal-collect-due-btn');
-      Number(inv.dueAmount) > 0 && !inv._isQuote ? (dueBtn.classList.remove('hidden'), dueBtn.classList.add('flex')) : (dueBtn.classList.add('hidden'), dueBtn.classList.remove('flex'));
+      const waBtn = document.getElementById('modal-wa-memo-btn');
+      const emailBtn = document.getElementById('modal-email-memo-btn');
+      const hasOptionalDue = Number(inv.dueAmount) > 0 && !inv._isQuote;
+      const hasOptionalWhatsapp = Boolean((inv.clientWhatsapp || '').trim());
+      const hasOptionalEmail = Boolean((inv.clientEmail || '').trim());
+
+      hasOptionalDue ? (dueBtn.classList.remove('hidden'), dueBtn.classList.add('flex')) : (dueBtn.classList.add('hidden'), dueBtn.classList.remove('flex'));
+      (hasOptionalDue && hasOptionalWhatsapp) ? (waBtn.classList.remove('hidden'), waBtn.classList.add('flex')) : (waBtn.classList.add('hidden'), waBtn.classList.remove('flex'));
+      (hasOptionalDue && hasOptionalEmail) ? (emailBtn.classList.remove('hidden'), emailBtn.classList.add('flex')) : (emailBtn.classList.add('hidden'), emailBtn.classList.remove('flex'));
 
       document.getElementById('pad-client-name').textContent = inv.clientName;
-      document.getElementById('pad-client-phone').innerHTML = `<i class="fa-solid fa-phone text-blue-600 mr-1.5 text-[9.5px]"></i>${escapeHTML(inv.clientPhone)}`;
+      const waLabel = inv.clientWhatsapp && inv.clientWhatsapp !== inv.clientPhone ? ` • WA: ${escapeHTML(inv.clientWhatsapp)}` : '';
+      document.getElementById('pad-client-phone').innerHTML = `<i class="fa-solid fa-phone text-blue-600 mr-1.5 text-[9.5px]"></i>${escapeHTML(inv.clientPhone)}${waLabel}`;
+      const padEmailEl = document.getElementById('pad-client-email');
+      if (inv.clientEmail) {
+        padEmailEl.innerHTML = `<i class="fa-solid fa-envelope text-indigo-600 mr-1.5 text-[9.5px]"></i>${escapeHTML(inv.clientEmail)}`;
+        padEmailEl.classList.remove('hidden');
+      } else {
+        padEmailEl.textContent = '';
+        padEmailEl.classList.add('hidden');
+      }
       document.getElementById('pad-client-address').innerHTML = `<i class="fa-solid fa-location-dot text-blue-600 mr-1.5 text-[9.5px]"></i>${escapeHTML(inv.clientAddress || 'Bangladesh')}`;
       document.getElementById('pad-pay-method').textContent = inv.paymentMethod;
       document.getElementById('pad-delivery-status-val').textContent = inv.deliveryStatus || 'Delivered';
@@ -2998,20 +3034,57 @@
 
     function collectDueFromPreview() { if (activePrintInvoiceId) openDueModal(activePrintInvoiceId); }
 
+    function buildInvoiceShareMessage(inv) {
+      const s = appState.settings;
+      const dueAmt = Number(inv.dueAmount) || 0;
+      const itemLines = (inv.items || []).map((it, idx) => `${idx + 1}. ${it.name} (x${it.qty}) - ${formatBDT(it.total)}`).join('\n');
+      let msg = `আসসালামু আলাইকুম ${inv.clientName},\n*${s.companyName}* — Digital Invoice / Cash Memo\nInvoice No: *${inv.invoiceNo}* (${inv.date})\n\nবিবরণ:\n${itemLines}\n\nসর্বমোট বিল: *${formatBDT(inv.grandTotal)}*\nজমা: *${formatBDT(inv.paidAmount)}*`;
+      if (dueAmt > 0 && !inv._isQuote) {
+        msg += `\nবকেয়া (Due): *${formatBDT(dueAmt)}*${inv.dueDate ? ` (পরিশোধের তারিখ: ${inv.dueDate})` : ''}\n\nআপনার উক্ত ইনভয়েস বাবদ *${formatBDT(dueAmt)}* বকেয়া রয়েছে। অনুগ্রহ করে নিচের মাধ্যমে পরিশোধ করার অনুরোধ রইল:\n${s.paymentInfo}`;
+      } else {
+        msg += `\nবকেয়া (Due): *৳ 0* (সম্পূর্ণ পরিশোধিত)`;
+      }
+      msg += `\n\nধন্যবাদান্তে,\n${s.companyName} (${s.phone})`;
+      return msg;
+    }
+
     function shareActiveInvoiceWhatsApp() {
       const inv = appState.invoices.find(i => i.id === activePrintInvoiceId);
-      if (!inv) return;
-      const rawPhone = String(inv.clientPhone || '').replace(/[^0-9]/g, '');
+      if (!inv || !(inv.clientWhatsapp || '').trim() || Number(inv.dueAmount) <= 0) return;
+      const rawPhone = String(inv.clientWhatsapp).replace(/[^0-9]/g, '');
       const waPhone = rawPhone.length >= 10 ? (rawPhone.startsWith('88') ? rawPhone : '88' + rawPhone) : '';
-      const itemLines = (inv.items || []).map((it, idx) => `${idx + 1}. ${it.name} (x${it.qty}) - ${formatBDT(it.total)}`).join('\n');
-      const msg = `*${appState.settings.companyName}* — Digital Invoice\nInvoice: *${inv.invoiceNo}* (${inv.date})\nClient: ${inv.clientName}\n${itemLines}\nGrand Total: *${formatBDT(inv.grandTotal)}*\nPaid: *${formatBDT(inv.paidAmount)}*\nDue: *${formatBDT(inv.dueAmount)}*`;
-      window.open(waPhone ? `https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+      if (!waPhone) { showToast('সঠিক WhatsApp নম্বর দেওয়া নেই!', 'error'); return; }
+      const msg = buildInvoiceShareMessage(inv);
+      window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function shareActiveInvoiceEmail() {
+      const inv = appState.invoices.find(i => i.id === activePrintInvoiceId);
+      if (!inv || !(inv.clientEmail || '').trim() || Number(inv.dueAmount) <= 0) return;
+      const subject = `Due Payment Reminder (${inv.invoiceNo}) - ${appState.settings.companyName}`;
+      const body = buildInvoiceShareMessage(inv).replace(/\*/g, '');
+      const toEmail = encodeURIComponent(inv.clientEmail.trim());
+      window.open(`mailto:${toEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
+    }
+
+    function shareActiveInvoiceEmail() {
+      const inv = appState.invoices.find(i => i.id === activePrintInvoiceId);
+      if (!inv) return;
+      const dueAmt = Number(inv.dueAmount) || 0;
+      const subject = dueAmt > 0
+        ? `Invoice & Due Payment Reminder (${inv.invoiceNo}) - ${appState.settings.companyName}`
+        : `Digital Invoice / Cash Memo (${inv.invoiceNo}) - ${appState.settings.companyName}`;
+      const body = buildInvoiceShareMessage(inv).replace(/\*/g, '');
+      const toEmail = encodeURIComponent(inv.clientEmail || '');
+      const mailtoUrl = `mailto:${toEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(mailtoUrl, '_blank');
     }
 
     function sendWhatsAppReminder(invoiceId) {
       const inv = appState.invoices.find(i => i.id === invoiceId);
       if (!inv) return;
-      const rawPhone = String(inv.clientPhone || '').replace(/[^0-9]/g, '');
+      const targetNumber = inv.clientWhatsapp || inv.clientPhone || '';
+      const rawPhone = String(targetNumber).replace(/[^0-9]/g, '');
       const waPhone = rawPhone.length >= 10 ? (rawPhone.startsWith('88') ? rawPhone : '88' + rawPhone) : '';
       const msg = `আসসালামু আলাইকুম ${inv.clientName},\n*${appState.settings.companyName}*-এ আপনার ইনভয়েস *${inv.invoiceNo}* (তারিখ: ${inv.date}) বাবদ *${formatBDT(inv.dueAmount)}* বকেয়া রয়েছে। অনুগ্রহ করে পরিশোধ করার অনুরোধ রইল। ধন্যবাদ। (${appState.settings.phone})`;
       window.open(waPhone ? `https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
