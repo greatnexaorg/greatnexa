@@ -69,9 +69,10 @@
     }
 
     @media print {
-- {
+      *, *::before, *::after {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+        color-adjust: exact !important;
         box-sizing: border-box !important;
       }
       html, body {
@@ -81,6 +82,34 @@
         margin: 0 !important;
         padding: 0 !important;
         overflow: visible !important;
+      }
+      #printable-invoice-sheet header {
+        background-color: #020617 !important;
+        color: #ffffff !important;
+      }
+      #printable-invoice-sheet thead tr {
+        background: linear-gradient(to right, #0f172a, #1e3a8a, #155e75) !important;
+        background-color: #0f172a !important;
+        color: #ffffff !important;
+      }
+      #printable-invoice-sheet #pad-financial-box > div.bg-gradient-to-r {
+        background: linear-gradient(to right, #0f172a, #1e3a8a, #155e75) !important;
+        background-color: #0f172a !important;
+        color: #ffffff !important;
+      }
+      #printable-invoice-sheet footer > div:last-child {
+        background: linear-gradient(to right, #020617, #172554, #164e63) !important;
+        background-color: #020617 !important;
+        color: #a5f3fc !important;
+      }
+      #printable-invoice-sheet #pad-pay-method {
+        background-color: #2563eb !important;
+        color: #ffffff !important;
+      }
+      #printable-invoice-sheet #pad-doc-type-badge {
+        background: linear-gradient(to right, #22d3ee, #3b82f6) !important;
+        background-color: #22d3ee !important;
+        color: #020617 !important;
       }
       body > div:not(#invoice-print-modal):not(#statement-print-modal):not(#sticker-print-modal) {
         display: none !important;
