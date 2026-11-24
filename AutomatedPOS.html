@@ -1,0 +1,2856 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GreatNexa — Automated POS, Billing & Sales Dashboard</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Hind Siliguri for crisp Bengali + English typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Hind Siliguri', 'sans-serif'],
+            bengali: ['Hind Siliguri', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            gn: {
+              navy: '#0b132b',
+              dark: '#0f172a',
+              slate: '#1e293b',
+              blue: '#1d4ed8',
+              cyan: '#06b6d4',
+              glow: '#38bdf8',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', 'Hind Siliguri', sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Thermal 80mm Receipt Mode Styling */
+    .thermal-mode #printable-invoice-sheet {
+      max-width: 80mm !important;
+      width: 80mm !important;
+      padding: 4mm !important;
+      margin: 0 auto !important;
+      font-size: 11px !important;
+    }
+    .thermal-mode .pad-grid-2col {
+      grid-template-columns: 1fr !important;
+      gap: 6px !important;
+    }
+    .thermal-mode .pad-summary-grid {
+      grid-template-columns: 1fr !important;
+      gap: 10px !important;
+    }
+    .thermal-mode .pad-hide-thermal {
+      display: none !important;
+    }
+    .thermal-mode #pad-company-name {
+      font-size: 16px !important;
+    }
+
+    /* Print Stylesheet: Prints ONLY the active A4 Invoice Pad or 80mm Thermal Receipt */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #invoice-print-modal,
+      #invoice-print-modal * {
+        visibility: visible !important;
+      }
+      #invoice-print-modal {
+        position: fixed !important;
+        inset: 0 !important;
+        background: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+        z-index: 99999 !important;
+      }
+      #invoice-modal-wrapper {
+        box-shadow: none !important;
+        border: none !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      #printable-invoice-sheet {
+        box-shadow: none !important;
+        border: none !important;
+      }
+      body.print-thermal #printable-invoice-sheet {
+        width: 80mm !important;
+        max-width: 80mm !important;
+        padding: 3mm !important;
+        margin: 0 auto !important;
+      }
+      body.print-thermal @page {
+        size: 80mm auto;
+        margin: 0;
+      }
+      body:not(.print-thermal) #printable-invoice-sheet {
+        padding: 10mm !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      body:not(.print-thermal) @page {
+        size: A4;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-cyan-500 selection:text-white">
+
+  <!-- Toast Notification Container (Replaces alert()) -->
+  <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Custom Confirmation Modal (Replaces confirm()) -->
+  <div id="confirm-modal" class="fixed inset-0 z-[90] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200 animate-fade-in">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 id="confirm-title" class="text-lg font-bold text-slate-900">নিশ্চিত করুন (Confirm)</h3>
+      </div>
+      <p id="confirm-message" class="text-sm text-slate-600 mb-6">আপনি কি নিশ্চিতভাবে এটি করতে চান?</p>
+      <div class="flex justify-end gap-3">
+        <button id="confirm-cancel-btn" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">বাতিল (Cancel)</button>
+        <button id="confirm-ok-btn" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 transition shadow-sm">নিশ্চিত (Yes)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Collect Due / বাকি আদায় Modal -->
+  <div id="collect-due-modal" class="fixed inset-0 z-[85] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+        <div>
+          <h3 class="text-lg font-bold text-slate-900">বাকি টাকা আদায় (Collect Due)</h3>
+          <p id="due-modal-inv-label" class="text-xs text-cyan-600 font-semibold"></p>
+        </div>
+        <button onclick="closeDueModal()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="space-y-4">
+        <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200 flex justify-between items-center">
+          <div>
+            <p class="text-xs text-slate-500">ক্লায়েন্ট (Client)</p>
+            <p id="due-modal-client" class="text-sm font-bold text-slate-800">-</p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs text-rose-500 font-medium">বর্তমান বাকি (Current Due)</p>
+            <p id="due-modal-amount" class="text-lg font-extrabold text-rose-600">৳ 0</p>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">জমা টাকার পরিমাণ (Amount Received ৳) *</label>
+          <input type="number" id="due-collect-input" min="1" step="any" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none font-bold text-slate-900" placeholder="পরিমাণ লিখুন..." />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">পেমেন্ট মাধ্যম (Payment Method)</label>
+          <select id="due-collect-method" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-cyan-500 outline-none text-sm font-medium bg-white">
+            <option value="Cash (নগদ)">Cash (নগদ)</option>
+            <option value="bKash">bKash</option>
+            <option value="Nagad">Nagad</option>
+            <option value="Islami Bank Cellfin">Islami Bank Cellfin</option>
+            <option value="Binance Pay">Binance Pay</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex justify-end gap-3 mt-6">
+        <button onclick="closeDueModal()" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">বন্ধ করুন</button>
+        <button onclick="submitDueCollection()" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 shadow-md transition">
+          <i class="fa-solid fa-check-circle mr-1.5"></i> জমা সেভ করুন
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Print-Ready Invoice Pad Modal -->
+  <div id="invoice-print-modal" class="fixed inset-0 z-[80] hidden items-start justify-center bg-slate-900/75 backdrop-blur-sm overflow-y-auto p-3 sm:p-6">
+    <div id="invoice-modal-wrapper" class="bg-slate-100 rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden my-auto">
+      <!-- Top Action Bar (Hidden on Print) -->
+      <div class="no-print bg-slate-900 text-white px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span class="font-semibold text-sm mr-2">ইনভয়েস / মেমো প্রিভিউ</span>
+          <div class="inline-flex rounded-xl bg-slate-800 p-1 border border-slate-700">
+            <button type="button" id="btn-format-a4" onclick="setInvoicePrintFormat('A4')" class="px-3 py-1 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950 transition">
+              <i class="fa-regular fa-file-lines mr-1"></i> A4 Pad
+            </button>
+            <button type="button" id="btn-format-thermal" onclick="setInvoicePrintFormat('THERMAL')" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">
+              <i class="fa-solid fa-receipt mr-1"></i> 80mm Thermal
+            </button>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="triggerPrintWithFormat()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs sm:text-sm font-bold shadow-lg flex items-center gap-2 transition">
+            <i class="fa-solid fa-print"></i> প্রিন্ট / PDF সেভ করুন
+          </button>
+          <button onclick="closeInvoiceModal()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold transition">
+            <i class="fa-solid fa-xmark mr-1"></i> বন্ধ করুন
+          </button>
+        </div>
+      </div>
+
+      <!-- Actual Printable Invoice Pad / Thermal Receipt -->
+      <div id="printable-invoice-sheet" class="bg-white p-6 sm:p-10 text-slate-900">
+        <!-- Pad Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-5 border-b-2 border-slate-900">
+          <div class="flex items-center gap-3.5">
+            <div id="pad-logo-container" class="w-16 h-16 rounded-2xl bg-slate-950 p-2 flex items-center justify-center shadow-md shrink-0 border border-cyan-500/30">
+              <!-- Logo rendered dynamically -->
+            </div>
+            <div>
+              <h1 id="pad-company-name" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-950">GreatNexa</h1>
+              <p id="pad-company-tagline" class="text-xs font-semibold text-cyan-700 uppercase tracking-wider mt-0.5">Digital Solutions | Automation | Courses | Trading Tools</p>
+              <p id="pad-company-contact" class="text-xs text-slate-600 mt-1">
+                <i class="fa-solid fa-globe text-cyan-600 mr-1"></i> https://www.greatnexa.com/ &nbsp;|&nbsp;
+                <i class="fa-solid fa-phone text-cyan-600 mr-1"></i> 01870-978004
+              </p>
+              <p id="pad-company-address" class="text-xs text-slate-500">Kushtia, Bangladesh &nbsp;|&nbsp; hridoykhan7581@gmail.com</p>
+            </div>
+          </div>
+
+          <div class="sm:text-right w-full sm:w-auto bg-slate-50 sm:bg-transparent p-3 sm:p-0 rounded-xl border sm:border-0 border-slate-200">
+            <div class="inline-block px-3 py-1 rounded-lg bg-slate-900 text-cyan-400 text-xs font-extrabold tracking-widest uppercase mb-1.5">
+              INVOICE / CASH MEMO
+            </div>
+            <p class="text-sm font-bold text-slate-800">Invoice No: <span id="pad-inv-no" class="text-blue-700 font-mono">GN-2026-001</span></p>
+            <p class="text-xs text-slate-600 mt-0.5">Date: <span id="pad-inv-date" class="font-semibold">24 Nov 2026</span></p>
+            <div class="mt-1.5">
+              <span id="pad-status-badge" class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                PAID (নগদ পরিশোধ)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Client & Payment Info Grid -->
+        <div class="pad-grid-2col grid grid-cols-1 sm:grid-cols-2 gap-4 my-5">
+          <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200">
+            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">BILL TO (ক্লায়েন্টের বিবরণ)</p>
+            <h3 id="pad-client-name" class="text-base font-bold text-slate-900">Client Name</h3>
+            <p id="pad-client-phone" class="text-xs font-semibold text-slate-700 mt-1"><i class="fa-solid fa-phone mr-1.5 text-slate-400"></i> 01700-000000</p>
+            <p id="pad-client-address" class="text-xs text-slate-600 mt-0.5"><i class="fa-solid fa-location-dot mr-1.5 text-slate-400"></i> Address</p>
+            <p id="pad-prev-due-line" class="text-[11px] font-bold text-amber-700 mt-1.5 hidden"></p>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200 flex flex-col justify-between">
+            <div>
+              <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">PAYMENT DETAILS (পেমেন্ট তথ্য)</p>
+              <p class="text-xs font-semibold text-slate-800">Method: <span id="pad-pay-method" class="text-blue-700 font-bold">bKash</span></p>
+              <p id="pad-pay-accounts" class="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                bKash / Nagad: 01870-978004 | Cellfin: 01870-978004 | Binance UID: 520327779
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Line Items Table -->
+        <div class="overflow-x-auto rounded-xl border border-slate-300">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-900 text-white text-xs uppercase tracking-wider">
+                <th class="py-2.5 px-3 font-semibold w-10 text-center">#</th>
+                <th class="py-2.5 px-3 font-semibold">Item / Description</th>
+                <th class="py-2.5 px-3 font-semibold pad-hide-thermal">Model</th>
+                <th class="py-2.5 px-3 font-semibold text-center">Qty</th>
+                <th class="py-2.5 px-3 font-semibold text-right pad-hide-thermal">Rate</th>
+                <th class="py-2.5 px-3 font-semibold text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody id="pad-items-tbody" class="divide-y divide-slate-200 text-sm">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Totals & Notes Section -->
+        <div class="pad-summary-grid grid grid-cols-1 sm:grid-cols-12 gap-6 mt-5 items-start">
+          <div class="sm:col-span-7 space-y-3">
+            <div class="bg-cyan-50/60 border border-cyan-200/80 rounded-xl p-3.5">
+              <p class="text-xs font-bold text-slate-800 mb-1">শর্তাবলী ও নোট (Terms & Notes):</p>
+              <p id="pad-terms-text" class="text-xs text-slate-600 leading-relaxed">
+                ১. পেমেন্ট নিশ্চিত হওয়ার পর ডিজিটাল প্রোডাক্ট/সার্ভিস ডেলিভারি প্রদান করা হয়।<br>
+                ২. ভবিষ্যতে যেকোনো সাপোর্ট বা আপডেটের জন্য ইনভয়েস নম্বর সংরক্ষণ করুন।
+              </p>
+            </div>
+            <p id="pad-custom-note" class="text-xs italic text-slate-500"></p>
+          </div>
+
+          <div class="sm:col-span-5 bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-1.5 text-sm">
+            <div class="flex justify-between text-slate-600">
+              <span>Subtotal (মোট):</span>
+              <span id="pad-subtotal" class="font-semibold text-slate-900">৳ 0</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Discount (ছাড়):</span>
+              <span id="pad-discount" class="font-semibold text-emerald-600">- ৳ 0</span>
+            </div>
+            <div id="pad-vat-row" class="flex justify-between text-slate-600 hidden">
+              <span id="pad-vat-label">VAT / Tax:</span>
+              <span id="pad-vat-amount" class="font-semibold text-slate-800">+ ৳ 0</span>
+            </div>
+            <div class="flex justify-between text-base font-extrabold text-slate-950 pt-2 border-t border-slate-300">
+              <span>Grand Total (সর্বমোট):</span>
+              <span id="pad-grand-total">৳ 0</span>
+            </div>
+            <div class="flex justify-between text-emerald-700 font-bold pt-1">
+              <span>Paid / জমা দিল:</span>
+              <span id="pad-paid-amount">৳ 0</span>
+            </div>
+            <div id="pad-change-row" class="flex justify-between text-sky-700 font-bold hidden">
+              <span>Change / ফেরত:</span>
+              <span id="pad-change-amount">৳ 0</span>
+            </div>
+            <div class="flex justify-between text-rose-600 font-extrabold pt-1 border-t border-dashed border-slate-300">
+              <span>Balance Due (বাকি):</span>
+              <span id="pad-due-amount">৳ 0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Auto / Uploaded Seal & Signature Footer -->
+        <div class="mt-10 pt-5 flex flex-wrap justify-between items-end gap-6 text-xs text-slate-600">
+          <div class="text-center">
+            <div class="h-14 flex items-end justify-center pb-1"></div>
+            <div class="w-36 border-t border-slate-400 pt-1.5 font-semibold">Client Signature (ক্রেতার স্বাক্ষর)</div>
+          </div>
+
+          <div class="flex items-end gap-5 ml-auto">
+            <div id="pad-seal-box" class="flex flex-col items-center">
+              <div id="pad-seal-visual" class="w-24 h-24 flex items-center justify-center"></div>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Company Seal / সিল</span>
+            </div>
+
+            <div id="pad-sign-box" class="text-center">
+              <div id="pad-sign-visual" class="h-14 w-44 flex items-center justify-center"></div>
+              <div class="w-44 border-t border-slate-900 pt-1.5 font-semibold text-slate-900">
+                <span id="pad-signatory-name">Md. Hriday Ahammad</span>
+                <span class="block text-[10px] font-normal text-slate-500">Authorized Signature / স্বাক্ষর</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App Shell -->
+  <div class="min-h-screen flex flex-col lg:flex-row">
+
+    <!-- Mobile Top Header -->
+    <header class="lg:hidden bg-slate-950 text-white px-4 py-3 flex items-center justify-between sticky top-0 z-40 shadow-md">
+      <div class="flex items-center gap-3">
+        <div id="mobile-header-logo" class="w-9 h-9 rounded-xl bg-slate-900 p-1 flex items-center justify-center border border-cyan-500/40"></div>
+        <div>
+          <span class="font-extrabold text-base tracking-tight text-white">GreatNexa</span>
+          <span class="block text-[10px] text-cyan-400 font-medium leading-none">Smart POS & Tally</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="switchTab('new-invoice')" class="px-3 py-1.5 rounded-lg bg-cyan-500 text-slate-950 text-xs font-extrabold shadow">
+          + নতুন বিল
+        </button>
+        <button onclick="toggleMobileSidebar()" class="w-9 h-9 rounded-lg bg-slate-800 text-slate-200 flex items-center justify-center">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Sidebar Backdrop (Mobile) -->
+    <div id="sidebar-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40 hidden lg:hidden"></div>
+
+    <!-- Left Navigation Sidebar -->
+    <aside id="app-sidebar" class="fixed lg:sticky top-0 left-0 z-50 h-screen w-72 bg-slate-950 text-slate-300 flex flex-col justify-between transition-transform duration-300 -translate-x-full lg:translate-x-0 border-r border-slate-800/80 shrink-0">
+      <div>
+        <!-- Brand Header -->
+        <div class="p-5 border-b border-slate-800/80 flex items-center justify-between">
+          <div class="flex items-center gap-3.5">
+            <div id="sidebar-logo-box" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 p-1.5 flex items-center justify-center border border-cyan-500/40 shadow-lg shadow-cyan-500/10 shrink-0"></div>
+            <div>
+              <h1 id="sidebar-brand-title" class="text-xl font-extrabold text-white tracking-tight leading-tight">GreatNexa</h1>
+              <p class="text-[11px] font-semibold text-cyan-400">POS & Tally Billing</p>
+            </div>
+          </div>
+          <button onclick="toggleMobileSidebar()" class="lg:hidden text-slate-400 hover:text-white p-1">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Quick New Bill CTA -->
+        <div class="p-4">
+          <button onclick="switchTab('new-invoice')" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-sm shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 transition transform active:scale-[0.99]">
+            <i class="fa-solid fa-plus-circle text-base"></i>
+            <span>নতুন বিল তৈরি (New Bill)</span>
+          </button>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="px-3 space-y-1.5">
+          <button data-tab="dashboard" onclick="switchTab('dashboard')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition bg-slate-900 text-cyan-400 border border-slate-800">
+            <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+            <span>সেলস ড্যাশবোর্ড (Dashboard)</span>
+          </button>
+
+          <button data-tab="new-invoice" onclick="switchTab('new-invoice')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-900/70 hover:text-white transition">
+            <i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i>
+            <span>নতুন ইনভয়েস (POS Billing)</span>
+          </button>
+
+          <button data-tab="invoices" onclick="switchTab('invoices')" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-900/70 hover:text-white transition">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-book-open w-5 text-center"></i>
+              <span>বিল ও বাকি খাতা (Ledger)</span>
+            </div>
+            <span id="nav-due-count-badge" class="hidden px-2 py-0.5 text-[10px] font-bold rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30">0</span>
+          </button>
+
+          <button data-tab="baki-khata" onclick="switchTab('baki-khata')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-900/70 hover:text-white transition">
+            <i class="fa-solid fa-user-clock w-5 text-center"></i>
+            <span>কাস্টমার বাকি খাতা (Khata)</span>
+          </button>
+
+          <button data-tab="products" onclick="switchTab('products')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-900/70 hover:text-white transition">
+            <i class="fa-solid fa-boxes-stacked w-5 text-center"></i>
+            <span>প্রোডাক্ট, স্টক ও ফ্রি</span>
+          </button>
+
+          <button data-tab="settings" onclick="switchTab('settings')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-900/70 hover:text-white transition">
+            <i class="fa-solid fa-stamp w-5 text-center"></i>
+            <span>সিল, সাক্ষর, লোগো ও সেটিংস</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="p-4 border-t border-slate-800/80 space-y-2.5">
+        <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 space-y-1.5">
+          <div class="flex items-center justify-between text-xs">
+            <span id="supabase-sync-status" class="text-amber-400 flex items-center gap-1.5 font-semibold">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> কানেক্টিং...
+            </span>
+            <button onclick="syncFromSupabase(true)" class="text-cyan-400 hover:underline font-semibold">Sync</button>
+          </div>
+          <p class="text-[11px] text-slate-500 leading-snug">PDF নয়, কলাম আকারে Supabase-এ হালকা ডেটা সেভ হয়।</p>
+        </div>
+        <a href="admin.html" class="flex items-center justify-center gap-2 text-xs font-bold bg-slate-900 hover:bg-slate-800 text-cyan-400 py-2 rounded-xl border border-slate-800 transition">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Back to Admin Suite</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+
+      <!-- TAB 1: SALES DASHBOARD -->
+      <section id="tab-dashboard" class="tab-section space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">সেলস ড্যাশবোর্ড (Sales Overview)</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">GreatNexa-এর মোট বিক্রি, নগদ আদায় ও বাকি হিসাবের লাইভ চিত্র</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2.5">
+            <button onclick="downloadStandaloneHTML()" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-2 transition">
+              <i class="fa-solid fa-download text-cyan-600"></i> অ্যাপ ডাউনলোড (HTML)
+            </button>
+            <button onclick="switchTab('new-invoice')" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition">
+              <i class="fa-solid fa-plus text-cyan-400"></i> নতুন বিল তৈরি করুন
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+          <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">মোট বিক্রি (Total Sales)</p>
+                <h3 id="kpi-total-sales" class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1.5">৳ 0</h3>
+              </div>
+              <div class="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg shrink-0">
+                <i class="fa-solid fa-chart-line"></i>
+              </div>
+            </div>
+            <p id="kpi-invoice-count" class="text-xs text-slate-500 mt-3 font-medium">আজকের বিক্রি: ৳ 0 (0 টি)</p>
+          </div>
+
+          <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-emerald-600 uppercase tracking-wider">নগদ ও পেমেন্ট আদায়</p>
+                <h3 id="kpi-total-paid" class="text-xl sm:text-2xl font-extrabold text-emerald-600 mt-1.5">৳ 0</h3>
+              </div>
+              <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg shrink-0">
+                <i class="fa-solid fa-wallet"></i>
+              </div>
+            </div>
+            <p class="text-xs text-slate-500 mt-3 font-medium">Cash, bKash, Nagad, Bank & Pay</p>
+          </div>
+
+          <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-rose-600 uppercase tracking-wider">মোট বাকি (Total Due)</p>
+                <h3 id="kpi-total-due" class="text-xl sm:text-2xl font-extrabold text-rose-600 mt-1.5">৳ 0</h3>
+              </div>
+              <div class="w-11 h-11 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg shrink-0">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+              </div>
+            </div>
+            <p id="kpi-due-clients" class="text-xs text-rose-500 mt-3 font-semibold">বাকি কাস্টমার: 0 জন</p>
+          </div>
+
+          <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider">আনুমানিক লাভ (Profit)</p>
+                <h3 id="kpi-estimated-profit" class="text-xl sm:text-2xl font-extrabold text-indigo-700 mt-1.5">৳ 0</h3>
+              </div>
+              <div class="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg shrink-0">
+                <i class="fa-solid fa-coins"></i>
+              </div>
+            </div>
+            <p class="text-xs text-slate-500 mt-3 font-medium">বিক্রয়মূল্য বনাম ক্রয়মূল্য</p>
+          </div>
+
+          <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-cyan-700 uppercase tracking-wider">প্রোডাক্ট ও স্টক</p>
+                <h3 id="kpi-total-products" class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1.5">0 টি</h3>
+              </div>
+              <div class="w-11 h-11 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-lg shrink-0">
+                <i class="fa-solid fa-cubes"></i>
+              </div>
+            </div>
+            <p id="kpi-free-products" class="text-xs text-cyan-700 mt-3 font-semibold">ফ্রি রিসোর্স: 0 টি</p>
+          </div>
+        </div>
+
+        <!-- Middle Grid: Payment Breakdown & Due Customer Alerts -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-5 bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-bold text-slate-900">পেমেন্ট মাধ্যম অনুযায়ী আয়</h3>
+                <span class="text-xs font-semibold text-cyan-600 bg-cyan-50 px-2.5 py-1 rounded-lg">Live Breakdown</span>
+              </div>
+              <div id="payment-breakdown-list" class="space-y-3.5"></div>
+            </div>
+            <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+              <span>সব মাধ্যমের মোট আদায়</span>
+              <span id="breakdown-total-label" class="font-bold text-slate-900 text-sm">৳ 0</span>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7 bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                <h3 class="text-base font-bold text-slate-900">বাকি কাস্টমার তালিকা (Due / Baki Alerts)</h3>
+              </div>
+              <button onclick="switchTab('invoices', 'Due')" class="text-xs font-bold text-blue-600 hover:underline">সব বাকি দেখুন →</button>
+            </div>
+            <div id="dashboard-due-list" class="space-y-2.5 max-h-72 overflow-y-auto pr-1"></div>
+          </div>
+        </div>
+
+        <!-- Recent Invoices Table -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+          <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="text-base font-bold text-slate-900">সাম্প্রতিক বিলসমূহ (Recent Invoices)</h3>
+            <button onclick="switchTab('invoices')" class="text-xs font-bold text-cyan-700 hover:text-cyan-800">সম্পূর্ণ খাতা দেখুন →</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
+                  <th class="py-3 px-4 font-semibold">Invoice #</th>
+                  <th class="py-3 px-4 font-semibold">তারিখ</th>
+                  <th class="py-3 px-4 font-semibold">ক্লায়েন্ট</th>
+                  <th class="py-3 px-4 font-semibold text-right">মোট বিল</th>
+                  <th class="py-3 px-4 font-semibold text-right">জমা</th>
+                  <th class="py-3 px-4 font-semibold text-right">বাকি</th>
+                  <th class="py-3 px-4 font-semibold text-center">স্ট্যাটাস</th>
+                  <th class="py-3 px-4 font-semibold text-right">অ্যাকশন</th>
+                </tr>
+              </thead>
+              <tbody id="dashboard-recent-tbody" class="divide-y divide-slate-100 text-sm"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: NEW INVOICE / POS BILLING FORM -->
+      <section id="tab-new-invoice" class="tab-section hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">নতুন ইনভয়েস ও বিল তৈরি (Auto POS Billing)</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">ক্লায়েন্ট ও প্রোডাক্টের তথ্য দিন — Supabase কলামে হালকা সেভ ও ইনস্ট্যান্ট PDF প্যাড তৈরি হবে</p>
+          </div>
+          <button onclick="resetInvoiceForm()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold self-start sm:self-auto transition">
+            <i class="fa-solid fa-rotate-right mr-1"></i> ফর্ম ক্লিয়ার করুন
+          </button>
+        </div>
+
+        <form id="pos-billing-form" onsubmit="handleSaveInvoice(event)" class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          <div class="xl:col-span-8 space-y-6">
+            <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-5">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <span class="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-extrabold">১</span>
+                  ক্লায়েন্ট ও ইনভয়েস তথ্য (Client & Invoice Info)
+                </h3>
+                <div class="flex items-center gap-2">
+                  <label class="text-xs font-semibold text-slate-500">পুরানো ক্লায়েন্ট:</label>
+                  <select id="saved-client-selector" onchange="fillClientFromSaved(this.value)" class="text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 bg-slate-50 font-semibold text-slate-700 max-w-[170px]">
+                    <option value="">-- সিলেক্ট করুন --</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">ইনভয়েস নং (Invoice #) *</label>
+                  <input type="text" id="bill-inv-no" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-slate-50 font-mono text-sm font-bold text-blue-700 focus:border-cyan-500 focus:bg-white outline-none" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">তারিখ (Date) *</label>
+                  <input type="date" id="bill-date" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-800 focus:border-cyan-500 outline-none" />
+                </div>
+                <div class="sm:col-span-2">
+                  <label class="block text-xs font-bold text-slate-700 mb-1">ক্লায়েন্টের নাম (Client Name) *</label>
+                  <input type="text" id="bill-client-name" required placeholder="যেমন: মো. হৃদয় আহমেদ / প্রতিষ্ঠানের নাম" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">মোবাইল নম্বর (Phone Number) *</label>
+                  <input type="text" id="bill-client-phone" required oninput="checkCustomerPreviousDue()" placeholder="017XX-XXXXXX" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">ঠিকানা / কোম্পানি (Address / Company)</label>
+                  <input type="text" id="bill-client-address" placeholder="যেমন: কুষ্টিয়া, বাংলাদেশ" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none" />
+                </div>
+              </div>
+
+              <div id="bill-prev-due-banner" class="hidden rounded-xl p-3 bg-amber-50 border border-amber-300 flex items-center justify-between gap-2 text-xs">
+                <div class="text-amber-900 font-semibold">
+                  <i class="fa-solid fa-clock-rotate-left text-amber-600 mr-1.5"></i>
+                  এই কাস্টমারের আগের বাকি আছে: <span id="bill-prev-due-amount" class="font-extrabold text-rose-600">৳ 0</span>
+                </div>
+                <button type="button" onclick="switchTab('baki-khata')" class="font-bold text-blue-700 hover:underline">বাকি খাতা দেখুন →</button>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <span class="w-7 h-7 rounded-lg bg-cyan-100 text-cyan-700 flex items-center justify-center text-xs font-extrabold">২</span>
+                  প্রোডাক্ট / সার্ভিস যুক্ত করুন (Add Items to Bill)
+                </h3>
+                <label class="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 cursor-pointer">
+                  <input type="checkbox" id="save-new-product-to-catalog" checked class="rounded text-cyan-600 focus:ring-cyan-500" />
+                  <span>নতুন প্রোডাক্ট হলে ক্যাটালগেও সেভ রাখুন</span>
+                </label>
+              </div>
+
+              <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/90 space-y-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">সেভ করা প্রোডাক্ট থেকে বাছাই করুন (অথবা নিচে নতুন লিখুন)</label>
+                  <select id="catalog-product-picker" onchange="selectCatalogProduct(this.value)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-semibold text-slate-800 focus:border-cyan-500 outline-none">
+                    <option value="">-- ক্যাটালগ থেকে প্রোডাক্ট সিলেক্ট করুন --</option>
+                  </select>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                  <div class="sm:col-span-5">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">প্রোডাক্ট / সার্ভিসের নাম *</label>
+                    <input type="text" id="item-name-input" placeholder="প্রোডাক্টের নাম লিখুন..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm font-medium focus:border-cyan-500 outline-none" />
+                  </div>
+                  <div class="sm:col-span-3">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">মডেল / SKU</label>
+                    <input type="text" id="item-model-input" placeholder="যেমন: GN-2026" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm font-mono focus:border-cyan-500 outline-none" />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">পরিমাণ (Qty)</label>
+                    <input type="number" id="item-qty-input" value="1" min="1" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm font-bold text-center focus:border-cyan-500 outline-none" />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">দর (Rate ৳)</label>
+                    <input type="number" id="item-price-input" value="0" min="0" step="any" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm font-bold text-right focus:border-cyan-500 outline-none" />
+                  </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+                  <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold cursor-pointer select-none">
+                    <input type="checkbox" id="item-is-free-check" onchange="toggleFreeItemPrice(this.checked)" class="rounded text-emerald-600 focus:ring-emerald-500" />
+                    <i class="fa-solid fa-gift text-emerald-600"></i>
+                    <span>ফ্রি প্রোডাক্ট / গিফট আইটেম (Free ৳0)</span>
+                  </label>
+
+                  <button type="button" onclick="addLineItemToBill()" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition">
+                    <i class="fa-solid fa-cart-plus text-cyan-400"></i> বিলে যোগ করুন (Add Item)
+                  </button>
+                </div>
+              </div>
+
+              <div class="overflow-x-auto rounded-xl border border-slate-200">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-slate-100 text-slate-600 text-xs uppercase">
+                      <th class="py-2.5 px-3 font-bold">#</th>
+                      <th class="py-2.5 px-3 font-bold">প্রোডাক্টের নাম</th>
+                      <th class="py-2.5 px-3 font-bold">মডেল</th>
+                      <th class="py-2.5 px-3 font-bold text-center">Qty</th>
+                      <th class="py-2.5 px-3 font-bold text-right">দর (৳)</th>
+                      <th class="py-2.5 px-3 font-bold text-right">মোট (৳)</th>
+                      <th class="py-2.5 px-3 font-bold text-center">মুছুন</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bill-draft-items-tbody" class="divide-y divide-slate-100 text-sm"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="xl:col-span-4 space-y-6">
+            <div class="bg-slate-950 text-white rounded-2xl p-6 shadow-xl border border-slate-800 sticky top-6 space-y-5">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-extrabold text-white flex items-center gap-2">
+                  <i class="fa-solid fa-calculator text-cyan-400"></i>
+                  <span>টালি হিসাব ও পেমেন্ট</span>
+                </h3>
+                <span id="live-bill-status-pill" class="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  PAID (নগদ)
+                </span>
+              </div>
+
+              <div class="space-y-3 text-sm">
+                <div class="flex justify-between items-center text-slate-300">
+                  <span>সাবটোটাল (Subtotal):</span>
+                  <span id="calc-subtotal" class="font-bold text-white text-base">৳ 0</span>
+                </div>
+
+                <div class="flex justify-between items-center gap-2">
+                  <div class="flex items-center gap-1.5">
+                    <label for="bill-discount-input" class="text-slate-300">ডিসকাউন্ট / ছাড়:</label>
+                    <select id="bill-discount-type" onchange="recalculateBillTotals()" class="px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold text-cyan-300 outline-none">
+                      <option value="BDT">৳ (Flat)</option>
+                      <option value="PCT">% (Percent)</option>
+                    </select>
+                  </div>
+                  <input type="number" id="bill-discount-input" value="0" min="0" step="any" oninput="recalculateBillTotals()" class="w-28 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-right font-bold text-emerald-400 focus:border-cyan-400 outline-none" />
+                </div>
+
+                <div class="flex justify-between items-center gap-2">
+                  <label for="bill-vat-input" class="text-slate-300">ভ্যাট / ট্যাক্স (VAT %):</label>
+                  <div class="flex items-center gap-2">
+                    <span id="calc-vat-amount" class="text-xs text-slate-400 font-semibold">+ ৳ 0</span>
+                    <input type="number" id="bill-vat-input" value="0" min="0" max="100" step="any" oninput="recalculateBillTotals()" class="w-20 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-right font-bold text-amber-300 focus:border-cyan-400 outline-none" />
+                  </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-800 flex justify-between items-center">
+                  <span class="text-base font-bold text-cyan-400">সর্বমোট বিল (Grand Total):</span>
+                  <span id="calc-grand-total" class="text-2xl font-extrabold text-white">৳ 0</span>
+                </div>
+              </div>
+
+              <div class="bg-slate-900/90 rounded-xl p-4 border border-slate-800 space-y-3.5">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-400 mb-1">পেমেন্ট মাধ্যম (Payment Method)</label>
+                  <select id="bill-pay-method" onchange="handlePaymentMethodChange()" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-sm font-semibold text-white focus:border-cyan-400 outline-none">
+                    <option value="Cash (নগদ)">Cash (নগদ)</option>
+                    <option value="bKash">bKash (01870-978004)</option>
+                    <option value="Nagad">Nagad (01870-978004)</option>
+                    <option value="Islami Bank Cellfin">Islami Bank Cellfin</option>
+                    <option value="Binance Pay">Binance Pay (UID: 520327779)</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="বাকি (Credit/Due)">বাকি (Credit/Due)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <label for="bill-paid-input" class="text-xs font-semibold text-emerald-400">কত জমা দিল / নগদ (Paid ৳)</label>
+                    <button type="button" onclick="setFullPaidAmount()" class="text-[11px] font-bold text-cyan-400 hover:underline">সম্পূর্ণ নগদ দিন</button>
+                  </div>
+                  <input type="number" id="bill-paid-input" value="0" min="0" step="any" oninput="recalculateBillTotals(true)" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-emerald-500/40 text-right text-lg font-extrabold text-emerald-400 focus:border-emerald-400 outline-none" />
+                </div>
+
+                <div id="calc-change-box" class="hidden justify-between items-center pt-1 text-sky-400">
+                  <span class="text-xs font-bold uppercase">ফেরত দিতে হবে (Change):</span>
+                  <span id="calc-change-amount" class="text-base font-extrabold">৳ 0</span>
+                </div>
+
+                <div class="flex justify-between items-center pt-2 border-t border-slate-800">
+                  <span class="text-xs font-bold text-rose-400 uppercase">কত বাকি আছে (Due / Baki):</span>
+                  <span id="calc-due-amount" class="text-xl font-extrabold text-rose-400">৳ 0</span>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">ইনভয়েস নোট (ঐচ্ছিক)</label>
+                <input type="text" id="bill-note-input" placeholder="যেমন: বাকি টাকা আগামী সপ্তাহে পরিশোধযোগ্য" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-200 focus:border-cyan-400 outline-none" />
+              </div>
+
+              <button type="submit" class="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-extrabold text-sm sm:text-base shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 transition transform active:scale-[0.99]">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span>বিল সেভ ও ইনভয়েস প্রিন্ট করুন</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- TAB 3: INVOICE LEDGER & DUE MANAGEMENT -->
+      <section id="tab-invoices" class="tab-section hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">সব ইনভয়েস ও বাকি খাতা (Sales & Due Ledger)</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">সব বিল খুঁজুন, বাকি টাকা আদায় করুন এবং যেকোনো বিলের প্রিন্ট প্যাড বের করুন</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button data-filter="ALL" onclick="setInvoiceFilter('ALL')" class="inv-filter-btn px-3.5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold transition">সব বিল</button>
+            <button data-filter="Paid" onclick="setInvoiceFilter('Paid')" class="inv-filter-btn px-3.5 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold transition">নগদ (Paid)</button>
+            <button data-filter="Due" onclick="setInvoiceFilter('Due')" class="inv-filter-btn px-3.5 py-2 rounded-xl bg-rose-50 text-rose-600 text-xs font-bold transition">বাকি (Due)</button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+          <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="relative w-full sm:max-w-sm">
+              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input type="text" id="invoice-search-input" oninput="renderInvoicesLedger()" placeholder="ইনভয়েস নং, নাম বা মোবাইল দিয়ে খুঁজুন..." class="w-full pl-9 pr-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm focus:border-cyan-500 outline-none" />
+            </div>
+            <button onclick="switchTab('new-invoice')" class="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-extrabold transition self-start sm:self-auto">
+              + নতুন বিল তৈরি
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-900 text-white text-xs uppercase tracking-wider">
+                  <th class="py-3.5 px-4 font-semibold">Invoice #</th>
+                  <th class="py-3.5 px-4 font-semibold">তারিখ</th>
+                  <th class="py-3.5 px-4 font-semibold">ক্লায়েন্ট</th>
+                  <th class="py-3.5 px-4 font-semibold">আইটেমসমূহ</th>
+                  <th class="py-3.5 px-4 font-semibold text-right">মোট বিল</th>
+                  <th class="py-3.5 px-4 font-semibold text-right">জমা</th>
+                  <th class="py-3.5 px-4 font-semibold text-right">বাকি</th>
+                  <th class="py-3.5 px-4 font-semibold text-center">স্ট্যাটাস</th>
+                  <th class="py-3.5 px-4 font-semibold text-right">অ্যাকশন</th>
+                </tr>
+              </thead>
+              <tbody id="ledger-invoices-tbody" class="divide-y divide-slate-100 text-sm"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3B: DEDICATED CUSTOMER BAKI KHATA -->
+      <section id="tab-baki-khata" class="tab-section hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">কাস্টমার বাকি খাতা (Customer Baki & Due Ledger)</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">প্রতিটি কাস্টমারের মোট কেনাকাটা, নগদ জমা ও বর্তমান বকেয়া হিসাব এক নজরে</p>
+          </div>
+          <button onclick="switchTab('new-invoice')" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold flex items-center gap-2 self-start sm:self-auto transition">
+            <i class="fa-solid fa-file-circle-plus"></i> নতুন বাকি/নগদ বিল
+          </button>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-900 text-white text-xs uppercase tracking-wider">
+                  <th class="py-3.5 px-4 font-semibold">কাস্টমার ও ঠিকানা</th>
+                  <th class="py-3.5 px-4 font-semibold">মোবাইল</th>
+                  <th class="py-3.5 px-4 font-semibold text-center">বিল সংখ্যা</th>
+                  <th class="py-3.5 px-4 font-semibold text-right">মোট বিল (৳)</th>
+                  <th class="py-3.5 px-4 font-semibold text-right">মোট জমা (৳)</th>
+                  <th class="py-3.5 px-4 font-semibold text-right">বর্তমান বাকি (৳)</th>
+                  <th class="py-3.5 px-4 font-semibold text-right">অ্যাকশন</th>
+                </tr>
+              </thead>
+              <tbody id="baki-khata-tbody" class="divide-y divide-slate-100 text-sm"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: PRODUCT & FREE RESOURCE CATALOG -->
+      <section id="tab-products" class="tab-section hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">প্রোডাক্ট, সার্ভিস ও ফ্রি ডাউনলোড ক্যাটালগ</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">নতুন প্রোডাক্ট বা মডেল যোগ করুন এবং ফ্রি রিসোর্স ডাউনলোড বা কাস্টমাইজ করুন</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-4">
+            <form id="product-catalog-form" onsubmit="handleSaveProduct(event)" class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-4 sticky top-6">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 id="product-form-title" class="text-base font-bold text-slate-900">নতুন প্রোডাক্ট যোগ করুন</h3>
+                <button type="button" id="cancel-edit-product-btn" onclick="resetProductForm()" class="hidden text-xs font-bold text-rose-600 hover:underline">বাতিল</button>
+              </div>
+              <input type="hidden" id="prod-edit-id" />
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">প্রোডাক্ট / সার্ভিসের নাম *</label>
+                <input type="text" id="prod-name" required placeholder="যেমন: CNC Metal Design Course" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-cyan-500 outline-none" />
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">মডেল / কোড *</label>
+                  <input type="text" id="prod-model" required placeholder="যেমন: GN-CNC-2026" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-mono text-sm focus:border-cyan-500 outline-none" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">স্টক (Stock)</label>
+                  <input type="number" id="prod-stock" value="99" min="0" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold focus:border-cyan-500 outline-none" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">ক্রয়মূল্য (Buy ৳)</label>
+                  <input type="number" id="prod-buy-price" value="0" min="0" step="any" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold focus:border-cyan-500 outline-none" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">বিক্রয়মূল্য (Sell ৳) *</label>
+                  <input type="number" id="prod-price" value="0" min="0" step="any" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-bold text-blue-700 focus:border-cyan-500 outline-none" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">ক্যাটাগরি</label>
+                <select id="prod-category" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold bg-white focus:border-cyan-500 outline-none">
+                  <option value="Course / Training">Course / Training</option>
+                  <option value="Automation / Software">Automation / Software</option>
+                  <option value="Trading Tools">Trading Tools</option>
+                  <option value="Web & Design">Web & Design</option>
+                  <option value="Shop / Retail Item">Shop / Retail Item</option>
+                  <option value="Free Resource">Free Resource</option>
+                </select>
+              </div>
+
+              <div class="bg-emerald-50/80 border border-emerald-200 rounded-xl p-3 space-y-2.5">
+                <label class="inline-flex items-center gap-2 text-xs font-bold text-emerald-800 cursor-pointer">
+                  <input type="checkbox" id="prod-is-free" onchange="toggleProductFreeFields(this.checked)" class="rounded text-emerald-600" />
+                  <span>এটি একটি ফ্রি ডাউনলোডযোগ্য প্রোডাক্ট (Free)</span>
+                </label>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">ডাউনলোড লিংক বা কাস্টম টেমপ্লেট নোট (ঐচ্ছিক)</label>
+                  <input type="text" id="prod-download-note" placeholder="https://www.greatnexa.com/ বা নোট লিখুন" class="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs focus:border-cyan-500 outline-none" />
+                </div>
+              </div>
+
+              <button type="submit" class="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-sm transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-plus-circle text-cyan-400"></i>
+                <span id="product-submit-label">ক্যাটালগে সেভ করুন</span>
+              </button>
+            </form>
+          </div>
+
+          <div class="lg:col-span-8 space-y-4">
+            <div id="products-catalog-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: SETTINGS, LOGO CUSTOMIZATION & DATA BACKUP -->
+      <section id="tab-settings" class="tab-section hidden space-y-6">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">প্রতিষ্ঠানের সেটিংস, লোগো ও ডেটা ব্যাকআপ</h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-0.5">আপনার লোগো পরিবর্তন করুন, ইনভয়েস প্যাডের তথ্য আপডেট করুন এবং সম্পূর্ণ অ্যাপ বা ডেটা ডাউনলোড করুন</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <form onsubmit="handleSaveSettings(event)" class="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
+            <h3 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">ইনভয়েস প্যাড ও ব্র্যান্ড তথ্য</h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">প্রতিষ্ঠানের নাম (Brand Name)</label>
+                <input type="text" id="set-company-name" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-bold focus:border-cyan-500 outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">ট্যাগলাইন (Tagline)</label>
+                <input type="text" id="set-tagline" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-cyan-500 outline-none" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">স্বাক্ষরকারীর নাম (Signatory Name)</label>
+                <input type="text" id="set-signatory-name" placeholder="Md. Hriday Ahammad" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold focus:border-cyan-500 outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">মোবাইল নম্বর (Phone)</label>
+                <input type="text" id="set-phone" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold focus:border-cyan-500 outline-none" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">ইমেইল (Email)</label>
+                <input type="email" id="set-email" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-cyan-500 outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">ওয়েবসাইট (Website)</label>
+                <input type="text" id="set-website" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-cyan-500 outline-none" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">ঠিকানা (Address)</label>
+              <input type="text" id="set-address" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-cyan-500 outline-none" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">পেমেন্ট অ্যাকাউন্ট তথ্য (bKash, Nagad, Bank, Binance)</label>
+              <input type="text" id="set-payment-info" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-cyan-500 outline-none" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">ইনভয়েস শর্তাবলী (Terms & Conditions)</label>
+              <textarea id="set-terms" rows="3" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:border-cyan-500 outline-none"></textarea>
+            </div>
+
+            <button type="submit" class="px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-sm transition">
+              <i class="fa-solid fa-check-circle text-cyan-400 mr-1.5"></i> সেটিংস সেভ করুন
+            </button>
+          </form>
+
+          <div class="lg:col-span-5 space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-5">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="text-base font-bold text-slate-900">লোগো, সিল ও সাক্ষর (Auto / Upload)</h3>
+                <label class="inline-flex items-center gap-2 text-xs font-bold text-cyan-700 bg-cyan-50 px-2.5 py-1 rounded-lg border border-cyan-200 cursor-pointer">
+                  <input type="checkbox" id="set-auto-seal-sign" onchange="toggleAutoSealSign(this.checked)" class="rounded text-cyan-600" />
+                  <span>অটো সিল ও সাক্ষর</span>
+                </label>
+              </div>
+
+              <div class="flex items-center gap-3.5 pb-4 border-b border-slate-100">
+                <div id="settings-logo-preview" class="w-16 h-16 rounded-2xl bg-slate-950 p-1.5 flex items-center justify-center border border-cyan-500/40 shadow-sm shrink-0"></div>
+                <div class="space-y-1.5">
+                  <p class="text-xs font-bold text-slate-800">১. প্রতিষ্ঠানের লোগো (Logo)</p>
+                  <div class="flex flex-wrap gap-1.5">
+                    <label class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold cursor-pointer transition inline-flex items-center gap-1">
+                      <i class="fa-solid fa-upload text-cyan-400"></i> আপলোড
+                      <input type="file" accept="image/*" onchange="handleAssetUpload(event, 'customLogoDataUrl', 'নতুন লোগো সেভ হয়েছে!')" class="hidden" />
+                    </label>
+                    <button type="button" onclick="resetAsset('customLogoDataUrl', 'ডিফল্ট GN লোগো রিস্টোর হয়েছে')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold transition">
+                      ডিফল্ট GN
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3.5 pb-4 border-b border-slate-100">
+                <div id="settings-seal-preview" class="w-20 h-20 rounded-xl bg-slate-50 p-1 flex items-center justify-center border border-slate-200 shrink-0"></div>
+                <div class="space-y-1.5">
+                  <p class="text-xs font-bold text-slate-800">২. প্রতিষ্ঠানের সিল / স্ট্যাম্প (Stamp / Seal)</p>
+                  <p class="text-[11px] text-slate-500">আপলোড না করলে অটো সিল তৈরি হবে।</p>
+                  <div class="flex flex-wrap gap-1.5">
+                    <label class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold cursor-pointer transition inline-flex items-center gap-1">
+                      <i class="fa-solid fa-stamp"></i> সিল আপলোড
+                      <input type="file" accept="image/*" onchange="handleAssetUpload(event, 'customSealDataUrl', 'কাস্টম সিল সেভ হয়েছে!')" class="hidden" />
+                    </label>
+                    <button type="button" onclick="resetAsset('customSealDataUrl', 'অটো সিল সক্রিয় করা হয়েছে')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold transition">
+                      অটো সিল
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3.5">
+                <div id="settings-sign-preview" class="w-28 h-16 rounded-xl bg-slate-50 p-1 flex items-center justify-center border border-slate-200 shrink-0"></div>
+                <div class="space-y-1.5">
+                  <p class="text-xs font-bold text-slate-800">৩. অনুমোদিত সাক্ষর (Signature)</p>
+                  <p class="text-[11px] text-slate-500">স্বাক্ষরকারীর নাম সেটিংসে বদলালে অটো সাক্ষর বদলায়।</p>
+                  <div class="flex flex-wrap gap-1.5">
+                    <label class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold cursor-pointer transition inline-flex items-center gap-1">
+                      <i class="fa-solid fa-signature"></i> সাক্ষর আপলোড
+                      <input type="file" accept="image/*" onchange="handleAssetUpload(event, 'customSignDataUrl', 'কাস্টম সাক্ষর সেভ হয়েছে!')" class="hidden" />
+                    </label>
+                    <button type="button" onclick="resetAsset('customSignDataUrl', 'অটো সাক্ষর সক্রিয় করা হয়েছে')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold transition">
+                      অটো সাক্ষর
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-slate-950 text-white rounded-2xl p-6 border border-slate-800 shadow-lg space-y-4">
+              <h3 class="text-base font-extrabold text-cyan-400 flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>অফলাইন অ্যাপ ও ডেটা ব্যাকআপ</span>
+              </h3>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                আপনি চাইলে এই সম্পূর্ণ সফটওয়্যারটি আপনার কম্পিউটার বা মোবাইলে ডাউনলোড করে ইন্টারনেট ছাড়াই আজীবন ফ্রি ব্যবহার ও কাস্টমাইজ করতে পারবেন।
+              </p>
+
+              <div class="space-y-2.5 pt-1">
+                <button type="button" onclick="downloadStandaloneHTML()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition">
+                  <i class="fa-solid fa-file-code"></i> সম্পূর্ণ সফটওয়্যার ডাউনলোড করুন (.HTML)
+                </button>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                  <button type="button" onclick="exportBackupJSON()" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                    <i class="fa-solid fa-download text-emerald-400"></i> ডেটা ব্যাকআপ (JSON)
+                  </button>
+                  <label class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition">
+                    <i class="fa-solid fa-file-import text-amber-400"></i> ডেটা রিস্টোর
+                    <input type="file" accept=".json" onchange="importBackupJSON(event)" class="hidden" />
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. DEFAULT GN CIRCUIT MONOGRAM LOGO SVG
+    // =========================================================================
+    const DEFAULT_GN_LOGO_SVG = `
+      <svg viewBox="0 0 220 180" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+        <defs>
+          <linearGradient id="gnBodyGrad" x1="15" y1="20" x2="195" y2="165" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#38bdf8" />
+            <stop offset="45%" stop-color="#2563eb" />
+            <stop offset="100%" stop-color="#1e1b4b" />
+          </linearGradient>
+          <linearGradient id="gnCyanGlow" x1="0" y1="0" x2="200" y2="180" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#a5f3fc" />
+            <stop offset="100%" stop-color="#06b6d4" />
+          </linearGradient>
+          <filter id="nodeGlow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="2.5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <path d="M98 48C86 35 68 30 50 34C27 39 14 60 15 88C16 117 34 139 62 142C82 144 98 135 104 120V84H62V101H84V114C78 122 69 125 58 124C41 122 33 108 33 88C33 68 43 53 60 51C71 50 80 54 86 61L98 48Z"
+              fill="url(#gnBodyGrad)" stroke="#38bdf8" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M76 44C62 39 43 43 32 57C22 70 21 94 30 112C39 129 58 135 76 131"
+              stroke="url(#gnCyanGlow)" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="77" cy="44" r="4" fill="#e0f2fe" filter="url(#nodeGlow)"/>
+        <circle cx="25" cy="96" r="4" fill="#38bdf8" filter="url(#nodeGlow)"/>
+        <circle cx="76" cy="131" r="4.5" fill="#a5f3fc" filter="url(#nodeGlow)"/>
+        <circle cx="63" cy="92" r="3.5" fill="#e0f2fe" filter="url(#nodeGlow)"/>
+        <path d="M112 142V38H131L168 102V54H156L178 20L200 54H188V142H169L131 76V142H112Z"
+              fill="url(#gnBodyGrad)" stroke="#38bdf8" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M121 134V62L177 134V44" stroke="url(#gnCyanGlow)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="121" cy="134" r="4.2" fill="#a5f3fc" filter="url(#nodeGlow)"/>
+        <circle cx="149" cy="98" r="4.5" fill="#ffffff" filter="url(#nodeGlow)"/>
+        <circle cx="178" cy="64" r="4.2" fill="#a5f3fc" filter="url(#nodeGlow)"/>
+        <path d="M139 112V156" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="139" cy="158" r="4.5" fill="#0f172a" stroke="#38bdf8" stroke-width="2.5"/>
+        <path d="M153 128V164" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="153" cy="166" r="4.5" fill="#0f172a" stroke="#38bdf8" stroke-width="2.5"/>
+      </svg>
+    `;
+
+    // =========================================================================
+    // 2. SUPABASE + LOCAL CACHE PERSISTENT STATE (Lightweight Column Storage)
+    // =========================================================================
+    const SUPABASE_URL = 'https://esqhansnosejkqapuhoo.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDk0MDMsImV4cCI6MjEwMjI4NTQwM30.ePcRYy5_B193R4S1MXw3slF5amFseCv1sSCAUyH59ok';
+    const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const STORAGE_KEY = 'greatnexa_pos_v1_state';
+    let currentAdminUserEmail = '';
+    let isSupabaseConnected = false;
+
+    const DEFAULT_STATE = {
+      settings: {
+        companyName: 'GreatNexa',
+        tagline: 'Digital Solutions | Automation | Courses | Trading Tools',
+        signatoryName: 'Md. Hriday Ahammad',
+        phone: '01870-978004',
+        email: 'hridoykhan7581@gmail.com',
+        website: 'https://www.greatnexa.com/',
+        address: 'Kushtia, Bangladesh',
+        paymentInfo: 'bKash / Nagad: 01870-978004 | Islami Bank Cellfin: 01870-978004 | Binance Pay UID: 520327779',
+        terms: '১. পেমেন্ট নিশ্চিত হওয়ার পর ডিজিটাল প্রোডাক্ট/সার্ভিস ডেলিভারি প্রদান করা হয়।\n২. ভবিষ্যতে যেকোনো সাপোর্ট বা আপডেটের জন্য ইনভয়েস নম্বর সংরক্ষণ করুন।',
+        autoSealAndSign: true,
+        customLogoDataUrl: '',
+        customSealDataUrl: '',
+        customSignDataUrl: ''
+      },
+      products: [
+        {
+          id: 'prod-1',
+          name: 'Laser Cutting & CNC Metal Design Course',
+          model: 'GN-CNC-2026',
+          category: 'Course / Training',
+          buyPrice: 1500,
+          price: 4999,
+          stock: 99,
+          isFree: false,
+          downloadNote: 'Full Video Course + DXF Vector Library'
+        },
+        {
+          id: 'prod-2',
+          name: 'GreatNexa Institutional Alpha VIP Pass',
+          model: 'SMC-PRO-V2',
+          category: 'Trading Tools',
+          buyPrice: 700,
+          price: 2500,
+          stock: 50,
+          isFree: false,
+          downloadNote: 'Gold & Crypto SMC Liquidity Signals + Mentorship'
+        },
+        {
+          id: 'prod-3',
+          name: 'Custom n8n Workflow Automation Setup',
+          model: 'N8N-AUTO-01',
+          category: 'Automation / Software',
+          buyPrice: 3000,
+          price: 8000,
+          stock: 25,
+          isFree: false,
+          downloadNote: 'AI Lead Gen, WhatsApp & CRM Automation'
+        },
+        {
+          id: 'prod-4',
+          name: 'WordPress & Business Website Package',
+          model: 'WEB-DEV-PRO',
+          category: 'Web & Design',
+          buyPrice: 4500,
+          price: 12000,
+          stock: 20,
+          isFree: false,
+          downloadNote: 'Complete Responsive Website + SEO Setup'
+        },
+        {
+          id: 'prod-5',
+          name: 'Free Invoice & SOP Starter Kit',
+          model: 'FREE-SOP-01',
+          category: 'Free Resource',
+          buyPrice: 0,
+          price: 0,
+          stock: 999,
+          isFree: true,
+          downloadNote: 'https://www.greatnexa.com/ (Customizable Free Starter Pack)'
+        }
+      ],
+      invoices: [
+        {
+          id: 'inv-1001',
+          invoiceNo: 'GN-2026-001',
+          date: '2026-11-24',
+          clientName: 'Md. Hriday Ahammad',
+          clientPhone: '01870-978004',
+          clientAddress: 'Kushtia, Bangladesh',
+          items: [
+            { name: 'Laser Cutting & CNC Metal Design Course', model: 'GN-CNC-2026', qty: 1, buyPrice: 1500, rate: 4999, total: 4999, isFree: false },
+            { name: 'Free Invoice & SOP Starter Kit', model: 'FREE-SOP-01', qty: 1, buyPrice: 0, rate: 0, total: 0, isFree: true }
+          ],
+          subtotal: 4999,
+          discount: 0,
+          vatPercent: 0,
+          vatAmount: 0,
+          grandTotal: 4999,
+          paidAmount: 4999,
+          changeAmount: 0,
+          dueAmount: 0,
+          paymentMethod: 'bKash',
+          note: 'Full payment received via bKash.'
+        }
+      ]
+    };
+
+    let appState = loadState();
+    let draftBillItems = [];
+    let currentInvoiceFilter = 'ALL';
+    let activeDueInvoiceId = null;
+    let userEditedPaidManually = false;
+    let currentPrintFormat = 'A4';
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return {
+            settings: { ...DEFAULT_STATE.settings, ...(parsed.settings || {}) },
+            products: Array.isArray(parsed.products) ? parsed.products : DEFAULT_STATE.products,
+            invoices: Array.isArray(parsed.invoices) ? parsed.invoices : DEFAULT_STATE.invoices
+          };
+        }
+      } catch (e) {
+        console.error('Failed to load state:', e);
+      }
+      return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        showToast('ডেটা সেভ করতে সমস্যা হয়েছে (Storage Full)', 'error');
+      }
+    }
+
+    // =========================================================================
+    // 3. UI HELPERS: AUTO SEAL, SIGNATURE, LOGO & RENDERING
+    // =========================================================================
+    function formatBDT(num) {
+      const val = Number(num) || 0;
+      return '৳ ' + val.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+    }
+
+    function getLogoHTML() {
+      if (appState.settings.customLogoDataUrl) {
+        return `<img src="${appState.settings.customLogoDataUrl}" alt="Logo" class="w-full h-full object-contain rounded-lg" />`;
+      }
+      return DEFAULT_GN_LOGO_SVG;
+    }
+
+    function getAutoStampSVG(companyName, address, dateStr) {
+      const safeName = escapeHTML((companyName || 'GREATNEXA').toUpperCase());
+      const safeAddr = escapeHTML((address || 'BANGLADESH').toUpperCase());
+      const safeDate = escapeHTML(dateStr || new Date().toISOString().slice(0, 10));
+      return `
+        <svg viewBox="0 0 140 140" class="w-full h-full opacity-85 -rotate-6 select-none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="70" cy="70" r="62" fill="none" stroke="#1d4ed8" stroke-width="3" stroke-dasharray="5 2"/>
+          <circle cx="70" cy="70" r="54" fill="none" stroke="#0284c7" stroke-width="1.5"/>
+          <line x1="20" y1="54" x2="120" y2="54" stroke="#1d4ed8" stroke-width="1.2"/>
+          <line x1="20" y1="88" x2="120" y2="88" stroke="#1d4ed8" stroke-width="1.2"/>
+          <text x="70" y="45" text-anchor="middle" fill="#1e3a8a" font-size="8" font-weight="800" letter-spacing="1.2">VERIFIED SEAL</text>
+          <text x="70" y="74" text-anchor="middle" fill="#1d4ed8" font-size="11.5" font-weight="900">${safeName.slice(0, 14)}</text>
+          <text x="70" y="102" text-anchor="middle" fill="#0369a1" font-size="7.5" font-weight="700">${safeAddr.slice(0, 18)}</text>
+          <text x="70" y="114" text-anchor="middle" fill="#1e40af" font-size="7" font-weight="700">${safeDate}</text>
+        </svg>
+      `;
+    }
+
+    function getAutoSignatureSVG(signatoryName) {
+      const name = escapeHTML(signatoryName || 'Authorized Signatory');
+      return `
+        <svg viewBox="0 0 220 75" class="w-full h-full select-none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 52 C32 22, 46 18, 52 46 C56 62, 64 26, 78 36 C88 43, 94 28, 110 42 C122 52, 138 22, 154 40 C166 52, 184 34, 202 38"
+                fill="none" stroke="#0f172a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M24 62 Q105 56 196 60" fill="none" stroke="#0284c7" stroke-width="1.4" stroke-linecap="round" opacity="0.7"/>
+          <text x="110" y="20" text-anchor="middle" fill="#334155" font-size="10" font-style="italic" font-weight="600" opacity="0.75">${name}</text>
+        </svg>
+      `;
+    }
+
+    function getSealHTML(dateStr) {
+      const s = appState.settings;
+      if (s.customSealDataUrl) {
+        return `<img src="${s.customSealDataUrl}" alt="Seal" class="w-full h-full object-contain" />`;
+      }
+      if (s.autoSealAndSign) {
+        return getAutoStampSVG(s.companyName, s.address, dateStr);
+      }
+      return `<span class="text-[10px] text-slate-400 italic">No Seal</span>`;
+    }
+
+    function getSignatureHTML() {
+      const s = appState.settings;
+      if (s.customSignDataUrl) {
+        return `<img src="${s.customSignDataUrl}" alt="Signature" class="h-full max-w-full object-contain" />`;
+      }
+      if (s.autoSealAndSign) {
+        return getAutoSignatureSVG(s.signatoryName);
+      }
+      return '';
+    }
+
+    function renderAllLogosAndBranding() {
+      const logoHTML = getLogoHTML();
+      const targets = ['sidebar-logo-box', 'mobile-header-logo', 'pad-logo-container', 'settings-logo-preview'];
+      targets.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = logoHTML;
+      });
+
+      const titleEl = document.getElementById('sidebar-brand-title');
+      if (titleEl) titleEl.textContent = appState.settings.companyName || 'GreatNexa';
+
+      const sealPreview = document.getElementById('settings-seal-preview');
+      if (sealPreview) sealPreview.innerHTML = getSealHTML();
+
+      const signPreview = document.getElementById('settings-sign-preview');
+      if (signPreview) signPreview.innerHTML = getSignatureHTML();
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const colors = {
+        success: 'bg-slate-900 text-white border-emerald-500/60',
+        error: 'bg-rose-950 text-white border-rose-500',
+        info: 'bg-slate-900 text-cyan-300 border-cyan-500/60'
+      };
+      const icons = {
+        success: '<i class="fa-solid fa-circle-check text-emerald-400"></i>',
+        error: '<i class="fa-solid fa-circle-exclamation text-rose-400"></i>',
+        info: '<i class="fa-solid fa-circle-info text-cyan-400"></i>'
+      };
+      toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl text-xs sm:text-sm font-semibold transition-all duration-300 ${colors[type] || colors.success}`;
+      toast.innerHTML = `${icons[type] || icons.success}<span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-8px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
+    function showConfirmDialog(title, message, onConfirm) {
+      const modal = document.getElementById('confirm-modal');
+      document.getElementById('confirm-title').textContent = title;
+      document.getElementById('confirm-message').textContent = message;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      const cancelBtn = document.getElementById('confirm-cancel-btn');
+      const okBtn = document.getElementById('confirm-ok-btn');
+
+      const cleanup = () => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        cancelBtn.onclick = null;
+        okBtn.onclick = null;
+      };
+
+      cancelBtn.onclick = cleanup;
+      okBtn.onclick = () => {
+        cleanup();
+        onConfirm();
+      };
+    }
+
+    // =========================================================================
+    // 4. NAVIGATION & TAB SWITCHING
+    // =========================================================================
+    function toggleMobileSidebar() {
+      const sidebar = document.getElementById('app-sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      sidebar.classList.toggle('-translate-x-full');
+      backdrop.classList.toggle('hidden');
+    }
+
+    function switchTab(tabName, optionalFilter = null) {
+      document.querySelectorAll('.tab-section').forEach(sec => sec.classList.add('hidden'));
+      const target = document.getElementById(`tab-${tabName}`);
+      if (target) target.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        if (btn.dataset.tab === tabName) {
+          btn.classList.add('bg-slate-900', 'text-cyan-400', 'border', 'border-slate-800');
+          btn.classList.remove('text-slate-400');
+        } else {
+          btn.classList.remove('bg-slate-900', 'text-cyan-400', 'border', 'border-slate-800');
+          btn.classList.add('text-slate-400');
+        }
+      });
+
+      const sidebar = document.getElementById('app-sidebar');
+      if (!sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
+        toggleMobileSidebar();
+      }
+
+      if (tabName === 'dashboard') renderDashboard();
+      if (tabName === 'new-invoice') initNewInvoiceForm();
+      if (tabName === 'invoices') {
+        if (optionalFilter) setInvoiceFilter(optionalFilter);
+        else renderInvoicesLedger();
+      }
+      if (tabName === 'baki-khata') renderBakiKhata();
+      if (tabName === 'products') renderProductsCatalog();
+      if (tabName === 'settings') populateSettingsForm();
+    }
+
+    // =========================================================================
+    // 5. DASHBOARD RENDERING
+    // =========================================================================
+    function renderDashboard() {
+      let totalSales = 0;
+      let totalPaid = 0;
+      let totalDue = 0;
+      let estimatedProfit = 0;
+      let todaySales = 0;
+      let todayCount = 0;
+      let dueCustomersCount = 0;
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      const methodTotals = {
+        'Cash (নগদ)': 0,
+        'bKash': 0,
+        'Nagad': 0,
+        'Islami Bank Cellfin': 0,
+        'Binance Pay': 0,
+        'Bank Transfer': 0,
+        'বাকি (Credit/Due)': 0
+      };
+
+      appState.invoices.forEach(inv => {
+        const gTotal = Number(inv.grandTotal) || 0;
+        const pAmt = Number(inv.paidAmount) || 0;
+        const dAmt = Number(inv.dueAmount) || 0;
+        const disc = Number(inv.discount) || 0;
+
+        totalSales += gTotal;
+        totalPaid += pAmt;
+        totalDue += dAmt;
+        if (dAmt > 0) dueCustomersCount++;
+
+        if (inv.date === todayStr) {
+          todaySales += gTotal;
+          todayCount++;
+        }
+
+        const lineProfit = (inv.items || []).reduce((acc, item) => {
+          const sell = Number(item.rate) || 0;
+          const buy = Number(item.buyPrice) || 0;
+          const qty = Number(item.qty) || 1;
+          return acc + ((sell - buy) * qty);
+        }, 0);
+        estimatedProfit += (lineProfit - disc);
+
+        const m = inv.paymentMethod || 'Cash (নগদ)';
+        methodTotals[m] = (methodTotals[m] || 0) + pAmt;
+      });
+
+      const freeProductsCount = appState.products.filter(p => p.isFree || Number(p.price) === 0).length;
+      const lowStockCount = appState.products.filter(p => !p.isFree && Number(p.stock) <= 5).length;
+
+      document.getElementById('kpi-total-sales').textContent = formatBDT(totalSales);
+      document.getElementById('kpi-invoice-count').textContent = `আজকের বিক্রি: ${formatBDT(todaySales)} (${todayCount} টি)`;
+      document.getElementById('kpi-total-paid').textContent = formatBDT(totalPaid);
+      document.getElementById('kpi-total-due').textContent = formatBDT(totalDue);
+      document.getElementById('kpi-due-clients').textContent = `বাকি কাস্টমার: ${dueCustomersCount} জন`;
+      document.getElementById('kpi-estimated-profit').textContent = formatBDT(estimatedProfit);
+      document.getElementById('kpi-total-products').textContent = `${appState.products.length} টি`;
+      document.getElementById('kpi-free-products').textContent = `ফ্রি: ${freeProductsCount} | লো-স্টক: ${lowStockCount}`;
+
+      const dueBadge = document.getElementById('nav-due-count-badge');
+      if (dueCustomersCount > 0) {
+        dueBadge.textContent = dueCustomersCount;
+        dueBadge.classList.remove('hidden');
+      } else {
+        dueBadge.classList.add('hidden');
+      }
+
+      const breakdownEl = document.getElementById('payment-breakdown-list');
+      document.getElementById('breakdown-total-label').textContent = formatBDT(totalPaid);
+      const barColors = {
+        'Cash (নগদ)': 'bg-emerald-500',
+        'bKash': 'bg-pink-500',
+        'Nagad': 'bg-orange-500',
+        'Islami Bank Cellfin': 'bg-teal-500',
+        'Binance Pay': 'bg-amber-400',
+        'Bank Transfer': 'bg-blue-500',
+        'বাকি (Credit/Due)': 'bg-rose-500'
+      };
+
+      breakdownEl.innerHTML = Object.entries(methodTotals).map(([method, amount]) => {
+        const pct = totalPaid > 0 ? Math.round((amount / totalPaid) * 100) : 0;
+        return `
+          <div>
+            <div class="flex justify-between text-xs font-semibold mb-1">
+              <span class="text-slate-700">${escapeHTML(method)}</span>
+              <span class="text-slate-900 font-bold">${formatBDT(amount)} <span class="text-slate-400 font-normal">(${pct}%)</span></span>
+            </div>
+            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div class="${barColors[method] || 'bg-cyan-500'} h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const dueListEl = document.getElementById('dashboard-due-list');
+      const dueInvoices = appState.invoices.filter(inv => (Number(inv.dueAmount) || 0) > 0);
+      if (dueInvoices.length === 0) {
+        dueListEl.innerHTML = `
+          <div class="text-center py-8 bg-emerald-50/50 rounded-xl border border-emerald-100">
+            <i class="fa-solid fa-circle-check text-2xl text-emerald-500 mb-1.5"></i>
+            <p class="text-xs font-bold text-emerald-800">কোনো কাস্টমারের কাছে বাকি নেই!</p>
+            <p class="text-[11px] text-emerald-600">সব বিল নগদ পরিশোধ রয়েছে।</p>
+          </div>
+        `;
+      } else {
+        dueListEl.innerHTML = dueInvoices.map(inv => `
+          <div class="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-rose-50/60 border border-rose-200/80">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-sm text-slate-900">${escapeHTML(inv.clientName)}</span>
+                <span class="text-[11px] font-mono font-semibold text-slate-500">(${escapeHTML(inv.invoiceNo)})</span>
+              </div>
+              <p class="text-xs text-slate-600"><i class="fa-solid fa-phone text-[10px] mr-1"></i>${escapeHTML(inv.clientPhone)} • তারিখ: ${inv.date}</p>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <div class="text-right">
+                <span class="block text-[10px] text-rose-600 font-bold uppercase">বাকি (Due)</span>
+                <span class="text-sm font-extrabold text-rose-600">${formatBDT(inv.dueAmount)}</span>
+              </div>
+              <button onclick="openDueModal('${inv.id}')" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition">
+                বাকি আদায়
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      const recentTbody = document.getElementById('dashboard-recent-tbody');
+      const recent = [...appState.invoices].slice(0, 5);
+      if (recent.length === 0) {
+        recentTbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-400 text-xs">কোনো ইনভয়েস পাওয়া যায়নি।</td></tr>`;
+      } else {
+        recentTbody.innerHTML = recent.map(inv => {
+          const status = getInvoiceStatusInfo(inv);
+          return `
+            <tr class="hover:bg-slate-50/80 transition">
+              <td class="py-3 px-4 font-mono text-xs font-bold text-blue-700">${escapeHTML(inv.invoiceNo)}</td>
+              <td class="py-3 px-4 text-xs text-slate-600">${inv.date}</td>
+              <td class="py-3 px-4">
+                <p class="font-bold text-slate-900 text-xs sm:text-sm">${escapeHTML(inv.clientName)}</p>
+                <p class="text-[11px] text-slate-500">${escapeHTML(inv.clientPhone)}</p>
+              </td>
+              <td class="py-3 px-4 text-right font-bold text-slate-900">${formatBDT(inv.grandTotal)}</td>
+              <td class="py-3 px-4 text-right font-semibold text-emerald-600">${formatBDT(inv.paidAmount)}</td>
+              <td class="py-3 px-4 text-right font-bold text-rose-600">${formatBDT(inv.dueAmount)}</td>
+              <td class="py-3 px-4 text-center">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${status.badgeClass}">${status.label}</span>
+              </td>
+              <td class="py-3 px-4 text-right">
+                <button onclick="openInvoicePrintModal('${inv.id}')" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition">
+                  <i class="fa-solid fa-print mr-1 text-cyan-400"></i> প্যাড
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+    }
+
+    // =========================================================================
+    // 6. NEW INVOICE / POS BILLING LOGIC
+    // =========================================================================
+    function generateNextInvoiceNumber() {
+      const year = new Date().getFullYear();
+      const count = appState.invoices.length + 1;
+      const padded = String(count).padStart(3, '0');
+      let candidate = `GN-${year}-${padded}`;
+      let bump = count;
+      while (appState.invoices.some(i => i.invoiceNo === candidate)) {
+        bump++;
+        candidate = `GN-${year}-${String(bump).padStart(3, '0')}`;
+      }
+      return candidate;
+    }
+
+    function initNewInvoiceForm() {
+      document.getElementById('bill-inv-no').value = generateNextInvoiceNumber();
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('bill-date').value = today;
+
+      const clientMap = new Map();
+      appState.invoices.forEach(inv => {
+        if (inv.clientName) {
+          clientMap.set(inv.clientPhone || inv.clientName, {
+            name: inv.clientName,
+            phone: inv.clientPhone || '',
+            address: inv.clientAddress || ''
+          });
+        }
+      });
+      const clientSel = document.getElementById('saved-client-selector');
+      clientSel.innerHTML = `<option value="">-- সিলেক্ট করুন (${clientMap.size}) --</option>` +
+        Array.from(clientMap.entries()).map(([key, c]) =>
+          `<option value="${escapeHTML(key)}">${escapeHTML(c.name)} (${escapeHTML(c.phone)})</option>`
+        ).join('');
+
+      const prodSel = document.getElementById('catalog-product-picker');
+      prodSel.innerHTML = `<option value="">-- ক্যাটালগ থেকে প্রোডাক্ট সিলেক্ট করুন (${appState.products.length}) --</option>` +
+        appState.products.map(p => {
+          const priceLabel = p.isFree || Number(p.price) === 0 ? 'FREE (৳0)' : formatBDT(p.price);
+          return `<option value="${p.id}">${escapeHTML(p.name)} [${escapeHTML(p.model)}] — ${priceLabel}</option>`;
+        }).join('');
+
+      renderDraftBillItems();
+    }
+
+    function fillClientFromSaved(key) {
+      if (!key) return;
+      const found = appState.invoices.find(inv => (inv.clientPhone || inv.clientName) === key);
+      if (found) {
+        document.getElementById('bill-client-name').value = found.clientName;
+        document.getElementById('bill-client-phone').value = found.clientPhone;
+        document.getElementById('bill-client-address').value = found.clientAddress;
+        checkCustomerPreviousDue();
+        showToast('পুরানো ক্লায়েন্টের তথ্য লোড হয়েছে', 'info');
+      }
+    }
+
+    function checkCustomerPreviousDue() {
+      const phone = (document.getElementById('bill-client-phone').value || '').trim().toLowerCase();
+      const name = (document.getElementById('bill-client-name').value || '').trim().toLowerCase();
+      const banner = document.getElementById('bill-prev-due-banner');
+      if (!phone && !name) {
+        banner.classList.add('hidden');
+        return;
+      }
+      const prevDue = appState.invoices
+        .filter(inv => {
+          const matchPhone = phone && (inv.clientPhone || '').trim().toLowerCase() === phone;
+          const matchName = !phone && name && (inv.clientName || '').trim().toLowerCase() === name;
+          return matchPhone || matchName;
+        })
+        .reduce((sum, inv) => sum + (Number(inv.dueAmount) || 0), 0);
+
+      if (prevDue > 0) {
+        document.getElementById('bill-prev-due-amount').textContent = formatBDT(prevDue);
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    function selectCatalogProduct(prodId) {
+      if (!prodId) return;
+      const prod = appState.products.find(p => p.id === prodId);
+      if (!prod) return;
+      document.getElementById('item-name-input').value = prod.name;
+      document.getElementById('item-model-input').value = prod.model;
+      document.getElementById('item-qty-input').value = 1;
+      document.getElementById('item-price-input').value = prod.isFree ? 0 : prod.price;
+      document.getElementById('item-is-free-check').checked = Boolean(prod.isFree || Number(prod.price) === 0);
+    }
+
+    function toggleFreeItemPrice(isFree) {
+      const priceInput = document.getElementById('item-price-input');
+      if (isFree) {
+        priceInput.value = 0;
+      }
+    }
+
+    function addLineItemToBill() {
+      const name = document.getElementById('item-name-input').value.trim();
+      const model = document.getElementById('item-model-input').value.trim() || 'STD-01';
+      const qty = Math.max(1, Number(document.getElementById('item-qty-input').value) || 1);
+      const isFree = document.getElementById('item-is-free-check').checked;
+      const rate = isFree ? 0 : Math.max(0, Number(document.getElementById('item-price-input').value) || 0);
+
+      if (!name) {
+        showToast('অনুগ্রহ করে প্রোডাক্ট বা সার্ভিসের নাম লিখুন', 'error');
+        document.getElementById('item-name-input').focus();
+        return;
+      }
+
+      const matchedCatalog = appState.products.find(p => p.name.toLowerCase() === name.toLowerCase());
+      const buyPrice = matchedCatalog ? (Number(matchedCatalog.buyPrice) || 0) : 0;
+      const total = qty * rate;
+      draftBillItems.push({ name, model, qty, buyPrice, rate, total, isFree: isFree || rate === 0 });
+
+      document.getElementById('catalog-product-picker').value = '';
+      document.getElementById('item-name-input').value = '';
+      document.getElementById('item-model-input').value = '';
+      document.getElementById('item-qty-input').value = 1;
+      document.getElementById('item-price-input').value = 0;
+      document.getElementById('item-is-free-check').checked = false;
+
+      renderDraftBillItems();
+      showToast('আইটেম বিলে যুক্ত হয়েছে', 'success');
+    }
+
+    function removeDraftItem(index) {
+      draftBillItems.splice(index, 1);
+      renderDraftBillItems();
+    }
+
+    function renderDraftBillItems() {
+      const tbody = document.getElementById('bill-draft-items-tbody');
+      if (draftBillItems.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="py-8 text-center text-slate-400 text-xs">
+              এখনো কোনো প্রোডাক্ট যোগ করা হয়নি। উপরের ফর্ম থেকে প্রোডাক্ট যোগ করুন।
+            </td>
+          </tr>
+        `;
+      } else {
+        tbody.innerHTML = draftBillItems.map((item, idx) => `
+          <tr class="hover:bg-slate-50">
+            <td class="py-2.5 px-3 text-xs font-bold text-slate-500">${idx + 1}</td>
+            <td class="py-2.5 px-3 font-semibold text-slate-900">
+              ${escapeHTML(item.name)}
+              ${item.isFree ? '<span class="ml-1.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-700">FREE / GIFT</span>' : ''}
+            </td>
+            <td class="py-2.5 px-3 font-mono text-xs text-slate-600">${escapeHTML(item.model)}</td>
+            <td class="py-2.5 px-3 text-center font-bold">${item.qty}</td>
+            <td class="py-2.5 px-3 text-right text-slate-700">${formatBDT(item.rate)}</td>
+            <td class="py-2.5 px-3 text-right font-extrabold text-slate-900">${item.isFree ? 'FREE (৳0)' : formatBDT(item.total)}</td>
+            <td class="py-2.5 px-3 text-center">
+              <button type="button" onclick="removeDraftItem(${idx})" class="w-7 h-7 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      }
+      recalculateBillTotals(false);
+    }
+
+    function recalculateBillTotals(manualPaidEdit = false) {
+      if (manualPaidEdit) userEditedPaidManually = true;
+
+      const subtotal = draftBillItems.reduce((sum, item) => sum + item.total, 0);
+      const discType = document.getElementById('bill-discount-type').value;
+      const rawDisc = Math.max(0, Number(document.getElementById('bill-discount-input').value) || 0);
+      const discount = discType === 'PCT' ? Math.min(subtotal, (subtotal * rawDisc) / 100) : Math.min(subtotal, rawDisc);
+
+      const afterDisc = Math.max(0, subtotal - discount);
+      const vatPercent = Math.max(0, Math.min(100, Number(document.getElementById('bill-vat-input').value) || 0));
+      const vatAmount = (afterDisc * vatPercent) / 100;
+      const grandTotal = afterDisc + vatAmount;
+
+      const payMethod = document.getElementById('bill-pay-method').value;
+      const paidInput = document.getElementById('bill-paid-input');
+      if (!userEditedPaidManually) {
+        paidInput.value = payMethod === 'বাকি (Credit/Due)' ? 0 : Math.round(grandTotal * 100) / 100;
+      }
+
+      const paidAmount = Math.max(0, Number(paidInput.value) || 0);
+      const changeAmount = paidAmount > grandTotal ? Math.round((paidAmount - grandTotal) * 100) / 100 : 0;
+      const dueAmount = grandTotal > paidAmount ? Math.round((grandTotal - paidAmount) * 100) / 100 : 0;
+
+      document.getElementById('calc-subtotal').textContent = formatBDT(subtotal);
+      document.getElementById('calc-vat-amount').textContent = `+ ${formatBDT(vatAmount)}`;
+      document.getElementById('calc-grand-total').textContent = formatBDT(grandTotal);
+      document.getElementById('calc-due-amount').textContent = formatBDT(dueAmount);
+
+      const changeBox = document.getElementById('calc-change-box');
+      if (changeAmount > 0) {
+        document.getElementById('calc-change-amount').textContent = formatBDT(changeAmount);
+        changeBox.classList.remove('hidden');
+        changeBox.classList.add('flex');
+      } else {
+        changeBox.classList.add('hidden');
+        changeBox.classList.remove('flex');
+      }
+
+      const statusPill = document.getElementById('live-bill-status-pill');
+      if (grandTotal === 0 || dueAmount === 0) {
+        statusPill.textContent = 'PAID (নগদ পরিশোধ)';
+        statusPill.className = 'px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+      } else if (paidAmount > 0 && dueAmount > 0) {
+        statusPill.textContent = 'PARTIAL (আংশিক বাকি)';
+        statusPill.className = 'px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/30';
+      } else {
+        statusPill.textContent = 'DUE (সম্পূর্ণ বাকি)';
+        statusPill.className = 'px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-rose-500/20 text-rose-400 border border-rose-500/30';
+      }
+    }
+
+    function handlePaymentMethodChange() {
+      const payMethod = document.getElementById('bill-pay-method').value;
+      userEditedPaidManually = false;
+      if (payMethod === 'বাকি (Credit/Due)') {
+        document.getElementById('bill-paid-input').value = 0;
+        userEditedPaidManually = true;
+      }
+      recalculateBillTotals(userEditedPaidManually);
+    }
+
+    function setFullPaidAmount() {
+      userEditedPaidManually = false;
+      recalculateBillTotals(false);
+    }
+
+    function resetInvoiceForm() {
+      draftBillItems = [];
+      userEditedPaidManually = false;
+      document.getElementById('bill-client-name').value = '';
+      document.getElementById('bill-client-phone').value = '';
+      document.getElementById('bill-client-address').value = '';
+      document.getElementById('bill-prev-due-banner').classList.add('hidden');
+      document.getElementById('bill-discount-input').value = 0;
+      document.getElementById('bill-discount-type').value = 'BDT';
+      document.getElementById('bill-vat-input').value = 0;
+      document.getElementById('bill-paid-input').value = 0;
+      document.getElementById('bill-note-input').value = '';
+      initNewInvoiceForm();
+    }
+
+    function handleSaveInvoice(event) {
+      event.preventDefault();
+      if (draftBillItems.length === 0) {
+        showToast('বিলে কমপক্ষে ১টি প্রোডাক্ট যোগ করুন!', 'error');
+        return;
+      }
+
+      const invoiceNo = document.getElementById('bill-inv-no').value.trim();
+      const date = document.getElementById('bill-date').value;
+      const clientName = document.getElementById('bill-client-name').value.trim();
+      const clientPhone = document.getElementById('bill-client-phone').value.trim();
+      const clientAddress = document.getElementById('bill-client-address').value.trim();
+      const paymentMethod = document.getElementById('bill-pay-method').value;
+      const note = document.getElementById('bill-note-input').value.trim();
+
+      const subtotal = draftBillItems.reduce((sum, item) => sum + item.total, 0);
+      const discType = document.getElementById('bill-discount-type').value;
+      const rawDisc = Math.max(0, Number(document.getElementById('bill-discount-input').value) || 0);
+      const discount = discType === 'PCT' ? Math.min(subtotal, (subtotal * rawDisc) / 100) : Math.min(subtotal, rawDisc);
+      const afterDisc = Math.max(0, subtotal - discount);
+      const vatPercent = Math.max(0, Math.min(100, Number(document.getElementById('bill-vat-input').value) || 0));
+      const vatAmount = (afterDisc * vatPercent) / 100;
+      const grandTotal = afterDisc + vatAmount;
+
+      const rawPaid = Math.max(0, Number(document.getElementById('bill-paid-input').value) || 0);
+      const changeAmount = rawPaid > grandTotal ? Math.round((rawPaid - grandTotal) * 100) / 100 : 0;
+      const effectivePaid = Math.min(grandTotal, rawPaid);
+      const dueAmount = grandTotal > rawPaid ? Math.round((grandTotal - rawPaid) * 100) / 100 : 0;
+
+      const newInvoice = {
+        id: 'inv-' + Date.now(),
+        invoiceNo,
+        date,
+        clientName,
+        clientPhone,
+        clientAddress,
+        items: JSON.parse(JSON.stringify(draftBillItems)),
+        subtotal,
+        discount,
+        vatPercent,
+        vatAmount,
+        grandTotal,
+        paidAmount: effectivePaid,
+        changeAmount,
+        dueAmount,
+        paymentMethod,
+        note
+      };
+
+      appState.invoices.unshift(newInvoice);
+
+      // Save lightweight column data to Supabase (no PDF blob stored)
+      if (isSupabaseConnected) {
+        _supabase.from('pos_invoices').insert([{
+          invoice_no: newInvoice.invoiceNo,
+          invoice_date: newInvoice.date,
+          client_name: newInvoice.clientName,
+          client_phone: newInvoice.clientPhone,
+          client_address: newInvoice.clientAddress,
+          items: newInvoice.items,
+          subtotal: newInvoice.subtotal,
+          discount: newInvoice.discount,
+          vat_percent: newInvoice.vatPercent,
+          vat_amount: newInvoice.vatAmount,
+          grand_total: newInvoice.grandTotal,
+          paid_amount: newInvoice.paidAmount,
+          change_amount: newInvoice.changeAmount,
+          due_amount: newInvoice.dueAmount,
+          payment_method: newInvoice.paymentMethod,
+          note: newInvoice.note,
+          created_by: currentAdminUserEmail
+        }]).select().single().then(({ data, error }) => {
+          if (error) {
+            console.error('Supabase insert error:', error.message);
+          } else if (data && data.id) {
+            newInvoice.id = data.id;
+            saveState();
+          }
+        });
+      }
+
+      const saveNewToCatalog = document.getElementById('save-new-product-to-catalog').checked;
+      draftBillItems.forEach(item => {
+        const existingProd = appState.products.find(p => p.name.toLowerCase() === item.name.toLowerCase());
+        if (existingProd) {
+          if (!existingProd.isFree && Number(existingProd.stock) > 0) {
+            existingProd.stock = Math.max(0, Number(existingProd.stock) - Number(item.qty));
+            if (isSupabaseConnected && /^[0-9a-f-]{36}$/i.test(existingProd.id)) {
+              _supabase.from('pos_products').update({ stock: existingProd.stock }).eq('id', existingProd.id);
+            }
+          }
+        } else if (saveNewToCatalog) {
+          const newProdObj = {
+            id: 'prod-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+            name: item.name,
+            model: item.model || 'STD-01',
+            category: item.isFree ? 'Free Resource' : 'Shop / Retail Item',
+            buyPrice: 0,
+            price: item.rate,
+            stock: 99,
+            isFree: Boolean(item.isFree),
+            downloadNote: ''
+          };
+          appState.products.unshift(newProdObj);
+          if (isSupabaseConnected) {
+            _supabase.from('pos_products').insert([{
+              name: newProdObj.name,
+              model: newProdObj.model,
+              category: newProdObj.category,
+              buy_price: 0,
+              price: newProdObj.price,
+              stock: newProdObj.stock,
+              is_free: newProdObj.isFree,
+              download_note: ''
+            }]);
+          }
+        }
+      });
+
+      saveState();
+      resetInvoiceForm();
+      renderDashboard();
+      showToast(`ইনভয়েস ${invoiceNo} সফলভাবে সেভ হয়েছে!`, 'success');
+      openInvoicePrintModal(newInvoice.id);
+    }
+
+    function getInvoiceStatusInfo(inv) {
+      const due = Number(inv.dueAmount) || 0;
+      const paid = Number(inv.paidAmount) || 0;
+      const total = Number(inv.grandTotal) || 0;
+      if (total === 0 || due === 0) {
+        return {
+          code: 'Paid',
+          label: 'PAID (নগদ)',
+          badgeClass: 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+        };
+      }
+      if (paid > 0 && due > 0) {
+        return {
+          code: 'Partial',
+          label: 'PARTIAL (আংশিক)',
+          badgeClass: 'bg-amber-100 text-amber-800 border border-amber-300'
+        };
+      }
+      return {
+        code: 'Due',
+        label: 'DUE (বাকি)',
+        badgeClass: 'bg-rose-100 text-rose-800 border border-rose-300'
+      };
+    }
+
+    function setInvoicePrintFormat(fmt) {
+      currentPrintFormat = fmt;
+      const sheet = document.getElementById('printable-invoice-sheet');
+      const btnA4 = document.getElementById('btn-format-a4');
+      const btnTh = document.getElementById('btn-format-thermal');
+
+      if (fmt === 'THERMAL') {
+        sheet.classList.add('thermal-mode');
+        document.body.classList.add('print-thermal');
+        btnTh.className = 'px-3 py-1 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950 transition';
+        btnA4.className = 'px-3 py-1 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition';
+      } else {
+        sheet.classList.remove('thermal-mode');
+        document.body.classList.remove('print-thermal');
+        btnA4.className = 'px-3 py-1 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950 transition';
+        btnTh.className = 'px-3 py-1 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition';
+      }
+    }
+
+    function triggerPrintWithFormat() {
+      if (currentPrintFormat === 'THERMAL') {
+        document.body.classList.add('print-thermal');
+      } else {
+        document.body.classList.remove('print-thermal');
+      }
+      window.print();
+    }
+
+    function openInvoicePrintModal(invoiceId) {
+      const inv = appState.invoices.find(i => i.id === invoiceId);
+      if (!inv) return;
+
+      setInvoicePrintFormat('A4');
+      const s = appState.settings;
+      document.getElementById('pad-company-name').textContent = s.companyName;
+      document.getElementById('pad-company-tagline').textContent = s.tagline;
+      document.getElementById('pad-company-contact').innerHTML = `<i class="fa-solid fa-globe text-cyan-600 mr-1"></i> ${escapeHTML(s.website)} &nbsp;|&nbsp; <i class="fa-solid fa-phone text-cyan-600 mr-1"></i> ${escapeHTML(s.phone)}`;
+      document.getElementById('pad-company-address').textContent = `${s.address} | ${s.email}`;
+      document.getElementById('pad-pay-accounts').textContent = s.paymentInfo;
+      document.getElementById('pad-terms-text').innerHTML = escapeHTML(s.terms).replace(/\n/g, '<br>');
+
+      document.getElementById('pad-inv-no').textContent = inv.invoiceNo;
+      document.getElementById('pad-inv-date').textContent = inv.date;
+
+      const status = getInvoiceStatusInfo(inv);
+      const badgeEl = document.getElementById('pad-status-badge');
+      badgeEl.textContent = status.label;
+      badgeEl.className = `inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${status.badgeClass}`;
+
+      document.getElementById('pad-client-name').textContent = inv.clientName;
+      document.getElementById('pad-client-phone').innerHTML = `<i class="fa-solid fa-phone mr-1.5 text-slate-400"></i> ${escapeHTML(inv.clientPhone)}`;
+      document.getElementById('pad-client-address').innerHTML = `<i class="fa-solid fa-location-dot mr-1.5 text-slate-400"></i> ${escapeHTML(inv.clientAddress || 'Bangladesh')}`;
+
+      const otherDue = appState.invoices
+        .filter(other => other.id !== inv.id && (other.clientPhone || '').trim() === (inv.clientPhone || '').trim())
+        .reduce((sum, other) => sum + (Number(other.dueAmount) || 0), 0);
+      const prevDueEl = document.getElementById('pad-prev-due-line');
+      if (otherDue > 0) {
+        prevDueEl.textContent = `অন্য বিলে আগের বাকি: ${formatBDT(otherDue)}`;
+        prevDueEl.classList.remove('hidden');
+      } else {
+        prevDueEl.classList.add('hidden');
+      }
+
+      document.getElementById('pad-pay-method').textContent = inv.paymentMethod;
+
+      const tbody = document.getElementById('pad-items-tbody');
+      tbody.innerHTML = inv.items.map((item, i) => `
+        <tr>
+          <td class="py-2.5 px-3 text-center font-semibold text-slate-600">${String(i + 1).padStart(2, '0')}</td>
+          <td class="py-2.5 px-3 font-bold text-slate-900">
+            ${escapeHTML(item.name)}
+            ${item.isFree ? '<span class="ml-1.5 px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-extrabold uppercase">FREE GIFT</span>' : ''}
+          </td>
+          <td class="py-2.5 px-3 font-mono text-xs text-slate-600 pad-hide-thermal">${escapeHTML(item.model)}</td>
+          <td class="py-2.5 px-3 text-center font-bold">${item.qty}</td>
+          <td class="py-2.5 px-3 text-right pad-hide-thermal">${formatBDT(item.rate)}</td>
+          <td class="py-2.5 px-3 text-right font-extrabold text-slate-900">${item.isFree ? 'FREE (৳0)' : formatBDT(item.total)}</td>
+        </tr>
+      `).join('');
+
+      document.getElementById('pad-subtotal').textContent = formatBDT(inv.subtotal);
+      document.getElementById('pad-discount').textContent = `- ${formatBDT(inv.discount)}`;
+
+      const vatRow = document.getElementById('pad-vat-row');
+      if (Number(inv.vatAmount) > 0) {
+        document.getElementById('pad-vat-label').textContent = `VAT (${inv.vatPercent || 0}%):`;
+        document.getElementById('pad-vat-amount').textContent = `+ ${formatBDT(inv.vatAmount)}`;
+        vatRow.classList.remove('hidden');
+        vatRow.classList.add('flex');
+      } else {
+        vatRow.classList.add('hidden');
+        vatRow.classList.remove('flex');
+      }
+
+      document.getElementById('pad-grand-total').textContent = formatBDT(inv.grandTotal);
+      document.getElementById('pad-paid-amount').textContent = formatBDT(inv.paidAmount);
+
+      const changeRow = document.getElementById('pad-change-row');
+      if (Number(inv.changeAmount) > 0) {
+        document.getElementById('pad-change-amount').textContent = formatBDT(inv.changeAmount);
+        changeRow.classList.remove('hidden');
+        changeRow.classList.add('flex');
+      } else {
+        changeRow.classList.add('hidden');
+        changeRow.classList.remove('flex');
+      }
+
+      document.getElementById('pad-due-amount').textContent = formatBDT(inv.dueAmount);
+      document.getElementById('pad-custom-note').textContent = inv.note ? `Note: ${inv.note}` : '';
+
+      document.getElementById('pad-seal-visual').innerHTML = getSealHTML(inv.date);
+      document.getElementById('pad-sign-visual').innerHTML = getSignatureHTML();
+      document.getElementById('pad-signatory-name').textContent = s.signatoryName || 'Authorized Signatory';
+
+      renderAllLogosAndBranding();
+
+      const modal = document.getElementById('invoice-print-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeInvoiceModal() {
+      const modal = document.getElementById('invoice-print-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // =========================================================================
+    // 8. INVOICE LEDGER, DUE COLLECTION & DELETION
+    // =========================================================================
+    function setInvoiceFilter(filter) {
+      currentInvoiceFilter = filter;
+      document.querySelectorAll('.inv-filter-btn').forEach(btn => {
+        if (btn.dataset.filter === filter) {
+          btn.classList.add('bg-slate-900', 'text-white');
+          btn.classList.remove('bg-slate-100', 'text-slate-600', 'bg-rose-50', 'text-rose-600');
+        } else {
+          btn.classList.remove('bg-slate-900', 'text-white');
+          if (btn.dataset.filter === 'Due') {
+            btn.classList.add('bg-rose-50', 'text-rose-600');
+          } else {
+            btn.classList.add('bg-slate-100', 'text-slate-600');
+          }
+        }
+      });
+      renderInvoicesLedger();
+    }
+
+    function renderInvoicesLedger() {
+      const query = (document.getElementById('invoice-search-input').value || '').toLowerCase().trim();
+      const filtered = appState.invoices.filter(inv => {
+        const status = getInvoiceStatusInfo(inv);
+        if (currentInvoiceFilter === 'Paid' && status.code !== 'Paid') return false;
+        if (currentInvoiceFilter === 'Due' && status.code === 'Paid') return false;
+
+        if (query) {
+          const hay = `${inv.invoiceNo} ${inv.clientName} ${inv.clientPhone} ${inv.clientAddress}`.toLowerCase();
+          return hay.includes(query);
+        }
+        return true;
+      });
+
+      const tbody = document.getElementById('ledger-invoices-tbody');
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="py-10 text-center text-slate-400 text-sm">কোনো ইনভয়েস পাওয়া যায়নি।</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(inv => {
+        const status = getInvoiceStatusInfo(inv);
+        const itemSummary = inv.items.map(i => `${i.name} (x${i.qty})`).join(', ');
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3.5 px-4 font-mono text-xs font-extrabold text-blue-700">${escapeHTML(inv.invoiceNo)}</td>
+            <td class="py-3.5 px-4 text-xs text-slate-600 whitespace-nowrap">${inv.date}</td>
+            <td class="py-3.5 px-4">
+              <p class="font-bold text-slate-900 text-sm">${escapeHTML(inv.clientName)}</p>
+              <p class="text-xs text-slate-500">${escapeHTML(inv.clientPhone)}</p>
+            </td>
+            <td class="py-3.5 px-4 text-xs text-slate-600 max-w-xs truncate" title="${escapeHTML(itemSummary)}">${escapeHTML(itemSummary)}</td>
+            <td class="py-3.5 px-4 text-right font-bold text-slate-900 whitespace-nowrap">${formatBDT(inv.grandTotal)}</td>
+            <td class="py-3.5 px-4 text-right font-semibold text-emerald-600 whitespace-nowrap">${formatBDT(inv.paidAmount)}</td>
+            <td class="py-3.5 px-4 text-right font-extrabold text-rose-600 whitespace-nowrap">${formatBDT(inv.dueAmount)}</td>
+            <td class="py-3.5 px-4 text-center whitespace-nowrap">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${status.badgeClass}">${status.label}</span>
+            </td>
+            <td class="py-3.5 px-4 text-right whitespace-nowrap">
+              <div class="inline-flex items-center gap-1.5">
+                ${Number(inv.dueAmount) > 0 ? `
+                  <button onclick="openDueModal('${inv.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition" title="বাকি টাকা জমা নিন">
+                    বাকি আদায়
+                  </button>
+                ` : ''}
+                <button onclick="openInvoicePrintModal('${inv.id}')" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition" title="প্রিন্ট / PDF">
+                  <i class="fa-solid fa-print text-cyan-400"></i>
+                </button>
+                <button onclick="deleteInvoice('${inv.id}')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-600 text-xs transition" title="মুছে ফেলুন">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openDueModal(invoiceId) {
+      const inv = appState.invoices.find(i => i.id === invoiceId);
+      if (!inv) return;
+      activeDueInvoiceId = invoiceId;
+      document.getElementById('due-modal-inv-label').textContent = `Invoice: ${inv.invoiceNo} (${inv.date})`;
+      document.getElementById('due-modal-client').textContent = `${inv.clientName} (${inv.clientPhone})`;
+      document.getElementById('due-modal-amount').textContent = formatBDT(inv.dueAmount);
+      document.getElementById('due-collect-input').value = inv.dueAmount;
+
+      const modal = document.getElementById('collect-due-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeDueModal() {
+      activeDueInvoiceId = null;
+      const modal = document.getElementById('collect-due-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function submitDueCollection() {
+      if (!activeDueInvoiceId) return;
+      const inv = appState.invoices.find(i => i.id === activeDueInvoiceId);
+      if (!inv) return;
+
+      const collected = Math.max(0, Number(document.getElementById('due-collect-input').value) || 0);
+      const method = document.getElementById('due-collect-method').value;
+
+      if (collected <= 0) {
+        showToast('সঠিক টাকার পরিমাণ লিখুন', 'error');
+        return;
+      }
+
+      const currentDue = Number(inv.dueAmount) || 0;
+      const applied = Math.min(currentDue, collected);
+      inv.paidAmount = Math.round(((Number(inv.paidAmount) || 0) + applied) * 100) / 100;
+      inv.dueAmount = Math.max(0, Math.round((currentDue - applied) * 100) / 100);
+      inv.paymentMethod = method;
+      inv.note = `${inv.note ? inv.note + ' | ' : ''}বাকি আদায় ${formatBDT(applied)} (${method})`;
+
+      if (isSupabaseConnected) {
+        _supabase.from('pos_invoices').update({
+          paid_amount: inv.paidAmount,
+          due_amount: inv.dueAmount,
+          payment_method: inv.paymentMethod,
+          note: inv.note
+        }).eq('invoice_no', inv.invoiceNo).then(({ error }) => {
+          if (error) console.error('Supabase due update error:', error.message);
+        });
+      }
+
+      saveState();
+      closeDueModal();
+      renderDashboard();
+      renderInvoicesLedger();
+      renderBakiKhata();
+      showToast(`${formatBDT(applied)} বাকি সফলভাবে জমা নেওয়া হয়েছে!`, 'success');
+    }
+
+    function deleteInvoice(invoiceId) {
+      showConfirmDialog(
+        'ইনভয়েস মুছে ফেলুন',
+        'আপনি কি নিশ্চিতভাবে এই ইনভয়েসটি স্থায়ীভাবে মুছে ফেলতে চান?',
+        () => {
+          const target = appState.invoices.find(i => i.id === invoiceId);
+          appState.invoices = appState.invoices.filter(i => i.id !== invoiceId);
+          if (isSupabaseConnected && target) {
+            _supabase.from('pos_invoices').delete().eq('invoice_no', target.invoiceNo);
+          }
+          saveState();
+          renderDashboard();
+          renderInvoicesLedger();
+          renderBakiKhata();
+          showToast('ইনভয়েস মুছে ফেলা হয়েছে', 'info');
+        }
+      );
+    }
+
+    function renderBakiKhata() {
+      const tbody = document.getElementById('baki-khata-tbody');
+      const map = new Map();
+
+      appState.invoices.forEach(inv => {
+        const key = (inv.clientPhone || inv.clientName || 'Unknown').trim().toLowerCase();
+        if (!map.has(key)) {
+          map.set(key, {
+            name: inv.clientName,
+            phone: inv.clientPhone,
+            address: inv.clientAddress || 'Bangladesh',
+            billCount: 0,
+            totalBill: 0,
+            totalPaid: 0,
+            totalDue: 0,
+            latestDueInvoiceId: null
+          });
+        }
+        const entry = map.get(key);
+        entry.billCount++;
+        entry.totalBill += Number(inv.grandTotal) || 0;
+        entry.totalPaid += Number(inv.paidAmount) || 0;
+        const due = Number(inv.dueAmount) || 0;
+        entry.totalDue += due;
+        if (due > 0 && !entry.latestDueInvoiceId) {
+          entry.latestDueInvoiceId = inv.id;
+        }
+      });
+
+      const customers = Array.from(map.values()).sort((a, b) => b.totalDue - a.totalDue);
+      if (customers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-10 text-center text-slate-400 text-sm">কোনো কাস্টমার ডেটা নেই।</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = customers.map(c => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="py-3.5 px-4">
+            <p class="font-bold text-slate-900">${escapeHTML(c.name)}</p>
+            <p class="text-xs text-slate-500">${escapeHTML(c.address)}</p>
+          </td>
+          <td class="py-3.5 px-4 text-xs font-semibold text-slate-700">${escapeHTML(c.phone)}</td>
+          <td class="py-3.5 px-4 text-center font-bold text-slate-700">${c.billCount}</td>
+          <td class="py-3.5 px-4 text-right font-bold text-slate-900">${formatBDT(c.totalBill)}</td>
+          <td class="py-3.5 px-4 text-right font-semibold text-emerald-600">${formatBDT(c.totalPaid)}</td>
+          <td class="py-3.5 px-4 text-right font-extrabold ${c.totalDue > 0 ? 'text-rose-600' : 'text-emerald-600'}">${formatBDT(c.totalDue)}</td>
+          <td class="py-3.5 px-4 text-right">
+            ${c.totalDue > 0 && c.latestDueInvoiceId ? `
+              <button onclick="openDueModal('${c.latestDueInvoiceId}')" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition">
+                জমা নিন (Collect)
+              </button>
+            ` : `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">বাকি শূন্য</span>`}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // =========================================================================
+    // 9. PRODUCT CATALOG & FREE DOWNLOADABLE RESOURCES
+    // =========================================================================
+    function toggleProductFreeFields(isFree) {
+      if (isFree) {
+        document.getElementById('prod-buy-price').value = 0;
+        document.getElementById('prod-price').value = 0;
+        document.getElementById('prod-category').value = 'Free Resource';
+      }
+    }
+
+    function handleSaveProduct(event) {
+      event.preventDefault();
+      const editId = document.getElementById('prod-edit-id').value;
+      const name = document.getElementById('prod-name').value.trim();
+      const model = document.getElementById('prod-model').value.trim();
+      const isFree = document.getElementById('prod-is-free').checked;
+      const buyPrice = isFree ? 0 : Math.max(0, Number(document.getElementById('prod-buy-price').value) || 0);
+      const price = isFree ? 0 : Math.max(0, Number(document.getElementById('prod-price').value) || 0);
+      const category = document.getElementById('prod-category').value;
+      const stock = Math.max(0, Number(document.getElementById('prod-stock').value) || 0);
+      const downloadNote = document.getElementById('prod-download-note').value.trim();
+
+      if (editId) {
+        const idx = appState.products.findIndex(p => p.id === editId);
+        if (idx !== -1) {
+          appState.products[idx] = { ...appState.products[idx], name, model, buyPrice, price, category, stock, isFree: isFree || price === 0, downloadNote };
+          if (isSupabaseConnected && /^[0-9a-f-]{36}$/i.test(editId)) {
+            _supabase.from('pos_products').update({
+              name, model, buy_price: buyPrice, price, category, stock, is_free: isFree || price === 0, download_note: downloadNote
+            }).eq('id', editId);
+          }
+          showToast('প্রোডাক্ট আপডেট করা হয়েছে', 'success');
+        }
+      } else {
+        const newProd = {
+          id: 'prod-' + Date.now(),
+          name,
+          model,
+          buyPrice,
+          price,
+          category,
+          stock,
+          isFree: isFree || price === 0,
+          downloadNote
+        };
+        appState.products.unshift(newProd);
+        if (isSupabaseConnected) {
+          _supabase.from('pos_products').insert([{
+            name, model, buy_price: buyPrice, price, category, stock, is_free: isFree || price === 0, download_note: downloadNote
+          }]).select().single().then(({ data }) => {
+            if (data && data.id) newProd.id = data.id;
+            saveState();
+          });
+        }
+        showToast('নতুন প্রোডাক্ট ক্যাটালগে সেভ হয়েছে', 'success');
+      }
+
+      saveState();
+      resetProductForm();
+      renderProductsCatalog();
+      renderDashboard();
+    }
+
+    function editProduct(prodId) {
+      const p = appState.products.find(item => item.id === prodId);
+      if (!p) return;
+      document.getElementById('prod-edit-id').value = p.id;
+      document.getElementById('prod-name').value = p.name;
+      document.getElementById('prod-model').value = p.model;
+      document.getElementById('prod-buy-price').value = p.buyPrice || 0;
+      document.getElementById('prod-price').value = p.price;
+      document.getElementById('prod-category').value = p.category;
+      document.getElementById('prod-stock').value = p.stock;
+      document.getElementById('prod-is-free').checked = Boolean(p.isFree);
+      document.getElementById('prod-download-note').value = p.downloadNote || '';
+
+      document.getElementById('product-form-title').textContent = 'প্রোডাক্ট এডিট করুন';
+      document.getElementById('product-submit-label').textContent = 'আপডেট সেভ করুন';
+      document.getElementById('cancel-edit-product-btn').classList.remove('hidden');
+    }
+
+    function resetProductForm() {
+      document.getElementById('product-catalog-form').reset();
+      document.getElementById('prod-edit-id').value = '';
+      document.getElementById('prod-stock').value = 99;
+      document.getElementById('product-form-title').textContent = 'নতুন প্রোডাক্ট যোগ করুন';
+      document.getElementById('product-submit-label').textContent = 'ক্যাটালগে সেভ করুন';
+      document.getElementById('cancel-edit-product-btn').classList.add('hidden');
+    }
+
+    function deleteProduct(prodId) {
+      showConfirmDialog(
+        'প্রোডাক্ট মুছে ফেলুন',
+        'আপনি কি নিশ্চিতভাবে এই প্রোডাক্টটি ক্যাটালগ থেকে মুছে ফেলতে চান?',
+        () => {
+          appState.products = appState.products.filter(p => p.id !== prodId);
+          if (isSupabaseConnected && /^[0-9a-f-]{36}$/i.test(prodId)) {
+            _supabase.from('pos_products').delete().eq('id', prodId);
+          }
+          saveState();
+          renderProductsCatalog();
+          renderDashboard();
+          showToast('প্রোডাক্ট মুছে ফেলা হয়েছে', 'info');
+        }
+      );
+    }
+
+    function quickBillProduct(prodId) {
+      switchTab('new-invoice');
+      selectCatalogProduct(prodId);
+      addLineItemToBill();
+    }
+
+    function downloadFreeProductTemplate(prodId) {
+      const p = appState.products.find(item => item.id === prodId);
+      if (!p) return;
+
+      if (p.downloadNote && /^https?:\/\//i.test(p.downloadNote)) {
+        window.open(p.downloadNote, '_blank');
+      }
+
+      const content = `============================================================
+GREATNEXA — FREE CUSTOMIZABLE RESOURCE & TEMPLATE PACK
+Website: ${appState.settings.website}
+Phone: ${appState.settings.phone} | Email: ${appState.settings.email}
+============================================================
+Product Name: ${p.name}
+Model / SKU : ${p.model}
+Category    : ${p.category}
+License     : FREE FOR PERSONAL & COMMERCIAL CUSTOMIZATION
+Notes       : ${p.downloadNote || 'Ready to customize and use!'}
+Generated On: ${new Date().toLocaleDateString()}
+============================================================`;
+
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${p.model || 'GreatNexa-Free-Pack'}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast(`"${p.name}" ফ্রি প্যাক ডাউনলোড হয়েছে!`, 'success');
+    }
+
+    function renderProductsCatalog() {
+      const grid = document.getElementById('products-catalog-grid');
+      if (appState.products.length === 0) {
+        grid.innerHTML = `<div class="col-span-2 bg-white rounded-2xl p-10 text-center text-slate-400 text-sm border border-slate-200">ক্যাটালগে কোনো প্রোডাক্ট নেই। বাম পাশের ফর্ম থেকে যোগ করুন।</div>`;
+        return;
+      }
+
+      grid.innerHTML = appState.products.map(p => {
+        const isFree = p.isFree || Number(p.price) === 0;
+        const isLowStock = !isFree && Number(p.stock) <= 5;
+        return `
+          <div class="bg-white rounded-2xl p-5 border ${isFree ? 'border-emerald-200 bg-gradient-to-br from-white to-emerald-50/30' : isLowStock ? 'border-amber-300 bg-amber-50/20' : 'border-slate-200/90'} shadow-xs flex flex-col justify-between gap-4">
+            <div>
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-bold ${isFree ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-50 text-blue-700'}">
+                    ${escapeHTML(p.category)}
+                  </span>
+                  ${isLowStock ? `<span class="px-2 py-0.5 rounded-lg text-[10px] font-extrabold bg-amber-100 text-amber-800">LOW STOCK</span>` : ''}
+                </div>
+                <span class="font-mono text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                  ${escapeHTML(p.model)}
+                </span>
+              </div>
+
+              <h4 class="text-base font-extrabold text-slate-900 mt-2.5 leading-snug">${escapeHTML(p.name)}</h4>
+              ${p.downloadNote ? `<p class="text-xs text-slate-500 mt-1 line-clamp-2">${escapeHTML(p.downloadNote)}</p>` : ''}
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 space-y-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-[11px] text-slate-400 block">বিক্রয়মূল্য (Sell)</span>
+                  <span class="text-lg font-extrabold ${isFree ? 'text-emerald-600' : 'text-slate-900'}">
+                    ${isFree ? 'FREE (৳ 0)' : formatBDT(p.price)}
+                  </span>
+                  ${!isFree ? `<span class="block text-[10px] text-slate-400">ক্রয়: ${formatBDT(p.buyPrice || 0)}</span>` : ''}
+                </div>
+                <div class="text-right">
+                  <span class="text-[11px] text-slate-400 block">স্টক</span>
+                  <span class="text-xs font-bold ${isLowStock ? 'text-rose-600' : 'text-slate-700'}">${p.stock} টি</span>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <button onclick="quickBillProduct('${p.id}')" class="flex-1 py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition text-center">
+                  <i class="fa-solid fa-file-invoice mr-1 text-cyan-400"></i> বিল করুন
+                </button>
+                ${isFree ? `
+                  <button onclick="downloadFreeProductTemplate('${p.id}')" class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition" title="ফ্রি ডাউনলোড ও কাস্টমাইজ করুন">
+                    <i class="fa-solid fa-download mr-1"></i> ফ্রি ডাউনলোড
+                  </button>
+                ` : ''}
+                <button onclick="editProduct('${p.id}')" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs transition" title="এডিট">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button onclick="deleteProduct('${p.id}')" class="p-2 rounded-xl bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-600 text-xs transition" title="মুছুন">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // 10. SETTINGS, CUSTOM LOGO/SEAL/SIGN UPLOAD & OFFLINE EXPORT
+    // =========================================================================
+    function populateSettingsForm() {
+      const s = appState.settings;
+      document.getElementById('set-company-name').value = s.companyName;
+      document.getElementById('set-tagline').value = s.tagline;
+      document.getElementById('set-signatory-name').value = s.signatoryName || '';
+      document.getElementById('set-phone').value = s.phone;
+      document.getElementById('set-email').value = s.email;
+      document.getElementById('set-website').value = s.website;
+      document.getElementById('set-address').value = s.address;
+      document.getElementById('set-payment-info').value = s.paymentInfo;
+      document.getElementById('set-terms').value = s.terms;
+      document.getElementById('set-auto-seal-sign').checked = Boolean(s.autoSealAndSign);
+      renderAllLogosAndBranding();
+    }
+
+    function handleSaveSettings(event) {
+      event.preventDefault();
+      appState.settings.companyName = document.getElementById('set-company-name').value.trim() || 'GreatNexa';
+      appState.settings.tagline = document.getElementById('set-tagline').value.trim();
+      appState.settings.signatoryName = document.getElementById('set-signatory-name').value.trim() || 'Md. Hriday Ahammad';
+      appState.settings.phone = document.getElementById('set-phone').value.trim();
+      appState.settings.email = document.getElementById('set-email').value.trim();
+      appState.settings.website = document.getElementById('set-website').value.trim();
+      appState.settings.address = document.getElementById('set-address').value.trim();
+      appState.settings.paymentInfo = document.getElementById('set-payment-info').value.trim();
+      appState.settings.terms = document.getElementById('set-terms').value.trim();
+      appState.settings.autoSealAndSign = document.getElementById('set-auto-seal-sign').checked;
+
+      saveState();
+      renderAllLogosAndBranding();
+      showToast('প্রতিষ্ঠানের সেটিংস সফলভাবে সেভ হয়েছে!', 'success');
+    }
+
+    function toggleAutoSealSign(enabled) {
+      appState.settings.autoSealAndSign = Boolean(enabled);
+      saveState();
+      renderAllLogosAndBranding();
+      showToast(enabled ? 'অটো সিল ও সাক্ষর চালু করা হয়েছে' : 'অটো সিল ও সাক্ষর বন্ধ করা হয়েছে', 'info');
+    }
+
+    function handleAssetUpload(event, fieldName, successMsg) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        appState.settings[fieldName] = e.target.result;
+        saveState();
+        renderAllLogosAndBranding();
+        showToast(successMsg, 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetAsset(fieldName, msg) {
+      appState.settings[fieldName] = '';
+      saveState();
+      renderAllLogosAndBranding();
+      showToast(msg, 'info');
+    }
+
+    function exportBackupJSON() {
+      const dataStr = JSON.stringify(appState, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `GreatNexa-POS-Backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('সম্পূর্ণ ডেটা ব্যাকআপ (JSON) ডাউনলোড হয়েছে!', 'success');
+    }
+
+    function importBackupJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && Array.isArray(imported.invoices) && Array.isArray(imported.products)) {
+            appState = {
+              settings: { ...DEFAULT_STATE.settings, ...(imported.settings || {}) },
+              products: imported.products,
+              invoices: imported.invoices
+            };
+            saveState();
+            renderAllLogosAndBranding();
+            renderDashboard();
+            showToast('ব্যাকআপ ডেটা সফলভাবে রিস্টোর হয়েছে!', 'success');
+          } else {
+            showToast('সঠিক ব্যাকআপ JSON ফাইল নয়!', 'error');
+          }
+        } catch (err) {
+          showToast('ফাইল পড়তে সমস্যা হয়েছে!', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function downloadStandaloneHTML() {
+      const docClone = document.documentElement.cloneNode(true);
+      const htmlContent = '<!DOCTYPE html>\n' + docClone.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'AutomatedPOS.html';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('অফলাইন POS অ্যাপ (AutomatedPOS.html) ডাউনলোড শুরু হয়েছে!', 'success');
+    }
+
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // =========================================================================
+    // 11. SUPABASE AUTH CHECK & COLUMN SYNC ON LOAD
+    // =========================================================================
+    async function syncFromSupabase(showNotice = false) {
+      const statusEl = document.getElementById('supabase-sync-status');
+      try {
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (!session || !session.user) {
+          isSupabaseConnected = false;
+          if (statusEl) {
+            statusEl.className = 'text-amber-400 flex items-center gap-1.5 font-semibold';
+            statusEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400"></span> অফলাইন মোড';
+          }
+          return;
+        }
+
+        isSupabaseConnected = true;
+        currentAdminUserEmail = session.user.email || '';
+        if (statusEl) {
+          statusEl.className = 'text-emerald-400 flex items-center gap-1.5 font-semibold';
+          statusEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400"></span> Supabase লাইভ';
+        }
+
+        const { data: invRows, error: invErr } = await _supabase
+          .from('pos_invoices')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!invErr && Array.isArray(invRows) && invRows.length > 0) {
+          appState.invoices = invRows.map(r => ({
+            id: r.id,
+            invoiceNo: r.invoice_no,
+            date: r.invoice_date,
+            clientName: r.client_name,
+            clientPhone: r.client_phone || '',
+            clientAddress: r.client_address || '',
+            items: Array.isArray(r.items) ? r.items : [],
+            subtotal: Number(r.subtotal) || 0,
+            discount: Number(r.discount) || 0,
+            vatPercent: Number(r.vat_percent) || 0,
+            vatAmount: Number(r.vat_amount) || 0,
+            grandTotal: Number(r.grand_total) || 0,
+            paidAmount: Number(r.paid_amount) || 0,
+            changeAmount: Number(r.change_amount) || 0,
+            dueAmount: Number(r.due_amount) || 0,
+            paymentMethod: r.payment_method || 'Cash (নগদ)',
+            note: r.note || ''
+          }));
+        }
+
+        const { data: prodRows, error: prodErr } = await _supabase
+          .from('pos_products')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!prodErr && Array.isArray(prodRows) && prodRows.length > 0) {
+          appState.products = prodRows.map(p => ({
+            id: p.id,
+            name: p.name,
+            model: p.model || 'STD-01',
+            category: p.category || 'Course / Training',
+            buyPrice: Number(p.buy_price) || 0,
+            price: Number(p.price) || 0,
+            stock: Number(p.stock) || 0,
+            isFree: Boolean(p.is_free),
+            downloadNote: p.download_note || ''
+          }));
+        }
+
+        saveState();
+        renderDashboard();
+        initNewInvoiceForm();
+        if (showNotice) showToast('Supabase কলাম ডেটা সিঙ্ক সম্পন্ন হয়েছে!', 'success');
+      } catch (err) {
+        console.error('Supabase sync error:', err);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderAllLogosAndBranding();
+      renderDashboard();
+      initNewInvoiceForm();
+      syncFromSupabase(false);
+    });
+  </script>
+</body>
+</html>
