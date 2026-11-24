@@ -170,34 +170,52 @@
 </head>
 <body class="antialiased selection:bg-cyan-500 selection:text-white">
 
-  <!-- ADMIN ACCESS GUARD OVERLAY (Blocks unauthorized direct access) -->
-  <div id="admin-auth-gate" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950 text-white p-4">
+  <!-- ADMIN PASSWORD AUTHENTICATION GATE (Exact match with admin.html security) -->
+  <div id="admin-auth-gate" class="fixed inset-0 z-[200] flex items-center justify-center bg-[#02040a]/95 backdrop-blur-xl text-white p-4">
     <div id="auth-gate-loading" class="text-center space-y-3">
-      <div class="w-12 h-12 rounded-2xl bg-slate-900 border border-cyan-500/40 flex items-center justify-center mx-auto">
-        <i class="fa-solid fa-shield-halved text-cyan-400 text-xl animate-pulse"></i>
+      <div class="w-14 h-14 mx-auto bg-blue-600/20 border border-blue-500/30 rounded-2xl flex items-center justify-center text-2xl animate-pulse">
+        🛡️
       </div>
-      <p class="text-sm font-bold text-slate-200">অ্যাডমিন সেশন যাচাই করা হচ্ছে...</p>
-      <p class="text-xs text-slate-400">অনুগ্রহ করে অপেক্ষা করুন</p>
+      <p class="text-sm font-bold text-slate-200 font-mono">Verifying Admin Session...</p>
+      <p class="text-xs text-slate-400">Supabase Institutional Security Gateway</p>
     </div>
 
-    <div id="auth-gate-denied" class="hidden max-w-md w-full bg-slate-900 border border-rose-500/40 rounded-2xl p-6 sm:p-8 text-center shadow-2xl space-y-4">
-      <div class="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/40 text-rose-400 flex items-center justify-center mx-auto text-2xl">
-        <i class="fa-solid fa-lock"></i>
+    <div id="auth-gate-login" class="hidden w-full max-w-sm rounded-3xl p-6 sm:p-8 bg-[#0a101e]/90 border border-white/10 text-center shadow-2xl relative">
+      <div class="w-14 h-14 mx-auto mb-4 bg-blue-600/20 border border-blue-500/30 rounded-2xl flex items-center justify-center text-2xl">
+        🛡️
       </div>
-      <div>
-        <span class="px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-extrabold uppercase tracking-wider">Restricted Admin Area</span>
-        <h2 class="text-xl font-extrabold text-white mt-2">অ্যাক্সেস সংরক্ষিত (Access Denied)</h2>
-        <p class="text-xs sm:text-sm text-slate-300 mt-1.5 leading-relaxed">
-          এই POS ও ERP সিস্টেমটি শুধুমাত্র অনুমোদিত অ্যাডমিনদের জন্য সংরক্ষিত। সরাসরি লিংকে প্রবেশ করা অনুমোদিত নয়। অনুগ্রহ করে অ্যাডমিন প্যানেল থেকে লগইন করে প্রবেশ করুন।
-        </p>
-      </div>
-      <div class="pt-2 flex flex-col sm:flex-row gap-2.5 justify-center">
-        <a href="admin.html" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-extrabold text-xs sm:text-sm shadow-lg flex items-center justify-center gap-2 transition">
-          <i class="fa-solid fa-right-to-bracket"></i><span>অ্যাডমিন প্যানেলে যান (Admin Login)</span>
-        </a>
-        <a href="index.html" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs sm:text-sm transition">
-          হোমপেজ
-        </a>
+      <h2 class="text-xl font-bold text-white mb-1">POS Admin Authentication</h2>
+      <p class="text-xs text-gray-400 mb-6">Supabase Institutional Security Gateway</p>
+
+      <form onsubmit="handlePosAdminLogin(event)" class="space-y-4 text-left">
+        <div>
+          <label class="block text-[11px] font-mono text-gray-400 mb-1">Admin Email</label>
+          <input type="email" id="posAdminEmail" required placeholder="admin@greatnexa.com"
+                 class="w-full text-xs font-mono bg-[#0b1324] border border-white/15 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
+        </div>
+        
+        <div>
+          <label class="block text-[11px] font-mono text-gray-400 mb-1">Secure Password</label>
+          <div class="relative">
+            <input type="password" id="posAdminPassword" required placeholder="••••••••••••"
+                   class="w-full text-xs font-mono bg-[#0b1324] border border-white/15 text-white rounded-xl pl-4 pr-10 py-3 focus:outline-none focus:border-blue-500">
+            <button type="button" onclick="togglePosPasswordVisibility()" 
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white cursor-pointer focus:outline-none">
+              <span id="posEyeIcon">👁️</span>
+            </button>
+          </div>
+        </div>
+        
+        <div id="posLoginError" class="text-rose-400 text-xs hidden font-medium leading-relaxed"></div>
+
+        <button type="submit" id="btnPosAdminLogin" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer font-mono">
+          Verify & Unlock POS
+        </button>
+      </form>
+
+      <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-gray-400">
+        <a href="admin.html" class="text-cyan-400 hover:underline">← Admin Suite</a>
+        <a href="index.html" class="hover:text-white">Home</a>
       </div>
     </div>
   </div>
@@ -713,9 +731,14 @@
             <button onclick="syncFromSupabase(true)" class="text-cyan-400 hover:underline font-semibold">Sync</button>
           </div>
         </div>
-        <a href="admin.html" class="flex items-center justify-center gap-2 text-xs font-bold bg-slate-900 hover:bg-slate-800 text-cyan-400 py-2 rounded-xl border border-slate-800 transition">
-          <i class="fa-solid fa-shield-halved"></i><span>Back to Admin Suite</span>
-        </a>
+        <div class="grid grid-cols-2 gap-2">
+          <a href="admin.html" class="flex items-center justify-center gap-1.5 text-xs font-bold bg-slate-900 hover:bg-slate-800 text-cyan-400 py-2 rounded-xl border border-slate-800 transition">
+            <i class="fa-solid fa-shield-halved"></i><span>Admin Suite</span>
+          </a>
+          <button type="button" onclick="handlePosLogout()" class="flex items-center justify-center gap-1.5 text-xs font-bold bg-rose-950/60 hover:bg-rose-600 text-rose-300 hover:text-white py-2 rounded-xl border border-rose-500/30 transition cursor-pointer">
+            <i class="fa-solid fa-right-from-bracket"></i><span>Sign Out</span>
+          </button>
+        </div>
       </div>
     </aside>
 
@@ -3400,44 +3423,85 @@
       const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' })); a.download = 'AutomatedPOS.html'; a.click();
     }
 
-    // ADMIN ACCESS GUARD & SUPABASE SYNC
-    async function verifyAdminAccess() {
+    // ADMIN ACCESS GUARD & SUPABASE SYNC (Matches admin.html security)
+    function togglePosPasswordVisibility() {
+      const inp = document.getElementById('posAdminPassword');
+      const icon = document.getElementById('posEyeIcon');
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        icon.innerText = '🙈';
+      } else {
+        inp.type = 'password';
+        icon.innerText = '👁️';
+      }
+    }
+
+    function showPosAuthLogin(errMsg = '') {
       const gateEl = document.getElementById('admin-auth-gate');
       const loadingEl = document.getElementById('auth-gate-loading');
-      const deniedEl = document.getElementById('auth-gate-denied');
+      const loginEl = document.getElementById('auth-gate-login');
       const shellEl = document.getElementById('pos-app-shell');
+      const errBox = document.getElementById('posLoginError');
 
+      if (shellEl) {
+        shellEl.classList.add('hidden');
+        shellEl.classList.remove('flex');
+      }
+      if (loadingEl) loadingEl.classList.add('hidden');
+      if (loginEl) loginEl.classList.remove('hidden');
+      if (gateEl) gateEl.classList.remove('hidden');
+
+      if (errMsg && errBox) {
+        errBox.innerText = errMsg;
+        errBox.classList.remove('hidden');
+      } else if (errBox) {
+        errBox.classList.add('hidden');
+      }
+    }
+
+    async function checkAdminRoleForUser(user) {
+      if (!user) return false;
+      let isAuthorized = false;
+
+      try {
+        const { data: rpcIsAdmin, error: rpcErr } = await _supabase.rpc('is_admin');
+        if (!rpcErr && rpcIsAdmin === true) {
+          isAuthorized = true;
+        }
+      } catch (_) {}
+
+      if (!isAuthorized) {
+        const { data: profile } = await _supabase
+          .from('user_profiles')
+          .select('role, status')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (profile && profile.status !== 'banned' && (profile.role === 'admin' || profile.role === 'support_agent')) {
+          isAuthorized = true;
+        }
+      }
+      return isAuthorized;
+    }
+
+    async function verifyAdminAccess() {
       try {
         const { data: { session }, error } = await _supabase.auth.getSession();
         if (error || !session || !session.user) {
-          if (loadingEl) loadingEl.classList.add('hidden');
-          if (deniedEl) deniedEl.classList.remove('hidden');
+          showPosAuthLogin();
           return false;
         }
 
-        // Verify user holds admin role if user_roles / profiles table exists
-        let isAuthorizedAdmin = true;
-        try {
-          const { data: roleData, error: roleErr } = await _supabase
-            .from('user_roles')
-            .select('role')
-            .eq('user_id', session.user.id)
-            .maybeSingle();
-
-          if (!roleErr && roleData && roleData.role && roleData.role !== 'admin' && roleData.role !== 'super_admin') {
-            isAuthorizedAdmin = false;
-          }
-        } catch (_) {
-          // Fallback to authenticated Supabase admin session if custom role table is absent
-        }
-
-        if (!isAuthorizedAdmin) {
-          if (loadingEl) loadingEl.classList.add('hidden');
-          if (deniedEl) deniedEl.classList.remove('hidden');
+        const isAuthorized = await checkAdminRoleForUser(session.user);
+        if (!isAuthorized) {
+          await _supabase.auth.signOut();
+          showPosAuthLogin("অ্যাক্সেস ডিনাইড! আপনার অ্যাকাউন্টে অ্যাডমিন পারমিশন নেই অথবা অ্যাকাউন্ট সাসপেন্ডেড।");
           return false;
         }
 
         currentAdminUserEmail = session.user.email || '';
+        const gateEl = document.getElementById('admin-auth-gate');
+        const shellEl = document.getElementById('pos-app-shell');
         if (gateEl) gateEl.classList.add('hidden');
         if (shellEl) {
           shellEl.classList.remove('hidden');
@@ -3445,26 +3509,61 @@
         }
         return true;
       } catch (err) {
-        if (loadingEl) loadingEl.classList.add('hidden');
-        if (deniedEl) deniedEl.classList.remove('hidden');
+        showPosAuthLogin();
         return false;
       }
+    }
+
+    async function handlePosAdminLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('posAdminEmail').value.trim();
+      const password = document.getElementById('posAdminPassword').value.trim();
+      const errBox = document.getElementById('posLoginError');
+      const submitBtn = document.getElementById('btnPosAdminLogin');
+
+      submitBtn.innerText = "Verifying...";
+      submitBtn.disabled = true;
+      errBox.classList.add('hidden');
+
+      try {
+        const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+
+        const isAuthorized = await checkAdminRoleForUser(data.user);
+        if (!isAuthorized) {
+          await _supabase.auth.signOut();
+          throw new Error("অননুমোদিত অ্যাকাউন্ট! আপনার অ্যাকাউন্টে অ্যাডমিন রোল নেই।");
+        }
+
+        currentAdminUserEmail = data.user.email || '';
+        document.getElementById('admin-auth-gate').classList.add('hidden');
+        const shellEl = document.getElementById('pos-app-shell');
+        shellEl.classList.remove('hidden');
+        shellEl.classList.add('flex');
+
+        renderAllLogosAndBranding();
+        renderDashboard();
+        initNewInvoiceForm();
+        syncFromSupabase(false);
+        showToast('অ্যাডমিন লগইন সফল হয়েছে!', 'success');
+      } catch (err) {
+        errBox.innerText = err.message || "লগইন ব্যর্থ হয়েছে!";
+        errBox.classList.remove('hidden');
+      } finally {
+        submitBtn.innerText = "Verify & Unlock POS";
+        submitBtn.disabled = false;
+      }
+    }
+
+    async function handlePosLogout() {
+      await _supabase.auth.signOut();
+      showPosAuthLogin();
     }
 
     // Listen for logout in another tab (e.g., Admin Panel sign out)
     _supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT' || !session) {
-        const gateEl = document.getElementById('admin-auth-gate');
-        const loadingEl = document.getElementById('auth-gate-loading');
-        const deniedEl = document.getElementById('auth-gate-denied');
-        const shellEl = document.getElementById('pos-app-shell');
-        if (shellEl) {
-          shellEl.classList.add('hidden');
-          shellEl.classList.remove('flex');
-        }
-        if (loadingEl) loadingEl.classList.add('hidden');
-        if (deniedEl) deniedEl.classList.remove('hidden');
-        if (gateEl) gateEl.classList.remove('hidden');
+        showPosAuthLogin();
       }
     });
 
