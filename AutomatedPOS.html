@@ -2859,9 +2859,8 @@
       document.getElementById('pad-pay-method').textContent = inv.paymentMethod;
       document.getElementById('pad-delivery-status-val').textContent = inv.deliveryStatus || 'Delivered';
 
-      // Light, easily scannable QR payload + clickable digital bill preview
-      const itemSummary = (inv.items || []).map(i => `${i.name} x${i.qty}`).join(', ');
-      const qrPlainText = `${s.companyName} | ${inv.invoiceNo} | ${inv.date} | ${inv.clientName} | ${itemSummary} | Total: ${inv.grandTotal} | Paid: ${inv.paidAmount} | Due: ${inv.dueAmount}`;
+      // Ultra-simple, clean & fast-scannable QR payload (stays clean regardless of item count)
+      const qrPlainText = `${s.companyName} | ${inv.invoiceNo} | Total: ${inv.grandTotal} | Due: ${inv.dueAmount}`;
       const baseHref = (window.location.href && window.location.href.startsWith('http'))
         ? window.location.href.split('#')[0]
         : 'https://www.greatnexa.com/AutomatedPOS.html';
