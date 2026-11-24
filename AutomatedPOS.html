@@ -3073,10 +3073,12 @@
     function shareActiveInvoiceEmail() {
       const inv = appState.invoices.find(i => i.id === activePrintInvoiceId);
       if (!inv || !(inv.clientEmail || '').trim() || Number(inv.dueAmount) <= 0) return;
+      const senderEmail = 'greatnexaorg@gmail.com';
       const subject = `Due Payment Reminder (${inv.invoiceNo}) - ${appState.settings.companyName}`;
       const body = buildInvoiceShareMessage(inv).replace(/\*/g, '');
       const toEmail = encodeURIComponent(inv.clientEmail.trim());
-      window.open(`mailto:${toEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
+      const gmailWebComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&authuser=${encodeURIComponent(senderEmail)}&to=${toEmail}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(gmailWebComposeUrl, '_blank', 'noopener,noreferrer');
     }
 
     function sendWhatsAppReminder(invoiceId) {
