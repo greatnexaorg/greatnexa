@@ -14,6 +14,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- QRious Lightweight QR Code Generator -->
+  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 
   <script>
     tailwind.config = {
@@ -89,6 +91,9 @@
     .thermal-mode .pad-brand-col,
     .thermal-mode .pad-meta-col {
       grid-column: span 12 / span 12 !important;
+    }
+    .thermal-mode #pad-company-tagline {
+      white-space: normal !important;
     }
 
     /* Exact A4 Proportions on Screen & Print */
@@ -293,62 +298,62 @@
 
         <!-- TOP CONTENT WRAPPER (Header + Client Info + 10-Row Items Table + Summary) -->
         <div class="relative z-10">
-          <!-- 1. LUXURY GEOMETRIC HEADER (Clean Split: Left 8 Cols Brand, Right 4 Cols Invoice Box — Zero Overlap!) -->
+          <!-- 1. LUXURY GEOMETRIC HEADER (Strict Split: Left 8 Cols Brand, Right 4 Cols Invoice Box — Zero Overlap!) -->
           <header class="relative bg-slate-950 text-white overflow-hidden">
             <!-- Top Vibrant Accent Strip -->
             <div class="h-2 w-full bg-gradient-to-r from-blue-600 via-cyan-400 to-indigo-500"></div>
 
             <!-- SVG Angled Geometric Shapes in Background -->
             <svg class="pointer-events-none absolute inset-0 w-full h-full pad-hide-thermal" preserveAspectRatio="none" viewBox="0 0 800 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <polygon points="500,0 800,0 800,180 430,180" fill="url(#padHeaderRightGrad)" />
-              <polygon points="470,0 505,0 435,180 400,180" fill="#06b6d4" fill-opacity="0.22" />
+              <polygon points="565,0 800,0 800,180 525,180" fill="url(#padHeaderRightGrad)" />
+              <polygon points="545,0 569,0 529,180 505,180" fill="#06b6d4" fill-opacity="0.22" />
               <circle cx="760" cy="25" r="75" fill="#38bdf8" fill-opacity="0.08" />
               <defs>
-                <linearGradient id="padHeaderRightGrad" x1="430" y1="0" x2="800" y2="180" gradientUnits="userSpaceOnUse">
+                <linearGradient id="padHeaderRightGrad" x1="525" y1="0" x2="800" y2="180" gradientUnits="userSpaceOnUse">
                   <stop offset="0%" stop-color="#1e3a8a" />
                   <stop offset="100%" stop-color="#0f172a" />
                 </linearGradient>
               </defs>
             </svg>
 
-            <!-- Header Grid: Left 66% Brand Info | Right 34% Invoice Meta Box -->
-            <div class="pad-header-grid relative z-10 px-6 sm:px-7 py-5 grid grid-cols-12 gap-4 items-center">
+            <!-- Header Grid: Left 8 Cols Brand Info | Right 4 Cols Invoice Meta Box -->
+            <div class="pad-header-grid relative z-10 px-6 py-5 grid grid-cols-12 gap-3 items-center">
               <!-- Left Brand Column -->
-              <div class="pad-brand-col col-span-8 flex items-center gap-3.5 pr-2">
+              <div class="pad-brand-col col-span-8 flex items-center gap-3 pr-2 min-w-0 overflow-hidden">
                 <div id="pad-logo-container" class="w-14 h-14 rounded-2xl bg-slate-900/95 p-1.5 flex items-center justify-center border border-cyan-400/50 shadow-lg shadow-cyan-500/20 shrink-0">
                   <!-- Logo rendered dynamically -->
                 </div>
 
-                <div class="min-w-0">
+                <div class="min-w-0 flex-1 overflow-hidden">
                   <div class="flex items-center gap-2">
-                    <h1 id="pad-company-name" class="text-2xl sm:text-[28px] font-black tracking-tight text-white leading-none">GreatNexa</h1>
-                    <span class="px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-[9px] font-extrabold uppercase tracking-wider pad-hide-thermal">Enterprise</span>
+                    <h1 id="pad-company-name" class="text-2xl sm:text-[26px] font-black tracking-tight text-white leading-none truncate">GreatNexa</h1>
+                    <span class="px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-[9px] font-extrabold uppercase tracking-wider shrink-0 pad-hide-thermal">Enterprise</span>
                   </div>
-                  <!-- Guaranteed Single Line Tagline with Proper Spacing -->
-                  <p id="pad-company-tagline" class="text-[8.5px] sm:text-[9px] font-bold text-cyan-300 uppercase tracking-[0.06em] mt-1.5 whitespace-nowrap">
+                  <!-- Contained Single-Line Tagline that NEVER overflows into the right Invoice Box -->
+                  <p id="pad-company-tagline" class="text-[7.8px] font-extrabold text-cyan-300 uppercase tracking-[0.02em] mt-1.5 truncate">
                     DIGITAL SOLUTIONS &bull; AUTOMATION &bull; COURSES &bull; TRADING TOOLS
                   </p>
-                  <div id="pad-company-contact" class="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[10.5px] text-slate-300 mt-1.5">
-                    <span><i class="fa-solid fa-globe text-cyan-400 mr-1"></i>greatnexa.com</span>
+                  <div id="pad-company-contact" class="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[10px] text-slate-300 mt-1.5">
+                    <span><i class="fa-solid fa-globe text-cyan-400 mr-1"></i>https://www.greatnexa.com/</span>
                     <span><i class="fa-solid fa-phone text-cyan-400 mr-1"></i>01870-978004</span>
-                    <span><i class="fa-solid fa-location-dot text-cyan-400 mr-1"></i>Kushtia, BD</span>
                   </div>
-                  <p id="pad-company-address" class="text-[10px] text-slate-400 mt-0.5">Kushtia, Bangladesh &bull; hridoykhan7581@gmail.com</p>
+                  <p id="pad-company-address" class="text-[10px] text-slate-400 mt-0.5 truncate">Kushtia, Bangladesh &bull; hridoykhan7581@gmail.com</p>
                 </div>
               </div>
 
               <!-- Right Invoice Badge Box -->
-              <div class="pad-meta-col col-span-4 flex justify-end">
-                <div class="w-full max-w-[195px] bg-slate-900/90 border border-cyan-400/40 rounded-xl p-2.5 text-right shadow-lg">
-                  <div class="inline-block w-full text-center py-0.5 rounded bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 text-[10px] font-black tracking-widest uppercase mb-1.5 whitespace-nowrap">
+              <div class="pad-meta-col col-span-4 flex justify-end shrink-0">
+                <div class="w-full max-w-[186px] bg-slate-900/95 border border-cyan-400/40 rounded-xl p-2.5 text-right shadow-lg relative z-10">
+                  <div class="inline-block w-full text-center py-0.5 rounded bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 text-[9.5px] font-black tracking-wider uppercase mb-1.5 whitespace-nowrap">
                     INVOICE / CASH MEMO
                   </div>
-                  <div class="space-y-0.5 text-[11px]">
+                  <div class="space-y-0.5 text-[10.5px]">
                     <p class="text-slate-300 whitespace-nowrap">No: <span id="pad-inv-no" class="font-mono font-extrabold text-cyan-300">GN-2026-001</span></p>
                     <p class="text-slate-300 whitespace-nowrap">Date: <span id="pad-inv-date" class="font-bold text-white">24 Nov 2026</span></p>
+                    <p id="pad-due-date-row" class="text-amber-300 text-[9.5px] font-bold hidden whitespace-nowrap">Due Date: <span id="pad-due-date"></span></p>
                   </div>
                   <div class="mt-1.5 pt-1 border-t border-slate-700/80 flex justify-end">
-                    <span id="pad-status-badge" class="inline-block px-2.5 py-0.5 rounded-full text-[9.5px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 whitespace-nowrap">
+                    <span id="pad-status-badge" class="inline-block px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 whitespace-nowrap">
                       ● PAID (নগদ)
                     </span>
                   </div>
@@ -394,14 +399,14 @@
             </div>
           </section>
 
-          <!-- 3. COLORFUL 10-ROW ITEMS TABLE (Always 10 Rows Minimum with Column Dividers & End-of-Items Closure) -->
+          <!-- 3. COLORFUL 10-ROW ITEMS TABLE (Uniform 10 Rows with Full Column Dividers from Row 01 to 10) -->
           <section class="px-6 sm:px-7">
             <div class="overflow-hidden rounded-xl border border-slate-300 shadow-2xs">
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr class="bg-gradient-to-r from-slate-900 via-blue-900 to-cyan-800 text-white text-[10.5px] uppercase tracking-wider">
                     <th class="py-2 px-2.5 font-extrabold w-10 text-center border-r border-white/15">#</th>
-                    <th class="py-2 px-2.5 font-extrabold border-r border-white/15">Item / Description</th>
+                    <th class="py-2 px-2.5 font-extrabold border-r border-white/15">Item / Description (Warranty &amp; Serial)</th>
                     <th class="py-2 px-2.5 font-extrabold border-r border-white/15 pad-hide-thermal">Model / SKU</th>
                     <th class="py-2 px-2.5 font-extrabold text-center w-14 border-r border-white/15">Qty</th>
                     <th class="py-2 px-2.5 font-extrabold text-right w-24 border-r border-white/15 pad-hide-thermal">Rate</th>
@@ -409,7 +414,7 @@
                   </tr>
                 </thead>
                 <tbody id="pad-items-tbody" class="divide-y divide-slate-200/80 text-[11.5px]">
-                  <!-- Populated dynamically with 10 structured ledger rows -->
+                  <!-- Populated dynamically with 10 uniform structured ledger rows -->
                 </tbody>
               </table>
             </div>
@@ -466,29 +471,37 @@
           </section>
         </div>
 
-        <!-- 5. DEDICATED BOTTOM FOOTER (Seal & Signature ALWAYS Anchored Here!) -->
+        <!-- 5. DEDICATED BOTTOM FOOTER (Seal, QR Code & Signature ALWAYS Anchored Here!) -->
         <footer class="pad-avoid-break relative z-10 mt-auto pt-4">
-          <div class="px-6 sm:px-7 pb-4 flex justify-between items-end gap-6">
+          <div class="px-6 sm:px-7 pb-4 flex justify-between items-end gap-4">
             <!-- Client Signature (Bottom Left) -->
             <div class="text-center">
               <div class="h-14"></div>
-              <div class="w-40 border-t-2 border-slate-400 pt-1 text-[11px] font-bold text-slate-700">
+              <div class="w-36 border-t-2 border-slate-400 pt-1 text-[10.5px] font-bold text-slate-700">
                 Client Signature (ক্রেতার স্বাক্ষর)
               </div>
             </div>
 
+            <!-- Dynamic Verification QR Code (Center) -->
+            <div class="flex flex-col items-center pad-hide-thermal">
+              <div class="p-1 bg-white border border-slate-200 rounded-lg shadow-2xs">
+                <canvas id="pad-qr-canvas" width="66" height="66"></canvas>
+              </div>
+              <span class="text-[8.5px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Scan to Verify</span>
+            </div>
+
             <!-- Company Official Seal & Authorized Signature (Bottom Right) -->
-            <div class="flex items-end gap-6">
+            <div class="flex items-end gap-5">
               <div id="pad-seal-box" class="flex flex-col items-center">
-                <div id="pad-seal-visual" class="w-24 h-24 flex items-center justify-center"></div>
-                <span class="text-[9px] font-extrabold text-blue-900 uppercase tracking-wider mt-0.5">Company Seal / সিল</span>
+                <div id="pad-seal-visual" class="w-22 h-22 flex items-center justify-center"></div>
+                <span class="text-[8.5px] font-extrabold text-blue-900 uppercase tracking-wider mt-0.5">Company Seal / সিল</span>
               </div>
 
               <div id="pad-sign-box" class="text-center">
-                <div id="pad-sign-visual" class="h-14 w-44 flex items-center justify-center"></div>
-                <div class="w-44 border-t-2 border-blue-900 pt-1 text-[11px] font-extrabold text-slate-900">
+                <div id="pad-sign-visual" class="h-14 w-40 flex items-center justify-center"></div>
+                <div class="w-40 border-t-2 border-blue-900 pt-1 text-[10.5px] font-extrabold text-slate-900">
                   <span id="pad-signatory-name">Md. Hriday Ahammad</span>
-                  <span class="block text-[9.5px] font-semibold text-cyan-700">Authorized Signature / স্বাক্ষর</span>
+                  <span class="block text-[9px] font-semibold text-cyan-700">Authorized Signature / স্বাক্ষর</span>
                 </div>
               </div>
             </div>
@@ -530,7 +543,7 @@
     <div id="sidebar-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40 hidden lg:hidden"></div>
 
     <!-- Left Navigation Sidebar -->
-    <aside id="app-sidebar" class="fixed lg:sticky top-0 left-0 z-50 h-screen w-72 bg-slate-950 text-slate-300 flex flex-col justify-between transition-transform duration-300 -translate-x-full lg:translate-x-0 border-r border-slate-800/80 shrink-0">
+    <aside id="app-sidebar" class="fixed lg:sticky top-0 left-0 z-50 h-screen w-72 bg-slate-950 text-slate-300 flex flex-col justify-between transition-transform duration-300 -translate-x-full lg:translate-x-0 border-r border-slate-800/80 shrink-0 overflow-y-auto">
       <div>
         <!-- Brand Header -->
         <div class="p-5 border-b border-slate-800/80 flex items-center justify-between">
@@ -548,43 +561,48 @@
 
         <!-- Quick New Bill CTA -->
         <div class="p-4">
-          <button onclick="switchTab('new-invoice')" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-sm shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 transition transform active:scale-[0.99]">
+          <button onclick="resetInvoiceForm(); switchTab('new-invoice');" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-sm shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 transition transform active:scale-[0.99]">
             <i class="fa-solid fa-plus-circle text-base"></i>
             <span>নতুন বিল তৈরি (New Bill)</span>
           </button>
         </div>
 
         <!-- Navigation Menu -->
-        <nav class="px-3 space-y-1.5">
-          <button data-tab="dashboard" onclick="switchTab('dashboard')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition bg-slate-900 text-cyan-400 border border-slate-800">
+        <nav class="px-3 space-y-1">
+          <button data-tab="dashboard" onclick="switchTab('dashboard')" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition bg-slate-900 text-cyan-400 border border-slate-800">
             <i class="fa-solid fa-chart-pie w-5 text-center"></i>
             <span>সেলস ড্যাশবোর্ড (Dashboard)</span>
           </button>
 
-          <button data-tab="new-invoice" onclick="switchTab('new-invoice')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-900/70 hover:text-white transition">
+          <button data-tab="new-invoice" onclick="switchTab('new-invoice')" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-900/70 hover:text-white transition">
             <i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i>
             <span>নতুন ইনভয়েস (POS Billing)</span>
           </button>
 
-          <button data-tab="invoices" onclick="switchTab('invoices')" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-900/70 hover:text-white transition">
+          <button data-tab="invoices" onclick="switchTab('invoices')" class="nav-item w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-900/70 hover:text-white transition">
             <div class="flex items-center gap-3">
               <i class="fa-solid fa-book-open w-5 text-center"></i>
-              <span>বিল ও বাকি খাতা (Ledger)</span>
+              <span>বিল ও এডিট খাতা (Ledger)</span>
             </div>
             <span id="nav-due-count-badge" class="hidden px-2 py-0.5 text-[10px] font-bold rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30">0</span>
           </button>
 
-          <button data-tab="baki-khata" onclick="switchTab('baki-khata')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-900/70 hover:text-white transition">
+          <button data-tab="baki-khata" onclick="switchTab('baki-khata')" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-900/70 hover:text-white transition">
             <i class="fa-solid fa-user-clock w-5 text-center"></i>
-            <span>কাস্টমার বাকি খাতা (Khata)</span>
+            <span>কাস্টমার বাকি ও তাগাদা</span>
           </button>
 
-          <button data-tab="products" onclick="switchTab('products')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-900/70 hover:text-white transition">
+          <button data-tab="expenses" onclick="switchTab('expenses')" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-900/70 hover:text-white transition">
+            <i class="fa-solid fa-money-bill-trend-up w-5 text-center"></i>
+            <span>খরচ ও নিট লাভ (Expense)</span>
+          </button>
+
+          <button data-tab="products" onclick="switchTab('products')" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-900/70 hover:text-white transition">
             <i class="fa-solid fa-boxes-stacked w-5 text-center"></i>
             <span>প্রোডাক্ট, স্টক ও ফ্রি</span>
           </button>
 
-          <button data-tab="settings" onclick="switchTab('settings')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-900/70 hover:text-white transition">
+          <button data-tab="settings" onclick="switchTab('settings')" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:bg-slate-900/70 hover:text-white transition">
             <i class="fa-solid fa-stamp w-5 text-center"></i>
             <span>সিল, সাক্ষর, লোগো ও সেটিংস</span>
           </button>
@@ -616,15 +634,22 @@
       <section id="tab-dashboard" class="tab-section space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
           <div>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">সেলস ড্যাশবোর্ড (Sales Overview)</h2>
-            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">GreatNexa-এর মোট বিক্রি, নগদ আদায় ও বাকি হিসাবের লাইভ চিত্র</p>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">সেলস ও নিট লাভ ড্যাশবোর্ড (Sales Overview)</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">GreatNexa-এর মোট বিক্রি, খরচ বাদে নিট লাভ, নগদ আদায় ও বাকি হিসাব</p>
           </div>
-          <div class="flex flex-wrap items-center gap-2.5">
-            <button onclick="downloadStandaloneHTML()" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-2 transition">
-              <i class="fa-solid fa-download text-cyan-600"></i> অ্যাপ ডাউনলোড (HTML)
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Date Range Filter -->
+            <select id="dashboard-date-filter" onchange="renderDashboard()" class="px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-xs font-bold text-slate-700 outline-none">
+              <option value="ALL">সব সময় (All Time)</option>
+              <option value="TODAY">আজকের হিসাব (Today)</option>
+              <option value="7DAYS">গত ৭ দিন (Last 7 Days)</option>
+              <option value="MONTH">এই মাস (This Month)</option>
+            </select>
+            <button onclick="downloadStandaloneHTML()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-download text-cyan-600"></i> অ্যাপ ডাউনলোড
             </button>
-            <button onclick="switchTab('new-invoice')" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition">
-              <i class="fa-solid fa-plus text-cyan-400"></i> নতুন বিল তৈরি করুন
+            <button onclick="resetInvoiceForm(); switchTab('new-invoice');" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-sm transition">
+              <i class="fa-solid fa-plus text-cyan-400"></i> নতুন বিল
             </button>
           </div>
         </div>
@@ -673,14 +698,14 @@
           <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider">আনুমানিক লাভ (Profit)</p>
+                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider">নিট লাভ (Net Profit)</p>
                 <h3 id="kpi-estimated-profit" class="text-xl sm:text-2xl font-extrabold text-indigo-700 mt-1.5">৳ 0</h3>
               </div>
               <div class="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg shrink-0">
                 <i class="fa-solid fa-coins"></i>
               </div>
             </div>
-            <p class="text-xs text-slate-500 mt-3 font-medium">বিক্রয়মূল্য বনাম ক্রয়মূল্য</p>
+            <p id="kpi-expense-subtitle" class="text-xs text-slate-500 mt-3 font-medium">মোট খরচ বাদে প্রকৃত লাভ</p>
           </div>
 
           <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
@@ -717,9 +742,9 @@
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                <h3 class="text-base font-bold text-slate-900">বাকি কাস্টমার তালিকা (Due / Baki Alerts)</h3>
+                <h3 class="text-base font-bold text-slate-900">বাকি কাস্টমার তালিকা ও তাগাদা (Due Alerts)</h3>
               </div>
-              <button onclick="switchTab('invoices', 'Due')" class="text-xs font-bold text-blue-600 hover:underline">সব বাকি দেখুন →</button>
+              <button onclick="switchTab('baki-khata')" class="text-xs font-bold text-blue-600 hover:underline">বাকি খাতা ও তাগাদা →</button>
             </div>
             <div id="dashboard-due-list" class="space-y-2.5 max-h-72 overflow-y-auto pr-1"></div>
           </div>
@@ -755,15 +780,19 @@
       <section id="tab-new-invoice" class="tab-section hidden space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
           <div>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">নতুন ইনভয়েস ও বিল তৈরি (Auto POS Billing)</h2>
-            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">নগদ, আংশিক জমা বা সম্পূর্ণ বাকি—সব হিসাব অটো সেভ ও পরবর্তীতে বাকি আদায় করা যাবে</p>
+            <div class="flex items-center gap-2.5">
+              <h2 id="pos-form-heading" class="text-xl sm:text-2xl font-extrabold text-slate-900">নতুন ইনভয়েস ও বিল তৈরি (Auto POS Billing)</h2>
+              <span id="pos-edit-mode-badge" class="hidden px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 text-xs font-extrabold">EDIT MODE</span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">ওয়ারেন্টি/সিরিয়াল নম্বর, বাকি পরিশোধের তারিখ এবং নগদ/বাকি হিসাব অটো সেভ হবে</p>
           </div>
           <button onclick="resetInvoiceForm()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold self-start sm:self-auto transition">
-            <i class="fa-solid fa-rotate-right mr-1"></i> ফর্ম ক্লিয়ার করুন
+            <i class="fa-solid fa-rotate-right mr-1"></i> নতুন ফর্ম / ক্লিয়ার
           </button>
         </div>
 
         <form id="pos-billing-form" onsubmit="handleSaveInvoice(event)" class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          <input type="hidden" id="editing-invoice-id" value="" />
           <div class="xl:col-span-8 space-y-6">
             <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-5">
               <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -794,14 +823,18 @@
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label class="block text-xs font-bold text-slate-700 mb-1">মোবাইল নম্বর (Phone Number) *</label>
                   <input type="text" id="bill-client-phone" required oninput="checkCustomerPreviousDue()" placeholder="017XX-XXXXXX" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none" />
                 </div>
                 <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">ঠিকানা / কোম্পানি (Address / Company)</label>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">ঠিকানা / কোম্পানি (Address)</label>
                   <input type="text" id="bill-client-address" placeholder="যেমন: কুষ্টিয়া, বাংলাদেশ" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-rose-600 mb-1">বাকি পরিশোধের তারিখ (Due Date)</label>
+                  <input type="date" id="bill-due-date" class="w-full px-3.5 py-2.5 rounded-xl border border-rose-200 bg-rose-50/40 text-sm font-semibold text-slate-800 focus:border-rose-500 outline-none" />
                 </div>
               </div>
 
@@ -827,11 +860,18 @@
               </div>
 
               <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/90 space-y-3">
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">সেভ করা প্রোডাক্ট থেকে বাছাই করুন (অথবা নিচে নতুন লিখুন)</label>
-                  <select id="catalog-product-picker" onchange="selectCatalogProduct(this.value)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-semibold text-slate-800 focus:border-cyan-500 outline-none">
-                    <option value="">-- ক্যাটালগ থেকে প্রোডাক্ট সিলেক্ট করুন --</option>
-                  </select>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">ক্যাটালগ থেকে প্রোডাক্ট বাছাই করুন</label>
+                    <select id="catalog-product-picker" onchange="selectCatalogProduct(this.value)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-semibold text-slate-800 focus:border-cyan-500 outline-none">
+                      <option value="">-- ক্যাটালগ থেকে প্রোডাক্ট সিলেক্ট করুন --</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">কুইক অটোকমপ্লিট সার্চ (নাম বা মডেল লিখুন)</label>
+                    <input type="text" id="quick-product-search" list="catalog-products-datalist" oninput="handleQuickProductSearch(this.value)" placeholder="টাইপ করে প্রোডাক্ট খুঁজুন..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-medium focus:border-cyan-500 outline-none" />
+                    <datalist id="catalog-products-datalist"></datalist>
+                  </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
@@ -853,6 +893,18 @@
                   </div>
                 </div>
 
+                <!-- Serial / IMEI & Warranty Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1">সিরিয়াল নং / IMEI (ঐচ্ছিক - হার্ডওয়্যার/ল্যাপটপের জন্য)</label>
+                    <input type="text" id="item-serial-input" placeholder="যেমন: SN-5CD1234XYZ" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-mono focus:border-cyan-500 outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1">ওয়ারেন্টি / গ্যারান্টি মেয়াদ (ঐচ্ছিক)</label>
+                    <input type="text" id="item-warranty-input" placeholder="যেমন: 1 Year Service Warranty / 15 Days Replacement" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs focus:border-cyan-500 outline-none" />
+                  </div>
+                </div>
+
                 <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
                   <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold cursor-pointer select-none">
                     <input type="checkbox" id="item-is-free-check" onchange="toggleFreeItemPrice(this.checked)" class="rounded text-emerald-600 focus:ring-emerald-500" />
@@ -871,7 +923,7 @@
                   <thead>
                     <tr class="bg-slate-100 text-slate-600 text-xs uppercase">
                       <th class="py-2.5 px-3 font-bold">#</th>
-                      <th class="py-2.5 px-3 font-bold">প্রোডাক্টের নাম</th>
+                      <th class="py-2.5 px-3 font-bold">প্রোডাক্ট, সিরিয়াল ও ওয়ারেন্টি</th>
                       <th class="py-2.5 px-3 font-bold">মডেল</th>
                       <th class="py-2.5 px-3 font-bold text-center">Qty</th>
                       <th class="py-2.5 px-3 font-bold text-right">দর (৳)</th>
@@ -970,7 +1022,7 @@
                 <input type="text" id="bill-note-input" placeholder="যেমন: বাকি টাকা আগামী সপ্তাহে পরিশোধযোগ্য" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-200 focus:border-cyan-400 outline-none" />
               </div>
 
-              <button type="submit" class="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-extrabold text-sm sm:text-base shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 transition transform active:scale-[0.99]">
+              <button type="submit" id="save-invoice-submit-btn" class="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-extrabold text-sm sm:text-base shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 transition transform active:scale-[0.99]">
                 <i class="fa-solid fa-floppy-disk"></i>
                 <span>বিল সেভ ও ইনভয়েস প্রিন্ট করুন</span>
               </button>
@@ -979,12 +1031,12 @@
         </form>
       </section>
 
-      <!-- TAB 3: INVOICE LEDGER & DUE MANAGEMENT -->
+      <!-- TAB 3: INVOICE LEDGER, EDIT, RETURN & DUE MANAGEMENT -->
       <section id="tab-invoices" class="tab-section hidden space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
           <div>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">সব ইনভয়েস ও বাকি খাতা (Sales & Due Ledger)</h2>
-            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">সব বিল খুঁজুন, বাকি টাকা আদায় করুন এবং যেকোনো বিলের প্রিন্ট প্যাড বের করুন</p>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">সব ইনভয়েস, এডিট ও রিটার্ন খাতা (Sales Ledger)</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">যেকোনো বিল এডিট করুন, প্রোডাক্ট রিটার্ন নিন, বাকি আদায় করুন এবং প্রিন্ট প্যাড বের করুন</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <button data-filter="ALL" onclick="setInvoiceFilter('ALL')" class="inv-filter-btn px-3.5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold transition">সব বিল</button>
@@ -1002,7 +1054,7 @@
               <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
               <input type="text" id="invoice-search-input" oninput="renderInvoicesLedger()" placeholder="ইনভয়েস নং, নাম বা মোবাইল দিয়ে খুঁজুন..." class="w-full pl-9 pr-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm focus:border-cyan-500 outline-none" />
             </div>
-            <button onclick="switchTab('new-invoice')" class="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-extrabold transition self-start sm:self-auto">
+            <button onclick="resetInvoiceForm(); switchTab('new-invoice');" class="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-extrabold transition self-start sm:self-auto">
               + নতুন বিল তৈরি
             </button>
           </div>
@@ -1028,14 +1080,14 @@
         </div>
       </section>
 
-      <!-- TAB 3B: DEDICATED CUSTOMER BAKI KHATA -->
+      <!-- TAB 3B: DEDICATED CUSTOMER BAKI KHATA & WHATSAPP REMINDER -->
       <section id="tab-baki-khata" class="tab-section hidden space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
           <div>
-            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">কাস্টমার বাকি খাতা (Customer Baki & Due Ledger)</h2>
-            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">প্রতিটি কাস্টমারের মোট কেনাকাটা, নগদ জমা ও বর্তমান বকেয়া হিসাব এক নজরে — যেকোনো সময় জমা নিন</p>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">কাস্টমার বাকি খাতা ও WhatsApp তাগাদা (Khata)</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">প্রতিটি কাস্টমারের বকেয়া হিসাব দেখুন, জমা নিন এবং এক ক্লিকে হোয়াটসঅ্যাপে তাগাদা মেসেজ পাঠান</p>
           </div>
-          <button onclick="switchTab('new-invoice')" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold flex items-center gap-2 self-start sm:self-auto transition">
+          <button onclick="resetInvoiceForm(); switchTab('new-invoice');" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold flex items-center gap-2 self-start sm:self-auto transition">
             <i class="fa-solid fa-file-circle-plus"></i> নতুন বাকি/নগদ বিল
           </button>
         </div>
@@ -1051,11 +1103,95 @@
                   <th class="py-3.5 px-4 font-semibold text-right">মোট বিল (৳)</th>
                   <th class="py-3.5 px-4 font-semibold text-right">মোট জমা (৳)</th>
                   <th class="py-3.5 px-4 font-semibold text-right">বর্তমান বাকি (৳)</th>
-                  <th class="py-3.5 px-4 font-semibold text-right">অ্যাকশন</th>
+                  <th class="py-3.5 px-4 font-semibold text-right">অ্যাকশন ও তাগাদা</th>
                 </tr>
               </thead>
               <tbody id="baki-khata-tbody" class="divide-y divide-slate-100 text-sm"></tbody>
             </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3C: EXPENSE & NET PROFIT TRACKER -->
+      <section id="tab-expenses" class="tab-section hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">ব্যবসায়িক খরচ ও নিট লাভ ব্যবস্থাপনা (Expense & Net Profit)</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">অফিস ভাড়া, ইন্টারনেট, ফেসবুক বুস্টিং বা দৈনন্দিন খরচ যোগ করুন — ড্যাশবোর্ডে অটোমেটিক নিট লাভ হিসাব হবে</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-4">
+            <form id="expense-form" onsubmit="handleSaveExpense(event)" class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-4 sticky top-6">
+              <h3 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">নতুন খরচ এন্ট্রি করুন</h3>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">তারিখ (Date) *</label>
+                <input type="date" id="exp-date" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold outline-none focus:border-cyan-500" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">খরচের বিবরণ (Expense Title) *</label>
+                <input type="text" id="exp-title" required placeholder="যেমন: Facebook Ads Boosting / Office Rent" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm outline-none focus:border-cyan-500" />
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">ক্যাটাগরি</label>
+                  <select id="exp-category" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold bg-white outline-none focus:border-cyan-500">
+                    <option value="Marketing / Ads">Marketing / Ads</option>
+                    <option value="Office Rent & Utility">Office Rent & Utility</option>
+                    <option value="Staff / Salary">Staff / Salary</option>
+                    <option value="Software / Server">Software / Server</option>
+                    <option value="Transport / Conveyance">Transport / Conveyance</option>
+                    <option value="General / Other">General / Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">টাকার পরিমাণ (৳) *</label>
+                  <input type="number" id="exp-amount" required min="1" step="any" placeholder="0" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-extrabold text-rose-600 outline-none focus:border-cyan-500" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">পেমেন্ট মাধ্যম</label>
+                <select id="exp-method" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold bg-white outline-none focus:border-cyan-500">
+                  <option value="Cash (নগদ)">Cash (নগদ)</option>
+                  <option value="bKash">bKash</option>
+                  <option value="Nagad">Nagad</option>
+                  <option value="Bank / Card">Bank / Card</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">নোট (ঐচ্ছিক)</label>
+                <input type="text" id="exp-note" placeholder="বিস্তারিত নোট লিখুন..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs outline-none focus:border-cyan-500" />
+              </div>
+              <button type="submit" class="w-full py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm shadow-sm transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-plus-circle"></i>
+                <span>খরচ সেভ করুন</span>
+              </button>
+            </form>
+          </div>
+
+          <div class="lg:col-span-8 space-y-4">
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+              <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                <h3 class="text-base font-bold text-slate-900">সব খরচের তালিকা (Expense Ledger)</h3>
+                <span id="total-expenses-badge" class="px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-extrabold">মোট খরচ: ৳ 0</span>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-slate-900 text-white text-xs uppercase tracking-wider">
+                      <th class="py-3 px-4 font-semibold">তারিখ</th>
+                      <th class="py-3 px-4 font-semibold">বিবরণ</th>
+                      <th class="py-3 px-4 font-semibold">ক্যাটাগরি</th>
+                      <th class="py-3 px-4 font-semibold">মাধ্যম</th>
+                      <th class="py-3 px-4 font-semibold text-right">পরিমাণ (৳)</th>
+                      <th class="py-3 px-4 font-semibold text-center">মুছুন</th>
+                    </tr>
+                  </thead>
+                  <tbody id="expenses-ledger-tbody" class="divide-y divide-slate-100 text-sm"></tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1349,7 +1485,7 @@
     const SUPABASE_URL = 'https://esqhansnosejkqapuhoo.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzcWhhbnNub3NlamtxYXB1aG9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDk0MDMsImV4cCI6MjEwMjI4NTQwM30.ePcRYy5_B193R4S1MXw3slF5amFseCv1sSCAUyH59ok';
     const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const STORAGE_KEY = 'greatnexa_pos_v1_state';
+    const STORAGE_KEY = 'greatnexa_pos_v2_state';
     let currentAdminUserEmail = '';
     let isSupabaseConnected = false;
 
@@ -1431,12 +1567,13 @@
           id: 'inv-1001',
           invoiceNo: 'GN-2026-001',
           date: '2026-11-24',
+          dueDate: '',
           clientName: 'Md. Hriday Ahammad',
           clientPhone: '01870-978004',
           clientAddress: 'Kushtia, Bangladesh',
           items: [
-            { name: 'Laser Cutting & CNC Metal Design Course', model: 'GN-CNC-2026', qty: 1, buyPrice: 1500, rate: 4999, total: 4999, isFree: false },
-            { name: 'Free Invoice & SOP Starter Kit', model: 'FREE-SOP-01', qty: 1, buyPrice: 0, rate: 0, total: 0, isFree: true }
+            { name: 'Laser Cutting & CNC Metal Design Course', model: 'GN-CNC-2026', serial: '', warranty: 'Lifetime Access', qty: 1, buyPrice: 1500, rate: 4999, total: 4999, isFree: false },
+            { name: 'Free Invoice & SOP Starter Kit', model: 'FREE-SOP-01', serial: '', warranty: '', qty: 1, buyPrice: 0, rate: 0, total: 0, isFree: true }
           ],
           subtotal: 4999,
           discount: 0,
@@ -1447,9 +1584,11 @@
           changeAmount: 0,
           dueAmount: 0,
           paymentMethod: 'bKash',
-          note: 'Full payment received via bKash.'
+          note: 'Full payment received via bKash.',
+          isReturned: false
         }
-      ]
+      ],
+      expenses: []
     };
 
     let appState = loadState();
@@ -1462,13 +1601,14 @@
 
     function loadState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('greatnexa_pos_v1_state');
         if (raw) {
           const parsed = JSON.parse(raw);
           return {
             settings: { ...DEFAULT_STATE.settings, ...(parsed.settings || {}) },
             products: Array.isArray(parsed.products) ? parsed.products : DEFAULT_STATE.products,
-            invoices: Array.isArray(parsed.invoices) ? parsed.invoices : DEFAULT_STATE.invoices
+            invoices: Array.isArray(parsed.invoices) ? parsed.invoices : DEFAULT_STATE.invoices,
+            expenses: Array.isArray(parsed.expenses) ? parsed.expenses : []
           };
         }
       } catch (e) {
@@ -1666,6 +1806,7 @@
         else renderInvoicesLedger();
       }
       if (tabName === 'baki-khata') renderBakiKhata();
+      if (tabName === 'expenses') renderExpensesTab();
       if (tabName === 'products') renderProductsCatalog();
       if (tabName === 'settings') populateSettingsForm();
     }
@@ -1673,6 +1814,7 @@
     function duplicateInvoiceToDraft(invoiceId) {
       const inv = appState.invoices.find(i => i.id === invoiceId);
       if (!inv) return;
+      resetInvoiceForm();
       switchTab('new-invoice');
       document.getElementById('bill-client-name').value = inv.clientName || '';
       document.getElementById('bill-client-phone').value = inv.clientPhone || '';
@@ -1683,14 +1825,109 @@
       showToast(`${inv.invoiceNo}-এর কপি নতুন বিলে লোড হয়েছে!`, 'info');
     }
 
+    function editExistingInvoice(invoiceId) {
+      const inv = appState.invoices.find(i => i.id === invoiceId);
+      if (!inv) return;
+      switchTab('new-invoice');
+      document.getElementById('editing-invoice-id').value = inv.id;
+      document.getElementById('pos-form-heading').textContent = `ইনভয়েস এডিট করুন: ${inv.invoiceNo}`;
+      document.getElementById('pos-edit-mode-badge').classList.remove('hidden');
+      document.getElementById('save-invoice-submit-btn').innerHTML = `<i class="fa-solid fa-check-circle"></i><span>আপডেট সেভ ও ইনভয়েস দেখুন</span>`;
+
+      document.getElementById('bill-inv-no').value = inv.invoiceNo;
+      document.getElementById('bill-date').value = inv.date;
+      document.getElementById('bill-due-date').value = inv.dueDate || '';
+      document.getElementById('bill-client-name').value = inv.clientName || '';
+      document.getElementById('bill-client-phone').value = inv.clientPhone || '';
+      document.getElementById('bill-client-address').value = inv.clientAddress || '';
+      document.getElementById('bill-discount-type').value = 'BDT';
+      document.getElementById('bill-discount-input').value = inv.discount || 0;
+      document.getElementById('bill-vat-input').value = inv.vatPercent || 0;
+      document.getElementById('bill-pay-method').value = inv.paymentMethod || 'Cash (নগদ)';
+      document.getElementById('bill-paid-input').value = inv.paidAmount || 0;
+      document.getElementById('bill-note-input').value = inv.note || '';
+      userEditedPaidManually = true;
+
+      draftBillItems = JSON.parse(JSON.stringify(inv.items || []));
+      renderDraftBillItems();
+      recalculateBillTotals(true);
+      showToast(`${inv.invoiceNo} এডিট মোডে খোলা হয়েছে`, 'info');
+    }
+
+    function returnInvoice(invoiceId) {
+      const inv = appState.invoices.find(i => i.id === invoiceId);
+      if (!inv) return;
+      if (inv.isReturned) {
+        showToast('এই ইনভয়েসটি ইতিমধ্যে রিটার্ন করা হয়েছে!', 'info');
+        return;
+      }
+
+      showConfirmDialog(
+        'সেলস রিটার্ন ও স্টক সমন্বয় (Sales Return)',
+        `আপনি কি ইনভয়েস ${inv.invoiceNo}-এর প্রোডাক্টগুলো রিটার্ন নিতে চান? এতে স্টক আবার যুক্ত হবে এবং বাকি/বিক্রি শূন্য হবে।`,
+        () => {
+          // Restore stock for returned items
+          (inv.items || []).forEach(item => {
+            const prod = appState.products.find(p => p.name.toLowerCase() === item.name.toLowerCase());
+            if (prod && !prod.isFree) {
+              prod.stock = (Number(prod.stock) || 0) + (Number(item.qty) || 0);
+              if (isSupabaseConnected && /^[0-9a-f-]{36}$/i.test(prod.id)) {
+                _supabase.from('pos_products').update({ stock: prod.stock }).eq('id', prod.id);
+              }
+            }
+          });
+
+          inv.isReturned = true;
+          inv.dueAmount = 0;
+          inv.note = `${inv.note ? inv.note + ' | ' : ''}[RETURNED / ফেরত নেওয়া হয়েছে]`;
+
+          if (isSupabaseConnected) {
+            _supabase.from('pos_invoices').update({
+              is_returned: true,
+              due_amount: 0,
+              note: inv.note
+            }).eq('invoice_no', inv.invoiceNo);
+          }
+
+          saveState();
+          renderDashboard();
+          renderInvoicesLedger();
+          renderBakiKhata();
+          showToast(`${inv.invoiceNo} রিটার্ন সফল ও স্টক আপডেট হয়েছে!`, 'success');
+        }
+      );
+    }
+
     // =========================================================================
-    // 5. DASHBOARD RENDERING
+    // 5. DASHBOARD RENDERING (WITH DATE FILTER & NET PROFIT)
     // =========================================================================
+    function matchesDateFilter(dateStr, filterMode) {
+      if (!filterMode || filterMode === 'ALL') return true;
+      if (!dateStr) return false;
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+      if (filterMode === 'TODAY') return dateStr === todayStr;
+
+      const itemDate = new Date(dateStr + 'T00:00:00');
+      if (filterMode === '7DAYS') {
+        const sevenDaysAgo = new Date(now);
+        sevenDaysAgo.setDate(now.getDate() - 7);
+        return itemDate >= sevenDaysAgo;
+      }
+      if (filterMode === 'MONTH') {
+        return dateStr.slice(0, 7) === todayStr.slice(0, 7);
+      }
+      return true;
+    }
+
     function renderDashboard() {
+      const filterEl = document.getElementById('dashboard-date-filter');
+      const dateFilter = filterEl ? filterEl.value : 'ALL';
+
       let totalSales = 0;
       let totalPaid = 0;
       let totalDue = 0;
-      let estimatedProfit = 0;
+      let grossProfit = 0;
       let todaySales = 0;
       let todayCount = 0;
       let dueCustomersCount = 0;
@@ -1707,20 +1944,23 @@
       };
 
       appState.invoices.forEach(inv => {
+        if (inv.isReturned) return;
         const gTotal = Number(inv.grandTotal) || 0;
         const pAmt = Number(inv.paidAmount) || 0;
         const dAmt = Number(inv.dueAmount) || 0;
         const disc = Number(inv.discount) || 0;
 
-        totalSales += gTotal;
-        totalPaid += pAmt;
-        totalDue += dAmt;
-        if (dAmt > 0) dueCustomersCount++;
-
         if (inv.date === todayStr) {
           todaySales += gTotal;
           todayCount++;
         }
+
+        if (!matchesDateFilter(inv.date, dateFilter)) return;
+
+        totalSales += gTotal;
+        totalPaid += pAmt;
+        totalDue += dAmt;
+        if (dAmt > 0) dueCustomersCount++;
 
         const lineProfit = (inv.items || []).reduce((acc, item) => {
           const sell = Number(item.rate) || 0;
@@ -1728,11 +1968,17 @@
           const qty = Number(item.qty) || 1;
           return acc + ((sell - buy) * qty);
         }, 0);
-        estimatedProfit += (lineProfit - disc);
+        grossProfit += (lineProfit - disc);
 
         const m = inv.paymentMethod || 'Cash (নগদ)';
         methodTotals[m] = (methodTotals[m] || 0) + pAmt;
       });
+
+      const filteredExpenses = (appState.expenses || [])
+        .filter(exp => matchesDateFilter(exp.date, dateFilter))
+        .reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
+
+      const netProfit = grossProfit - filteredExpenses;
 
       const freeProductsCount = appState.products.filter(p => p.isFree || Number(p.price) === 0).length;
       const lowStockCount = appState.products.filter(p => !p.isFree && Number(p.stock) <= 5).length;
@@ -1742,7 +1988,8 @@
       document.getElementById('kpi-total-paid').textContent = formatBDT(totalPaid);
       document.getElementById('kpi-total-due').textContent = formatBDT(totalDue);
       document.getElementById('kpi-due-clients').textContent = `বাকি কাস্টমার: ${dueCustomersCount} জন`;
-      document.getElementById('kpi-estimated-profit').textContent = formatBDT(estimatedProfit);
+      document.getElementById('kpi-estimated-profit').textContent = formatBDT(netProfit);
+      document.getElementById('kpi-expense-subtitle').textContent = `খরচ: ${formatBDT(filteredExpenses)} বাদে নিট লাভ`;
       document.getElementById('kpi-total-products').textContent = `${appState.products.length} টি`;
       document.getElementById('kpi-free-products').textContent = `ফ্রি: ${freeProductsCount} | লো-স্টক: ${lowStockCount}`;
 
@@ -1782,7 +2029,7 @@
       }).join('');
 
       const dueListEl = document.getElementById('dashboard-due-list');
-      const dueInvoices = appState.invoices.filter(inv => (Number(inv.dueAmount) || 0) > 0);
+      const dueInvoices = appState.invoices.filter(inv => !inv.isReturned && (Number(inv.dueAmount) || 0) > 0);
       if (dueInvoices.length === 0) {
         dueListEl.innerHTML = `
           <div class="text-center py-8 bg-emerald-50/50 rounded-xl border border-emerald-100">
@@ -1799,15 +2046,21 @@
                 <span class="font-bold text-sm text-slate-900">${escapeHTML(inv.clientName)}</span>
                 <span class="text-[11px] font-mono font-semibold text-slate-500">(${escapeHTML(inv.invoiceNo)})</span>
               </div>
-              <p class="text-xs text-slate-600"><i class="fa-solid fa-phone text-[10px] mr-1"></i>${escapeHTML(inv.clientPhone)} • তারিখ: ${inv.date}</p>
+              <p class="text-xs text-slate-600">
+                <i class="fa-solid fa-phone text-[10px] mr-1"></i>${escapeHTML(inv.clientPhone)}
+                ${inv.dueDate ? ` • <span class="text-rose-700 font-bold">পরিশোধ তারিখ: ${inv.dueDate}</span>` : ` • তারিখ: ${inv.date}`}
+              </p>
             </div>
-            <div class="flex items-center gap-2.5">
-              <div class="text-right">
+            <div class="flex items-center gap-2">
+              <div class="text-right mr-1">
                 <span class="block text-[10px] text-rose-600 font-bold uppercase">বাকি (Due)</span>
                 <span class="text-sm font-extrabold text-rose-600">${formatBDT(inv.dueAmount)}</span>
               </div>
+              <button onclick="sendWhatsAppDueReminder('${escapeHTML(inv.clientName)}', '${escapeHTML(inv.clientPhone)}', ${inv.dueAmount}, '${inv.dueDate || ''}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition" title="WhatsApp তাগাদা পাঠান">
+                <i class="fa-brands fa-whatsapp"></i>
+              </button>
               <button onclick="openDueModal('${inv.id}')" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition">
-                বাকি আদায়
+                আদায়
               </button>
             </div>
           </div>
@@ -1863,9 +2116,12 @@
     }
 
     function initNewInvoiceForm() {
-      document.getElementById('bill-inv-no').value = generateNextInvoiceNumber();
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('bill-date').value = today;
+      const isEditing = Boolean(document.getElementById('editing-invoice-id').value);
+      if (!isEditing) {
+        document.getElementById('bill-inv-no').value = generateNextInvoiceNumber();
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('bill-date').value = today;
+      }
 
       const clientMap = new Map();
       appState.invoices.forEach(inv => {
@@ -1890,7 +2146,25 @@
           return `<option value="${p.id}">${escapeHTML(p.name)} [${escapeHTML(p.model)}] — ${priceLabel}</option>`;
         }).join('');
 
+      const dataList = document.getElementById('catalog-products-datalist');
+      if (dataList) {
+        dataList.innerHTML = appState.products.map(p =>
+          `<option value="${escapeHTML(p.name)}">${escapeHTML(p.model)} — ${formatBDT(p.price)}</option>`
+        ).join('');
+      }
+
       renderDraftBillItems();
+    }
+
+    function handleQuickProductSearch(val) {
+      if (!val) return;
+      const found = appState.products.find(p =>
+        p.name.toLowerCase() === val.trim().toLowerCase() ||
+        p.model.toLowerCase() === val.trim().toLowerCase()
+      );
+      if (found) {
+        selectCatalogProduct(found.id);
+      }
     }
 
     function fillClientFromSaved(key) {
@@ -1908,6 +2182,7 @@
     function checkCustomerPreviousDue() {
       const phone = (document.getElementById('bill-client-phone').value || '').trim().toLowerCase();
       const name = (document.getElementById('bill-client-name').value || '').trim().toLowerCase();
+      const editingId = document.getElementById('editing-invoice-id').value;
       const banner = document.getElementById('bill-prev-due-banner');
       if (!phone && !name) {
         banner.classList.add('hidden');
@@ -1915,6 +2190,7 @@
       }
       const prevDue = appState.invoices
         .filter(inv => {
+          if (inv.id === editingId || inv.isReturned) return false;
           const matchPhone = phone && (inv.clientPhone || '').trim().toLowerCase() === phone;
           const matchName = !phone && name && (inv.clientName || '').trim().toLowerCase() === name;
           return matchPhone || matchName;
@@ -1950,6 +2226,8 @@
     function addLineItemToBill() {
       const name = document.getElementById('item-name-input').value.trim();
       const model = document.getElementById('item-model-input').value.trim() || 'STD-01';
+      const serial = document.getElementById('item-serial-input').value.trim();
+      const warranty = document.getElementById('item-warranty-input').value.trim();
       const qty = Math.max(1, Number(document.getElementById('item-qty-input').value) || 1);
       const isFree = document.getElementById('item-is-free-check').checked;
       const rate = isFree ? 0 : Math.max(0, Number(document.getElementById('item-price-input').value) || 0);
@@ -1963,11 +2241,14 @@
       const matchedCatalog = appState.products.find(p => p.name.toLowerCase() === name.toLowerCase());
       const buyPrice = matchedCatalog ? (Number(matchedCatalog.buyPrice) || 0) : 0;
       const total = qty * rate;
-      draftBillItems.push({ name, model, qty, buyPrice, rate, total, isFree: isFree || rate === 0 });
+      draftBillItems.push({ name, model, serial, warranty, qty, buyPrice, rate, total, isFree: isFree || rate === 0 });
 
       document.getElementById('catalog-product-picker').value = '';
+      document.getElementById('quick-product-search').value = '';
       document.getElementById('item-name-input').value = '';
       document.getElementById('item-model-input').value = '';
+      document.getElementById('item-serial-input').value = '';
+      document.getElementById('item-warranty-input').value = '';
       document.getElementById('item-qty-input').value = 1;
       document.getElementById('item-price-input').value = 0;
       document.getElementById('item-is-free-check').checked = false;
@@ -1998,6 +2279,13 @@
             <td class="py-2.5 px-3 font-semibold text-slate-900">
               ${escapeHTML(item.name)}
               ${item.isFree ? '<span class="ml-1.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-700">FREE / GIFT</span>' : ''}
+              ${(item.serial || item.warranty) ? `
+                <span class="block text-[10.5px] font-normal text-slate-500 mt-0.5">
+                  ${item.serial ? `S/N: <span class="font-mono font-semibold text-slate-700">${escapeHTML(item.serial)}</span>` : ''}
+                  ${(item.serial && item.warranty) ? ' | ' : ''}
+                  ${item.warranty ? `Warranty: <span class="text-blue-700 font-semibold">${escapeHTML(item.warranty)}</span>` : ''}
+                </span>
+              ` : ''}
             </td>
             <td class="py-2.5 px-3 font-mono text-xs text-slate-600">${escapeHTML(item.model)}</td>
             <td class="py-2.5 px-3 text-center font-bold">${item.qty}</td>
@@ -2089,9 +2377,15 @@
     function resetInvoiceForm() {
       draftBillItems = [];
       userEditedPaidManually = false;
+      document.getElementById('editing-invoice-id').value = '';
+      document.getElementById('pos-form-heading').textContent = 'নতুন ইনভয়েস ও বিল তৈরি (Auto POS Billing)';
+      document.getElementById('pos-edit-mode-badge').classList.add('hidden');
+      document.getElementById('save-invoice-submit-btn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i><span>বিল সেভ ও ইনভয়েস প্রিন্ট করুন</span>`;
+
       document.getElementById('bill-client-name').value = '';
       document.getElementById('bill-client-phone').value = '';
       document.getElementById('bill-client-address').value = '';
+      document.getElementById('bill-due-date').value = '';
       document.getElementById('bill-prev-due-banner').classList.add('hidden');
       document.getElementById('bill-discount-input').value = 0;
       document.getElementById('bill-discount-type').value = 'BDT';
@@ -2108,8 +2402,10 @@
         return;
       }
 
+      const editingId = document.getElementById('editing-invoice-id').value;
       const invoiceNo = document.getElementById('bill-inv-no').value.trim();
       const date = document.getElementById('bill-date').value;
+      const dueDate = document.getElementById('bill-due-date').value || '';
       const clientName = document.getElementById('bill-client-name').value.trim();
       const clientPhone = document.getElementById('bill-client-phone').value.trim();
       const clientAddress = document.getElementById('bill-client-address').value.trim();
@@ -2130,10 +2426,11 @@
       const effectivePaid = Math.min(grandTotal, rawPaid);
       const dueAmount = grandTotal > rawPaid ? Math.round((grandTotal - rawPaid) * 100) / 100 : 0;
 
-      const newInvoice = {
-        id: 'inv-' + Date.now(),
+      const invoicePayload = {
+        id: editingId || ('inv-' + Date.now()),
         invoiceNo,
         date,
+        dueDate,
         clientName,
         clientPhone,
         clientAddress,
@@ -2147,87 +2444,125 @@
         changeAmount,
         dueAmount,
         paymentMethod,
-        note
+        note,
+        isReturned: false
       };
 
-      appState.invoices.unshift(newInvoice);
+      if (editingId) {
+        const idx = appState.invoices.findIndex(i => i.id === editingId);
+        if (idx !== -1) {
+          invoicePayload.isReturned = Boolean(appState.invoices[idx].isReturned);
+          appState.invoices[idx] = invoicePayload;
+        }
+        if (isSupabaseConnected) {
+          _supabase.from('pos_invoices').update({
+            invoice_no: invoicePayload.invoiceNo,
+            invoice_date: invoicePayload.date,
+            due_date: invoicePayload.dueDate || null,
+            client_name: invoicePayload.clientName,
+            client_phone: invoicePayload.clientPhone,
+            client_address: invoicePayload.clientAddress,
+            items: invoicePayload.items,
+            subtotal: invoicePayload.subtotal,
+            discount: invoicePayload.discount,
+            vat_percent: invoicePayload.vatPercent,
+            vat_amount: invoicePayload.vatAmount,
+            grand_total: invoicePayload.grandTotal,
+            paid_amount: invoicePayload.paidAmount,
+            change_amount: invoicePayload.changeAmount,
+            due_amount: invoicePayload.dueAmount,
+            payment_method: invoicePayload.paymentMethod,
+            note: invoicePayload.note
+          }).eq('invoice_no', invoicePayload.invoiceNo).then(({ error }) => {
+            if (error) console.error('Supabase update error:', error.message);
+          });
+        }
+      } else {
+        appState.invoices.unshift(invoicePayload);
+        if (isSupabaseConnected) {
+          _supabase.from('pos_invoices').insert([{
+            invoice_no: invoicePayload.invoiceNo,
+            invoice_date: invoicePayload.date,
+            due_date: invoicePayload.dueDate || null,
+            client_name: invoicePayload.clientName,
+            client_phone: invoicePayload.clientPhone,
+            client_address: invoicePayload.clientAddress,
+            items: invoicePayload.items,
+            subtotal: invoicePayload.subtotal,
+            discount: invoicePayload.discount,
+            vat_percent: invoicePayload.vatPercent,
+            vat_amount: invoicePayload.vatAmount,
+            grand_total: invoicePayload.grandTotal,
+            paid_amount: invoicePayload.paidAmount,
+            change_amount: invoicePayload.changeAmount,
+            due_amount: invoicePayload.dueAmount,
+            payment_method: invoicePayload.paymentMethod,
+            note: invoicePayload.note,
+            created_by: currentAdminUserEmail
+          }]).select().single().then(({ data, error }) => {
+            if (error) {
+              console.error('Supabase insert error:', error.message);
+            } else if (data && data.id) {
+              invoicePayload.id = data.id;
+              saveState();
+            }
+          });
+        }
 
-      // Save lightweight column data to Supabase (no PDF blob stored)
-      if (isSupabaseConnected) {
-        _supabase.from('pos_invoices').insert([{
-          invoice_no: newInvoice.invoiceNo,
-          invoice_date: newInvoice.date,
-          client_name: newInvoice.clientName,
-          client_phone: newInvoice.clientPhone,
-          client_address: newInvoice.clientAddress,
-          items: newInvoice.items,
-          subtotal: newInvoice.subtotal,
-          discount: newInvoice.discount,
-          vat_percent: newInvoice.vatPercent,
-          vat_amount: newInvoice.vatAmount,
-          grand_total: newInvoice.grandTotal,
-          paid_amount: newInvoice.paidAmount,
-          change_amount: newInvoice.changeAmount,
-          due_amount: newInvoice.dueAmount,
-          payment_method: newInvoice.paymentMethod,
-          note: newInvoice.note,
-          created_by: currentAdminUserEmail
-        }]).select().single().then(({ data, error }) => {
-          if (error) {
-            console.error('Supabase insert error:', error.message);
-          } else if (data && data.id) {
-            newInvoice.id = data.id;
-            saveState();
+        const saveNewToCatalog = document.getElementById('save-new-product-to-catalog').checked;
+        draftBillItems.forEach(item => {
+          const existingProd = appState.products.find(p => p.name.toLowerCase() === item.name.toLowerCase());
+          if (existingProd) {
+            if (!existingProd.isFree && Number(existingProd.stock) > 0) {
+              existingProd.stock = Math.max(0, Number(existingProd.stock) - Number(item.qty));
+              if (isSupabaseConnected && /^[0-9a-f-]{36}$/i.test(existingProd.id)) {
+                _supabase.from('pos_products').update({ stock: existingProd.stock }).eq('id', existingProd.id);
+              }
+            }
+          } else if (saveNewToCatalog) {
+            const newProdObj = {
+              id: 'prod-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+              name: item.name,
+              model: item.model || 'STD-01',
+              category: item.isFree ? 'Free Resource' : 'Shop / Retail Item',
+              buyPrice: 0,
+              price: item.rate,
+              stock: 99,
+              isFree: Boolean(item.isFree),
+              downloadNote: ''
+            };
+            appState.products.unshift(newProdObj);
+            if (isSupabaseConnected) {
+              _supabase.from('pos_products').insert([{
+                name: newProdObj.name,
+                model: newProdObj.model,
+                category: newProdObj.category,
+                buy_price: 0,
+                price: newProdObj.price,
+                stock: newProdObj.stock,
+                is_free: newProdObj.isFree,
+                download_note: ''
+              }]);
+            }
           }
         });
       }
-
-      const saveNewToCatalog = document.getElementById('save-new-product-to-catalog').checked;
-      draftBillItems.forEach(item => {
-        const existingProd = appState.products.find(p => p.name.toLowerCase() === item.name.toLowerCase());
-        if (existingProd) {
-          if (!existingProd.isFree && Number(existingProd.stock) > 0) {
-            existingProd.stock = Math.max(0, Number(existingProd.stock) - Number(item.qty));
-            if (isSupabaseConnected && /^[0-9a-f-]{36}$/i.test(existingProd.id)) {
-              _supabase.from('pos_products').update({ stock: existingProd.stock }).eq('id', existingProd.id);
-            }
-          }
-        } else if (saveNewToCatalog) {
-          const newProdObj = {
-            id: 'prod-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-            name: item.name,
-            model: item.model || 'STD-01',
-            category: item.isFree ? 'Free Resource' : 'Shop / Retail Item',
-            buyPrice: 0,
-            price: item.rate,
-            stock: 99,
-            isFree: Boolean(item.isFree),
-            downloadNote: ''
-          };
-          appState.products.unshift(newProdObj);
-          if (isSupabaseConnected) {
-            _supabase.from('pos_products').insert([{
-              name: newProdObj.name,
-              model: newProdObj.model,
-              category: newProdObj.category,
-              buy_price: 0,
-              price: newProdObj.price,
-              stock: newProdObj.stock,
-              is_free: newProdObj.isFree,
-              download_note: ''
-            }]);
-          }
-        }
-      });
 
       saveState();
       resetInvoiceForm();
       renderDashboard();
       showToast(`ইনভয়েস ${invoiceNo} সফলভাবে সেভ হয়েছে!`, 'success');
-      openInvoicePrintModal(newInvoice.id);
+      openInvoicePrintModal(invoicePayload.id);
     }
 
     function getInvoiceStatusInfo(inv) {
+      if (inv.isReturned) {
+        return {
+          code: 'Returned',
+          label: 'RETURNED (ফেরত)',
+          badgeClass: 'bg-slate-200 text-slate-700 border border-slate-400'
+        };
+      }
       const due = Number(inv.dueAmount) || 0;
       const paid = Number(inv.paidAmount) || 0;
       const total = Number(inv.grandTotal) || 0;
@@ -2290,12 +2625,17 @@
         const rowBg = i % 2 === 1 ? 'bg-slate-50/70' : 'bg-white';
 
         if (item) {
+          const metaTags = [];
+          if (item.serial) metaTags.push(`S/N: ${escapeHTML(item.serial)}`);
+          if (item.warranty) metaTags.push(`Warranty: ${escapeHTML(item.warranty)}`);
+
           rowsHTML += `
             <tr class="${rowBg}">
               <td class="py-2 px-2.5 text-center font-extrabold text-blue-900 border-r border-slate-200/70">${String(i + 1).padStart(2, '0')}</td>
               <td class="py-2 px-2.5 font-bold text-slate-900 border-r border-slate-200/70">
                 ${escapeHTML(item.name)}
                 ${item.isFree ? '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[9px] font-extrabold uppercase">FREE GIFT</span>' : ''}
+                ${metaTags.length > 0 ? `<span class="block text-[9.5px] font-semibold text-blue-800 mt-0.5">${metaTags.join(' &bull; ')}</span>` : ''}
               </td>
               <td class="py-2 px-2.5 font-mono text-[10.5px] text-slate-600 border-r border-slate-200/70 pad-hide-thermal">${escapeHTML(item.model)}</td>
               <td class="py-2 px-2.5 text-center font-bold text-slate-800 border-r border-slate-200/70">${item.qty}</td>
@@ -2303,24 +2643,15 @@
               <td class="py-2 px-2.5 text-right font-extrabold text-slate-950">${item.isFree ? 'FREE (৳0)' : formatBDT(item.total)}</td>
             </tr>
           `;
-        } else if (i === items.length && items.length < minRows) {
-          rowsHTML += `
-            <tr class="${rowBg}">
-              <td class="py-1.5 px-2.5 text-center font-semibold text-slate-300 border-r border-slate-200/60">${String(i + 1).padStart(2, '0')}</td>
-              <td colspan="5" class="py-1.5 px-2.5 text-center text-[9.5px] font-semibold uppercase tracking-[0.2em] text-slate-400/80 select-none">
-                — End of Listed Items / পরিশিষ্ট —
-              </td>
-            </tr>
-          `;
         } else {
           rowsHTML += `
             <tr class="${rowBg}">
-              <td class="py-1.5 px-2.5 text-center font-semibold text-slate-300 border-r border-slate-200/60">${String(i + 1).padStart(2, '0')}</td>
-              <td class="py-1.5 px-2.5 border-r border-slate-200/60 text-slate-200 select-none">&nbsp;</td>
-              <td class="py-1.5 px-2.5 border-r border-slate-200/60 text-center text-slate-200 text-[10px] select-none pad-hide-thermal">—</td>
-              <td class="py-1.5 px-2.5 border-r border-slate-200/60 text-center text-slate-200 text-[10px] select-none">—</td>
-              <td class="py-1.5 px-2.5 border-r border-slate-200/60 text-right text-slate-200 text-[10px] select-none pad-hide-thermal">—</td>
-              <td class="py-1.5 px-2.5 text-right text-slate-200 text-[10px] select-none">—</td>
+              <td class="py-2 px-2.5 text-center font-semibold text-slate-300 border-r border-slate-200/60">${String(i + 1).padStart(2, '0')}</td>
+              <td class="py-2 px-2.5 border-r border-slate-200/60 text-slate-200 select-none">&nbsp;</td>
+              <td class="py-2 px-2.5 border-r border-slate-200/60 text-center text-slate-200 text-[10px] select-none pad-hide-thermal">—</td>
+              <td class="py-2 px-2.5 border-r border-slate-200/60 text-center text-slate-200 text-[10px] select-none">—</td>
+              <td class="py-2 px-2.5 border-r border-slate-200/60 text-right text-slate-200 text-[10px] select-none pad-hide-thermal">—</td>
+              <td class="py-2 px-2.5 text-right text-slate-200 text-[10px] select-none">—</td>
             </tr>
           `;
         }
@@ -2356,13 +2687,21 @@
       document.getElementById('pad-inv-no').textContent = inv.invoiceNo;
       document.getElementById('pad-inv-date').textContent = inv.date;
 
+      const dueDateRow = document.getElementById('pad-due-date-row');
+      if (inv.dueDate && Number(inv.dueAmount) > 0) {
+        document.getElementById('pad-due-date').textContent = inv.dueDate;
+        dueDateRow.classList.remove('hidden');
+      } else {
+        dueDateRow.classList.add('hidden');
+      }
+
       const status = getInvoiceStatusInfo(inv);
       const badgeEl = document.getElementById('pad-status-badge');
       badgeEl.textContent = '● ' + status.label;
-      badgeEl.className = `inline-block px-2.5 py-0.5 rounded-full text-[9.5px] font-extrabold whitespace-nowrap ${status.badgeClass}`;
+      badgeEl.className = `inline-block px-2 py-0.5 rounded-full text-[9px] font-extrabold whitespace-nowrap ${status.badgeClass}`;
 
       const collectDueBtn = document.getElementById('modal-collect-due-btn');
-      if (Number(inv.dueAmount) > 0) {
+      if (Number(inv.dueAmount) > 0 && !inv.isReturned) {
         collectDueBtn.classList.remove('hidden');
         collectDueBtn.classList.add('flex');
       } else {
@@ -2375,7 +2714,7 @@
       document.getElementById('pad-client-address').innerHTML = `<i class="fa-solid fa-location-dot text-blue-600 mr-1.5 text-[10px]"></i>${escapeHTML(inv.clientAddress || 'Bangladesh')}`;
 
       const otherDue = appState.invoices
-        .filter(other => other.id !== inv.id && (other.clientPhone || '').trim() === (inv.clientPhone || '').trim())
+        .filter(other => other.id !== inv.id && !other.isReturned && (other.clientPhone || '').trim() === (inv.clientPhone || '').trim())
         .reduce((sum, other) => sum + (Number(other.dueAmount) || 0), 0);
       const prevDueEl = document.getElementById('pad-prev-due-line');
       if (otherDue > 0) {
@@ -2423,6 +2762,17 @@
       document.getElementById('pad-sign-visual').innerHTML = getSignatureHTML();
       document.getElementById('pad-signatory-name').textContent = s.signatoryName || 'Authorized Signatory';
 
+      // Render Dynamic Verification QR Code
+      const qrCanvas = document.getElementById('pad-qr-canvas');
+      if (qrCanvas && window.QRious) {
+        new QRious({
+          element: qrCanvas,
+          value: `INV:${inv.invoiceNo}|CLIENT:${inv.clientName}|TOTAL:${inv.grandTotal}|DUE:${inv.dueAmount}|${s.website}`,
+          size: 66,
+          foreground: '#0f172a'
+        });
+      }
+
       renderAllLogosAndBranding();
 
       const modal = document.getElementById('invoice-print-modal');
@@ -2452,7 +2802,21 @@
         `Grand Total: *${formatBDT(inv.grandTotal)}*\n` +
         `Paid (${inv.paymentMethod}): *${formatBDT(inv.paidAmount)}*\n` +
         `Balance Due (বাকি): *${formatBDT(inv.dueAmount)}*\n` +
+        (inv.dueDate && Number(inv.dueAmount) > 0 ? `Due Payment Date: *${inv.dueDate}*\n` : '') +
         `Thank you for choosing ${appState.settings.companyName}! (${appState.settings.website})`;
+      const url = waPhone
+        ? `https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`
+        : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
+
+    function sendWhatsAppDueReminder(clientName, clientPhone, totalDue, dueDate) {
+      const rawPhone = String(clientPhone || '').replace(/[^0-9]/g, '');
+      const waPhone = rawPhone.length >= 10 ? (rawPhone.startsWith('88') ? rawPhone : '88' + rawPhone) : '';
+      const msg = `আসসালামু আলাইকুম *${clientName}*,\n` +
+        `*${appState.settings.companyName}*-এর পক্ষ থেকে বিনীত রিমাইন্ডার: আপনার নিকট আমাদের বর্তমান বকেয়া (Due) রয়েছে *${formatBDT(totalDue)}*।` +
+        (dueDate ? `\nপরিশোধের নির্ধারিত তারিখ: *${dueDate}*।` : '') +
+        `\n\nপেমেন্ট মাধ্যম:\n${appState.settings.paymentInfo}\n\nধন্যবাদান্তে,\n*${appState.settings.companyName}* (${appState.settings.phone})`;
       const url = waPhone
         ? `https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`
         : `https://wa.me/?text=${encodeURIComponent(msg)}`;
@@ -2464,12 +2828,13 @@
         showToast('এক্সপোর্ট করার মতো কোনো বিল নেই!', 'error');
         return;
       }
-      const headers = ['Invoice No', 'Date', 'Client Name', 'Phone', 'Address', 'Items', 'Subtotal', 'Discount', 'VAT', 'Grand Total', 'Paid', 'Due', 'Payment Method', 'Note'];
+      const headers = ['Invoice No', 'Date', 'Due Date', 'Client Name', 'Phone', 'Address', 'Items', 'Subtotal', 'Discount', 'VAT', 'Grand Total', 'Paid', 'Due', 'Payment Method', 'Status', 'Note'];
       const rows = appState.invoices.map(inv => {
         const itemText = (inv.items || []).map(i => `${i.name} [${i.model}] x${i.qty}`).join(' | ');
         return [
           inv.invoiceNo,
           inv.date,
+          inv.dueDate || '',
           inv.clientName,
           inv.clientPhone,
           inv.clientAddress,
@@ -2481,6 +2846,7 @@
           inv.paidAmount,
           inv.dueAmount,
           inv.paymentMethod,
+          inv.isReturned ? 'Returned' : (Number(inv.dueAmount) > 0 ? 'Due' : 'Paid'),
           inv.note || ''
         ].map(val => `"${String(val ?? '').replace(/"/g, '""')}"`).join(',');
       });
@@ -2528,7 +2894,7 @@
       const filtered = appState.invoices.filter(inv => {
         const status = getInvoiceStatusInfo(inv);
         if (currentInvoiceFilter === 'Paid' && status.code !== 'Paid') return false;
-        if (currentInvoiceFilter === 'Due' && status.code === 'Paid') return false;
+        if (currentInvoiceFilter === 'Due' && (status.code === 'Paid' || status.code === 'Returned')) return false;
 
         if (query) {
           const hay = `${inv.invoiceNo} ${inv.clientName} ${inv.clientPhone} ${inv.clientAddress}`.toLowerCase();
@@ -2547,9 +2913,12 @@
         const status = getInvoiceStatusInfo(inv);
         const itemSummary = inv.items.map(i => `${i.name} (x${i.qty})`).join(', ');
         return `
-          <tr class="hover:bg-slate-50 transition">
+          <tr class="hover:bg-slate-50 transition ${inv.isReturned ? 'opacity-65 bg-slate-50' : ''}">
             <td class="py-3.5 px-4 font-mono text-xs font-extrabold text-blue-700">${escapeHTML(inv.invoiceNo)}</td>
-            <td class="py-3.5 px-4 text-xs text-slate-600 whitespace-nowrap">${inv.date}</td>
+            <td class="py-3.5 px-4 text-xs text-slate-600 whitespace-nowrap">
+              ${inv.date}
+              ${inv.dueDate && Number(inv.dueAmount) > 0 ? `<span class="block text-[10px] text-rose-600 font-bold">Due: ${inv.dueDate}</span>` : ''}
+            </td>
             <td class="py-3.5 px-4">
               <p class="font-bold text-slate-900 text-sm">${escapeHTML(inv.clientName)}</p>
               <p class="text-xs text-slate-500">${escapeHTML(inv.clientPhone)}</p>
@@ -2563,15 +2932,23 @@
             </td>
             <td class="py-3.5 px-4 text-right whitespace-nowrap">
               <div class="inline-flex items-center gap-1.5">
-                ${Number(inv.dueAmount) > 0 ? `
+                ${(Number(inv.dueAmount) > 0 && !inv.isReturned) ? `
                   <button onclick="openDueModal('${inv.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition" title="বাকি টাকা জমা নিন">
-                    বাকি আদায়
+                    আদায়
                   </button>
                 ` : ''}
                 <button onclick="openInvoicePrintModal('${inv.id}')" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition" title="প্রিন্ট / PDF">
                   <i class="fa-solid fa-print text-cyan-400"></i>
                 </button>
-                <button onclick="duplicateInvoiceToDraft('${inv.id}')" class="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs transition" title="এই বিলের কপি বানান (Duplicate)">
+                ${!inv.isReturned ? `
+                  <button onclick="editExistingInvoice('${inv.id}')" class="px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs transition" title="ইনভয়েস এডিট করুন (Edit)">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button onclick="returnInvoice('${inv.id}')" class="px-2.5 py-1.5 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs transition" title="প্রোডাক্ট রিটার্ন নিন (Sales Return)">
+                    <i class="fa-solid fa-rotate-left"></i>
+                  </button>
+                ` : ''}
+                <button onclick="duplicateInvoiceToDraft('${inv.id}')" class="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs transition" title="কপি বানান (Duplicate)">
                   <i class="fa-regular fa-copy"></i>
                 </button>
                 <button onclick="deleteInvoice('${inv.id}')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-600 text-xs transition" title="মুছে ফেলুন">
@@ -2676,6 +3053,7 @@
       const map = new Map();
 
       appState.invoices.forEach(inv => {
+        if (inv.isReturned) return;
         const key = (inv.clientPhone || inv.clientName || 'Unknown').trim().toLowerCase();
         if (!map.has(key)) {
           map.set(key, {
@@ -2686,7 +3064,8 @@
             totalBill: 0,
             totalPaid: 0,
             totalDue: 0,
-            latestDueInvoiceId: null
+            latestDueInvoiceId: null,
+            latestDueDate: ''
           });
         }
         const entry = map.get(key);
@@ -2697,6 +3076,7 @@
         entry.totalDue += due;
         if (due > 0 && !entry.latestDueInvoiceId) {
           entry.latestDueInvoiceId = inv.id;
+          entry.latestDueDate = inv.dueDate || '';
         }
       });
 
@@ -2717,15 +3097,128 @@
           <td class="py-3.5 px-4 text-right font-bold text-slate-900">${formatBDT(c.totalBill)}</td>
           <td class="py-3.5 px-4 text-right font-semibold text-emerald-600">${formatBDT(c.totalPaid)}</td>
           <td class="py-3.5 px-4 text-right font-extrabold ${c.totalDue > 0 ? 'text-rose-600' : 'text-emerald-600'}">${formatBDT(c.totalDue)}</td>
-          <td class="py-3.5 px-4 text-right">
+          <td class="py-3.5 px-4 text-right whitespace-nowrap">
             ${c.totalDue > 0 && c.latestDueInvoiceId ? `
-              <button onclick="openDueModal('${c.latestDueInvoiceId}')" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition">
-                জমা নিন (Collect)
-              </button>
+              <div class="inline-flex items-center gap-1.5">
+                <button onclick="sendWhatsAppDueReminder('${escapeHTML(c.name)}', '${escapeHTML(c.phone)}', ${c.totalDue}, '${c.latestDueDate}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition" title="WhatsApp তাগাদা পাঠান">
+                  <i class="fa-brands fa-whatsapp mr-1"></i> তাগাদা
+                </button>
+                <button onclick="openDueModal('${c.latestDueInvoiceId}')" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition">
+                  জমা নিন
+                </button>
+              </div>
             ` : `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">বাকি শূন্য</span>`}
           </td>
         </tr>
       `).join('');
+    }
+
+    // =========================================================================
+    // 8B. EXPENSE TRACKER & NET PROFIT MANAGEMENT
+    // =========================================================================
+    function renderExpensesTab() {
+      const dateInput = document.getElementById('exp-date');
+      if (dateInput && !dateInput.value) {
+        dateInput.value = new Date().toISOString().split('T')[0];
+      }
+
+      const list = appState.expenses || [];
+      const totalExp = list.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+      document.getElementById('total-expenses-badge').textContent = `মোট খরচ: ${formatBDT(totalExp)}`;
+
+      const tbody = document.getElementById('expenses-ledger-tbody');
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-10 text-center text-slate-400 text-sm">এখনো কোনো খরচ এন্ট্রি করা হয়নি।</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(exp => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="py-3 px-4 text-xs text-slate-600 whitespace-nowrap">${exp.date}</td>
+          <td class="py-3 px-4">
+            <p class="font-bold text-slate-900 text-sm">${escapeHTML(exp.title)}</p>
+            ${exp.note ? `<p class="text-[11px] text-slate-500">${escapeHTML(exp.note)}</p>` : ''}
+          </td>
+          <td class="py-3 px-4 text-xs font-semibold text-slate-600">${escapeHTML(exp.category)}</td>
+          <td class="py-3 px-4 text-xs text-slate-600">${escapeHTML(exp.paymentMethod)}</td>
+          <td class="py-3 px-4 text-right font-extrabold text-rose-600 whitespace-nowrap">${formatBDT(exp.amount)}</td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="deleteExpense('${exp.id}')" class="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-600 text-xs transition">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function handleSaveExpense(event) {
+      event.preventDefault();
+      const date = document.getElementById('exp-date').value;
+      const title = document.getElementById('exp-title').value.trim();
+      const category = document.getElementById('exp-category').value;
+      const amount = Math.max(0, Number(document.getElementById('exp-amount').value) || 0);
+      const paymentMethod = document.getElementById('exp-method').value;
+      const note = document.getElementById('exp-note').value.trim();
+
+      if (!title || amount <= 0) {
+        showToast('খরচের বিবরণ এবং সঠিক পরিমাণ লিখুন', 'error');
+        return;
+      }
+
+      const newExp = {
+        id: 'exp-' + Date.now(),
+        date,
+        title,
+        category,
+        amount,
+        paymentMethod,
+        note
+      };
+
+      appState.expenses = appState.expenses || [];
+      appState.expenses.unshift(newExp);
+
+      if (isSupabaseConnected) {
+        _supabase.from('pos_expenses').insert([{
+          expense_date: date,
+          title,
+          category,
+          amount,
+          payment_method: paymentMethod,
+          note,
+          created_by: currentAdminUserEmail
+        }]).select().single().then(({ data, error }) => {
+          if (error) console.error('Supabase expense insert error:', error.message);
+          else if (data && data.id) {
+            newExp.id = data.id;
+            saveState();
+          }
+        });
+      }
+
+      saveState();
+      document.getElementById('expense-form').reset();
+      document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
+      renderExpensesTab();
+      renderDashboard();
+      showToast('খরচ সফলভাবে সেভ হয়েছে!', 'success');
+    }
+
+    function deleteExpense(expId) {
+      showConfirmDialog(
+        'খরচ মুছে ফেলুন',
+        'আপনি কি নিশ্চিতভাবে এই খরচের হিসাবটি মুছে ফেলতে চান?',
+        () => {
+          appState.expenses = (appState.expenses || []).filter(e => e.id !== expId);
+          if (isSupabaseConnected && /^[0-9a-f-]{36}$/i.test(expId)) {
+            _supabase.from('pos_expenses').delete().eq('id', expId);
+          }
+          saveState();
+          renderExpensesTab();
+          renderDashboard();
+          showToast('খরচ মুছে ফেলা হয়েছে', 'info');
+        }
+      );
     }
 
     // =========================================================================
@@ -3025,7 +3518,8 @@ Generated On: ${new Date().toLocaleDateString()}
             appState = {
               settings: { ...DEFAULT_STATE.settings, ...(imported.settings || {}) },
               products: imported.products,
-              invoices: imported.invoices
+              invoices: imported.invoices,
+              expenses: Array.isArray(imported.expenses) ? imported.expenses : []
             };
             saveState();
             renderAllLogosAndBranding();
@@ -3097,6 +3591,7 @@ Generated On: ${new Date().toLocaleDateString()}
             id: r.id,
             invoiceNo: r.invoice_no,
             date: r.invoice_date,
+            dueDate: r.due_date || '',
             clientName: r.client_name,
             clientPhone: r.client_phone || '',
             clientAddress: r.client_address || '',
@@ -3110,7 +3605,8 @@ Generated On: ${new Date().toLocaleDateString()}
             changeAmount: Number(r.change_amount) || 0,
             dueAmount: Number(r.due_amount) || 0,
             paymentMethod: r.payment_method || 'Cash (নগদ)',
-            note: r.note || ''
+            note: r.note || '',
+            isReturned: Boolean(r.is_returned)
           }));
         }
 
@@ -3130,6 +3626,23 @@ Generated On: ${new Date().toLocaleDateString()}
             stock: Number(p.stock) || 0,
             isFree: Boolean(p.is_free),
             downloadNote: p.download_note || ''
+          }));
+        }
+
+        const { data: expRows, error: expErr } = await _supabase
+          .from('pos_expenses')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!expErr && Array.isArray(expRows)) {
+          appState.expenses = expRows.map(e => ({
+            id: e.id,
+            date: e.expense_date,
+            title: e.title,
+            category: e.category || 'General / Other',
+            amount: Number(e.amount) || 0,
+            paymentMethod: e.payment_method || 'Cash (নগদ)',
+            note: e.note || ''
           }));
         }
 
