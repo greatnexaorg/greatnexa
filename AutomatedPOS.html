@@ -3079,19 +3079,6 @@
       window.open(`mailto:${toEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
     }
 
-    function shareActiveInvoiceEmail() {
-      const inv = appState.invoices.find(i => i.id === activePrintInvoiceId);
-      if (!inv) return;
-      const dueAmt = Number(inv.dueAmount) || 0;
-      const subject = dueAmt > 0
-        ? `Invoice & Due Payment Reminder (${inv.invoiceNo}) - ${appState.settings.companyName}`
-        : `Digital Invoice / Cash Memo (${inv.invoiceNo}) - ${appState.settings.companyName}`;
-      const body = buildInvoiceShareMessage(inv).replace(/\*/g, '');
-      const toEmail = encodeURIComponent(inv.clientEmail || '');
-      const mailtoUrl = `mailto:${toEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.open(mailtoUrl, '_blank');
-    }
-
     function sendWhatsAppReminder(invoiceId) {
       const inv = appState.invoices.find(i => i.id === invoiceId);
       if (!inv) return;
@@ -3842,6 +3829,51 @@
               dueAmount: Number(r.due_amount) || 0, paymentMethod: r.payment_method || 'Cash (নগদ)',
               deliveryStatus: r.delivery_status || 'Delivered', isReturned: Boolean(r.is_returned), note: r.note || ''
             };
+          });
+        }
+
+        const { data: prodRows } = await _supabase.from('pos_products').select('*').order('created_at', { ascending: false });
+        if (Array.isArray(prodRows) && prodRows.length > 0) {
+          appState.products = prodRows.map(p => ({
+            id: p.id, name: p.name, model: p.model || 'STD-01', category: p.category || 'Course / Training',
+            buyPrice: Number(p.buy_price) || 0, price: Number(p.price) || 0, stock: Number(p.stock) || 0,
+            isUnlimited: Number(p.stock) === -1 || Number(p.stock) >= 999999,
+            warranty: p.warranty || 'No Warranty', isFree: Boolean(p.is_free), downloadNote: p.download_note || ''
+          }));
+        }
+
+        const { data: purRows } = await _supabase.from('pos_purchases').select('*').order('created_at', { ascending: false });
+        if (Array.isArray(purRows) && purRows.length > 0) {
+          appState.purchases = purRows.map(p => ({
+            id: p.id, voucherNo: p.voucher_no, date: p.purchase_date, supplierName: p.supplier_name,
+            supplierPhone: p.supplier_phone || '', productName: p.product_name, model: p.model || '',
+            warranty: p.warranty || 'No Warranty', qty: Number(p.qty) || 1, buyRate: Number(p.buy_rate) || 0,
+            sellRate: Number(p.sell_rate) || 0, totalAmount: Number(p.total_amount) || 0,
+            paidAmount: Number(p.paid_amount) || 0, dueAmount: Number(p.due_amount) || 0
+          }));
+        }
+
+        const { data: expRows } = await _supabase.from('pos_expenses').select('*').order('created_at', { ascending: false });
+        if (Array.isArray(expRows) && expRows.length > 0) {
+          appState.expenses = expRows.map(e => ({
+            id: e.id, date: e.expense_date, category: e.category, title: e.title, amount: Number(e.amount) || 0, method: e.payment_method || 'Cash (নগদ)'
+          }));
+        }
+
+        const { data: qtRows } = await _supabase.from('pos_quotations').select('*').order('created_at', { ascending: false });
+        if (Array.isArray(qtRows) && qtRows.length > 0) {
+          appState.quotations = qtRows.map(q => ({
+            id: q.id, quoteNo: q.quote_no, date: q.quote_date, validUntil: q.valid_until || '',
+            clientName: q.client_name, clientPhone: q.client_phone || '', clientAddress: q.client_address || '',
+            items: Array.isArray(q.items) ? q.items : [], subtotal: Number(q.subtotal) || 0,
+            discount: Number(q.discount) || 0, grandTotal: Number(q.grand_total) || 0, note: q.note || ''
+          }));
+        }
+
+        const { data: advRows } = await _supabase.from('pos_customer_advances').select('*');
+        if (Array.isArray(advRows) && advRows.length > 0) {
+          advRows.forEach(a => {
+            appState.customerAdvances[a.client_key] = { name: a.client_name, phone: a.client_phone || '', balance: Number(a.balance) || 0 };
           });
         }
 
