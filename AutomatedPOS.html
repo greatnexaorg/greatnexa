@@ -149,35 +149,35 @@
         box-shadow: none !important;
         border: none !important;
         border-radius: 0 !important;
-      }
-      /* Full Bleed A4 Portrait Layout so 10-row pad fits Page 1 strictly without spilling to Page 2 */
+      /* Full Bleed A4 Portrait Layout so 10-row pad fits Page 1 strictly even with browser Headers/Footers enabled */
       body:not(.print-thermal) {
         width: 210mm !important;
-        height: 290mm !important;
-        max-height: 290mm !important;
+        height: 268mm !important;
+        max-height: 268mm !important;
         overflow: hidden !important;
       }
       body:not(.print-thermal) #invoice-print-modal,
       body:not(.print-thermal) #invoice-modal-wrapper {
-        height: 290mm !important;
-        max-height: 290mm !important;
+        height: 268mm !important;
+        max-height: 268mm !important;
         overflow: hidden !important;
       }
       body:not(.print-thermal) #printable-invoice-sheet {
         padding: 0 !important;
         width: 210mm !important;
-        height: 290mm !important;
-        min-height: 290mm !important;
-        max-height: 290mm !important;
+        height: 268mm !important;
+        min-height: 268mm !important;
+        max-height: 268mm !important;
         max-width: 100% !important;
         overflow: hidden !important;
+        zoom: 0.90 !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
       }
       body:not(.print-thermal) #pad-items-tbody td {
-        padding-top: 4px !important;
-        padding-bottom: 4px !important;
+        padding-top: 3px !important;
+        padding-bottom: 3px !important;
       }
       body:not(.print-thermal) @page {
         size: A4 portrait;
