@@ -170,6 +170,37 @@
 </head>
 <body class="antialiased selection:bg-cyan-500 selection:text-white">
 
+  <!-- Strict Admin Access Gate (Blocks unauthorized direct link access) -->
+  <div id="admin-access-gate" class="fixed inset-0 z-[200] bg-slate-950 text-white flex items-center justify-center p-4">
+    <div id="admin-gate-loading" class="text-center space-y-3 max-w-sm w-full">
+      <div class="w-12 h-12 rounded-2xl bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 flex items-center justify-center mx-auto text-xl">
+        <i class="fa-solid fa-shield-halved fa-spin"></i>
+      </div>
+      <p class="text-sm font-bold text-slate-200">অ্যাডমিন পারমিশন যাচাই করা হচ্ছে...</p>
+      <p class="text-xs text-slate-400">অনুমোদিত অ্যাডমিন সেশন চেক করা হচ্ছে</p>
+    </div>
+
+    <div id="admin-gate-denied" class="hidden max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center shadow-2xl space-y-4">
+      <div class="w-14 h-14 rounded-2xl bg-rose-500/15 border border-rose-500/40 text-rose-400 flex items-center justify-center mx-auto text-2xl">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <div>
+        <h2 class="text-xl font-black text-white">অ্যাক্সেস সংরক্ষিত (Admin Only)</h2>
+        <p id="admin-gate-reason" class="text-xs sm:text-sm text-slate-400 mt-1.5">
+          এই পেজে সরাসরি অটো অ্যাক্সেস বন্ধ রাখা হয়েছে। শুধুমাত্র অনুমোদিত অ্যাডমিন প্যানেল থেকে লগইন করে প্রবেশ করা যাবে।
+        </p>
+      </div>
+      <div class="pt-2 flex flex-col sm:flex-row gap-2.5 justify-center">
+        <a href="admin.html" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-right-to-bracket"></i><span>Admin Panel লগইনে যান</span>
+        </a>
+        <button type="button" onclick="verifyAdminAccess(true)" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-bold transition">
+          আবার যাচাই করুন
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast-container" class="fixed top-4 right-4 z-[110] flex flex-col gap-2 pointer-events-none"></div>
 
   <!-- Confirmation Modal -->
@@ -230,7 +261,7 @@
         </div>
       </div>
       <div class="flex justify-end gap-3 mt-6">
-        <button onclick="closeDueModal()" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200">বন্ধ করুন</button>
+        <button onclick="closeDueModal()" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100">বন্ধ করুন</button>
         <button onclick="submitDueCollection()" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 shadow-md">
           <i class="fa-solid fa-check-circle mr-1.5"></i> জমা সেভ করুন
         </button>
@@ -1716,6 +1747,7 @@
     const STORAGE_KEY = 'greatnexa_erp_v3_state';
     let currentAdminUserEmail = '';
     let isSupabaseConnected = false;
+    let isAuthorizedAdminSession = false;
 
     const DEFAULT_STATE = {
       settings: {
@@ -1820,6 +1852,94 @@
 
     function isUUID(id) {
       return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id || ''));
+    }
+
+    async function isUserAdminInSupabase(user) {
+      if (!user) return false;
+      const roleMeta = String(
+        user.app_metadata?.role ||
+        user.user_metadata?.role ||
+        ''
+      ).toLowerCase();
+      if (roleMeta === 'admin' || roleMeta === 'super_admin' || roleMeta === 'owner') {
+        return true;
+      }
+
+      try {
+        const { data: profileById } = await _supabase
+          .from('profiles')
+          .select('role, is_admin')
+          .eq('id', user.id)
+          .maybeSingle();
+        if (profileById && (profileById.is_admin === true || String(profileById.role || '').toLowerCase() === 'admin')) {
+          return true;
+        }
+      } catch (_) {}
+
+      try {
+        const { data: adminRow } = await _supabase
+          .from('admin_users')
+          .select('id, role')
+          .or(`user_id.eq.${user.id},email.eq.${user.email || ''}`)
+          .maybeSingle();
+        if (adminRow) return true;
+      } catch (_) {}
+
+      return false;
+    }
+
+    function showAccessGateLoading() {
+      const gate = document.getElementById('admin-access-gate');
+      const loading = document.getElementById('admin-gate-loading');
+      const denied = document.getElementById('admin-gate-denied');
+      if (gate) gate.classList.remove('hidden');
+      if (loading) loading.classList.remove('hidden');
+      if (denied) denied.classList.add('hidden');
+    }
+
+    function showAccessGateDenied(reasonText) {
+      isAuthorizedAdminSession = false;
+      isSupabaseConnected = false;
+      const gate = document.getElementById('admin-access-gate');
+      const loading = document.getElementById('admin-gate-loading');
+      const denied = document.getElementById('admin-gate-denied');
+      const reasonEl = document.getElementById('admin-gate-reason');
+      if (reasonEl && reasonText) reasonEl.textContent = reasonText;
+      if (loading) loading.classList.add('hidden');
+      if (denied) denied.classList.remove('hidden');
+      if (gate) gate.classList.remove('hidden');
+    }
+
+    function unlockAdminPanelUI() {
+      isAuthorizedAdminSession = true;
+      const gate = document.getElementById('admin-access-gate');
+      if (gate) gate.classList.add('hidden');
+    }
+
+    async function verifyAdminAccess(showNotice = false) {
+      showAccessGateLoading();
+      try {
+        const { data: { session }, error } = await _supabase.auth.getSession();
+        if (error || !session || !session.user) {
+          showAccessGateDenied('এই পেজে সরাসরি অটো অ্যাক্সেস বন্ধ রাখা হয়েছে। অনুগ্রহ করে Admin Panel (admin.html) থেকে লগইন করুন।');
+          return false;
+        }
+
+        const isAdmin = await isUserAdminInSupabase(session.user);
+        if (!isAdmin) {
+          await _supabase.auth.signOut().catch(() => {});
+          showAccessGateDenied('শুধুমাত্র অনুমোদিত অ্যাডমিন অ্যাকাউন্ট থেকেই এই প্যানেলে প্রবেশ করা যাবে।');
+          return false;
+        }
+
+        currentAdminUserEmail = session.user.email || '';
+        unlockAdminPanelUI();
+        if (showNotice) showToast('অ্যাডমিন অ্যাক্সেস যাচাই সম্পন্ন হয়েছে!', 'success');
+        return true;
+      } catch (_) {
+        showAccessGateDenied('অ্যাডমিন সেশন যাচাই করা যায়নি। অনুগ্রহ করে Admin Panel থেকে লগইন করুন।');
+        return false;
+      }
     }
 
     function togglePrivacyMode() {
@@ -1933,6 +2053,10 @@
     }
 
     function switchTab(tabName, optionalFilter = null) {
+      if (!isAuthorizedAdminSession) {
+        showAccessGateDenied('শুধুমাত্র অনুমোদিত অ্যাডমিন প্যানেল থেকে অ্যাক্সেস করা যাবে।');
+        return;
+      }
       document.querySelectorAll('.tab-section').forEach(sec => sec.classList.add('hidden'));
       const target = document.getElementById(`tab-${tabName}`);
       if (target) target.classList.remove('hidden');
@@ -2300,6 +2424,7 @@
 
     function handleSaveInvoice(event) {
       event.preventDefault();
+      if (!isAuthorizedAdminSession) { showAccessGateDenied('শুধুমাত্র অনুমোদিত অ্যাডমিন বিল সেভ করতে পারবেন।'); return; }
       if (draftBillItems.length === 0) { showToast('বিলে কমপক্ষে ১টি প্রোডাক্ট যোগ করুন!', 'error'); return; }
 
       const editId = document.getElementById('editing-invoice-id').value;
@@ -2636,7 +2761,6 @@
       document.getElementById('pad-pay-method').textContent = inv.paymentMethod;
       document.getElementById('pad-delivery-status-val').textContent = inv.deliveryStatus || 'Delivered';
 
-      // Light, easily scannable QR payload + clickable digital bill preview
       const itemSummary = (inv.items || []).map(i => `${i.name} x${i.qty}`).join(', ');
       const qrPlainText = `${s.companyName} | ${inv.invoiceNo} | ${inv.date} | ${inv.clientName} | ${itemSummary} | Total: ${inv.grandTotal} | Paid: ${inv.paidAmount} | Due: ${inv.dueAmount}`;
       const baseHref = (window.location.href && window.location.href.startsWith('http'))
@@ -3372,10 +3496,18 @@
     async function syncFromSupabase(showNotice = false) {
       const statusEl = document.getElementById('supabase-sync-status');
       try {
+        const hasAdminAccess = await verifyAdminAccess(false);
+        if (!hasAdminAccess) {
+          if (statusEl) {
+            statusEl.className = 'text-rose-400 flex items-center gap-1.5 font-semibold';
+            statusEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-400"></span> অ্যাক্সেস সীমাবদ্ধ';
+          }
+          return;
+        }
+
         const { data: { session } } = await _supabase.auth.getSession();
         if (!session || !session.user) {
-          isSupabaseConnected = false;
-          if (statusEl) statusEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400"></span> অফলাইন মোড';
+          showAccessGateDenied('অ্যাডমিন সেশন পাওয়া যায়নি। অনুগ্রহ করে Admin Panel থেকে লগইন করুন।');
           return;
         }
         isSupabaseConnected = true;
@@ -3448,9 +3580,27 @@
       } catch (err) { console.error(err); }
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
       if (renderQRVerificationPageIfPresent()) return;
-      renderAllLogosAndBranding(); renderDashboard(); initNewInvoiceForm(); syncFromSupabase(false);
+      renderAllLogosAndBranding();
+      const allowed = await verifyAdminAccess(false);
+      if (!allowed) return;
+      renderDashboard();
+      initNewInvoiceForm();
+      syncFromSupabase(false);
+
+      _supabase.auth.onAuthStateChange(async (_event, session) => {
+        if (!session || !session.user) {
+          showAccessGateDenied('সেশন শেষ হয়েছে। পুনরায় Admin Panel থেকে লগইন করুন।');
+          return;
+        }
+        const stillAdmin = await isUserAdminInSupabase(session.user);
+        if (!stillAdmin) {
+          showAccessGateDenied('শুধুমাত্র অনুমোদিত অ্যাডমিন অ্যাকাউন্ট থেকেই এই প্যানেলে প্রবেশ করা যাবে।');
+        } else {
+          unlockAdminPanelUI();
+        }
+      });
     });
   </script>
 </body>
