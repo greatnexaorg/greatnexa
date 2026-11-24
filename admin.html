@@ -80,7 +80,11 @@
                     </span>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex flex-wrap items-center gap-3">
+                <!-- NEW: Direct Access to Automated POS & Billing -->
+                <a href="AutomatedPOS.html" class="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-extrabold text-xs rounded-xl transition shadow-lg shadow-cyan-500/20 flex items-center gap-1.5 cursor-pointer font-mono">
+                    🧾 Automated POS & Billing
+                </a>
                 <button type="button" onclick="exportOrdersCSV()" class="px-3.5 py-2 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/30 text-xs font-bold rounded-xl transition cursor-pointer font-mono flex items-center gap-1.5">
                     📥 Export CSV
                 </button>
@@ -94,7 +98,7 @@
         </header>
 
         <!-- Stats Overview Cards -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono text-xs">
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 font-mono text-xs">
             <div class="p-4 glass-panel rounded-xl border border-white/5">
                 <span class="text-gray-400 block text-[10px]">TOTAL ORDERS</span>
                 <span id="statTotal" class="text-lg font-bold text-white">0</span>
@@ -107,6 +111,14 @@
                 <span class="text-emerald-400 block text-[10px]">TOTAL REGISTERED USERS</span>
                 <span id="statUsers" class="text-lg font-bold text-emerald-400">0</span>
             </div>
+            <!-- NEW: Live POS Sales & Baki Summary Card -->
+            <a href="AutomatedPOS.html" class="p-4 glass-panel rounded-xl border border-cyan-500/30 hover:border-cyan-400 transition flex flex-col justify-between group">
+                <div>
+                    <span class="text-cyan-400 block text-[10px]">POS BILLING & BAKI</span>
+                    <span id="statPosSales" class="text-sm font-bold text-white">৳ 0</span>
+                </div>
+                <span class="mt-1 text-[10px] text-rose-400 font-bold group-hover:underline">বাকি: <span id="statPosDue">৳ 0</span> → POS খুলুন</span>
+            </a>
             <div class="p-4 glass-panel rounded-xl border border-blue-500/20 flex flex-col justify-between">
                 <div>
                     <span class="text-blue-400 block text-[10px]">VIP CHANNEL LINK</span>
@@ -613,8 +625,29 @@
                 loadSupportTickets(),
                 loadReferralsData(),
                 loadReferralProgramRules(),
-                loadPricingSettings()
+                loadPricingSettings(),
+                loadPosSummary()
             ]);
+        }
+
+        // NEW: POS Summary Loader from Supabase Lightweight Columns
+        async function loadPosSummary() {
+            try {
+                const { data, error } = await _supabase.from('pos_invoices').select('grand_total, due_amount');
+                if (error || !data) return;
+                let totalSales = 0;
+                let totalDue = 0;
+                data.forEach(row => {
+                    totalSales += Number(row.grand_total) || 0;
+                    totalDue += Number(row.due_amount) || 0;
+                });
+                const salesEl = document.getElementById('statPosSales');
+                const dueEl = document.getElementById('statPosDue');
+                if (salesEl) salesEl.innerText = '৳ ' + totalSales.toLocaleString('en-IN');
+                if (dueEl) dueEl.innerText = '৳ ' + totalDue.toLocaleString('en-IN');
+            } catch (err) {
+                console.log("POS summary load skipped:", err);
+            }
         }
 
         // ==========================================
@@ -1192,6 +1225,13 @@
                     loadSupportTickets();
                 })
                 .subscribe();
+
+            _supabase
+                .channel('admin_live_pos')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'pos_invoices' }, () => {
+                    loadPosSummary();
+                })
+                .subscribe();
         }
 
         // ==========================================
@@ -1500,7 +1540,7 @@
                 // ১. সিকিউর আরপিসি ট্রাঙ্কেট চেষ্টা করুন
                 let { error } = await _supabase.rpc('admin_clear_all_tickets');
                 
-                // ২. আরপিসি ডিফাইন না থাকলে ডেটাবেজ-সেফ কুয়েরি ফলব্যাক
+                // ২. আরপিসি ডিফাইন না থাকলে ডেটাবেজ-সেফ কুয়েরি ফলব্যাক
                 if (error) {
                     const fallback = await _supabase
                         .from('support_tickets')
@@ -1544,7 +1584,7 @@
             const chartLabels = labels.length ? labels : ['Today'];
             const chartData = counts.length ? counts : [0];
 
-            // চার্ট ইনস্ট্যান্স থাকলে নতুন করে না বানিয়ে শুধুমাত্র ডেটা আপডেট
+            // চার্ট ইনস্ট্যান্স থাকলে নতুন করে না বানিয়ে শুধুমাত্র ডেটা আপডেট
             if (revenueChartInstance) {
                 revenueChartInstance.data.labels = chartLabels;
                 revenueChartInstance.data.datasets[0].data = chartData;
