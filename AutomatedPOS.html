@@ -1487,7 +1487,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
           <div>
             <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">প্রোডাক্ট ক্যাটালগ, ফ্রি রিসোর্স ও বারকোড স্টিকার</h2>
-            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">স্টক ভ্যালুয়েশন, আনলিমিটেড ডিজিটাল প্রোডাক্ট, ফ্রি প্যাক ডাউনলোড ও SKU স্টিকার প্রিন্ট</p>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">স্টক ভ্যালুয়েশন, ফ্রি প্যাক ডাউনলোড ও SKU স্টিকার প্রিন্ট</p>
           </div>
           <div class="flex flex-wrap items-center gap-2.5">
             <button onclick="openStickerPrintModal()" class="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-300 text-xs font-bold flex items-center gap-1.5">
@@ -1519,14 +1519,9 @@
                 </div>
                 <div>
                   <label class="block text-xs font-bold text-slate-700 mb-1">স্টক</label>
-                  <input type="number" id="prod-stock" value="99" min="0" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold disabled:bg-slate-100 disabled:text-slate-400" />
+                  <input type="number" id="prod-stock" value="99" min="0" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold" />
                 </div>
               </div>
-              <label class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-cyan-50 border border-cyan-200 text-cyan-900 text-xs font-bold cursor-pointer select-none w-full">
-                <input type="checkbox" id="prod-is-unlimited" onchange="toggleProductUnlimitedFields(this.checked)" class="rounded text-cyan-600" />
-                <i class="fa-solid fa-infinity text-cyan-600"></i>
-                <span>আনলিমিটেড স্টক / ডিজিটাল সার্ভিস (Unlimited ∞)</span>
-              </label>
               <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="block text-xs font-bold text-amber-700 mb-1">ক্রয়মূল্য (Buy ৳)</label>
@@ -1738,11 +1733,11 @@
         customSignDataUrl: ''
       },
       products: [
-        { id: 'prod-1', name: 'Laser Cutting & CNC Metal Design Course', model: 'GN-CNC-2026', category: 'Course / Training', buyPrice: 0, price: 4999, stock: 0, isUnlimited: true, warranty: 'Lifetime Access / Support', isFree: false, downloadNote: 'Full Video Course + DXF Vector Library' },
-        { id: 'prod-2', name: 'GreatNexa Institutional Alpha VIP Pass', model: 'SMC-PRO-V2', category: 'Trading Tools', buyPrice: 0, price: 2500, stock: 0, isUnlimited: true, warranty: '1 Month Service Warranty', isFree: false, downloadNote: 'Gold & Crypto SMC Signals' },
-        { id: 'prod-3', name: 'Custom n8n Workflow Automation Setup', model: 'N8N-AUTO-01', category: 'Automation / Software', buyPrice: 0, price: 8000, stock: 0, isUnlimited: true, warranty: '3 Months Warranty', isFree: false, downloadNote: 'AI Lead Gen & CRM Automation' },
-        { id: 'prod-4', name: 'Used Laptop - HP Core i5 8th Gen (8GB/128GB+1TB)', model: 'HP-I5-8G', category: 'Hardware / Laptop', buyPrice: 16500, price: 20000, stock: 5, isUnlimited: false, warranty: '6 Months Warranty', isFree: false, downloadNote: '2GB Graphics, Good Condition' },
-        { id: 'prod-5', name: 'Free Invoice & SOP Starter Kit', model: 'FREE-SOP-01', category: 'Free Resource', buyPrice: 0, price: 0, stock: 0, isUnlimited: true, warranty: 'Lifetime Access / Support', isFree: true, downloadNote: 'https://www.greatnexa.com/' }
+        { id: 'prod-1', name: 'Laser Cutting & CNC Metal Design Course', model: 'GN-CNC-2026', category: 'Course / Training', buyPrice: 1500, price: 4999, stock: 99, warranty: 'Lifetime Access / Support', isFree: false, downloadNote: 'Full Video Course + DXF Vector Library' },
+        { id: 'prod-2', name: 'GreatNexa Institutional Alpha VIP Pass', model: 'SMC-PRO-V2', category: 'Trading Tools', buyPrice: 700, price: 2500, stock: 50, warranty: '1 Month Service Warranty', isFree: false, downloadNote: 'Gold & Crypto SMC Signals' },
+        { id: 'prod-3', name: 'Custom n8n Workflow Automation Setup', model: 'N8N-AUTO-01', category: 'Automation / Software', buyPrice: 3000, price: 8000, stock: 25, warranty: '3 Months Warranty', isFree: false, downloadNote: 'AI Lead Gen & CRM Automation' },
+        { id: 'prod-4', name: 'Used Laptop - HP Core i5 8th Gen (8GB/128GB+1TB)', model: 'HP-I5-8G', category: 'Hardware / Laptop', buyPrice: 16500, price: 20000, stock: 5, warranty: '6 Months Warranty', isFree: false, downloadNote: '2GB Graphics, Good Condition' },
+        { id: 'prod-5', name: 'Free Invoice & SOP Starter Kit', model: 'FREE-SOP-01', category: 'Free Resource', buyPrice: 0, price: 0, stock: 999, warranty: 'Lifetime Access / Support', isFree: true, downloadNote: 'https://www.greatnexa.com/' }
       ],
       invoices: [
         {
@@ -1755,7 +1750,7 @@
           clientPhone: '01870-978004',
           clientAddress: 'Kushtia, Bangladesh',
           items: [
-            { name: 'Laser Cutting & CNC Metal Design Course', model: 'GN-CNC-2026', serial: 'GN-LIC-8801', warranty: 'Lifetime Access / Support', qty: 1, buyPrice: 0, rate: 4999, total: 4999, isFree: false }
+            { name: 'Laser Cutting & CNC Metal Design Course', model: 'GN-CNC-2026', serial: 'GN-LIC-8801', warranty: 'Lifetime Access / Support', qty: 1, buyPrice: 1500, rate: 4999, total: 4999, isFree: false }
           ],
           subtotal: 4999,
           discount: 0,
@@ -2027,8 +2022,8 @@
       const totalPurchaseSpend = periodPurchases.reduce((s, p) => s + (Number(p.totalAmount) || 0), 0);
       const totalSupplierDue = appState.purchases.reduce((s, p) => s + (Number(p.dueAmount) || 0), 0);
       const netProfit = grossProfit - totalOperatingExpense;
-      const stockBuyVal = appState.products.reduce((s, p) => p.isUnlimited ? s : s + ((Number(p.buyPrice) || 0) * (Number(p.stock) || 0)), 0);
-      const stockSellVal = appState.products.reduce((s, p) => p.isUnlimited ? s : s + ((Number(p.price) || 0) * (Number(p.stock) || 0)), 0);
+      const stockBuyVal = appState.products.reduce((s, p) => s + ((Number(p.buyPrice) || 0) * (Number(p.stock) || 0)), 0);
+      const stockSellVal = appState.products.reduce((s, p) => s + ((Number(p.price) || 0) * (Number(p.stock) || 0)), 0);
 
       document.getElementById('kpi-total-sales').textContent = formatBDT(totalSales);
       document.getElementById('kpi-invoice-count').textContent = `মোট বিল: ${activeInvoices.length} টি`;
@@ -2122,7 +2117,7 @@
         Array.from(clientMap.entries()).map(([k, c]) => `<option value="${escapeHTML(k)}">${escapeHTML(c.name)} (${escapeHTML(c.phone)})</option>`).join('');
 
       document.getElementById('catalog-product-picker').innerHTML = `<option value="">-- ক্যাটালগ থেকে প্রোডাক্ট সিলেক্ট করুন (${appState.products.length}) --</option>` +
-        appState.products.map(p => `<option value="${p.id}">${escapeHTML(p.name)} [${escapeHTML(p.model)}] — ${p.isFree ? 'FREE' : formatBDT(p.price)} (${p.isUnlimited ? '∞ Unlimited' : 'Stock: ' + p.stock})</option>`).join('');
+        appState.products.map(p => `<option value="${p.id}">${escapeHTML(p.name)} [${escapeHTML(p.model)}] — ${p.isFree ? 'FREE' : formatBDT(p.price)} (Stock: ${p.stock})</option>`).join('');
 
       renderDraftBillItems();
     }
@@ -2356,13 +2351,13 @@
         appState.invoices.unshift(invoiceObj);
         draftBillItems.forEach(item => {
           const existing = appState.products.find(p => p.name.toLowerCase() === item.name.toLowerCase());
-          if (existing && !existing.isFree && !existing.isUnlimited && Number(existing.stock) > 0) {
+          if (existing && !existing.isFree && Number(existing.stock) > 0) {
             existing.stock = Math.max(0, Number(existing.stock) - Number(item.qty));
             if (isSupabaseConnected && isUUID(existing.id)) _supabase.from('pos_products').update({ stock: existing.stock }).eq('id', existing.id);
           } else if (!existing && document.getElementById('save-new-product-to-catalog').checked) {
-            const newP = { id: 'prod-' + Date.now() + Math.random(), name: item.name, model: item.model, category: item.isFree ? 'Free Resource' : 'Hardware / Laptop', buyPrice: item.buyPrice || 0, price: item.rate, stock: 0, isUnlimited: true, warranty: item.warranty || 'No Warranty', isFree: Boolean(item.isFree), downloadNote: '' };
+            const newP = { id: 'prod-' + Date.now() + Math.random(), name: item.name, model: item.model, category: item.isFree ? 'Free Resource' : 'Hardware / Laptop', buyPrice: item.buyPrice || 0, price: item.rate, stock: 99, warranty: item.warranty || 'No Warranty', isFree: Boolean(item.isFree), downloadNote: '' };
             appState.products.unshift(newP);
-            if (isSupabaseConnected) _supabase.from('pos_products').insert([{ name: newP.name, model: newP.model, category: newP.category, buy_price: newP.buyPrice, price: newP.price, stock: newP.stock, is_unlimited: true, warranty: newP.warranty, is_free: newP.isFree, download_note: '' }]);
+            if (isSupabaseConnected) _supabase.from('pos_products').insert([{ name: newP.name, model: newP.model, category: newP.category, buy_price: newP.buyPrice, price: newP.price, stock: newP.stock, warranty: newP.warranty, is_free: newP.isFree, download_note: '' }]);
           }
         });
       }
@@ -2423,7 +2418,7 @@
         inv.isReturned = true; inv.dueAmount = 0; inv.deliveryStatus = 'Returned';
         (inv.items || []).forEach(it => {
           const prod = appState.products.find(p => p.name.toLowerCase() === it.name.toLowerCase());
-          if (prod && !prod.isFree && !prod.isUnlimited) {
+          if (prod && !prod.isFree) {
             prod.stock = (Number(prod.stock) || 0) + (Number(it.qty) || 1);
             if (isSupabaseConnected && isUUID(prod.id)) _supabase.from('pos_products').update({ stock: prod.stock }).eq('id', prod.id);
           }
@@ -2620,8 +2615,41 @@
       document.getElementById('pad-pay-method').textContent = inv.paymentMethod;
       document.getElementById('pad-delivery-status-val').textContent = inv.deliveryStatus || 'Delivered';
 
-      const qrData = `${s.companyName} | ${inv.invoiceNo} | Client: ${inv.clientName} | Total: ${inv.grandTotal} BDT | Due: ${inv.dueAmount} BDT | ${s.website}`;
-      document.getElementById('pad-qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(qrData)}`;
+      const verifyPayload = {
+        co: s.companyName,
+        ph: s.phone,
+        web: s.website,
+        no: inv.invoiceNo,
+        dt: inv.date,
+        st: status.label,
+        del: inv.deliveryStatus || 'Delivered',
+        cn: inv.clientName,
+        cp: inv.clientPhone,
+        pm: inv.paymentMethod,
+        tot: inv.grandTotal,
+        paid: inv.paidAmount,
+        due: inv.dueAmount,
+        note: inv.note || '',
+        items: (inv.items || []).map(i => ({
+          n: i.name,
+          m: i.model,
+          s: i.serial || '',
+          w: i.warranty || '',
+          q: i.qty,
+          t: i.total,
+          f: Boolean(i.isFree)
+        }))
+      };
+      const encodedPayload = btoa(unescape(encodeURIComponent(JSON.stringify(verifyPayload))));
+      const baseHref = (window.location.href && window.location.href.startsWith('http'))
+        ? window.location.href.split('#')[0]
+        : 'https://www.greatnexa.com/AutomatedPOS.html';
+      const qrVerifyUrl = `${baseHref}#verify=${encodedPayload}`;
+      const qrImgEl = document.getElementById('pad-qr-img');
+      qrImgEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&ecc=M&data=${encodeURIComponent(qrVerifyUrl)}`;
+      qrImgEl.onclick = () => window.open(qrVerifyUrl, '_blank');
+      qrImgEl.style.cursor = 'pointer';
+      qrImgEl.title = 'ক্লিক বা স্ক্যান করে ডিজিটাল ইনভয়েস দেখুন';
 
       setInvoicePrintFormat('A4');
 
@@ -2930,14 +2958,14 @@
       appState.purchases.unshift({ id: 'pur-' + Date.now(), voucherNo, date, supplierName, supplierPhone, productName, model, warranty, qty, buyRate, sellRate, totalAmount, paidAmount, dueAmount });
       const existing = appState.products.find(p => p.name.toLowerCase() === productName.toLowerCase());
       if (existing) {
-        existing.stock = (Number(existing.stock) || 0) + qty; existing.buyPrice = buyRate; existing.isUnlimited = false;
+        existing.stock = (Number(existing.stock) || 0) + qty; existing.buyPrice = buyRate;
         if (sellRate > 0) existing.price = sellRate;
         if (warranty) existing.warranty = warranty;
-        if (isSupabaseConnected && isUUID(existing.id)) _supabase.from('pos_products').update({ stock: existing.stock, is_unlimited: false, buy_price: buyRate, price: existing.price, warranty: existing.warranty }).eq('id', existing.id);
+        if (isSupabaseConnected && isUUID(existing.id)) _supabase.from('pos_products').update({ stock: existing.stock, buy_price: buyRate, price: existing.price, warranty: existing.warranty }).eq('id', existing.id);
       } else {
-        const np = { id: 'prod-' + Date.now(), name: productName, model, category: 'Hardware / Laptop', buyPrice: buyRate, price: sellRate || buyRate, stock: qty, isUnlimited: false, warranty, isFree: false, downloadNote: '' };
+        const np = { id: 'prod-' + Date.now(), name: productName, model, category: 'Hardware / Laptop', buyPrice: buyRate, price: sellRate || buyRate, stock: qty, warranty, isFree: false, downloadNote: '' };
         appState.products.unshift(np);
-        if (isSupabaseConnected) _supabase.from('pos_products').insert([{ name: np.name, model: np.model, category: np.category, buy_price: np.buyPrice, price: np.price, stock: np.stock, is_unlimited: false, warranty: np.warranty, is_free: false, download_note: '' }]);
+        if (isSupabaseConnected) _supabase.from('pos_products').insert([{ name: np.name, model: np.model, category: np.category, buy_price: np.buyPrice, price: np.price, stock: np.stock, warranty: np.warranty, is_free: false, download_note: '' }]);
       }
 
       if (isSupabaseConnected) {
@@ -3033,23 +3061,9 @@
       saveState(); renderExpensesTab(); renderDashboard(); showToast('খরচ মুছে ফেলা হয়েছে', 'info');
     }
 
-    // PRODUCTS, UNLIMITED, FREE DOWNLOAD & BARCODE STICKERS
-    function toggleProductUnlimitedFields(isUnlimited) {
-      const stockEl = document.getElementById('prod-stock');
-      if (stockEl) {
-        stockEl.disabled = Boolean(isUnlimited);
-        if (isUnlimited) stockEl.value = 0;
-      }
-    }
-
+    // PRODUCTS, FREE DOWNLOAD & BARCODE STICKERS
     function toggleProductFreeFields(isFree) {
-      if (isFree) {
-        document.getElementById('prod-buy-price').value = 0;
-        document.getElementById('prod-price').value = 0;
-        document.getElementById('prod-category').value = 'Free Resource';
-        document.getElementById('prod-is-unlimited').checked = true;
-        toggleProductUnlimitedFields(true);
-      }
+      if (isFree) { document.getElementById('prod-buy-price').value = 0; document.getElementById('prod-price').value = 0; document.getElementById('prod-category').value = 'Free Resource'; }
     }
 
     function handleSaveProduct(e) {
@@ -3058,25 +3072,24 @@
       const name = document.getElementById('prod-name').value.trim();
       const model = document.getElementById('prod-model').value.trim();
       const isFree = document.getElementById('prod-is-free').checked;
-      const isUnlimited = document.getElementById('prod-is-unlimited').checked;
       const buyPrice = isFree ? 0 : Math.max(0, Number(document.getElementById('prod-buy-price').value) || 0);
       const price = isFree ? 0 : Math.max(0, Number(document.getElementById('prod-price').value) || 0);
       const category = document.getElementById('prod-category').value;
       const warranty = document.getElementById('prod-warranty').value;
-      const stock = isUnlimited ? 0 : Math.max(0, Number(document.getElementById('prod-stock').value) || 0);
+      const stock = Math.max(0, Number(document.getElementById('prod-stock').value) || 0);
       const downloadNote = document.getElementById('prod-download-note').value.trim();
 
       if (editId) {
         const idx = appState.products.findIndex(p => p.id === editId);
         if (idx !== -1) {
-          appState.products[idx] = { ...appState.products[idx], name, model, buyPrice, price, category, warranty, stock, isUnlimited, isFree: isFree || price === 0, downloadNote };
-          if (isSupabaseConnected && isUUID(editId)) _supabase.from('pos_products').update({ name, model, buy_price: buyPrice, price, category, warranty, stock, is_unlimited: isUnlimited, is_free: isFree || price === 0, download_note: downloadNote }).eq('id', editId);
+          appState.products[idx] = { ...appState.products[idx], name, model, buyPrice, price, category, warranty, stock, isFree: isFree || price === 0, downloadNote };
+          if (isSupabaseConnected && isUUID(editId)) _supabase.from('pos_products').update({ name, model, buy_price: buyPrice, price, category, warranty, stock, is_free: isFree || price === 0, download_note: downloadNote }).eq('id', editId);
         }
       } else {
-        const np = { id: 'prod-' + Date.now(), name, model, buyPrice, price, category, warranty, stock, isUnlimited, isFree: isFree || price === 0, downloadNote };
+        const np = { id: 'prod-' + Date.now(), name, model, buyPrice, price, category, warranty, stock, isFree: isFree || price === 0, downloadNote };
         appState.products.unshift(np);
         if (isSupabaseConnected) {
-          _supabase.from('pos_products').insert([{ name, model, buy_price: buyPrice, price, category, warranty, stock, is_unlimited: isUnlimited, is_free: isFree || price === 0, download_note: downloadNote }]).select().single().then(({ data }) => { if (data && data.id) { np.id = data.id; saveState(); } });
+          _supabase.from('pos_products').insert([{ name, model, buy_price: buyPrice, price, category, warranty, stock, is_free: isFree || price === 0, download_note: downloadNote }]).select().single().then(({ data }) => { if (data && data.id) { np.id = data.id; saveState(); } });
         }
       }
       saveState(); resetProductForm(); renderProductsCatalog(); renderDashboard(); showToast('প্রোডাক্ট সেভ হয়েছে!', 'success');
@@ -3089,8 +3102,6 @@
       document.getElementById('prod-model').value = p.model; document.getElementById('prod-buy-price').value = p.buyPrice || 0;
       document.getElementById('prod-price').value = p.price; document.getElementById('prod-category').value = p.category;
       document.getElementById('prod-warranty').value = p.warranty || 'No Warranty'; document.getElementById('prod-stock').value = p.stock;
-      document.getElementById('prod-is-unlimited').checked = Boolean(p.isUnlimited);
-      toggleProductUnlimitedFields(Boolean(p.isUnlimited));
       document.getElementById('prod-is-free').checked = Boolean(p.isFree); document.getElementById('prod-download-note').value = p.downloadNote || '';
       document.getElementById('product-form-title').textContent = 'প্রোডাক্ট এডিট করুন';
       document.getElementById('product-submit-label').textContent = 'আপডেট সেভ করুন';
@@ -3100,7 +3111,6 @@
     function resetProductForm() {
       document.getElementById('product-catalog-form').reset();
       document.getElementById('prod-edit-id').value = ''; document.getElementById('prod-stock').value = 99;
-      toggleProductUnlimitedFields(false);
       document.getElementById('product-form-title').textContent = 'নতুন প্রোডাক্ট যোগ করুন';
       document.getElementById('product-submit-label').textContent = 'ক্যাটালগে সেভ করুন';
       document.getElementById('cancel-edit-product-btn').classList.add('hidden');
@@ -3149,22 +3159,18 @@
     function closeStickerModal() { document.body.classList.remove('printing-sticker'); document.getElementById('sticker-print-modal').classList.add('hidden'); document.getElementById('sticker-print-modal').classList.remove('flex'); }
 
     function renderProductsCatalog() {
-      const buyVal = appState.products.reduce((s, p) => p.isUnlimited ? s : s + ((Number(p.buyPrice) || 0) * (Number(p.stock) || 0)), 0);
-      const sellVal = appState.products.reduce((s, p) => p.isUnlimited ? s : s + ((Number(p.price) || 0) * (Number(p.stock) || 0)), 0);
+      const buyVal = appState.products.reduce((s, p) => s + ((Number(p.buyPrice) || 0) * (Number(p.stock) || 0)), 0);
+      const sellVal = appState.products.reduce((s, p) => s + ((Number(p.price) || 0) * (Number(p.stock) || 0)), 0);
       document.getElementById('cat-total-buy-val').textContent = formatBDT(buyVal);
       document.getElementById('cat-total-sell-val').textContent = formatBDT(sellVal);
 
       document.getElementById('products-catalog-grid').innerHTML = appState.products.map(p => {
         const isFree = p.isFree || Number(p.price) === 0;
-        const isUnlimited = Boolean(p.isUnlimited);
         return `
           <div class="bg-white rounded-2xl p-4 border ${isFree ? 'border-emerald-200 bg-emerald-50/20' : 'border-slate-200'} shadow-xs flex flex-col justify-between gap-3">
             <div>
               <div class="flex justify-between items-center text-xs">
-                <div class="flex items-center gap-1.5">
-                  <span class="px-2 py-0.5 rounded ${isFree ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-50 text-blue-700'} font-bold">${escapeHTML(p.category)}</span>
-                  ${isUnlimited ? `<span class="px-2 py-0.5 rounded bg-cyan-100 text-cyan-800 font-extrabold text-[10px]">∞ UNLIMITED</span>` : ''}
-                </div>
+                <span class="px-2 py-0.5 rounded ${isFree ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-50 text-blue-700'} font-bold">${escapeHTML(p.category)}</span>
                 <span class="font-mono font-bold text-slate-500">${escapeHTML(p.model)}</span>
               </div>
               <h4 class="font-extrabold text-slate-900 mt-2">${escapeHTML(p.name)}</h4>
@@ -3173,7 +3179,7 @@
             <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
               <div>
                 <span class="text-base font-extrabold ${isFree ? 'text-emerald-600' : 'text-slate-900'}">${isFree ? 'FREE (৳ 0)' : formatBDT(p.price)}</span>
-                <span class="block text-[10px] text-amber-700 profit-sensitive">Buy: ${formatBDT(p.buyPrice || 0)} | Stock: ${isUnlimited ? '∞ Unlimited' : p.stock}</span>
+                <span class="block text-[10px] text-amber-700 profit-sensitive">Buy: ${formatBDT(p.buyPrice || 0)} | Stock: ${p.stock}</span>
               </div>
               <div class="flex flex-wrap gap-1.5">
                 <button onclick="switchTab('new-invoice'); selectCatalogProduct('${p.id}'); addLineItemToBill();" class="px-2.5 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold">বিল</button>
@@ -3291,7 +3297,6 @@
           appState.products = prodRows.map(p => ({
             id: p.id, name: p.name, model: p.model || 'STD-01', category: p.category || 'Course / Training',
             buyPrice: Number(p.buy_price) || 0, price: Number(p.price) || 0, stock: Number(p.stock) || 0,
-            isUnlimited: Boolean(p.is_unlimited),
             warranty: p.warranty || 'No Warranty', isFree: Boolean(p.is_free), downloadNote: p.download_note || ''
           }));
         }
@@ -3336,7 +3341,94 @@
       } catch (err) { console.error(err); }
     }
 
+    function renderQRVerificationPageIfPresent() {
+      const hash = window.location.hash || '';
+      if (!hash.startsWith('#verify=')) return false;
+      try {
+        const b64 = hash.slice(8);
+        const jsonStr = decodeURIComponent(escape(atob(b64)));
+        const d = JSON.parse(jsonStr);
+        const itemsRows = (d.items || []).map((it, idx) => `
+          <tr class="border-b border-slate-100">
+            <td class="py-2.5 px-3 text-xs font-bold text-slate-500">${idx + 1}</td>
+            <td class="py-2.5 px-3">
+              <p class="font-bold text-slate-900 text-xs sm:text-sm">${escapeHTML(it.n)}</p>
+              <p class="text-[11px] text-slate-500 font-mono">${escapeHTML(it.m || '')}${it.s ? ' • S/N: ' + escapeHTML(it.s) : ''}</p>
+              ${it.w && it.w !== 'No Warranty' ? `<span class="inline-block mt-0.5 px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-[10px] font-bold">${escapeHTML(it.w)}</span>` : ''}
+            </td>
+            <td class="py-2.5 px-3 text-center font-bold text-xs">${it.q}</td>
+            <td class="py-2.5 px-3 text-right font-extrabold text-xs sm:text-sm text-slate-900">${it.f ? 'FREE' : formatBDT(it.t)}</td>
+          </tr>
+        `).join('');
+
+        document.body.innerHTML = `
+          <div class="min-h-screen bg-slate-100 py-6 px-4 flex items-center justify-center">
+            <div class="max-w-xl w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+              <div class="bg-slate-950 text-white p-5 flex items-center justify-between gap-3">
+                <div>
+                  <span class="px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-extrabold uppercase tracking-wider">Verified Digital Memo</span>
+                  <h1 class="text-xl font-black mt-1">${escapeHTML(d.co || 'GreatNexa')}</h1>
+                  <p class="text-xs text-slate-400">${escapeHTML(d.ph || '')} ${d.web ? '• ' + escapeHTML(d.web) : ''}</p>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono text-xs font-extrabold text-cyan-300">${escapeHTML(d.no)}</p>
+                  <p class="text-xs text-slate-300 mt-0.5">${escapeHTML(d.dt)}</p>
+                  <span class="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300">${escapeHTML(d.st || 'VERIFIED')}</span>
+                </div>
+              </div>
+              <div class="p-5 space-y-4">
+                <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200 flex flex-wrap justify-between gap-2 text-xs">
+                  <div>
+                    <span class="text-slate-400 block font-bold uppercase text-[10px]">ক্লায়েন্ট</span>
+                    <p class="font-extrabold text-slate-900 text-sm">${escapeHTML(d.cn)}</p>
+                    <p class="text-slate-600 font-semibold">${escapeHTML(d.cp || '')}</p>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-slate-400 block font-bold uppercase text-[10px]">পেমেন্ট ও ডেলিভারি</span>
+                    <p class="font-bold text-blue-700">${escapeHTML(d.pm || '')}</p>
+                    <p class="text-indigo-700 font-semibold">${escapeHTML(d.del || '')}</p>
+                  </div>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                  <table class="w-full text-left border-collapse">
+                    <thead>
+                      <tr class="bg-slate-900 text-white text-[11px] uppercase">
+                        <th class="py-2 px-3">#</th>
+                        <th class="py-2 px-3">আইটেম ও বিবরণ</th>
+                        <th class="py-2 px-3 text-center">Qty</th>
+                        <th class="py-2 px-3 text-right">মোট</th>
+                      </tr>
+                    </thead>
+                    <tbody>${itemsRows}</tbody>
+                  </table>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-1.5 text-xs sm:text-sm">
+                  <div class="flex justify-between font-bold text-slate-900 text-base">
+                    <span>সর্বমোট বিল (Grand Total):</span>
+                    <span class="text-blue-700">${formatBDT(d.tot)}</span>
+                  </div>
+                  <div class="flex justify-between text-emerald-700 font-bold">
+                    <span>জমা (Paid):</span>
+                    <span>${formatBDT(d.paid)}</span>
+                  </div>
+                  <div class="flex justify-between text-rose-600 font-extrabold pt-1.5 border-t border-slate-200">
+                    <span>বাকি (Balance Due):</span>
+                    <span>${formatBDT(d.due)}</span>
+                  </div>
+                </div>
+                ${d.note ? `<p class="text-xs text-slate-600 italic bg-blue-50/60 p-2.5 rounded-xl border border-blue-100">নোট: ${escapeHTML(d.note)}</p>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+        return true;
+      } catch (err) {
+        return false;
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
+      if (renderQRVerificationPageIfPresent()) return;
       renderAllLogosAndBranding(); renderDashboard(); initNewInvoiceForm(); syncFromSupabase(false);
     });
   </script>
