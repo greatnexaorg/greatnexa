@@ -2585,7 +2585,21 @@
       document.getElementById('pad-company-tagline').textContent = s.tagline;
       document.getElementById('pad-company-contact').innerHTML = `<span><i class="fa-solid fa-globe text-cyan-400 mr-1"></i>${escapeHTML(s.website)}</span><span><i class="fa-solid fa-phone text-cyan-400 mr-1"></i>${escapeHTML(s.phone)}</span>`;
       document.getElementById('pad-company-address').textContent = `${s.address} • ${s.email}`;
-      document.getElementById('pad-pay-accounts').textContent = s.paymentInfo;
+      const hasDue = Number(inv.dueAmount) > 0 && !inv._isQuote;
+      const clientKey = (inv.clientPhone || inv.clientName || '').trim().toLowerCase();
+      const clientInvoices = appState.invoices.filter(i => !i.isReturned && (i.clientPhone || i.clientName || '').trim().toLowerCase() === clientKey);
+      const clientTotalOrders = clientInvoices.length;
+      const clientTotalDue = clientInvoices.reduce((sum, i) => sum + (Number(i.dueAmount) || 0), 0);
+      const totalSettledOnBill = (Number(inv.paidAmount) || 0) + (Number(inv.advanceUsed) || 0);
+
+      if (hasDue) {
+        document.getElementById('pad-pay-accounts').innerHTML = escapeHTML(s.paymentInfo);
+      } else {
+        document.getElementById('pad-pay-accounts').innerHTML = `
+          <span class="block font-semibold text-slate-800">Paid via ${escapeHTML(inv.paymentMethod)} • Settled: ${formatBDT(totalSettledOnBill)}</span>
+          <span class="block text-[9.5px] text-slate-600 mt-0.5">Customer Records: ${clientTotalOrders} Bill(s) • Total Due: ${formatBDT(clientTotalDue)}</span>
+        `;
+      }
       document.getElementById('pad-terms-text').innerHTML = escapeHTML(s.terms).replace(/\n/g, '<br>');
 
       document.getElementById('pad-inv-no').textContent = inv.invoiceNo;
