@@ -269,14 +269,16 @@
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1.5">পেমেন্ট মাধ্যম</label>
-          <select id="due-collect-method" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-medium bg-white">
+          <select id="due-collect-method" onchange="toggleCustomInput(this.value, 'due-collect-method-custom')" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-medium bg-white">
             <option value="Cash (নগদ)">Cash (নগদ)</option>
             <option value="bKash">bKash</option>
             <option value="Nagad">Nagad</option>
             <option value="Islami Bank Cellfin">Islami Bank Cellfin</option>
             <option value="Binance Pay">Binance Pay</option>
             <option value="Bank Transfer">Bank Transfer</option>
+            <option value="Others">Others (কাস্টম মাধ্যম লিখুন...)</option>
           </select>
+          <input type="text" id="due-collect-method-custom" placeholder="যেমন: Rocket / Upay লিখুন..." class="hidden mt-2 w-full px-3.5 py-2 rounded-xl border border-cyan-300 text-xs font-semibold" />
         </div>
       </div>
       <div class="flex justify-end gap-3 mt-6">
@@ -1014,17 +1016,18 @@
                 <div class="grid grid-cols-2 sm:grid-cols-12 gap-3 items-end">
                   <div class="sm:col-span-4">
                     <label class="block text-xs font-bold text-slate-700 mb-1">ওয়ারেন্টি / গ্যারান্টি</label>
-                    <input type="text" id="item-warranty-input" list="warranty-options-list" value="No Warranty" placeholder="সিলেক্ট বা কাস্টম লিখুন..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800" />
-                    <datalist id="warranty-options-list">
-                      <option value="No Warranty"></option>
-                      <option value="7 Days Replacement"></option>
-                      <option value="1 Month Service Warranty"></option>
-                      <option value="3 Months Warranty"></option>
-                      <option value="6 Months Warranty"></option>
-                      <option value="1 Year Official Warranty"></option>
-                      <option value="2 Years Warranty"></option>
-                      <option value="Lifetime Access / Support"></option>
-                    </datalist>
+                    <select id="item-warranty-input" onchange="toggleCustomInput(this.value, 'item-warranty-custom')" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800">
+                      <option value="No Warranty">No Warranty</option>
+                      <option value="7 Days Replacement">7 Days Replacement</option>
+                      <option value="1 Month Service Warranty">1 Month Service Warranty</option>
+                      <option value="3 Months Warranty">3 Months Warranty</option>
+                      <option value="6 Months Warranty">6 Months Warranty</option>
+                      <option value="1 Year Official Warranty">1 Year Official Warranty</option>
+                      <option value="2 Years Warranty">2 Years Warranty</option>
+                      <option value="Lifetime Access / Support">Lifetime Access / Support</option>
+                      <option value="Others">Others (কাস্টম ওয়ারেন্টি লিখুন...)</option>
+                    </select>
+                    <input type="text" id="item-warranty-custom" placeholder="যেমন: 15 Days Replacement" class="hidden mt-1.5 w-full px-3 py-1.5 rounded-lg border border-indigo-300 bg-white text-xs font-semibold" />
                   </div>
                   <div class="sm:col-span-2">
                     <label class="block text-xs font-bold text-slate-700 mb-1">পরিমাণ (Qty)</label>
@@ -1381,7 +1384,18 @@
                 </div>
                 <div>
                   <label class="block text-xs font-bold text-slate-700 mb-1">ওয়ারেন্টি মেয়াদ</label>
-                  <input type="text" id="pur-warranty" placeholder="6 Months Warranty" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs" />
+                  <select id="pur-warranty" onchange="toggleCustomInput(this.value, 'pur-warranty-custom')" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold bg-white">
+                    <option value="No Warranty">No Warranty</option>
+                    <option value="7 Days Replacement">7 Days Replacement</option>
+                    <option value="1 Month Service Warranty">1 Month Service Warranty</option>
+                    <option value="3 Months Warranty">3 Months Warranty</option>
+                    <option value="6 Months Warranty">6 Months Warranty</option>
+                    <option value="1 Year Official Warranty">1 Year Official Warranty</option>
+                    <option value="2 Years Warranty">2 Years Warranty</option>
+                    <option value="Lifetime Access / Support">Lifetime Access / Support</option>
+                    <option value="Others">Others (কাস্টম লিখুন...)</option>
+                  </select>
+                  <input type="text" id="pur-warranty-custom" placeholder="কাস্টম ওয়ারেন্টি লিখুন..." class="hidden mt-1.5 w-full px-3 py-1.5 rounded-lg border border-blue-300 text-xs font-semibold" />
                 </div>
               </div>
               <div class="grid grid-cols-3 gap-2.5">
@@ -1509,12 +1523,14 @@
               </div>
               <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">পেমেন্ট মাধ্যম</label>
-                <select id="exp-method" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold bg-white">
+                <select id="exp-method" onchange="toggleCustomInput(this.value, 'exp-method-custom')" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold bg-white">
                   <option value="Cash (নগদ)">Cash (নগদ)</option>
                   <option value="bKash">bKash</option>
                   <option value="Nagad">Nagad</option>
                   <option value="Bank Transfer">Bank Transfer</option>
+                  <option value="Others">Others (কাস্টম মাধ্যম লিখুন...)</option>
                 </select>
+                <input type="text" id="exp-method-custom" placeholder="কাস্টম মাধ্যম লিখুন..." class="hidden mt-1.5 w-full px-3 py-1.5 rounded-lg border border-rose-300 text-xs font-semibold" />
               </div>
               <button type="submit" class="w-full py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm transition">
                 <i class="fa-solid fa-plus-circle mr-1.5"></i> খরচ সেভ করুন
@@ -1614,7 +1630,18 @@
                 </div>
                 <div>
                   <label class="block text-xs font-bold text-slate-700 mb-1">ডিফল্ট ওয়ারেন্টি</label>
-                  <input type="text" id="prod-warranty" list="warranty-options-list" value="No Warranty" placeholder="সিলেক্ট বা কাস্টম লিখুন..." class="w-full px-2.5 py-2 rounded-xl border border-slate-300 text-xs font-semibold bg-white" />
+                  <select id="prod-warranty" onchange="toggleCustomInput(this.value, 'prod-warranty-custom')" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 text-xs font-semibold bg-white">
+                    <option value="No Warranty">No Warranty</option>
+                    <option value="7 Days Replacement">7 Days Replacement</option>
+                    <option value="1 Month Service Warranty">1 Month Service Warranty</option>
+                    <option value="3 Months Warranty">3 Months Warranty</option>
+                    <option value="6 Months Warranty">6 Months Warranty</option>
+                    <option value="1 Year Official Warranty">1 Year Official Warranty</option>
+                    <option value="2 Years Warranty">2 Years Warranty</option>
+                    <option value="Lifetime Access / Support">Lifetime Access / Support</option>
+                    <option value="Others">Others (কাস্টম লিখুন...)</option>
+                  </select>
+                  <input type="text" id="prod-warranty-custom" placeholder="কাস্টম ওয়ারেন্টি লিখুন..." class="hidden mt-1.5 w-full px-2.5 py-1.5 rounded-lg border border-indigo-300 text-xs font-semibold" />
                 </div>
               </div>
               <div class="bg-emerald-50/80 border border-emerald-200 rounded-xl p-3 space-y-2">
@@ -2065,7 +2092,7 @@
       const periodPurchases = appState.purchases.filter(p => filterByPeriod(p.date, period));
 
       let totalSales = 0, totalPaid = 0, totalDue = 0, grossProfit = 0, dueCount = 0;
-      const methodTotals = { 'Cash (নগদ)': 0, 'bKash': 0, 'Nagad': 0, 'Islami Bank Cellfin': 0, 'Binance Pay': 0, 'Bank Transfer': 0 };
+      const methodTotals = { 'Cash (নগদ)': 0, 'bKash': 0, 'Nagad': 0, 'Islami Bank Cellfin': 0, 'Binance Pay': 0, 'Bank Transfer': 0, 'Other Methods': 0 };
 
       activeInvoices.forEach(inv => {
         totalSales += Number(inv.grandTotal) || 0;
@@ -2077,7 +2104,9 @@
         grossProfit += (lineProfit - (Number(inv.discount) || 0));
         const m = inv.paymentMethod || 'Cash (নগদ)';
         if (methodTotals[m] !== undefined) methodTotals[m] += Number(inv.paidAmount) || 0;
+        else methodTotals['Other Methods'] += Number(inv.paidAmount) || 0;
       });
+      if (methodTotals['Other Methods'] === 0) delete methodTotals['Other Methods'];
 
       const totalOperatingExpense = periodExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
       const totalPurchaseSpend = periodPurchases.reduce((s, p) => s + (Number(p.totalAmount) || 0), 0);
@@ -2229,7 +2258,7 @@
       if (!prod) return;
       document.getElementById('item-name-input').value = prod.name;
       document.getElementById('item-model-input').value = prod.model;
-      document.getElementById('item-warranty-input').value = prod.warranty || 'No Warranty';
+      setSelectOrCustomValue('item-warranty-input', 'item-warranty-custom', prod.warranty || 'No Warranty');
       document.getElementById('item-qty-input').value = 1;
       document.getElementById('item-buy-price-input').value = prod.buyPrice || 0;
       document.getElementById('item-price-input').value = prod.isFree ? 0 : prod.price;
@@ -2242,7 +2271,7 @@
       const name = document.getElementById('item-name-input').value.trim();
       const model = document.getElementById('item-model-input').value.trim() || 'STD-01';
       const serial = document.getElementById('item-serial-input').value.trim();
-      const warranty = document.getElementById('item-warranty-input').value.trim() || 'No Warranty';
+      const warranty = getSelectOrCustomValue('item-warranty-input', 'item-warranty-custom', 'No Warranty');
       const qty = Math.max(1, Number(document.getElementById('item-qty-input').value) || 1);
       const isFree = document.getElementById('item-is-free-check').checked;
       const buyPrice = Math.max(0, Number(document.getElementById('item-buy-price-input').value) || 0);
@@ -2255,6 +2284,9 @@
       document.getElementById('item-name-input').value = '';
       document.getElementById('item-model-input').value = '';
       document.getElementById('item-serial-input').value = '';
+      document.getElementById('item-warranty-input').value = 'No Warranty';
+      document.getElementById('item-warranty-custom').classList.add('hidden');
+      document.getElementById('item-warranty-custom').value = '';
       document.getElementById('item-qty-input').value = 1;
       document.getElementById('item-buy-price-input').value = 0;
       document.getElementById('item-price-input').value = 0;
@@ -2359,6 +2391,31 @@
         el.focus();
       } else {
         el.classList.add('hidden');
+      }
+    }
+
+    function getSelectOrCustomValue(selectId, customInputId, fallback = '') {
+      const sel = document.getElementById(selectId);
+      const custom = document.getElementById(customInputId);
+      if (!sel) return fallback;
+      if (sel.value === 'Others' || sel.value === 'CUSTOM') {
+        return (custom?.value || '').trim() || fallback;
+      }
+      return sel.value || fallback;
+    }
+
+    function setSelectOrCustomValue(selectId, customInputId, value, customOptionVal = 'Others') {
+      const sel = document.getElementById(selectId);
+      const custom = document.getElementById(customInputId);
+      if (!sel) return;
+      const targetVal = String(value || '').trim();
+      const hasPreset = Array.from(sel.options).some(opt => opt.value === targetVal && opt.value !== 'Others' && opt.value !== 'CUSTOM');
+      if (hasPreset || !targetVal) {
+        sel.value = targetVal || sel.options[0]?.value || '';
+        if (custom) { custom.classList.add('hidden'); custom.value = ''; }
+      } else {
+        sel.value = customOptionVal;
+        if (custom) { custom.classList.remove('hidden'); custom.value = targetVal; }
       }
     }
 
@@ -2507,7 +2564,8 @@
       document.getElementById('bill-client-name').value = inv.clientName; document.getElementById('bill-client-phone').value = inv.clientPhone;
       document.getElementById('bill-client-address').value = inv.clientAddress; document.getElementById('bill-discount-input').value = inv.discount || 0;
       document.getElementById('bill-vat-input').value = inv.vatPercent || 0; document.getElementById('bill-advance-input').value = inv.advanceUsed || 0;
-      document.getElementById('bill-paid-input').value = inv.paidAmount || 0; document.getElementById('bill-pay-method').value = inv.paymentMethod || 'Cash (নগদ)';
+      document.getElementById('bill-paid-input').value = inv.paidAmount || 0;
+      setSelectOrCustomValue('bill-pay-method', 'bill-pay-method-custom', inv.paymentMethod || 'Cash (নগদ)', 'CUSTOM');
       document.getElementById('bill-note-input').value = inv.note || '';
       userEditedPaidManually = true; draftBillItems = JSON.parse(JSON.stringify(inv.items || [])); renderDraftBillItems();
     }
@@ -2519,7 +2577,7 @@
         inv.isReturned = true; inv.dueAmount = 0; inv.deliveryStatus = 'Returned';
         (inv.items || []).forEach(it => {
           const prod = appState.products.find(p => p.name.toLowerCase() === it.name.toLowerCase());
-          if (prod && !prod.isFree) {
+          if (prod && !prod.isFree && !isUnlimitedProduct(prod)) {
             prod.stock = (Number(prod.stock) || 0) + (Number(it.qty) || 1);
             if (isSupabaseConnected && isUUID(prod.id)) _supabase.from('pos_products').update({ stock: prod.stock }).eq('id', prod.id);
           }
@@ -2997,7 +3055,7 @@
       const inv = appState.invoices.find(i => i.id === activeDueInvoiceId);
       if (!inv) return;
       const collected = Math.max(0, Number(document.getElementById('due-collect-input').value) || 0);
-      const method = document.getElementById('due-collect-method').value;
+      const method = getSelectOrCustomValue('due-collect-method', 'due-collect-method-custom', 'Cash (নগদ)');
       if (collected <= 0) return;
       const applied = Math.min(Number(inv.dueAmount) || 0, collected);
       inv.paidAmount = Math.round(((Number(inv.paidAmount) || 0) + applied) * 100) / 100;
@@ -3154,7 +3212,7 @@
       const supplierPhone = document.getElementById('pur-supplier-phone').value.trim();
       const productName = document.getElementById('pur-product-name').value.trim();
       const model = document.getElementById('pur-model').value.trim() || 'STD-01';
-      const warranty = document.getElementById('pur-warranty').value.trim() || 'No Warranty';
+      const warranty = getSelectOrCustomValue('pur-warranty', 'pur-warranty-custom', 'No Warranty');
       const qty = Math.max(1, Number(document.getElementById('pur-qty').value) || 1);
       const buyRate = Math.max(0, Number(document.getElementById('pur-buy-rate').value) || 0);
       const sellRate = Math.max(0, Number(document.getElementById('pur-sell-rate').value) || 0);
@@ -3179,7 +3237,7 @@
       if (isSupabaseConnected) {
         _supabase.from('pos_purchases').insert([{ voucher_no: voucherNo, purchase_date: date, supplier_name: supplierName, supplier_phone: supplierPhone, product_name: productName, model, qty, buy_rate: buyRate, sell_rate: sellRate, warranty, total_amount: totalAmount, paid_amount: paidAmount, due_amount: dueAmount }]);
       }
-      saveState(); e.target.reset(); renderPurchasesTab(); renderDashboard(); showToast('মাল ক্রয় ও স্টক আপডেট হয়েছে!', 'success');
+      saveState(); e.target.reset(); document.getElementById('pur-warranty-custom').classList.add('hidden'); renderPurchasesTab(); renderDashboard(); showToast('মাল ক্রয় ও স্টক আপডেট হয়েছে!', 'success');
     }
 
     function openSupplierDueModal(purId) {
@@ -3254,15 +3312,14 @@
 
     function handleSaveExpense(e) {
       e.preventDefault();
-      const rawCat = document.getElementById('exp-category').value;
-      const customCat = document.getElementById('exp-category-custom').value.trim();
-      const category = rawCat === 'Others' ? (customCat || 'Others') : rawCat;
-      const exp = { id: 'exp-' + Date.now(), date: document.getElementById('exp-date').value, category, title: document.getElementById('exp-title').value.trim(), amount: Math.max(0, Number(document.getElementById('exp-amount').value) || 0), method: document.getElementById('exp-method').value };
+      const category = getSelectOrCustomValue('exp-category', 'exp-category-custom', 'Others');
+      const method = getSelectOrCustomValue('exp-method', 'exp-method-custom', 'Cash (নগদ)');
+      const exp = { id: 'exp-' + Date.now(), date: document.getElementById('exp-date').value, category, title: document.getElementById('exp-title').value.trim(), amount: Math.max(0, Number(document.getElementById('exp-amount').value) || 0), method };
       appState.expenses.unshift(exp);
       if (isSupabaseConnected) {
         _supabase.from('pos_expenses').insert([{ expense_date: exp.date, category: exp.category, title: exp.title, amount: exp.amount, payment_method: exp.method }]).select().single().then(({ data }) => { if (data && data.id) { exp.id = data.id; saveState(); } });
       }
-      saveState(); e.target.reset(); document.getElementById('exp-category-custom').classList.add('hidden'); renderExpensesTab(); renderDashboard(); showToast('খরচ সেভ হয়েছে!', 'success');
+      saveState(); e.target.reset(); document.getElementById('exp-category-custom').classList.add('hidden'); document.getElementById('exp-method-custom').classList.add('hidden'); renderExpensesTab(); renderDashboard(); showToast('খরচ সেভ হয়েছে!', 'success');
     }
 
     function deleteExpense(id) {
@@ -3286,10 +3343,8 @@
       const isUnlimited = document.getElementById('prod-is-unlimited').checked;
       const buyPrice = isFree ? 0 : Math.max(0, Number(document.getElementById('prod-buy-price').value) || 0);
       const price = isFree ? 0 : Math.max(0, Number(document.getElementById('prod-price').value) || 0);
-      const rawCat = document.getElementById('prod-category').value;
-      const customCat = document.getElementById('prod-category-custom').value.trim();
-      const category = rawCat === 'Others' ? (customCat || 'Others') : rawCat;
-      const warranty = document.getElementById('prod-warranty').value.trim() || 'No Warranty';
+      const category = getSelectOrCustomValue('prod-category', 'prod-category-custom', 'Others');
+      const warranty = getSelectOrCustomValue('prod-warranty', 'prod-warranty-custom', 'No Warranty');
       const stock = isUnlimited ? -1 : Math.max(0, Number(document.getElementById('prod-stock').value) || 0);
       const downloadNote = document.getElementById('prod-download-note').value.trim();
 
@@ -3318,20 +3373,8 @@
       document.getElementById('prod-buy-price').value = p.buyPrice || 0;
       document.getElementById('prod-price').value = p.price;
 
-      const catSelect = document.getElementById('prod-category');
-      const catCustom = document.getElementById('prod-category-custom');
-      const hasPresetCat = Array.from(catSelect.options).some(opt => opt.value === p.category && opt.value !== 'Others');
-      if (hasPresetCat) {
-        catSelect.value = p.category;
-        catCustom.classList.add('hidden');
-        catCustom.value = '';
-      } else {
-        catSelect.value = 'Others';
-        catCustom.classList.remove('hidden');
-        catCustom.value = p.category || '';
-      }
-
-      document.getElementById('prod-warranty').value = p.warranty || 'No Warranty';
+      setSelectOrCustomValue('prod-category', 'prod-category-custom', p.category || 'Course / Training');
+      setSelectOrCustomValue('prod-warranty', 'prod-warranty-custom', p.warranty || 'No Warranty');
 
       const unlim = isUnlimitedProduct(p);
       document.getElementById('prod-is-unlimited').checked = unlim;
@@ -3352,7 +3395,10 @@
       toggleProductUnlimitedStock(false);
       document.getElementById('prod-stock').value = 99;
       document.getElementById('prod-warranty').value = 'No Warranty';
+      document.getElementById('prod-warranty-custom').classList.add('hidden');
+      document.getElementById('prod-warranty-custom').value = '';
       document.getElementById('prod-category-custom').classList.add('hidden');
+      document.getElementById('prod-category-custom').value = '';
       document.getElementById('product-form-title').textContent = 'নতুন প্রোডাক্ট যোগ করুন';
       document.getElementById('product-submit-label').textContent = 'ক্যাটালগে সেভ করুন';
       document.getElementById('cancel-edit-product-btn').classList.add('hidden');
