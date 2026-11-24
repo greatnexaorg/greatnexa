@@ -85,29 +85,41 @@
 
     /* Print Stylesheet: Prints ONLY the active A4 Invoice Pad or 80mm Thermal Receipt */
     @media print {
-      body * {
-        visibility: hidden !important;
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
-      #invoice-print-modal,
-      #invoice-print-modal * {
-        visibility: visible !important;
+      html, body {
+        height: auto !important;
+        min-height: 0 !important;
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+      }
+      /* Hide main app shell completely so it never forces extra blank/duplicate pages */
+      body > div:not(#invoice-print-modal) {
+        display: none !important;
       }
       #invoice-print-modal {
-        position: fixed !important;
-        inset: 0 !important;
+        position: static !important;
+        inset: auto !important;
+        display: block !important;
         background: #ffffff !important;
         padding: 0 !important;
         margin: 0 !important;
         overflow: visible !important;
-        z-index: 99999 !important;
+        height: auto !important;
       }
       #invoice-modal-wrapper {
         box-shadow: none !important;
         border: none !important;
+        border-radius: 0 !important;
         max-width: 100% !important;
         width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
+        background: #ffffff !important;
       }
       .no-print {
         display: none !important;
@@ -115,6 +127,15 @@
       #printable-invoice-sheet {
         box-shadow: none !important;
         border: none !important;
+        border-radius: 0 !important;
+      }
+      .pad-avoid-break {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+      #pad-items-tbody tr {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
       }
       body.print-thermal #printable-invoice-sheet {
         width: 80mm !important;
@@ -126,13 +147,14 @@
         size: 80mm auto;
         margin: 0;
       }
+      /* Compact A4 spacing so 8-10 items fit cleanly on Page 1 */
       body:not(.print-thermal) #printable-invoice-sheet {
-        padding: 10mm !important;
+        padding: 7mm 9mm !important;
         width: 100% !important;
         max-width: 100% !important;
       }
       body:not(.print-thermal) @page {
-        size: A4;
+        size: A4 portrait;
         margin: 0;
       }
     }
@@ -236,144 +258,165 @@
       </div>
 
       <!-- Actual Printable Invoice Pad / Thermal Receipt -->
-      <div id="printable-invoice-sheet" class="bg-white p-6 sm:p-10 text-slate-900">
-        <!-- Pad Header -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-5 border-b-2 border-slate-900">
-          <div class="flex items-center gap-3.5">
-            <div id="pad-logo-container" class="w-16 h-16 rounded-2xl bg-slate-950 p-2 flex items-center justify-center shadow-md shrink-0 border border-cyan-500/30">
-              <!-- Logo rendered dynamically -->
-            </div>
-            <div>
-              <h1 id="pad-company-name" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-950">GreatNexa</h1>
-              <p id="pad-company-tagline" class="text-xs font-semibold text-cyan-700 uppercase tracking-wider mt-0.5">Digital Solutions | Automation | Courses | Trading Tools</p>
-              <p id="pad-company-contact" class="text-xs text-slate-600 mt-1">
-                <i class="fa-solid fa-globe text-cyan-600 mr-1"></i> https://www.greatnexa.com/ &nbsp;|&nbsp;
-                <i class="fa-solid fa-phone text-cyan-600 mr-1"></i> 01870-978004
-              </p>
-              <p id="pad-company-address" class="text-xs text-slate-500">Kushtia, Bangladesh &nbsp;|&nbsp; hridoykhan7581@gmail.com</p>
-            </div>
-          </div>
+      <div id="printable-invoice-sheet" class="bg-white text-slate-900 relative overflow-hidden">
+        <!-- Decorative Top Geometric Accent Strip -->
+        <div class="h-2.5 w-full bg-gradient-to-r from-blue-900 via-blue-600 to-cyan-400"></div>
 
-          <div class="sm:text-right w-full sm:w-auto bg-slate-50 sm:bg-transparent p-3 sm:p-0 rounded-xl border sm:border-0 border-slate-200">
-            <div class="inline-block px-3 py-1 rounded-lg bg-slate-900 text-cyan-400 text-xs font-extrabold tracking-widest uppercase mb-1.5">
-              INVOICE / CASH MEMO
-            </div>
-            <p class="text-sm font-bold text-slate-800">Invoice No: <span id="pad-inv-no" class="text-blue-700 font-mono">GN-2026-001</span></p>
-            <p class="text-xs text-slate-600 mt-0.5">Date: <span id="pad-inv-date" class="font-semibold">24 Nov 2026</span></p>
-            <div class="mt-1.5">
-              <span id="pad-status-badge" class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                PAID (নগদ পরিশোধ)
-              </span>
-            </div>
-          </div>
-        </div>
+        <!-- Colorful Geometric Header Banner -->
+        <div class="relative bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 text-white px-6 sm:px-8 py-5 overflow-hidden">
+          <!-- Decorative Geometric Shapes -->
+          <div class="pointer-events-none absolute -right-12 -top-12 w-52 h-52 rounded-full bg-cyan-500/15 blur-xl"></div>
+          <div class="pointer-events-none absolute right-28 -bottom-16 w-44 h-44 rotate-45 rounded-3xl bg-blue-500/15 border border-cyan-400/20"></div>
+          <div class="pointer-events-none absolute left-1/3 top-0 w-24 h-24 -rotate-12 rounded-2xl bg-indigo-500/10"></div>
 
-        <!-- Client & Payment Info Grid -->
-        <div class="pad-grid-2col grid grid-cols-1 sm:grid-cols-2 gap-4 my-5">
-          <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200">
-            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">BILL TO (ক্লায়েন্টের বিবরণ)</p>
-            <h3 id="pad-client-name" class="text-base font-bold text-slate-900">Client Name</h3>
-            <p id="pad-client-phone" class="text-xs font-semibold text-slate-700 mt-1"><i class="fa-solid fa-phone mr-1.5 text-slate-400"></i> 01700-000000</p>
-            <p id="pad-client-address" class="text-xs text-slate-600 mt-0.5"><i class="fa-solid fa-location-dot mr-1.5 text-slate-400"></i> Address</p>
-            <p id="pad-prev-due-line" class="text-[11px] font-bold text-amber-700 mt-1.5 hidden"></p>
-          </div>
-
-          <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200 flex flex-col justify-between">
-            <div>
-              <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">PAYMENT DETAILS (পেমেন্ট তথ্য)</p>
-              <p class="text-xs font-semibold text-slate-800">Method: <span id="pad-pay-method" class="text-blue-700 font-bold">bKash</span></p>
-              <p id="pad-pay-accounts" class="text-[11px] text-slate-600 mt-1 leading-relaxed">
-                bKash / Nagad: 01870-978004 | Cellfin: 01870-978004 | Binance UID: 520327779
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Line Items Table -->
-        <div class="overflow-x-auto rounded-xl border border-slate-300">
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="bg-slate-900 text-white text-xs uppercase tracking-wider">
-                <th class="py-2.5 px-3 font-semibold w-10 text-center">#</th>
-                <th class="py-2.5 px-3 font-semibold">Item / Description</th>
-                <th class="py-2.5 px-3 font-semibold pad-hide-thermal">Model</th>
-                <th class="py-2.5 px-3 font-semibold text-center">Qty</th>
-                <th class="py-2.5 px-3 font-semibold text-right pad-hide-thermal">Rate</th>
-                <th class="py-2.5 px-3 font-semibold text-right">Total</th>
-              </tr>
-            </thead>
-            <tbody id="pad-items-tbody" class="divide-y divide-slate-200 text-sm">
-              <!-- Populated dynamically -->
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Totals & Notes Section -->
-        <div class="pad-summary-grid grid grid-cols-1 sm:grid-cols-12 gap-6 mt-5 items-start">
-          <div class="sm:col-span-7 space-y-3">
-            <div class="bg-cyan-50/60 border border-cyan-200/80 rounded-xl p-3.5">
-              <p class="text-xs font-bold text-slate-800 mb-1">শর্তাবলী ও নোট (Terms & Notes):</p>
-              <p id="pad-terms-text" class="text-xs text-slate-600 leading-relaxed">
-                ১. পেমেন্ট নিশ্চিত হওয়ার পর ডিজিটাল প্রোডাক্ট/সার্ভিস ডেলিভারি প্রদান করা হয়।<br>
-                ২. ভবিষ্যতে যেকোনো সাপোর্ট বা আপডেটের জন্য ইনভয়েস নম্বর সংরক্ষণ করুন।
-              </p>
-            </div>
-            <p id="pad-custom-note" class="text-xs italic text-slate-500"></p>
-          </div>
-
-          <div class="sm:col-span-5 bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-1.5 text-sm">
-            <div class="flex justify-between text-slate-600">
-              <span>Subtotal (মোট):</span>
-              <span id="pad-subtotal" class="font-semibold text-slate-900">৳ 0</span>
-            </div>
-            <div class="flex justify-between text-slate-600">
-              <span>Discount (ছাড়):</span>
-              <span id="pad-discount" class="font-semibold text-emerald-600">- ৳ 0</span>
-            </div>
-            <div id="pad-vat-row" class="flex justify-between text-slate-600 hidden">
-              <span id="pad-vat-label">VAT / Tax:</span>
-              <span id="pad-vat-amount" class="font-semibold text-slate-800">+ ৳ 0</span>
-            </div>
-            <div class="flex justify-between text-base font-extrabold text-slate-950 pt-2 border-t border-slate-300">
-              <span>Grand Total (সর্বমোট):</span>
-              <span id="pad-grand-total">৳ 0</span>
-            </div>
-            <div class="flex justify-between text-emerald-700 font-bold pt-1">
-              <span>Paid / জমা দিল:</span>
-              <span id="pad-paid-amount">৳ 0</span>
-            </div>
-            <div id="pad-change-row" class="flex justify-between text-sky-700 font-bold hidden">
-              <span>Change / ফেরত:</span>
-              <span id="pad-change-amount">৳ 0</span>
-            </div>
-            <div class="flex justify-between text-rose-600 font-extrabold pt-1 border-t border-dashed border-slate-300">
-              <span>Balance Due (বাকি):</span>
-              <span id="pad-due-amount">৳ 0</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Auto / Uploaded Seal & Signature Footer -->
-        <div class="mt-10 pt-5 flex flex-wrap justify-between items-end gap-6 text-xs text-slate-600">
-          <div class="text-center">
-            <div class="h-14 flex items-end justify-center pb-1"></div>
-            <div class="w-36 border-t border-slate-400 pt-1.5 font-semibold">Client Signature (ক্রেতার স্বাক্ষর)</div>
-          </div>
-
-          <div class="flex items-end gap-5 ml-auto">
-            <div id="pad-seal-box" class="flex flex-col items-center">
-              <div id="pad-seal-visual" class="w-24 h-24 flex items-center justify-center"></div>
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Company Seal / সিল</span>
+          <div class="relative z-10 flex flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3.5 min-w-0">
+              <div id="pad-logo-container" class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-900/90 p-2 flex items-center justify-center shadow-lg shadow-cyan-500/20 shrink-0 border border-cyan-400/40">
+                <!-- Logo rendered dynamically -->
+              </div>
+              <div class="min-w-0">
+                <h1 id="pad-company-name" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-none">GreatNexa</h1>
+                <p id="pad-company-tagline" class="text-[9.5px] sm:text-[10.5px] font-bold text-cyan-300 uppercase tracking-wider mt-1.5 whitespace-nowrap">DIGITAL SOLUTIONS | AUTOMATION | COURSES | TRADING TOOLS</p>
+                <p id="pad-company-contact" class="text-[11px] text-slate-200 mt-1">
+                  <i class="fa-solid fa-globe text-cyan-400 mr-1"></i> https://www.greatnexa.com/ &nbsp;|&nbsp;
+                  <i class="fa-solid fa-phone text-cyan-400 mr-1"></i> 01870-978004
+                </p>
+                <p id="pad-company-address" class="text-[11px] text-slate-300">Kushtia, Bangladesh &nbsp;|&nbsp; hridoykhan7581@gmail.com</p>
+              </div>
             </div>
 
-            <div id="pad-sign-box" class="text-center">
-              <div id="pad-sign-visual" class="h-14 w-44 flex items-center justify-center"></div>
-              <div class="w-44 border-t border-slate-900 pt-1.5 font-semibold text-slate-900">
-                <span id="pad-signatory-name">Md. Hriday Ahammad</span>
-                <span class="block text-[10px] font-normal text-slate-500">Authorized Signature / স্বাক্ষর</span>
+            <div class="text-right shrink-0 bg-white/10 backdrop-blur-xs px-3.5 py-2.5 rounded-2xl border border-cyan-400/30">
+              <div class="inline-block px-2.5 py-0.5 rounded-md bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 text-[10px] font-extrabold tracking-widest uppercase mb-1 whitespace-nowrap">
+                INVOICE / CASH MEMO
+              </div>
+              <p class="text-xs sm:text-sm font-bold text-white whitespace-nowrap">Invoice No: <span id="pad-inv-no" class="text-cyan-300 font-mono">GN-2026-001</span></p>
+              <p class="text-[11px] text-slate-200 mt-0.5 whitespace-nowrap">Date: <span id="pad-inv-date" class="font-semibold text-white">24 Nov 2026</span></p>
+              <div class="mt-1.5">
+                <span id="pad-status-badge" class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-400/20 text-emerald-300 border border-emerald-400/40 whitespace-nowrap">
+                  PAID (নগদ পরিশোধ)
+                </span>
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- Pad Body Container -->
+        <div class="px-6 sm:px-8 py-4 space-y-3.5 relative">
+          <!-- Client & Payment Info Grid with Colorful Left Accent Shapes -->
+          <div class="pad-grid-2col grid grid-cols-2 gap-3.5">
+            <div class="relative overflow-hidden bg-gradient-to-br from-blue-50/90 to-slate-50 rounded-xl p-3 border border-blue-200/80 border-l-4 border-l-blue-600">
+              <div class="pointer-events-none absolute -right-4 -bottom-4 w-16 h-16 rounded-full bg-blue-500/10"></div>
+              <p class="text-[10px] font-extrabold uppercase tracking-wider text-blue-700 mb-0.5">BILL TO (ক্লায়েন্টের বিবরণ)</p>
+              <h3 id="pad-client-name" class="text-sm font-extrabold text-slate-900 leading-tight">Client Name</h3>
+              <p id="pad-client-phone" class="text-[11px] font-semibold text-slate-700 mt-0.5"><i class="fa-solid fa-phone mr-1.5 text-blue-600"></i> 01700-000000</p>
+              <p id="pad-client-address" class="text-[11px] text-slate-600"><i class="fa-solid fa-location-dot mr-1.5 text-blue-600"></i> Address</p>
+              <p id="pad-prev-due-line" class="text-[10px] font-bold text-amber-700 mt-1 hidden"></p>
+            </div>
+
+            <div class="relative overflow-hidden bg-gradient-to-br from-cyan-50/90 to-slate-50 rounded-xl p-3 border border-cyan-200/80 border-l-4 border-l-cyan-500 flex flex-col justify-between">
+              <div class="pointer-events-none absolute -right-4 -bottom-4 w-16 h-16 rotate-12 rounded-xl bg-cyan-500/10"></div>
+              <div>
+                <p class="text-[10px] font-extrabold uppercase tracking-wider text-cyan-700 mb-0.5">PAYMENT DETAILS (পেমেন্ট তথ্য)</p>
+                <p class="text-xs font-semibold text-slate-800">Method: <span id="pad-pay-method" class="px-2 py-0.5 rounded bg-blue-600 text-white font-bold text-[11px]">bKash</span></p>
+                <p id="pad-pay-accounts" class="text-[10.5px] text-slate-600 mt-1 leading-snug">
+                  bKash / Nagad: 01870-978004 | Cellfin: 01870-978004 | Binance UID: 520327779
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Line Items Table (Compact Row Padding so 8-10 Items Fit on Page 1) -->
+          <div class="overflow-hidden rounded-xl border border-blue-200 shadow-2xs">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-gradient-to-r from-slate-900 via-blue-900 to-cyan-800 text-white text-[11px] uppercase tracking-wider">
+                  <th class="py-2 px-2.5 font-bold w-9 text-center">#</th>
+                  <th class="py-2 px-2.5 font-bold">Item / Description</th>
+                  <th class="py-2 px-2.5 font-bold pad-hide-thermal">Model</th>
+                  <th class="py-2 px-2.5 font-bold text-center">Qty</th>
+                  <th class="py-2 px-2.5 font-bold text-right pad-hide-thermal">Rate</th>
+                  <th class="py-2 px-2.5 font-bold text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody id="pad-items-tbody" class="divide-y divide-slate-200 text-xs">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Totals & Notes Section (Kept together cleanly) -->
+          <div class="pad-avoid-break pad-summary-grid grid grid-cols-12 gap-4 pt-1 items-start">
+            <div class="col-span-7 space-y-2">
+              <div class="relative overflow-hidden bg-gradient-to-r from-cyan-50 to-blue-50/70 border border-cyan-200 rounded-xl p-2.5">
+                <p class="text-[11px] font-extrabold text-blue-950 mb-0.5"><i class="fa-solid fa-shield-check text-cyan-600 mr-1"></i>শর্তাবলী ও নোট (Terms & Notes):</p>
+                <p id="pad-terms-text" class="text-[10.5px] text-slate-700 leading-snug">
+                  ১. পেমেন্ট নিশ্চিত হওয়ার পর ডিজিটাল প্রোডাক্ট/সার্ভিস ডেলিভারি প্রদান করা হয়।<br>
+                  ২. ভবিষ্যতে যেকোনো সাপোর্ট বা আপডেটের জন্য ইনভয়েস নম্বর সংরক্ষণ করুন।
+                </p>
+              </div>
+              <p id="pad-custom-note" class="text-[11px] italic font-medium text-blue-800"></p>
+            </div>
+
+            <div class="col-span-5 bg-gradient-to-br from-slate-50 to-blue-50/50 rounded-xl p-3 border border-blue-200/80 space-y-1 text-xs">
+              <div class="flex justify-between text-slate-600">
+                <span>Subtotal (মোট):</span>
+                <span id="pad-subtotal" class="font-bold text-slate-900">৳ 0</span>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span>Discount (ছাড়):</span>
+                <span id="pad-discount" class="font-bold text-emerald-600">- ৳ 0</span>
+              </div>
+              <div id="pad-vat-row" class="flex justify-between text-slate-600 hidden">
+                <span id="pad-vat-label">VAT / Tax:</span>
+                <span id="pad-vat-amount" class="font-semibold text-slate-800">+ ৳ 0</span>
+              </div>
+              <div class="flex justify-between text-sm font-extrabold text-white bg-gradient-to-r from-slate-900 to-blue-900 px-2.5 py-1.5 rounded-lg my-1">
+                <span>Grand Total (সর্বমোট):</span>
+                <span id="pad-grand-total" class="text-cyan-300">৳ 0</span>
+              </div>
+              <div class="flex justify-between text-emerald-700 font-bold pt-0.5">
+                <span>Paid / জমা দিল:</span>
+                <span id="pad-paid-amount">৳ 0</span>
+              </div>
+              <div id="pad-change-row" class="flex justify-between text-sky-700 font-bold hidden">
+                <span>Change / ফেরত:</span>
+                <span id="pad-change-amount">৳ 0</span>
+              </div>
+              <div class="flex justify-between text-rose-600 font-extrabold pt-1 border-t border-dashed border-slate-300">
+                <span>Balance Due (বাকি):</span>
+                <span id="pad-due-amount">৳ 0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Auto / Uploaded Seal & Signature Footer -->
+          <div class="pad-avoid-break pt-3 flex justify-between items-end gap-4 text-xs text-slate-600">
+            <div class="text-center">
+              <div class="h-12 flex items-end justify-center pb-1"></div>
+              <div class="w-36 border-t-2 border-slate-400 pt-1 font-semibold text-slate-700">Client Signature (ক্রেতার স্বাক্ষর)</div>
+            </div>
+
+            <div class="flex items-end gap-4 ml-auto">
+              <div id="pad-seal-box" class="flex flex-col items-center">
+                <div id="pad-seal-visual" class="w-20 h-20 flex items-center justify-center"></div>
+                <span class="text-[9px] font-extrabold text-blue-800 uppercase tracking-wider">Company Seal / সিল</span>
+              </div>
+
+              <div id="pad-sign-box" class="text-center">
+                <div id="pad-sign-visual" class="h-12 w-40 flex items-center justify-center"></div>
+                <div class="w-40 border-t-2 border-blue-900 pt-1 font-bold text-slate-900">
+                  <span id="pad-signatory-name">Md. Hriday Ahammad</span>
+                  <span class="block text-[9.5px] font-medium text-cyan-700">Authorized Signature / স্বাক্ষর</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Colorful Geometric Footer Bar -->
+        <div class="bg-gradient-to-r from-slate-950 via-blue-950 to-cyan-900 text-cyan-200 text-[10px] font-semibold px-6 py-2 flex justify-between items-center">
+          <span>Thank you for choosing GreatNexa!</span>
+          <span class="text-white">Powered by GreatNexa Automated POS</span>
         </div>
       </div>
     </div>
@@ -1369,18 +1412,30 @@
 
     function getAutoStampSVG(companyName, address, dateStr) {
       const safeName = escapeHTML((companyName || 'GREATNEXA').toUpperCase());
-      const safeAddr = escapeHTML((address || 'BANGLADESH').toUpperCase());
+      const safeAddr = escapeHTML((address || 'KUSHTIA, BANGLADESH').toUpperCase());
       const safeDate = escapeHTML(dateStr || new Date().toISOString().slice(0, 10));
+      const uid = 'seal_' + Math.floor(Math.random() * 100000);
       return `
-        <svg viewBox="0 0 140 140" class="w-full h-full opacity-85 -rotate-6 select-none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="70" cy="70" r="62" fill="none" stroke="#1d4ed8" stroke-width="3" stroke-dasharray="5 2"/>
-          <circle cx="70" cy="70" r="54" fill="none" stroke="#0284c7" stroke-width="1.5"/>
-          <line x1="20" y1="54" x2="120" y2="54" stroke="#1d4ed8" stroke-width="1.2"/>
-          <line x1="20" y1="88" x2="120" y2="88" stroke="#1d4ed8" stroke-width="1.2"/>
-          <text x="70" y="45" text-anchor="middle" fill="#1e3a8a" font-size="8" font-weight="800" letter-spacing="1.2">VERIFIED SEAL</text>
-          <text x="70" y="74" text-anchor="middle" fill="#1d4ed8" font-size="11.5" font-weight="900">${safeName.slice(0, 14)}</text>
-          <text x="70" y="102" text-anchor="middle" fill="#0369a1" font-size="7.5" font-weight="700">${safeAddr.slice(0, 18)}</text>
-          <text x="70" y="114" text-anchor="middle" fill="#1e40af" font-size="7" font-weight="700">${safeDate}</text>
+        <svg viewBox="0 0 240 240" class="w-full h-full opacity-90 -rotate-6 select-none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <path id="${uid}_top" d="M 34,120 A 86,86 0 1,1 206,120" />
+            <path id="${uid}_bot" d="M 28,120 A 92,92 0 1,0 212,120" />
+          </defs>
+          <circle cx="120" cy="120" r="110" fill="none" stroke="#1e3a8a" stroke-width="4" />
+          <circle cx="120" cy="120" r="104" fill="none" stroke="#1d4ed8" stroke-width="1.2" stroke-dasharray="2.5 2.5" />
+          <text fill="#1e3a8a" font-size="10.5" font-weight="800" letter-spacing="2.2">
+            <textPath href="#${uid}_top" startOffset="50%" text-anchor="middle">★ ${safeName} OFFICIAL ★</textPath>
+          </text>
+          <text fill="#0369a1" font-size="9.2" font-weight="800" letter-spacing="1.5">
+            <textPath href="#${uid}_bot" startOffset="50%" text-anchor="middle">${safeAddr.slice(0, 24)}</textPath>
+          </text>
+          <circle cx="120" cy="120" r="70" fill="none" stroke="#1d4ed8" stroke-width="2" />
+          <circle cx="120" cy="120" r="66" fill="none" stroke="#0284c7" stroke-width="0.9" />
+          <line x1="56" y1="98" x2="184" y2="98" stroke="#1d4ed8" stroke-width="1.5" />
+          <line x1="56" y1="142" x2="184" y2="142" stroke="#1d4ed8" stroke-width="1.5" />
+          <text x="120" y="89" text-anchor="middle" fill="#0284c7" font-size="8.5" font-weight="800" letter-spacing="1.4">VERIFIED SEAL</text>
+          <text x="120" y="126" text-anchor="middle" fill="#1e3a8a" font-size="18.5" font-weight="900" letter-spacing="1">${safeName.slice(0, 12)}</text>
+          <text x="120" y="156" text-anchor="middle" fill="#1e40af" font-family="monospace" font-size="8.5" font-weight="800">${safeDate}</text>
         </svg>
       `;
     }
@@ -2156,16 +2211,16 @@
 
       const tbody = document.getElementById('pad-items-tbody');
       tbody.innerHTML = inv.items.map((item, i) => `
-        <tr>
-          <td class="py-2.5 px-3 text-center font-semibold text-slate-600">${String(i + 1).padStart(2, '0')}</td>
-          <td class="py-2.5 px-3 font-bold text-slate-900">
+        <tr class="${i % 2 === 1 ? 'bg-blue-50/35' : 'bg-white'}">
+          <td class="py-1.5 px-2.5 text-center font-bold text-blue-800">${String(i + 1).padStart(2, '0')}</td>
+          <td class="py-1.5 px-2.5 font-bold text-slate-900">
             ${escapeHTML(item.name)}
-            ${item.isFree ? '<span class="ml-1.5 px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-extrabold uppercase">FREE GIFT</span>' : ''}
+            ${item.isFree ? '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[9px] font-extrabold uppercase">FREE GIFT</span>' : ''}
           </td>
-          <td class="py-2.5 px-3 font-mono text-xs text-slate-600 pad-hide-thermal">${escapeHTML(item.model)}</td>
-          <td class="py-2.5 px-3 text-center font-bold">${item.qty}</td>
-          <td class="py-2.5 px-3 text-right pad-hide-thermal">${formatBDT(item.rate)}</td>
-          <td class="py-2.5 px-3 text-right font-extrabold text-slate-900">${item.isFree ? 'FREE (৳0)' : formatBDT(item.total)}</td>
+          <td class="py-1.5 px-2.5 font-mono text-[11px] text-slate-600 pad-hide-thermal">${escapeHTML(item.model)}</td>
+          <td class="py-1.5 px-2.5 text-center font-bold text-slate-800">${item.qty}</td>
+          <td class="py-1.5 px-2.5 text-right text-slate-700 pad-hide-thermal">${formatBDT(item.rate)}</td>
+          <td class="py-1.5 px-2.5 text-right font-extrabold text-slate-950">${item.isFree ? 'FREE (৳0)' : formatBDT(item.total)}</td>
         </tr>
       `).join('');
 
