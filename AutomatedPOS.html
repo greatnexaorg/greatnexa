@@ -1014,16 +1014,17 @@
                 <div class="grid grid-cols-2 sm:grid-cols-12 gap-3 items-end">
                   <div class="sm:col-span-4">
                     <label class="block text-xs font-bold text-slate-700 mb-1">ওয়ারেন্টি / গ্যারান্টি</label>
-                    <select id="item-warranty-input" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800">
-                      <option value="No Warranty">No Warranty</option>
-                      <option value="7 Days Replacement">7 Days Replacement</option>
-                      <option value="1 Month Service Warranty">1 Month Service Warranty</option>
-                      <option value="3 Months Warranty">3 Months Warranty</option>
-                      <option value="6 Months Warranty">6 Months Warranty</option>
-                      <option value="1 Year Official Warranty">1 Year Official Warranty</option>
-                      <option value="2 Years Warranty">2 Years Warranty</option>
-                      <option value="Lifetime Access / Support">Lifetime Access / Support</option>
-                    </select>
+                    <input type="text" id="item-warranty-input" list="warranty-options-list" value="No Warranty" placeholder="সিলেক্ট বা কাস্টম লিখুন..." class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-800" />
+                    <datalist id="warranty-options-list">
+                      <option value="No Warranty"></option>
+                      <option value="7 Days Replacement"></option>
+                      <option value="1 Month Service Warranty"></option>
+                      <option value="3 Months Warranty"></option>
+                      <option value="6 Months Warranty"></option>
+                      <option value="1 Year Official Warranty"></option>
+                      <option value="2 Years Warranty"></option>
+                      <option value="Lifetime Access / Support"></option>
+                    </datalist>
                   </div>
                   <div class="sm:col-span-2">
                     <label class="block text-xs font-bold text-slate-700 mb-1">পরিমাণ (Qty)</label>
@@ -1136,7 +1137,9 @@
                     <option value="Binance Pay">Binance Pay (UID: 520327779)</option>
                     <option value="Bank Transfer">Bank Transfer</option>
                     <option value="বাকি (Credit/Due)">বাকি (Credit/Due)</option>
+                    <option value="CUSTOM">Others / কাস্টম মাধ্যম...</option>
                   </select>
+                  <input type="text" id="bill-pay-method-custom" placeholder="যেমন: Rocket / Upay / Card লিখুন" class="hidden mt-2 w-full px-3 py-2 rounded-xl bg-slate-950 border border-cyan-500/50 text-xs font-semibold text-cyan-200" />
                 </div>
                 <div>
                   <div class="flex items-center justify-between mb-1">
@@ -1485,15 +1488,16 @@
               </div>
               <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">খরচের খাত</label>
-                <select id="exp-category" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-white">
+                <select id="exp-category" onchange="toggleCustomInput(this.value, 'exp-category-custom')" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold bg-white">
                   <option value="Office / Shop Rent">Office / Shop Rent (ভাড়া)</option>
                   <option value="Facebook / Google Ads">Facebook / Google Ads (মার্কেটিং)</option>
                   <option value="Internet & Electricity">Internet &amp; Electricity</option>
                   <option value="Staff / Salary">Staff / Salary</option>
                   <option value="Transport / Courier">Transport / Courier</option>
                   <option value="Software / Server">Software / Server</option>
-                  <option value="Others">Others (অন্যান্য)</option>
+                  <option value="Others">Others (কাস্টম খাত লিখুন...)</option>
                 </select>
+                <input type="text" id="exp-category-custom" placeholder="কাস্টম খরচের খাত লিখুন..." class="hidden mt-2 w-full px-3 py-2 rounded-xl border border-rose-300 text-xs font-semibold" />
               </div>
               <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">বিবরণ *</label>
@@ -1574,7 +1578,13 @@
                   <input type="text" id="prod-model" required class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-sm" />
                 </div>
                 <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">স্টক</label>
+                  <div class="flex items-center justify-between mb-1">
+                    <label class="text-xs font-bold text-slate-700">স্টক</label>
+                    <label class="inline-flex items-center gap-1 text-[11px] font-extrabold text-cyan-700 cursor-pointer select-none">
+                      <input type="checkbox" id="prod-is-unlimited" onchange="toggleProductUnlimitedStock(this.checked)" class="rounded text-cyan-600" />
+                      <span>∞ আনলিমিটেড</span>
+                    </label>
+                  </div>
                   <input type="number" id="prod-stock" value="99" min="0" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold" />
                 </div>
               </div>
@@ -1591,25 +1601,20 @@
               <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="block text-xs font-bold text-slate-700 mb-1">ক্যাটাগরি</label>
-                  <select id="prod-category" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 text-xs font-semibold bg-white">
+                  <select id="prod-category" onchange="toggleCustomInput(this.value, 'prod-category-custom')" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 text-xs font-semibold bg-white">
                     <option value="Course / Training">Course / Training</option>
                     <option value="Automation / Software">Automation / Software</option>
                     <option value="Trading Tools">Trading Tools</option>
                     <option value="Web & Design">Web &amp; Design</option>
                     <option value="Hardware / Laptop">Hardware / Laptop</option>
                     <option value="Free Resource">Free Resource</option>
+                    <option value="Others">Others (কাস্টম লিখুন...)</option>
                   </select>
+                  <input type="text" id="prod-category-custom" placeholder="কাস্টম ক্যাটাগরি লিখুন..." class="hidden mt-1.5 w-full px-2.5 py-1.5 rounded-lg border border-blue-300 text-xs font-semibold" />
                 </div>
                 <div>
                   <label class="block text-xs font-bold text-slate-700 mb-1">ডিফল্ট ওয়ারেন্টি</label>
-                  <select id="prod-warranty" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 text-xs font-semibold bg-white">
-                    <option value="No Warranty">No Warranty</option>
-                    <option value="7 Days Replacement">7 Days Replacement</option>
-                    <option value="3 Months Warranty">3 Months Warranty</option>
-                    <option value="6 Months Warranty">6 Months Warranty</option>
-                    <option value="1 Year Official Warranty">1 Year Official Warranty</option>
-                    <option value="Lifetime Access / Support">Lifetime Access / Support</option>
-                  </select>
+                  <input type="text" id="prod-warranty" list="warranty-options-list" value="No Warranty" placeholder="সিলেক্ট বা কাস্টম লিখুন..." class="w-full px-2.5 py-2 rounded-xl border border-slate-300 text-xs font-semibold bg-white" />
                 </div>
               </div>
               <div class="bg-emerald-50/80 border border-emerald-200 rounded-xl p-3 space-y-2">
@@ -2078,8 +2083,8 @@
       const totalPurchaseSpend = periodPurchases.reduce((s, p) => s + (Number(p.totalAmount) || 0), 0);
       const totalSupplierDue = appState.purchases.reduce((s, p) => s + (Number(p.dueAmount) || 0), 0);
       const netProfit = grossProfit - totalOperatingExpense;
-      const stockBuyVal = appState.products.reduce((s, p) => s + ((Number(p.buyPrice) || 0) * (Number(p.stock) || 0)), 0);
-      const stockSellVal = appState.products.reduce((s, p) => s + ((Number(p.price) || 0) * (Number(p.stock) || 0)), 0);
+      const stockBuyVal = appState.products.reduce((s, p) => s + (isUnlimitedProduct(p) ? 0 : ((Number(p.buyPrice) || 0) * (Number(p.stock) || 0))), 0);
+      const stockSellVal = appState.products.reduce((s, p) => s + (isUnlimitedProduct(p) ? 0 : ((Number(p.price) || 0) * (Number(p.stock) || 0))), 0);
 
       document.getElementById('kpi-total-sales').textContent = formatBDT(totalSales);
       document.getElementById('kpi-invoice-count').textContent = `মোট বিল: ${activeInvoices.length} টি`;
@@ -2173,7 +2178,7 @@
         Array.from(clientMap.entries()).map(([k, c]) => `<option value="${escapeHTML(k)}">${escapeHTML(c.name)} (${escapeHTML(c.phone)})</option>`).join('');
 
       document.getElementById('catalog-product-picker').innerHTML = `<option value="">-- ক্যাটালগ থেকে প্রোডাক্ট সিলেক্ট করুন (${appState.products.length}) --</option>` +
-        appState.products.map(p => `<option value="${p.id}">${escapeHTML(p.name)} [${escapeHTML(p.model)}] — ${p.isFree ? 'FREE' : formatBDT(p.price)} (Stock: ${p.stock})</option>`).join('');
+        appState.products.map(p => `<option value="${p.id}">${escapeHTML(p.name)} [${escapeHTML(p.model)}] — ${p.isFree ? 'FREE' : formatBDT(p.price)} (Stock: ${isUnlimitedProduct(p) ? '∞ Unlimited' : p.stock})</option>`).join('');
 
       renderDraftBillItems();
     }
@@ -2237,7 +2242,7 @@
       const name = document.getElementById('item-name-input').value.trim();
       const model = document.getElementById('item-model-input').value.trim() || 'STD-01';
       const serial = document.getElementById('item-serial-input').value.trim();
-      const warranty = document.getElementById('item-warranty-input').value;
+      const warranty = document.getElementById('item-warranty-input').value.trim() || 'No Warranty';
       const qty = Math.max(1, Number(document.getElementById('item-qty-input').value) || 1);
       const isFree = document.getElementById('item-is-free-check').checked;
       const buyPrice = Math.max(0, Number(document.getElementById('item-buy-price-input').value) || 0);
@@ -2332,10 +2337,48 @@
 
     function handlePaymentMethodChange() {
       userEditedPaidManually = false;
-      if (document.getElementById('bill-pay-method').value === 'বাকি (Credit/Due)') {
+      const val = document.getElementById('bill-pay-method').value;
+      const customInp = document.getElementById('bill-pay-method-custom');
+      if (val === 'CUSTOM') {
+        customInp.classList.remove('hidden');
+        customInp.focus();
+      } else {
+        customInp.classList.add('hidden');
+      }
+      if (val === 'বাকি (Credit/Due)') {
         document.getElementById('bill-paid-input').value = 0; userEditedPaidManually = true;
       }
       recalculateBillTotals(userEditedPaidManually);
+    }
+
+    function toggleCustomInput(selectedVal, customInputId) {
+      const el = document.getElementById(customInputId);
+      if (!el) return;
+      if (selectedVal === 'Others' || selectedVal === 'CUSTOM') {
+        el.classList.remove('hidden');
+        el.focus();
+      } else {
+        el.classList.add('hidden');
+      }
+    }
+
+    function isUnlimitedProduct(p) {
+      return Boolean(p && (p.isUnlimited || Number(p.stock) === -1 || Number(p.stock) >= 999999));
+    }
+
+    function toggleProductUnlimitedStock(isUnlimited) {
+      const stockInp = document.getElementById('prod-stock');
+      if (isUnlimited) {
+        stockInp.value = '';
+        stockInp.placeholder = '∞ Unlimited';
+        stockInp.disabled = true;
+        stockInp.classList.add('bg-cyan-50', 'text-cyan-800');
+      } else {
+        stockInp.disabled = false;
+        stockInp.placeholder = '';
+        stockInp.classList.remove('bg-cyan-50', 'text-cyan-800');
+        if (!stockInp.value) stockInp.value = 99;
+      }
     }
 
     function setFullPaidAmount() { userEditedPaidManually = false; recalculateBillTotals(false); }
@@ -2366,7 +2409,9 @@
       const clientName = document.getElementById('bill-client-name').value.trim();
       const clientPhone = document.getElementById('bill-client-phone').value.trim();
       const clientAddress = document.getElementById('bill-client-address').value.trim();
-      const paymentMethod = document.getElementById('bill-pay-method').value;
+      const rawPayMethod = document.getElementById('bill-pay-method').value;
+      const customPayMethod = document.getElementById('bill-pay-method-custom').value.trim();
+      const paymentMethod = rawPayMethod === 'CUSTOM' ? (customPayMethod || 'Others') : rawPayMethod;
       const note = document.getElementById('bill-note-input').value.trim();
 
       const subtotal = draftBillItems.reduce((s, i) => s + i.total, 0);
@@ -2407,7 +2452,7 @@
         appState.invoices.unshift(invoiceObj);
         draftBillItems.forEach(item => {
           const existing = appState.products.find(p => p.name.toLowerCase() === item.name.toLowerCase());
-          if (existing && !existing.isFree && Number(existing.stock) > 0) {
+          if (existing && !existing.isFree && !isUnlimitedProduct(existing) && Number(existing.stock) > 0) {
             existing.stock = Math.max(0, Number(existing.stock) - Number(item.qty));
             if (isSupabaseConnected && isUUID(existing.id)) _supabase.from('pos_products').update({ stock: existing.stock }).eq('id', existing.id);
           } else if (!existing && document.getElementById('save-new-product-to-catalog').checked) {
@@ -3120,7 +3165,8 @@
       appState.purchases.unshift({ id: 'pur-' + Date.now(), voucherNo, date, supplierName, supplierPhone, productName, model, warranty, qty, buyRate, sellRate, totalAmount, paidAmount, dueAmount });
       const existing = appState.products.find(p => p.name.toLowerCase() === productName.toLowerCase());
       if (existing) {
-        existing.stock = (Number(existing.stock) || 0) + qty; existing.buyPrice = buyRate;
+        if (!isUnlimitedProduct(existing)) existing.stock = (Number(existing.stock) || 0) + qty;
+        existing.buyPrice = buyRate;
         if (sellRate > 0) existing.price = sellRate;
         if (warranty) existing.warranty = warranty;
         if (isSupabaseConnected && isUUID(existing.id)) _supabase.from('pos_products').update({ stock: existing.stock, buy_price: buyRate, price: existing.price, warranty: existing.warranty }).eq('id', existing.id);
@@ -3208,12 +3254,15 @@
 
     function handleSaveExpense(e) {
       e.preventDefault();
-      const exp = { id: 'exp-' + Date.now(), date: document.getElementById('exp-date').value, category: document.getElementById('exp-category').value, title: document.getElementById('exp-title').value.trim(), amount: Math.max(0, Number(document.getElementById('exp-amount').value) || 0), method: document.getElementById('exp-method').value };
+      const rawCat = document.getElementById('exp-category').value;
+      const customCat = document.getElementById('exp-category-custom').value.trim();
+      const category = rawCat === 'Others' ? (customCat || 'Others') : rawCat;
+      const exp = { id: 'exp-' + Date.now(), date: document.getElementById('exp-date').value, category, title: document.getElementById('exp-title').value.trim(), amount: Math.max(0, Number(document.getElementById('exp-amount').value) || 0), method: document.getElementById('exp-method').value };
       appState.expenses.unshift(exp);
       if (isSupabaseConnected) {
         _supabase.from('pos_expenses').insert([{ expense_date: exp.date, category: exp.category, title: exp.title, amount: exp.amount, payment_method: exp.method }]).select().single().then(({ data }) => { if (data && data.id) { exp.id = data.id; saveState(); } });
       }
-      saveState(); e.target.reset(); renderExpensesTab(); renderDashboard(); showToast('খরচ সেভ হয়েছে!', 'success');
+      saveState(); e.target.reset(); document.getElementById('exp-category-custom').classList.add('hidden'); renderExpensesTab(); renderDashboard(); showToast('খরচ সেভ হয়েছে!', 'success');
     }
 
     function deleteExpense(id) {
@@ -3234,21 +3283,24 @@
       const name = document.getElementById('prod-name').value.trim();
       const model = document.getElementById('prod-model').value.trim();
       const isFree = document.getElementById('prod-is-free').checked;
+      const isUnlimited = document.getElementById('prod-is-unlimited').checked;
       const buyPrice = isFree ? 0 : Math.max(0, Number(document.getElementById('prod-buy-price').value) || 0);
       const price = isFree ? 0 : Math.max(0, Number(document.getElementById('prod-price').value) || 0);
-      const category = document.getElementById('prod-category').value;
-      const warranty = document.getElementById('prod-warranty').value;
-      const stock = Math.max(0, Number(document.getElementById('prod-stock').value) || 0);
+      const rawCat = document.getElementById('prod-category').value;
+      const customCat = document.getElementById('prod-category-custom').value.trim();
+      const category = rawCat === 'Others' ? (customCat || 'Others') : rawCat;
+      const warranty = document.getElementById('prod-warranty').value.trim() || 'No Warranty';
+      const stock = isUnlimited ? -1 : Math.max(0, Number(document.getElementById('prod-stock').value) || 0);
       const downloadNote = document.getElementById('prod-download-note').value.trim();
 
       if (editId) {
         const idx = appState.products.findIndex(p => p.id === editId);
         if (idx !== -1) {
-          appState.products[idx] = { ...appState.products[idx], name, model, buyPrice, price, category, warranty, stock, isFree: isFree || price === 0, downloadNote };
+          appState.products[idx] = { ...appState.products[idx], name, model, buyPrice, price, category, warranty, stock, isUnlimited, isFree: isFree || price === 0, downloadNote };
           if (isSupabaseConnected && isUUID(editId)) _supabase.from('pos_products').update({ name, model, buy_price: buyPrice, price, category, warranty, stock, is_free: isFree || price === 0, download_note: downloadNote }).eq('id', editId);
         }
       } else {
-        const np = { id: 'prod-' + Date.now(), name, model, buyPrice, price, category, warranty, stock, isFree: isFree || price === 0, downloadNote };
+        const np = { id: 'prod-' + Date.now(), name, model, buyPrice, price, category, warranty, stock, isUnlimited, isFree: isFree || price === 0, downloadNote };
         appState.products.unshift(np);
         if (isSupabaseConnected) {
           _supabase.from('pos_products').insert([{ name, model, buy_price: buyPrice, price, category, warranty, stock, is_free: isFree || price === 0, download_note: downloadNote }]).select().single().then(({ data }) => { if (data && data.id) { np.id = data.id; saveState(); } });
@@ -3260,11 +3312,34 @@
     function editProduct(id) {
       const p = appState.products.find(item => item.id === id);
       if (!p) return;
-      document.getElementById('prod-edit-id').value = p.id; document.getElementById('prod-name').value = p.name;
-      document.getElementById('prod-model').value = p.model; document.getElementById('prod-buy-price').value = p.buyPrice || 0;
-      document.getElementById('prod-price').value = p.price; document.getElementById('prod-category').value = p.category;
-      document.getElementById('prod-warranty').value = p.warranty || 'No Warranty'; document.getElementById('prod-stock').value = p.stock;
-      document.getElementById('prod-is-free').checked = Boolean(p.isFree); document.getElementById('prod-download-note').value = p.downloadNote || '';
+      document.getElementById('prod-edit-id').value = p.id;
+      document.getElementById('prod-name').value = p.name;
+      document.getElementById('prod-model').value = p.model;
+      document.getElementById('prod-buy-price').value = p.buyPrice || 0;
+      document.getElementById('prod-price').value = p.price;
+
+      const catSelect = document.getElementById('prod-category');
+      const catCustom = document.getElementById('prod-category-custom');
+      const hasPresetCat = Array.from(catSelect.options).some(opt => opt.value === p.category && opt.value !== 'Others');
+      if (hasPresetCat) {
+        catSelect.value = p.category;
+        catCustom.classList.add('hidden');
+        catCustom.value = '';
+      } else {
+        catSelect.value = 'Others';
+        catCustom.classList.remove('hidden');
+        catCustom.value = p.category || '';
+      }
+
+      document.getElementById('prod-warranty').value = p.warranty || 'No Warranty';
+
+      const unlim = isUnlimitedProduct(p);
+      document.getElementById('prod-is-unlimited').checked = unlim;
+      toggleProductUnlimitedStock(unlim);
+      if (!unlim) document.getElementById('prod-stock').value = p.stock;
+
+      document.getElementById('prod-is-free').checked = Boolean(p.isFree);
+      document.getElementById('prod-download-note').value = p.downloadNote || '';
       document.getElementById('product-form-title').textContent = 'প্রোডাক্ট এডিট করুন';
       document.getElementById('product-submit-label').textContent = 'আপডেট সেভ করুন';
       document.getElementById('cancel-edit-product-btn').classList.remove('hidden');
@@ -3272,7 +3347,12 @@
 
     function resetProductForm() {
       document.getElementById('product-catalog-form').reset();
-      document.getElementById('prod-edit-id').value = ''; document.getElementById('prod-stock').value = 99;
+      document.getElementById('prod-edit-id').value = '';
+      document.getElementById('prod-is-unlimited').checked = false;
+      toggleProductUnlimitedStock(false);
+      document.getElementById('prod-stock').value = 99;
+      document.getElementById('prod-warranty').value = 'No Warranty';
+      document.getElementById('prod-category-custom').classList.add('hidden');
       document.getElementById('product-form-title').textContent = 'নতুন প্রোডাক্ট যোগ করুন';
       document.getElementById('product-submit-label').textContent = 'ক্যাটালগে সেভ করুন';
       document.getElementById('cancel-edit-product-btn').classList.add('hidden');
@@ -3321,13 +3401,14 @@
     function closeStickerModal() { document.body.classList.remove('printing-sticker'); document.getElementById('sticker-print-modal').classList.add('hidden'); document.getElementById('sticker-print-modal').classList.remove('flex'); }
 
     function renderProductsCatalog() {
-      const buyVal = appState.products.reduce((s, p) => s + ((Number(p.buyPrice) || 0) * (Number(p.stock) || 0)), 0);
-      const sellVal = appState.products.reduce((s, p) => s + ((Number(p.price) || 0) * (Number(p.stock) || 0)), 0);
+      const buyVal = appState.products.reduce((s, p) => s + (isUnlimitedProduct(p) ? 0 : ((Number(p.buyPrice) || 0) * (Number(p.stock) || 0))), 0);
+      const sellVal = appState.products.reduce((s, p) => s + (isUnlimitedProduct(p) ? 0 : ((Number(p.price) || 0) * (Number(p.stock) || 0))), 0);
       document.getElementById('cat-total-buy-val').textContent = formatBDT(buyVal);
       document.getElementById('cat-total-sell-val').textContent = formatBDT(sellVal);
 
       document.getElementById('products-catalog-grid').innerHTML = appState.products.map(p => {
         const isFree = p.isFree || Number(p.price) === 0;
+        const stockLabel = isUnlimitedProduct(p) ? '<strong class="text-cyan-700">∞ Unlimited</strong>' : p.stock;
         return `
           <div class="bg-white rounded-2xl p-4 border ${isFree ? 'border-emerald-200 bg-emerald-50/20' : 'border-slate-200'} shadow-xs flex flex-col justify-between gap-3">
             <div>
@@ -3341,7 +3422,7 @@
             <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
               <div>
                 <span class="text-base font-extrabold ${isFree ? 'text-emerald-600' : 'text-slate-900'}">${isFree ? 'FREE (৳ 0)' : formatBDT(p.price)}</span>
-                <span class="block text-[10px] text-amber-700 profit-sensitive">Buy: ${formatBDT(p.buyPrice || 0)} | Stock: ${p.stock}</span>
+                <span class="block text-[10px] text-amber-700 profit-sensitive">Buy: ${formatBDT(p.buyPrice || 0)} | Stock: ${stockLabel}</span>
               </div>
               <div class="flex flex-wrap gap-1.5">
                 <button onclick="switchTab('new-invoice'); selectCatalogProduct('${p.id}'); addLineItemToBill();" class="px-2.5 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold">বিল</button>
@@ -3601,7 +3682,8 @@
         if (Array.isArray(prodRows) && prodRows.length > 0) {
           appState.products = prodRows.map(p => ({
             id: p.id, name: p.name, model: p.model || 'STD-01', category: p.category || 'Course / Training',
-            buyPrice: Number(p.buy_price) || 0, price: Number(p.price) || 0, stock: Number(p.stock) || 0,
+            buyPrice: Number(p.buy_price) || 0, price: Number(p.price) || 0, stock: Number(p.stock) ?? 0,
+            isUnlimited: Number(p.stock) === -1 || Number(p.stock) >= 999999,
             warranty: p.warranty || 'No Warranty', isFree: Boolean(p.is_free), downloadNote: p.download_note || ''
           }));
         }
