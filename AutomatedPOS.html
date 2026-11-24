@@ -2566,15 +2566,27 @@
       }
 
       if (isSupabaseConnected) {
-        _supabase.from('pos_invoices').upsert([{
+        const invoicePayload = {
           invoice_no: invoiceObj.invoiceNo, invoice_date: invoiceObj.date, due_date: invoiceObj.dueDate || null, emi_plan: invoiceObj.emiPlan || null,
-          client_name: invoiceObj.clientName, client_phone: invoiceObj.clientPhone, client_address: invoiceObj.clientAddress,
+          client_name: invoiceObj.clientName, client_phone: invoiceObj.clientPhone,
+          client_whatsapp: invoiceObj.clientWhatsapp || null, client_email: invoiceObj.clientEmail || null,
+          client_address: invoiceObj.clientAddress,
           items: invoiceObj.items, subtotal: invoiceObj.subtotal, discount: invoiceObj.discount,
           vat_percent: invoiceObj.vatPercent, vat_amount: invoiceObj.vatAmount, grand_total: invoiceObj.grandTotal,
           advance_used: invoiceObj.advanceUsed, paid_amount: invoiceObj.paidAmount, change_amount: invoiceObj.changeAmount,
           due_amount: invoiceObj.dueAmount, payment_method: invoiceObj.paymentMethod, delivery_status: invoiceObj.deliveryStatus,
           is_returned: invoiceObj.isReturned, note: invoiceObj.note, created_by: currentAdminUserEmail
-        }], { onConflict: 'invoice_no' });
+        };
+        _supabase.from('pos_invoices').upsert([invoicePayload], { onConflict: 'invoice_no' }).then(({ error }) => {
+          if (error) {
+            // Fallback without optional columns if SQL migration not run yet
+            delete invoicePayload.client_whatsapp;
+            delete invoicePayload.client_email;
+            _supabase.from('pos_invoices').upsert([invoicePayload], { onConflict: 'invoice_no' }).then(({ error: err2 }) => {
+              if (err2) showToast('Supabase সেভ এরর: ' + err2.message, 'error');
+            });
+          }
+        });
       }
 
       saveState(); resetInvoiceForm(); renderDashboard();
@@ -3814,60 +3826,22 @@
 
         const { data: invRows } = await _supabase.from('pos_invoices').select('*').order('created_at', { ascending: false });
         if (Array.isArray(invRows) && invRows.length > 0) {
-          appState.invoices = invRows.map(r => ({
-            id: r.id, invoiceNo: r.invoice_no, date: r.invoice_date, dueDate: r.due_date || '', emiPlan: r.emi_plan || '',
-            clientName: r.client_name, clientPhone: r.client_phone || '', clientAddress: r.client_address || '',
-            items: Array.isArray(r.items) ? r.items : [], subtotal: Number(r.subtotal) || 0,
-            discount: Number(r.discount) || 0, vatPercent: Number(r.vat_percent) || 0, vatAmount: Number(r.vat_amount) || 0,
-            grandTotal: Number(r.grand_total) || 0, advanceUsed: Number(r.advance_used) || 0,
-            paidAmount: Number(r.paid_amount) || 0, changeAmount: Number(r.change_amount) || 0,
-            dueAmount: Number(r.due_amount) || 0, paymentMethod: r.payment_method || 'Cash (নগদ)',
-            deliveryStatus: r.delivery_status || 'Delivered', isReturned: Boolean(r.is_returned), note: r.note || ''
-          }));
-        }
-
-        const { data: prodRows } = await _supabase.from('pos_products').select('*').order('created_at', { ascending: false });
-        if (Array.isArray(prodRows) && prodRows.length > 0) {
-          appState.products = prodRows.map(p => ({
-            id: p.id, name: p.name, model: p.model || 'STD-01', category: p.category || 'Course / Training',
-            buyPrice: Number(p.buy_price) || 0, price: Number(p.price) || 0, stock: Number(p.stock) ?? 0,
-            isUnlimited: Number(p.stock) === -1 || Number(p.stock) >= 999999,
-            warranty: p.warranty || 'No Warranty', isFree: Boolean(p.is_free), downloadNote: p.download_note || ''
-          }));
-        }
-
-        const { data: purRows } = await _supabase.from('pos_purchases').select('*').order('created_at', { ascending: false });
-        if (Array.isArray(purRows) && purRows.length > 0) {
-          appState.purchases = purRows.map(p => ({
-            id: p.id, voucherNo: p.voucher_no, date: p.purchase_date, supplierName: p.supplier_name,
-            supplierPhone: p.supplier_phone || '', productName: p.product_name, model: p.model || '',
-            warranty: p.warranty || 'No Warranty', qty: Number(p.qty) || 1, buyRate: Number(p.buy_rate) || 0,
-            sellRate: Number(p.sell_rate) || 0, totalAmount: Number(p.total_amount) || 0,
-            paidAmount: Number(p.paid_amount) || 0, dueAmount: Number(p.due_amount) || 0
-          }));
-        }
-
-        const { data: expRows } = await _supabase.from('pos_expenses').select('*').order('created_at', { ascending: false });
-        if (Array.isArray(expRows) && expRows.length > 0) {
-          appState.expenses = expRows.map(e => ({
-            id: e.id, date: e.expense_date, category: e.category, title: e.title, amount: Number(e.amount) || 0, method: e.payment_method || 'Cash (নগদ)'
-          }));
-        }
-
-        const { data: qtRows } = await _supabase.from('pos_quotations').select('*').order('created_at', { ascending: false });
-        if (Array.isArray(qtRows) && qtRows.length > 0) {
-          appState.quotations = qtRows.map(q => ({
-            id: q.id, quoteNo: q.quote_no, date: q.quote_date, validUntil: q.valid_until || '',
-            clientName: q.client_name, clientPhone: q.client_phone || '', clientAddress: q.client_address || '',
-            items: Array.isArray(q.items) ? q.items : [], subtotal: Number(q.subtotal) || 0,
-            discount: Number(q.discount) || 0, grandTotal: Number(q.grand_total) || 0, note: q.note || ''
-          }));
-        }
-
-        const { data: advRows } = await _supabase.from('pos_customer_advances').select('*');
-        if (Array.isArray(advRows) && advRows.length > 0) {
-          advRows.forEach(a => {
-            appState.customerAdvances[a.client_key] = { name: a.client_name, phone: a.client_phone || '', balance: Number(a.balance) || 0 };
+          const localByNo = new Map(appState.invoices.map(i => [i.invoiceNo, i]));
+          appState.invoices = invRows.map(r => {
+            const prevLocal = localByNo.get(r.invoice_no) || {};
+            return {
+              id: r.id, invoiceNo: r.invoice_no, date: r.invoice_date, dueDate: r.due_date || '', emiPlan: r.emi_plan || '',
+              clientName: r.client_name, clientPhone: r.client_phone || '',
+              clientWhatsapp: r.client_whatsapp || prevLocal.clientWhatsapp || '',
+              clientEmail: r.client_email || prevLocal.clientEmail || '',
+              clientAddress: r.client_address || '',
+              items: Array.isArray(r.items) ? r.items : [], subtotal: Number(r.subtotal) || 0,
+              discount: Number(r.discount) || 0, vatPercent: Number(r.vat_percent) || 0, vatAmount: Number(r.vat_amount) || 0,
+              grandTotal: Number(r.grand_total) || 0, advanceUsed: Number(r.advance_used) || 0,
+              paidAmount: Number(r.paid_amount) || 0, changeAmount: Number(r.change_amount) || 0,
+              dueAmount: Number(r.due_amount) || 0, paymentMethod: r.payment_method || 'Cash (নগদ)',
+              deliveryStatus: r.delivery_status || 'Delivered', isReturned: Boolean(r.is_returned), note: r.note || ''
+            };
           });
         }
 
