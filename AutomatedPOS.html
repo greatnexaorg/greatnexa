@@ -2635,7 +2635,7 @@
 
       const tbody = document.getElementById('pad-items-tbody');
       const items = Array.isArray(inv.items) ? inv.items : [];
-      const minRows = currentPrintFormat === 'THERMAL' ? items.length : 10;
+      const minRows = currentPrintFormat === 'THERMAL' ? items.length : 5;
       const totalRowsToRender = Math.max(minRows, items.length);
       let rowsHTML = '';
 
