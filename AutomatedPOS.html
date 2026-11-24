@@ -515,7 +515,7 @@
                   </div>
                   <div class="space-y-0.5">
                     <span class="inline-block px-2 py-0.5 rounded bg-slate-900 text-cyan-300 text-[8.5px] font-extrabold uppercase tracking-wider">Digital Verification QR</span>
-                    <p class="text-[9.5px] text-slate-700 font-bold">ইনভয়েস ভেরিফিকেশন ও পেমেন্ট তথ্য</p>
+                    <p class="text-[9.5px] text-slate-700 font-bold">স্ক্যান করে বিল দেখুন বা ক্লিক করুন</p>
                     <p id="pad-custom-note" class="text-[9.5px] font-semibold text-blue-800 italic"></p>
                   </div>
                 </div>
@@ -2615,41 +2615,34 @@
       document.getElementById('pad-pay-method').textContent = inv.paymentMethod;
       document.getElementById('pad-delivery-status-val').textContent = inv.deliveryStatus || 'Delivered';
 
-      const verifyPayload = {
+      // Light, easily scannable QR payload + clickable digital bill preview
+      const itemSummary = (inv.items || []).map(i => `${i.name} x${i.qty}`).join(', ');
+      const qrPlainText = `${s.companyName} | ${inv.invoiceNo} | ${inv.date} | ${inv.clientName} | ${itemSummary} | Total: ${inv.grandTotal} | Paid: ${inv.paidAmount} | Due: ${inv.dueAmount}`;
+      const baseHref = (window.location.href && window.location.href.startsWith('http'))
+        ? window.location.href.split('#')[0]
+        : 'https://www.greatnexa.com/AutomatedPOS.html';
+      const compactMemo = {
         co: s.companyName,
         ph: s.phone,
-        web: s.website,
         no: inv.invoiceNo,
         dt: inv.date,
         st: status.label,
-        del: inv.deliveryStatus || 'Delivered',
         cn: inv.clientName,
-        cp: inv.clientPhone,
-        pm: inv.paymentMethod,
+        cp: inv.clientPhone || '',
+        pm: inv.paymentMethod || '',
+        del: inv.deliveryStatus || '',
         tot: inv.grandTotal,
         paid: inv.paidAmount,
         due: inv.dueAmount,
         note: inv.note || '',
-        items: (inv.items || []).map(i => ({
-          n: i.name,
-          m: i.model,
-          s: i.serial || '',
-          w: i.warranty || '',
-          q: i.qty,
-          t: i.total,
-          f: Boolean(i.isFree)
-        }))
+        items: (inv.items || []).map(i => ({ n: i.name, m: i.model, s: i.serial || '', w: i.warranty || '', q: i.qty, t: i.total, f: Boolean(i.isFree) }))
       };
-      const encodedPayload = btoa(unescape(encodeURIComponent(JSON.stringify(verifyPayload))));
-      const baseHref = (window.location.href && window.location.href.startsWith('http'))
-        ? window.location.href.split('#')[0]
-        : 'https://www.greatnexa.com/AutomatedPOS.html';
-      const qrVerifyUrl = `${baseHref}#verify=${encodedPayload}`;
+      const qrVerifyUrl = `${baseHref}#bill=${encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(compactMemo)))))}`;
       const qrImgEl = document.getElementById('pad-qr-img');
-      qrImgEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&ecc=M&data=${encodeURIComponent(qrVerifyUrl)}`;
+      qrImgEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&ecc=L&margin=2&data=${encodeURIComponent(qrPlainText)}`;
       qrImgEl.onclick = () => window.open(qrVerifyUrl, '_blank');
       qrImgEl.style.cursor = 'pointer';
-      qrImgEl.title = 'ক্লিক বা স্ক্যান করে ডিজিটাল ইনভয়েস দেখুন';
+      qrImgEl.title = 'ক্লিক করলে ডিজিটাল বিল প্রিভিউ খুলবে';
 
       setInvoicePrintFormat('A4');
 
@@ -2688,6 +2681,99 @@
       renderAllLogosAndBranding();
       const modal = document.getElementById('invoice-print-modal');
       modal.classList.remove('hidden'); modal.classList.add('flex');
+    }
+
+    function renderQRVerificationPageIfPresent() {
+      const hash = window.location.hash || '';
+      if (!hash.startsWith('#bill=') && !hash.startsWith('#verify=')) return false;
+      try {
+        const rawEncoded = decodeURIComponent(hash.startsWith('#bill=') ? hash.slice(6) : hash.slice(8));
+        const d = JSON.parse(decodeURIComponent(escape(atob(rawEncoded))));
+        const itemsRows = (d.items || []).map((it, idx) => {
+          const isObj = typeof it === 'object' && it !== null;
+          const itemTitle = isObj ? it.n : String(it);
+          const itemMeta = isObj ? `${it.m || ''}${it.s ? ' • S/N: ' + it.s : ''}` : '';
+          const itemWarranty = isObj && it.w && it.w !== 'No Warranty' ? it.w : '';
+          const itemQty = isObj ? it.q : '';
+          const itemTotal = isObj ? (it.f ? 'FREE' : formatBDT(it.t)) : '';
+          return `
+            <tr class="border-b border-slate-100">
+              <td class="py-2.5 px-3 text-xs font-bold text-slate-500">${idx + 1}</td>
+              <td class="py-2.5 px-3">
+                <p class="font-bold text-slate-900 text-xs sm:text-sm">${escapeHTML(itemTitle)}</p>
+                ${itemMeta ? `<p class="text-[11px] text-slate-500 font-mono">${escapeHTML(itemMeta)}</p>` : ''}
+                ${itemWarranty ? `<span class="inline-block mt-0.5 px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-[10px] font-bold">${escapeHTML(itemWarranty)}</span>` : ''}
+              </td>
+              <td class="py-2.5 px-3 text-center font-bold text-xs">${escapeHTML(itemQty)}</td>
+              <td class="py-2.5 px-3 text-right font-extrabold text-xs sm:text-sm text-slate-900">${escapeHTML(itemTotal)}</td>
+            </tr>
+          `;
+        }).join('');
+
+        document.body.innerHTML = `
+          <div class="min-h-screen bg-slate-100 py-6 px-4 flex items-center justify-center">
+            <div class="max-w-xl w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+              <div class="bg-slate-950 text-white p-5 flex items-center justify-between gap-3">
+                <div>
+                  <span class="px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-extrabold uppercase tracking-wider">Verified Digital Memo</span>
+                  <h1 class="text-xl font-black mt-1">${escapeHTML(d.co || appState.settings.companyName || 'GreatNexa')}</h1>
+                  <p class="text-xs text-slate-400">${escapeHTML(d.ph || appState.settings.phone || '')}</p>
+                </div>
+                <div class="text-right">
+                  <p class="font-mono text-xs font-extrabold text-cyan-300">${escapeHTML(d.no)}</p>
+                  <p class="text-xs text-slate-300 mt-0.5">${escapeHTML(d.dt)}</p>
+                  <span class="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300">${escapeHTML(d.st || 'VERIFIED')}</span>
+                </div>
+              </div>
+              <div class="p-5 space-y-4">
+                <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200 flex flex-wrap justify-between gap-2 text-xs">
+                  <div>
+                    <span class="text-slate-400 block font-bold uppercase text-[10px]">ক্লায়েন্ট</span>
+                    <p class="font-extrabold text-slate-900 text-sm">${escapeHTML(d.cn)}</p>
+                    <p class="text-slate-600 font-semibold">${escapeHTML(d.cp || '')}</p>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-slate-400 block font-bold uppercase text-[10px]">পেমেন্ট ও ডেলিভারি</span>
+                    <p class="font-bold text-blue-700">${escapeHTML(d.pm || '')}</p>
+                    <p class="text-indigo-700 font-semibold">${escapeHTML(d.del || '')}</p>
+                  </div>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                  <table class="w-full text-left border-collapse">
+                    <thead>
+                      <tr class="bg-slate-900 text-white text-[11px] uppercase">
+                        <th class="py-2 px-3">#</th>
+                        <th class="py-2 px-3">আইটেম ও বিবরণ</th>
+                        <th class="py-2 px-3 text-center">Qty</th>
+                        <th class="py-2 px-3 text-right">মোট</th>
+                      </tr>
+                    </thead>
+                    <tbody>${itemsRows}</tbody>
+                  </table>
+                </div>
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-1.5 text-xs sm:text-sm">
+                  <div class="flex justify-between font-bold text-slate-900 text-base">
+                    <span>সর্বমোট বিল (Grand Total):</span>
+                    <span class="text-blue-700">${formatBDT(d.tot)}</span>
+                  </div>
+                  <div class="flex justify-between text-emerald-700 font-bold">
+                    <span>জমা (Paid):</span>
+                    <span>${formatBDT(d.paid)}</span>
+                  </div>
+                  <div class="flex justify-between text-rose-600 font-extrabold pt-1.5 border-t border-slate-200">
+                    <span>বাকি (Balance Due):</span>
+                    <span>${formatBDT(d.due)}</span>
+                  </div>
+                </div>
+                ${d.note ? `<p class="text-xs text-slate-600 italic bg-blue-50/60 p-2.5 rounded-xl border border-blue-100">নোট: ${escapeHTML(d.note)}</p>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+        return true;
+      } catch (err) {
+        return false;
+      }
     }
 
     function triggerPrintWithFormat() {
@@ -3339,92 +3425,6 @@
         saveState(); renderDashboard(); initNewInvoiceForm();
         if (showNotice) showToast('Supabase ERP ডেটা সিঙ্ক সম্পন্ন হয়েছে!', 'success');
       } catch (err) { console.error(err); }
-    }
-
-    function renderQRVerificationPageIfPresent() {
-      const hash = window.location.hash || '';
-      if (!hash.startsWith('#verify=')) return false;
-      try {
-        const b64 = hash.slice(8);
-        const jsonStr = decodeURIComponent(escape(atob(b64)));
-        const d = JSON.parse(jsonStr);
-        const itemsRows = (d.items || []).map((it, idx) => `
-          <tr class="border-b border-slate-100">
-            <td class="py-2.5 px-3 text-xs font-bold text-slate-500">${idx + 1}</td>
-            <td class="py-2.5 px-3">
-              <p class="font-bold text-slate-900 text-xs sm:text-sm">${escapeHTML(it.n)}</p>
-              <p class="text-[11px] text-slate-500 font-mono">${escapeHTML(it.m || '')}${it.s ? ' • S/N: ' + escapeHTML(it.s) : ''}</p>
-              ${it.w && it.w !== 'No Warranty' ? `<span class="inline-block mt-0.5 px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-[10px] font-bold">${escapeHTML(it.w)}</span>` : ''}
-            </td>
-            <td class="py-2.5 px-3 text-center font-bold text-xs">${it.q}</td>
-            <td class="py-2.5 px-3 text-right font-extrabold text-xs sm:text-sm text-slate-900">${it.f ? 'FREE' : formatBDT(it.t)}</td>
-          </tr>
-        `).join('');
-
-        document.body.innerHTML = `
-          <div class="min-h-screen bg-slate-100 py-6 px-4 flex items-center justify-center">
-            <div class="max-w-xl w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-              <div class="bg-slate-950 text-white p-5 flex items-center justify-between gap-3">
-                <div>
-                  <span class="px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-extrabold uppercase tracking-wider">Verified Digital Memo</span>
-                  <h1 class="text-xl font-black mt-1">${escapeHTML(d.co || 'GreatNexa')}</h1>
-                  <p class="text-xs text-slate-400">${escapeHTML(d.ph || '')} ${d.web ? '• ' + escapeHTML(d.web) : ''}</p>
-                </div>
-                <div class="text-right">
-                  <p class="font-mono text-xs font-extrabold text-cyan-300">${escapeHTML(d.no)}</p>
-                  <p class="text-xs text-slate-300 mt-0.5">${escapeHTML(d.dt)}</p>
-                  <span class="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300">${escapeHTML(d.st || 'VERIFIED')}</span>
-                </div>
-              </div>
-              <div class="p-5 space-y-4">
-                <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200 flex flex-wrap justify-between gap-2 text-xs">
-                  <div>
-                    <span class="text-slate-400 block font-bold uppercase text-[10px]">ক্লায়েন্ট</span>
-                    <p class="font-extrabold text-slate-900 text-sm">${escapeHTML(d.cn)}</p>
-                    <p class="text-slate-600 font-semibold">${escapeHTML(d.cp || '')}</p>
-                  </div>
-                  <div class="text-right">
-                    <span class="text-slate-400 block font-bold uppercase text-[10px]">পেমেন্ট ও ডেলিভারি</span>
-                    <p class="font-bold text-blue-700">${escapeHTML(d.pm || '')}</p>
-                    <p class="text-indigo-700 font-semibold">${escapeHTML(d.del || '')}</p>
-                  </div>
-                </div>
-                <div class="overflow-x-auto rounded-xl border border-slate-200">
-                  <table class="w-full text-left border-collapse">
-                    <thead>
-                      <tr class="bg-slate-900 text-white text-[11px] uppercase">
-                        <th class="py-2 px-3">#</th>
-                        <th class="py-2 px-3">আইটেম ও বিবরণ</th>
-                        <th class="py-2 px-3 text-center">Qty</th>
-                        <th class="py-2 px-3 text-right">মোট</th>
-                      </tr>
-                    </thead>
-                    <tbody>${itemsRows}</tbody>
-                  </table>
-                </div>
-                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-1.5 text-xs sm:text-sm">
-                  <div class="flex justify-between font-bold text-slate-900 text-base">
-                    <span>সর্বমোট বিল (Grand Total):</span>
-                    <span class="text-blue-700">${formatBDT(d.tot)}</span>
-                  </div>
-                  <div class="flex justify-between text-emerald-700 font-bold">
-                    <span>জমা (Paid):</span>
-                    <span>${formatBDT(d.paid)}</span>
-                  </div>
-                  <div class="flex justify-between text-rose-600 font-extrabold pt-1.5 border-t border-slate-200">
-                    <span>বাকি (Balance Due):</span>
-                    <span>${formatBDT(d.due)}</span>
-                  </div>
-                </div>
-                ${d.note ? `<p class="text-xs text-slate-600 italic bg-blue-50/60 p-2.5 rounded-xl border border-blue-100">নোট: ${escapeHTML(d.note)}</p>` : ''}
-              </div>
-            </div>
-          </div>
-        `;
-        return true;
-      } catch (err) {
-        return false;
-      }
     }
 
     window.addEventListener('DOMContentLoaded', () => {
