@@ -150,34 +150,34 @@
         border: none !important;
         border-radius: 0 !important;
       }
-      .pad-avoid-break {
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
+      /* Full Bleed A4 Portrait Layout so 10-row pad fits Page 1 strictly without spilling to Page 2 */
+      body:not(.print-thermal) {
+        width: 210mm !important;
+        height: 290mm !important;
+        max-height: 290mm !important;
+        overflow: hidden !important;
       }
-      #pad-items-tbody tr {
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
+      body:not(.print-thermal) #invoice-print-modal,
+      body:not(.print-thermal) #invoice-modal-wrapper {
+        height: 290mm !important;
+        max-height: 290mm !important;
+        overflow: hidden !important;
       }
-      body.print-thermal #printable-invoice-sheet {
-        width: 80mm !important;
-        max-width: 80mm !important;
-        min-height: auto !important;
-        padding: 3mm !important;
-        margin: 0 auto !important;
-      }
-      body.print-thermal @page {
-        size: 80mm auto;
-        margin: 0;
-      }
-      /* Full Bleed A4 Portrait Layout so 10-row pad fits Page 1 with bottom-anchored footer */
       body:not(.print-thermal) #printable-invoice-sheet {
         padding: 0 !important;
         width: 210mm !important;
-        height: 296mm !important;
-        min-height: 296mm !important;
-        max-height: 296mm !important;
+        height: 290mm !important;
+        min-height: 290mm !important;
+        max-height: 290mm !important;
         max-width: 100% !important;
         overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+      }
+      body:not(.print-thermal) #pad-items-tbody td {
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
       }
       body:not(.print-thermal) @page {
         size: A4 portrait;
