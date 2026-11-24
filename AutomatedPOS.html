@@ -3056,7 +3056,7 @@
       } else {
         msg += `\nবকেয়া (Due): *৳ 0* (সম্পূর্ণ পরিশোধিত)`;
       }
-      msg += `\n\nধন্যবাদান্তে,\n${s.companyName} (${s.phone})`;
+      msg += `\n\nধন্যবাদান্তে,\n${s.companyName}\n${s.website}`;
       return msg;
     }
 
@@ -3077,8 +3077,9 @@
       const subject = `Due Payment Reminder (${inv.invoiceNo}) - ${appState.settings.companyName}`;
       const body = buildInvoiceShareMessage(inv).replace(/\*/g, '');
       const toEmail = encodeURIComponent(inv.clientEmail.trim());
-      const gmailWebComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&authuser=${encodeURIComponent(senderEmail)}&to=${toEmail}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.open(gmailWebComposeUrl, '_blank', 'noopener,noreferrer');
+      const targetComposeUrl = `https://mail.google.com/mail/u/?authuser=${encodeURIComponent(senderEmail)}&view=cm&fs=1&to=${toEmail}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      const accountChooserUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(senderEmail)}&continue=${encodeURIComponent(targetComposeUrl)}`;
+      window.open(accountChooserUrl, '_blank', 'noopener,noreferrer');
     }
 
     function sendWhatsAppReminder(invoiceId) {
@@ -3087,7 +3088,7 @@
       const targetNumber = inv.clientWhatsapp || inv.clientPhone || '';
       const rawPhone = String(targetNumber).replace(/[^0-9]/g, '');
       const waPhone = rawPhone.length >= 10 ? (rawPhone.startsWith('88') ? rawPhone : '88' + rawPhone) : '';
-      const msg = `আসসালামু আলাইকুম ${inv.clientName},\n*${appState.settings.companyName}*-এ আপনার ইনভয়েস *${inv.invoiceNo}* (তারিখ: ${inv.date}) বাবদ *${formatBDT(inv.dueAmount)}* বকেয়া রয়েছে। অনুগ্রহ করে পরিশোধ করার অনুরোধ রইল। ধন্যবাদ। (${appState.settings.phone})`;
+      const msg = `আসসালামু আলাইকুম ${inv.clientName},\n*${appState.settings.companyName}*-এ আপনার ইনভয়েস *${inv.invoiceNo}* (তারিখ: ${inv.date}) বাবদ *${formatBDT(inv.dueAmount)}* বকেয়া রয়েছে। অনুগ্রহ করে পরিশোধ করার অনুরোধ রইল।\n\nধন্যবাদান্তে,\n${appState.settings.companyName}\n${appState.settings.website}`;
       window.open(waPhone ? `https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
