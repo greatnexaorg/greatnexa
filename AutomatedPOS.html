@@ -230,21 +230,21 @@
                    class="w-full text-xs font-mono bg-[#0b1324] border border-white/15 text-white rounded-xl pl-4 pr-10 py-3 focus:outline-none focus:border-blue-500">
             <button type="button" onclick="togglePosPasswordVisibility()" 
                     class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white cursor-pointer focus:outline-none">
-              <span id="posEyeIcon">👁️</span>
-            </button>
-          </div>
+  <div id="toast-container" class="fixed top-4 right-4 z-[130] flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirm-modal" class="fixed inset-0 z-[120] hidden items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-triangle-exclamation"></i>
         </div>
-        
-        <div id="posLoginError" class="text-rose-400 text-xs hidden font-medium leading-relaxed"></div>
-
-        <button type="submit" id="btnPosAdminLogin" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer font-mono">
-          Verify & Unlock POS
-        </button>
-      </form>
-
-      <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-gray-400">
-        <a href="admin.html" class="text-cyan-400 hover:underline">← Admin Suite</a>
-        <a href="index.html" class="hover:text-white">Home</a>
+        <h3 id="confirm-title" class="text-lg font-bold text-slate-900">নিশ্চিত করুন (Confirm)</h3>
+      </div>
+      <p id="confirm-message" class="text-sm text-slate-600 mb-6">আপনি কি নিশ্চিতভাবে এটি করতে চান?</p>
+      <div class="flex justify-end gap-3">
+        <button type="button" id="confirm-cancel-btn" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition cursor-pointer">বাতিল</button>
+        <button type="button" id="confirm-ok-btn" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 transition cursor-pointer">নিশ্চিত</button>
       </div>
     </div>
   </div>
@@ -2046,12 +2046,23 @@
 
     function showConfirmDialog(title, message, onConfirm) {
       const modal = document.getElementById('confirm-modal');
-      document.getElementById('confirm-title').textContent = title;
-      document.getElementById('confirm-message').textContent = message;
-      modal.classList.remove('hidden'); modal.classList.add('flex');
-      const cleanup = () => { modal.classList.add('hidden'); modal.classList.remove('flex'); };
-      document.getElementById('confirm-cancel-btn').onclick = cleanup;
-      document.getElementById('confirm-ok-btn').onclick = () => { cleanup(); onConfirm(); };
+      const titleEl = document.getElementById('confirm-title');
+      const msgEl = document.getElementById('confirm-message');
+      const cancelBtn = document.getElementById('confirm-cancel-btn');
+      const okBtn = document.getElementById('confirm-ok-btn');
+      if (!modal || !okBtn) return;
+      titleEl.textContent = title;
+      msgEl.textContent = message;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      const cleanup = () => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        okBtn.onclick = null;
+        cancelBtn.onclick = null;
+      };
+      cancelBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); cleanup(); };
+      okBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); cleanup(); onConfirm(); };
     }
 
     function toggleMobileSidebar() {
@@ -3173,11 +3184,27 @@
     }
 
     function deleteInvoice(invoiceId) {
-      showConfirmDialog('ইনভয়েস মুছে ফেলুন', 'আপনি কি নিশ্চিতভাবে এটি মুছে ফেলতে চান?', () => {
-        const target = appState.invoices.find(i => i.id === invoiceId);
-        appState.invoices = appState.invoices.filter(i => i.id !== invoiceId);
-        if (isSupabaseConnected && target) _supabase.from('pos_invoices').delete().eq('invoice_no', target.invoiceNo);
-        saveState(); renderDashboard(); renderInvoicesLedger(); renderBakiKhata();
+      const target = appState.invoices.find(i => String(i.id) === String(invoiceId));
+      if (!target) {
+        showToast('ইনভয়েসটি খুঁজে পাওয়া যায়নি!', 'error');
+        return;
+      }
+      showConfirmDialog('ইনভয়েস মুছে ফেলুন', `আপনি কি নিশ্চিতভাবে ${target.invoiceNo} মুছে ফেলতে চান?`, async () => {
+        appState.invoices = appState.invoices.filter(i => String(i.id) !== String(invoiceId));
+        saveState();
+        renderDashboard();
+        renderInvoicesLedger();
+        renderBakiKhata();
+        if (isSupabaseConnected) {
+          let delQuery = _supabase.from('pos_invoices').delete();
+          delQuery = isUUID(target.id) ? delQuery.eq('id', target.id) : delQuery.eq('invoice_no', target.invoiceNo);
+          const { error } = await delQuery;
+          if (error) {
+            showToast('Supabase থেকে ডিলিট এরর: ' + error.message, 'error');
+            return;
+          }
+        }
+        showToast(`ইনভয়েস ${target.invoiceNo} মুছে ফেলা হয়েছে!`, 'success');
       });
     }
 
@@ -3427,93 +3454,12 @@
     }
 
     function deleteExpense(id) {
-      const target = appState.expenses.find(e => e.id === id);
-      appState.expenses = appState.expenses.filter(e => e.id !== id);
-      if (isSupabaseConnected && target && isUUID(target.id)) _supabase.from('pos_expenses').delete().eq('id', target.id);
-      saveState(); renderExpensesTab(); renderDashboard(); showToast('খরচ মুছে ফেলা হয়েছে', 'info');
-    }
-
-    // PRODUCTS, FREE DOWNLOAD & BARCODE STICKERS
-    function toggleProductFreeFields(isFree) {
-      if (isFree) { document.getElementById('prod-buy-price').value = 0; document.getElementById('prod-price').value = 0; document.getElementById('prod-category').value = 'Free Resource'; }
-    }
-
-    function handleSaveProduct(e) {
-      e.preventDefault();
-      const editId = document.getElementById('prod-edit-id').value;
-      const name = document.getElementById('prod-name').value.trim();
-      const model = document.getElementById('prod-model').value.trim();
-      const isFree = document.getElementById('prod-is-free').checked;
-      const isUnlimited = document.getElementById('prod-is-unlimited').checked;
-      const buyPrice = isFree ? 0 : Math.max(0, Number(document.getElementById('prod-buy-price').value) || 0);
-      const price = isFree ? 0 : Math.max(0, Number(document.getElementById('prod-price').value) || 0);
-      const category = getSelectOrCustomValue('prod-category', 'prod-category-custom', 'Others');
-      const warranty = getSelectOrCustomValue('prod-warranty', 'prod-warranty-custom', 'No Warranty');
-      const stock = isUnlimited ? -1 : Math.max(0, Number(document.getElementById('prod-stock').value) || 0);
-      const downloadNote = document.getElementById('prod-download-note').value.trim();
-
-      if (editId) {
-        const idx = appState.products.findIndex(p => p.id === editId);
-        if (idx !== -1) {
-          appState.products[idx] = { ...appState.products[idx], name, model, buyPrice, price, category, warranty, stock, isUnlimited, isFree: isFree || price === 0, downloadNote };
-          if (isSupabaseConnected && isUUID(editId)) _supabase.from('pos_products').update({ name, model, buy_price: buyPrice, price, category, warranty, stock, is_free: isFree || price === 0, download_note: downloadNote }).eq('id', editId);
-        }
-      } else {
-        const np = { id: 'prod-' + Date.now(), name, model, buyPrice, price, category, warranty, stock, isUnlimited, isFree: isFree || price === 0, downloadNote };
-        appState.products.unshift(np);
-        if (isSupabaseConnected) {
-          _supabase.from('pos_products').insert([{ name, model, buy_price: buyPrice, price, category, warranty, stock, is_free: isFree || price === 0, download_note: downloadNote }]).select().single().then(({ data }) => { if (data && data.id) { np.id = data.id; saveState(); } });
-        }
-      }
-      saveState(); resetProductForm(); renderProductsCatalog(); renderDashboard(); showToast('প্রোডাক্ট সেভ হয়েছে!', 'success');
-    }
-
-    function editProduct(id) {
-      const p = appState.products.find(item => item.id === id);
-      if (!p) return;
-      document.getElementById('prod-edit-id').value = p.id;
-      document.getElementById('prod-name').value = p.name;
-      document.getElementById('prod-model').value = p.model;
-      document.getElementById('prod-buy-price').value = p.buyPrice || 0;
-      document.getElementById('prod-price').value = p.price;
-
-      setSelectOrCustomValue('prod-category', 'prod-category-custom', p.category || 'Course / Training');
-      setSelectOrCustomValue('prod-warranty', 'prod-warranty-custom', p.warranty || 'No Warranty');
-
-      const unlim = isUnlimitedProduct(p);
-      document.getElementById('prod-is-unlimited').checked = unlim;
-      toggleProductUnlimitedStock(unlim);
-      if (!unlim) document.getElementById('prod-stock').value = p.stock;
-
-      document.getElementById('prod-is-free').checked = Boolean(p.isFree);
-      document.getElementById('prod-download-note').value = p.downloadNote || '';
-      document.getElementById('product-form-title').textContent = 'প্রোডাক্ট এডিট করুন';
-      document.getElementById('product-submit-label').textContent = 'আপডেট সেভ করুন';
-      document.getElementById('cancel-edit-product-btn').classList.remove('hidden');
-    }
-
-    function resetProductForm() {
-      document.getElementById('product-catalog-form').reset();
-      document.getElementById('prod-edit-id').value = '';
-      document.getElementById('prod-is-unlimited').checked = false;
-      toggleProductUnlimitedStock(false);
-      document.getElementById('prod-stock').value = 99;
-      document.getElementById('prod-warranty').value = 'No Warranty';
-      document.getElementById('prod-warranty-custom').classList.add('hidden');
-      document.getElementById('prod-warranty-custom').value = '';
-      document.getElementById('prod-category-custom').classList.add('hidden');
-      document.getElementById('prod-category-custom').value = '';
-      document.getElementById('product-form-title').textContent = 'নতুন প্রোডাক্ট যোগ করুন';
-      document.getElementById('product-submit-label').textContent = 'ক্যাটালগে সেভ করুন';
-      document.getElementById('cancel-edit-product-btn').classList.add('hidden');
-    }
-
-    function deleteProduct(id) {
-      showConfirmDialog('প্রোডাক্ট মুছে ফেলুন', 'আপনি কি নিশ্চিতভাবে এটি মুছে ফেলতে চান?', () => {
-        const target = appState.products.find(p => p.id === id);
-        appState.products = appState.products.filter(p => p.id !== id);
-        if (isSupabaseConnected && target && isUUID(target.id)) _supabase.from('pos_products').delete().eq('id', target.id);
-        saveState(); renderProductsCatalog(); renderDashboard(); showToast('প্রোডাক্ট মুছে ফেলা হয়েছে', 'info');
+      const target = appState.expenses.find(e => String(e.id) === String(id));
+      if (!target) return;
+      showConfirmDialog('খরচ মুছে ফেলুন', `আপনি কি নিশ্চিতভাবে "${target.title}" (${formatBDT(target.amount)}) খরচটি মুছে ফেলতে চান?`, () => {
+        appState.expenses = appState.expenses.filter(e => String(e.id) !== String(id));
+        if (isSupabaseConnected && isUUID(target.id)) _supabase.from('pos_expenses').delete().eq('id', target.id);
+        saveState(); renderExpensesTab(); renderDashboard(); showToast('খরচ মুছে ফেলা হয়েছে', 'info');
       });
     }
 
